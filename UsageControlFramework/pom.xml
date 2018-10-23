@@ -1,0 +1,160 @@
+<!--
+  Copyright 2018 IIT-CNR
+  
+  Licensed under the Apache License, Version 2.0 (the "License"); you may not
+  use this file except in compliance with the License.  You may obtain a copy
+  of the License at
+  
+    http://www.apache.org/licenses/LICENSE-2.0
+  
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
+  License for the specific language governing permissions and limitations under
+  the License.
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>it.cnr.iit.usagecontrolframework</groupId>
+  <artifactId>UsageControlFramework</artifactId>
+  <version>3.0-SNAPSHOT</version>
+  
+  <properties>
+    <jclouds.version>1.9.1</jclouds.version>
+    <springfox.version>2.2.2</springfox.version>
+    <swagger.version>1.5.3</swagger.version>
+    <springboot.version>1.2.6.RELEASE</springboot.version>
+  </properties>
+
+  <build>
+
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>org.apache.tomcat.maven</groupId>
+          <artifactId>tomcat7-maven-plugin</artifactId>
+          <version>2.1</version>
+          <executions>
+            <execution>
+              <id>default-cli</id>
+              <goals>
+                <goal>run-war</goal>
+              </goals>
+              <configuration>
+                <!--<port>14000</port> <path>/usage-control</path> -->
+                <!-- unnecessary to launch the WAR file stand-alone throguh tomcat7:run-war -->
+                <!-- <fork>true</fork> -->
+                <useSeparateTomcatClassLoader>true</useSeparateTomcatClassLoader>
+              </configuration>
+            </execution>
+          </executions>
+        </plugin>
+
+      </plugins>
+    </pluginManagement>
+
+    <plugins>
+      <plugin>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.3</version>
+        <configuration>
+          <source>1.8</source>
+          <target>1.8</target>
+        </configuration>
+      </plugin>
+
+      <plugin>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-maven-plugin</artifactId>
+      </plugin>
+      <plugin>
+        <artifactId>maven-war-plugin</artifactId>
+        <configuration>
+          <failOnMissingWebXml>false</failOnMissingWebXml>
+        </configuration>
+      </plugin>
+
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>exec-maven-plugin</artifactId>
+        <version>1.5.0</version>
+        <configuration>
+          <mainClass>it.cnr.iit.ucsframework</mainClass>
+        </configuration>
+      </plugin>
+
+
+    </plugins>
+  </build>
+  <dependencies>
+
+    <dependency>
+      <groupId>iit.cnr.it.ucsinterface</groupId>
+      <artifactId>UCSInterface</artifactId>
+      <version>0.0.1-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>iit.cnr.it.usagecontrolframework.pdp</groupId>
+      <artifactId>PolicyDecisionPoint</artifactId>
+      <version>1.0-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>iit.cnr.it.usagecontrolframework</groupId>
+      <artifactId>PIPReader</artifactId>
+      <version>2.0-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>iit.cnr.it.usagecontrolframework.pap</groupId>
+      <artifactId>PolicyAdministrationPoint</artifactId>
+      <version>1.0-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>iit.cnr.it.usagecontrolframework</groupId>
+      <artifactId>ObligationManager</artifactId>
+      <version>0.0.1-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>it.cnr.iit.sessionmanagerdesktop</groupId>
+      <artifactId>SessionManagerDesktop</artifactId>
+      <version>1.0-SNAPSHOT</version>
+    </dependency>
+
+    <dependency>
+      <groupId>io.springfox</groupId>
+      <artifactId>springfox-swagger2</artifactId>
+      <version>${springfox.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>io.springfox</groupId>
+      <artifactId>springfox-swagger-ui</artifactId>
+      <version>${springfox.version}</version>
+    </dependency>
+
+    <!-- swagger core dependencies -->
+
+    <dependency>
+      <groupId>io.swagger</groupId>
+      <artifactId>swagger-annotations</artifactId>
+      <version>${swagger.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>io.swagger</groupId>
+      <artifactId>swagger-core</artifactId>
+      <version>${swagger.version}</version>
+    </dependency>
+
+    <!-- <dependency>
+      <groupId>iit.cnr.it.smppip</groupId>
+      <artifactId>PIPSmp</artifactId>
+      <version>1.0.0-SNAPSHOT</version>
+    </dependency>  -->
+    <dependency>
+    	<groupId>it.cnr.iit.xacmlutilities</groupId>
+    	<artifactId>XACMLUtilities</artifactId>
+    	<version>3.0-SNAPSHOT</version>
+    </dependency>
+  </dependencies>
+</project>
