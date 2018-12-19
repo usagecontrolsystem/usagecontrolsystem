@@ -48,11 +48,6 @@
   
   <dependencies>
   	<dependency>
-  		<groupId>iit.cnr.it.cassandraapi</groupId>
-  		<artifactId>CassandraApi</artifactId>
-  		<version>0.0.1-SNAPSHOT</version>
-  	</dependency>
-  	<dependency>
             <groupId>com.j256.ormlite</groupId>
             <artifactId>ormlite-core</artifactId>
             <version>4.48</version>
@@ -164,6 +159,11 @@
       <artifactId>org.wso2.balana</artifactId>
       <version>1.0.2</version>
       <scope>compile</scope>
+    </dependency>
+    <dependency>
+    	<groupId>com.datastax.cassandra</groupId>
+    	<artifactId>cassandra-driver-core</artifactId>
+    	<version>3.6.0</version>
     </dependency>
   </dependencies>
   

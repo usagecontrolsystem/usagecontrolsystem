@@ -20,7 +20,6 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import iit.cnr.it.ucsinterface.contexthandler.pipregister.PIPRegisterInterface;
 import iit.cnr.it.ucsinterface.forwardingqueue.ForwardingQueueToCHInterface;
 import iit.cnr.it.ucsinterface.obligationmanager.ObligationManagerInterface;
 import iit.cnr.it.ucsinterface.pap.PAPInterface;
@@ -75,8 +74,6 @@ public abstract class AbstractContextHandler
 	private PAPInterface									papInterface;
 	// interface to the request manager
 	private RequestManagerToCHInterface		requestManagerToChInterface;
-	// interface to the PIP register
-	protected PIPRegisterInterface				pipRegister;
 	// configuration of the context handler
 	private XMLContextHandler							configuration;
 	// ip of the context handler
@@ -286,9 +283,6 @@ public abstract class AbstractContextHandler
 		for (PIPCHInterface pipInterface : pipList) {
 			pipInterface.setContextHandlerInterface(this);
 			this.addPip(pipInterface);
-		}
-		if (pipRegister != null) {
-			pipRegister.addPips(pipList, ip, port);
 		}
 		
 		// add the pipRetrieval
