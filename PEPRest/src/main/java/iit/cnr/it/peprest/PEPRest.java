@@ -101,7 +101,7 @@ public class PEPRest implements PEPInterface, Runnable {
 		try {
 			String xml = "";
 			InputStream stream = PEPRest.class.getClassLoader()
-			    .getResourceAsStream("conf_kademlia.xml");
+			    .getResourceAsStream("conf.xml");
 			BufferedReader buffer = new BufferedReader(new InputStreamReader(stream));
 			String line = "";
 			
