@@ -28,6 +28,9 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.springframework.scheduling.annotation.Async;
+import org.springframework.stereotype.Component;
+
+import com.google.common.annotations.VisibleForTesting;
 
 import iit.cnr.it.peprest.configuration.Configuration;
 import iit.cnr.it.peprest.configuration.PEPConf;
@@ -53,35 +56,35 @@ import it.cnr.iit.xacmlutilities.policy.utility.JAXBUtility;
  * @author antonio
  *
  */
+@Component
 public class PEPRest implements PEPInterface, Runnable {
-	
-	private Configuration												configuration;
-	
-	private String															ip;
-	private String															port;
-	private String															revokeType;
+
+	private Configuration configuration;
+
+	private String ip;
+	private String port;
+	private String revokeType;
 	// required to give the PEP an endpoint in case of on going notifications
-	private String															onGoingEvaluationInterface;
-	
+	private String onGoingEvaluationInterface;
+
 	// path to the policy
-	private String															POLICY_PATH;
-	
-	private String															REQUEST_PATH;
-	
-	protected static final Logger								LOGGER			= Logger
-	    .getLogger(PEPRest.class.getName());
-	
-	private RequestManagerToExternalInterface		requestManager;
+	private String POLICY_PATH;
+
+	private String REQUEST_PATH;
+
+	protected static final Logger LOGGER = Logger.getLogger(PEPRest.class.getName());
+
+	private RequestManagerToExternalInterface requestManager;
 	// private ContextHandlerInterface contextHandler;
-	
+
 	// map of unanswered messages, the key is the id of the message
-	private HashMap<String, Message>						unanswered	= new HashMap<>();
-	private ConcurrentHashMap<String, Message>	responses		= new ConcurrentHashMap<>();
-	
-	private volatile boolean										initialized	= false;
-	
-	private Object															mutex				= new Object();
-	
+	private HashMap<String, Message> unanswered = new HashMap<>();
+	private ConcurrentHashMap<String, Message> responses = new ConcurrentHashMap<>();
+
+	private volatile boolean initialized = false;
+
+	private Object mutex = new Object();
+
 	public PEPRest() {
 		if ((configuration = retrieveConfiguration()) == null) {
 			return;
@@ -96,29 +99,27 @@ public class PEPRest implements PEPInterface, Runnable {
 		this.REQUEST_PATH = pepConf.getRequestPath();
 		initialized = true;
 	}
-	
+
 	private Configuration retrieveConfiguration() {
 		try {
 			String xml = "";
-			InputStream stream = PEPRest.class.getClassLoader()
-			    .getResourceAsStream("conf.xml");
+			InputStream stream = PEPRest.class.getClassLoader().getResourceAsStream("conf.xml");
 			BufferedReader buffer = new BufferedReader(new InputStreamReader(stream));
 			String line = "";
-			
+
 			while ((line = buffer.readLine()) != null) {
 				xml += line;
 			}
 			buffer.close();
 			stream.close();
-			Configuration configuration = JAXBUtility
-			    .unmarshalToObject(Configuration.class, xml);
+			Configuration configuration = JAXBUtility.unmarshalToObject(Configuration.class, xml);
 			return configuration;
 		} catch (Exception e) {
 			e.printStackTrace();
 			return null;
 		}
 	}
-	
+
 	public String tryAccess() {
 		String request;
 		String policy;
@@ -130,14 +131,12 @@ public class PEPRest implements PEPInterface, Runnable {
 			policy = Utility.readFileAbsPath(POLICY_PATH);
 			request = Utility.readFileAbsPath(REQUEST_PATH);
 		}
-		
-		TryAccessMessageBuilder tryAccessBuilder = new TryAccessMessageBuilder(
-		    configuration.getPepConf().getId(), configuration.getPepConf().getIp());
-		tryAccessBuilder.setPepUri(buildOnGoingEvaluationInterface())
-		    .setPolicy(policy).setRequest(request);
+
+		TryAccessMessageBuilder tryAccessBuilder = new TryAccessMessageBuilder(configuration.getPepConf().getId(),
+				configuration.getPepConf().getIp());
+		tryAccessBuilder.setPepUri(buildOnGoingEvaluationInterface()).setPolicy(policy).setRequest(request);
 		TryAccessMessage tryAccessMessage = tryAccessBuilder.build();
-		tryAccessMessage.setCallback(buildResponseInterface("tryAccessResponse"),
-		    MEAN.REST);
+		tryAccessMessage.setCallback(buildResponseInterface("tryAccessResponse"), MEAN.REST);
 		unanswered.put(tryAccessMessage.getID(), tryAccessMessage);
 		// Gson gson = new Gson();
 		// String s = gson.toJson(tryAccessMessage);
@@ -145,21 +144,20 @@ public class PEPRest implements PEPInterface, Runnable {
 		System.out.println("[TIME] TRYACCESS " + System.currentTimeMillis());
 		Message message = requestManager.sendMessageToCH(tryAccessMessage);
 		return tryAccessMessage.getID();
-		
+
 		// return (TryAccessResponse) contextHandler.tryAccess(tryAccessMessage);
 	}
-	
+
 	public String startAccess(String sessionId) {
-		StartAccessMessage startAccessMessage = new StartAccessMessage(
-		    configuration.getPepConf().getId(), configuration.getPepConf().getIp());
+		StartAccessMessage startAccessMessage = new StartAccessMessage(configuration.getPepConf().getId(),
+				configuration.getPepConf().getIp());
 		startAccessMessage.setSessionId(sessionId);
-		startAccessMessage
-		    .setCallback(buildResponseInterface("startAccessResponse"), MEAN.REST);
+		startAccessMessage.setCallback(buildResponseInterface("startAccessResponse"), MEAN.REST);
 		unanswered.put(startAccessMessage.getID(), startAccessMessage);
 		try {
 			System.out.println("[TIME] STARTACCESS " + System.currentTimeMillis());
 			Message message = requestManager.sendMessageToCH(startAccessMessage);
-			
+
 			// return (StartAccessResponse) contextHandler
 			// .startAccess(startAccessMessage);
 		} catch (Exception e) {
@@ -169,13 +167,13 @@ public class PEPRest implements PEPInterface, Runnable {
 		}
 		return startAccessMessage.getID();
 	}
-	
-	private String endAccess(String sessionId) {
-		EndAccessMessage endAccessMessage = new EndAccessMessage(
-		    configuration.getPepConf().getId(), configuration.getPepConf().getIp());
+
+	@VisibleForTesting
+	String endAccess(String sessionId) {
+		EndAccessMessage endAccessMessage = new EndAccessMessage(configuration.getPepConf().getId(),
+				configuration.getPepConf().getIp());
 		endAccessMessage.setSessionId(sessionId);
-		endAccessMessage.setCallback(buildResponseInterface("endAccessResponse"),
-		    MEAN.REST);
+		endAccessMessage.setCallback(buildResponseInterface("endAccessResponse"), MEAN.REST);
 		unanswered.put(endAccessMessage.getID(), endAccessMessage);
 		try {
 			System.out.println("[TIME] ENDACCESS " + System.currentTimeMillis());
@@ -192,17 +190,16 @@ public class PEPRest implements PEPInterface, Runnable {
 		}
 		return endAccessMessage.getID();
 	}
-	
+
 	/*
-	 * public void setCHInterface(ContextHandlerInterface contextHandlerInterface)
-	 * { this.contextHandler = contextHandlerInterface; }
+	 * public void setCHInterface(ContextHandlerInterface contextHandlerInterface) {
+	 * this.contextHandler = contextHandlerInterface; }
 	 */
-	
-	public void setRequestManagerInterface(
-	    RequestManagerToExternalInterface requestManager) {
+
+	public void setRequestManagerInterface(RequestManagerToExternalInterface requestManager) {
 		this.requestManager = requestManager;
 	}
-	
+
 	@Override
 	@Async
 	public Message onGoingEvaluation(Message message) {
@@ -216,20 +213,18 @@ public class PEPRest implements PEPInterface, Runnable {
 			return null;
 		}
 		// END parameter checking
-		
+
 		System.out.println("[TIME] ON_GOING_EVAL " + System.currentTimeMillis());
-		
+
 		ReevaluationResponse chPepMessage = (ReevaluationResponse) message;
 		if (revokeType.equals("HARD")) {
-			System.out
-			    .println("[TIME] sending endacces " + System.currentTimeMillis());
-			EndAccessMessage endAccess = new EndAccessMessage(
-			    configuration.getPepConf().getId(),
-			    configuration.getPepConf().getIp());
+			System.out.println("[TIME] sending endacces " + System.currentTimeMillis());
+			EndAccessMessage endAccess = new EndAccessMessage(configuration.getPepConf().getId(),
+					configuration.getPepConf().getIp());
 			endAccess.setCallback(null, MEAN.REST);
 			endAccess.setSessionId(chPepMessage.getPDPEvaluation().getSessionId());
 			requestManager.sendMessageToCH(endAccess);
-			
+
 			try {
 				message = waitForResponse(endAccess.getID());
 				System.out.println("[TIME] endacces END" + System.currentTimeMillis());
@@ -237,7 +232,7 @@ public class PEPRest implements PEPInterface, Runnable {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			
+
 		} else {
 			if (chPepMessage.getPDPEvaluation().getResponse().contains("Permit")) {
 				LOGGER.log(Level.INFO, "RESUME EXECUTION");
@@ -248,10 +243,10 @@ public class PEPRest implements PEPInterface, Runnable {
 		}
 		// contextHandler.endAccess(endAccess);
 		message.setMotivation("OK");
-		
+
 		return message;
 	}
-	
+
 	@Override
 	@Async
 	public void receiveResponse(Message message) {
@@ -260,45 +255,44 @@ public class PEPRest implements PEPInterface, Runnable {
 			mutex.notifyAll();
 		}
 	}
-	
+
 	@Override
 	public void run() {
 		try {
 			String id = tryAccess();
-			TryAccessResponse tryAccessResponse = (TryAccessResponse) waitForResponse(
-			    id);
-			System.out.println("[TIME] TRYACCESS END" + System.currentTimeMillis());
-			if (tryAccessResponse.getPDPEvaluation().getResponse()
-			    .contains("Permit")) {
+			TryAccessResponse tryAccessResponse = (TryAccessResponse) waitForResponse(id);
+			System.out.println("[TIME] TRYACCESS END " + System.currentTimeMillis());
+			if (tryAccessResponse.getPDPEvaluation().getResponse().contains("Permit")) {
 				id = startAccess(tryAccessResponse.getSessionId());
-				StartAccessResponse startAccessResponse = (StartAccessResponse) waitForResponse(
-				    id);
-				System.out
-				    .println("[TIME] STARTACCESS END" + System.currentTimeMillis());
-				if (startAccessResponse.getPDPEvaluation().getResponse()
-				    .contains("Permit")) {
+				StartAccessResponse startAccessResponse = (StartAccessResponse) waitForResponse(id);
+				System.out.println("[TIME] STARTACCESS END " + System.currentTimeMillis());
+				if (startAccessResponse.getPDPEvaluation().getResponse().contains("Permit")) {
+				} else {
+					System.err.println("[TIME] STARTACCESS DENIED " + System.currentTimeMillis());
 				}
+			} else {
+				System.err.println("[TIME] TRYACCESS DENIED " + System.currentTimeMillis());
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
-	
-	private Message waitForResponse(String id)
-	    throws InterruptedException, ExecutionException {
+
+	@VisibleForTesting
+	Message waitForResponse(String id) throws InterruptedException, ExecutionException {
 		ExecutorService executor = Executors.newSingleThreadExecutor();
 		TaskBody taskBody = new TaskBody(id);
 		return executor.submit(taskBody).get();
 	}
-	
+
 	private class TaskBody implements Callable<Message> {
-		
+
 		private String id;
-		
+
 		public TaskBody(String id) {
 			this.id = id;
 		}
-		
+
 		@Override
 		public Message call() {
 			try {
@@ -317,11 +311,11 @@ public class PEPRest implements PEPInterface, Runnable {
 			}
 		}
 	}
-	
+
 	public ConcurrentHashMap<String, Message> getResponses() {
 		return responses;
 	}
-	
+
 	private final String buildResponseInterface(String name) {
 		StringBuilder response = new StringBuilder();
 		response.append("http://" + ip + ":");
@@ -329,24 +323,21 @@ public class PEPRest implements PEPInterface, Runnable {
 		response.append(name);
 		return response.toString();
 	}
-	
+
 	private String buildOnGoingEvaluationInterface() {
-		StringBuilder response = new StringBuilder();
-		response.append("http://" + ip + ":");
-		response.append(port + "/");
-		response.append(onGoingEvaluationInterface);
-		return response.toString();
+//		StringBuilder response = new StringBuilder();
+//		response.append("http://" + ip + ":");
+//		response.append(port + "/");
+//		response.append(onGoingEvaluationInterface);
+//		return response.toString();
+		return buildResponseInterface(onGoingEvaluationInterface);
 	}
-	
-	public void end(String sessionId)
-	    throws InterruptedException, ExecutionException {
-		LOGGER.log(Level.INFO,
-		    "[TIME] Sending endAccess " + System.currentTimeMillis());
+
+	public void end(String sessionId) throws InterruptedException, ExecutionException {
+		LOGGER.log(Level.INFO, "[TIME] Sending endAccess " + System.currentTimeMillis());
 		String id = endAccess(sessionId);
-		EndAccessResponse endAccessResponse = (EndAccessResponse) waitForResponse(
-		    id);
-		LOGGER.log(Level.INFO,
-		    "[TIME] END ACCESS RESPONSE: " + System.currentTimeMillis());
+		EndAccessResponse endAccessResponse = (EndAccessResponse) waitForResponse(id);
+		LOGGER.log(Level.INFO, "[TIME] END ACCESS RESPONSE: " + System.currentTimeMillis());
 	}
-	
+
 }

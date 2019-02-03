@@ -17,6 +17,7 @@ package iit.cnr.it.peprest;
 
 import java.util.concurrent.ExecutionException;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.context.annotation.Bean;
@@ -46,8 +47,15 @@ import io.swagger.annotations.ApiResponses;
 @EnableAutoConfiguration
 public class PEPRestCommunication {
   boolean initialized = false;
-  private PEPRest pepRest = new PEPRest();
+  
+  @Autowired
+  private PEPRest pepRest; //= new PEPRest();
 
+  @RequestMapping(method = RequestMethod.GET, value = "/isAlive", consumes = MediaType.ALL_VALUE)
+  public void isAlive() {
+	  System.out.println("in isAlive():heath check OK");
+  }
+  
   @ApiOperation(httpMethod = "POST", value = "Receives request from PEP for tryaccess operation")
   // provides a documentation of the different http error messages and their
   // meaning from the application perspective
