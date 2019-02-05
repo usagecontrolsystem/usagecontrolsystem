@@ -11,115 +11,45 @@
 
 	<!-- list of pips -->
 	<pips>
-		<!-- PIP id and class -->
-		<!-- <pip id="PIPReaderEnv" class="iit.cnr.it.pipreader.PIPReader" retrieval="false"> 
-			arguments required <arg name="CATEGORY" argument="urn:oasis:names:tc:xacml:3.0:attribute-category:environment" 
-			/> <arg name="DATA_TYPE" argument="http://www.w3.org/2001/XMLSchema#double" 
-			/> <arg name="ATTRIBUTE_ID" argument="urn:oasis:names:tc:xacml:3.0:environment:temperature" 
-			/> <arg name="FILE_PATH" argument="/home/antonio/projects/pips/static.txt"></arg> 
-			</pip> -->
-		 <pip id="PIPReaderEnv" class="it.cnr.iit.pipsocket.PIPUDPSocket" retrieval="false"> 
-			<attributes> <arg name="CATEGORY" argument="urn:oasis:names:tc:xacml:3.0:attribute-category:environment" 
-			/> <arg name="DATA_TYPE" argument="http://www.w3.org/2001/XMLSchema#integer" 
-			/> <arg name="ATTRIBUTE_ID" argument="urn:oasis:names:tc:xacml:3.0:environment:camera" 
-			/> <arg name="AM_IP" argument="10.0.0.23"></arg> <arg name="AM_PORT" argument="9899"></arg> 
-			</attributes> </pip> 
-			 <!-- <pip id="PIPReaderEnv" class="it.cnr.iit.pipsocket.PIPUDPSocket" retrieval="false"> 
-      <attributes> <arg name="CATEGORY" argument="urn:oasis:names:tc:xacml:1.0:subject-category:access-subject" 
-      /> <arg name="DATA_TYPE" argument="http://www.w3.org/2001/XMLSchema#string" 
-      /> <arg name="ATTRIBUTE_ID" argument="urn:oasis:names:tc:xacml:1.0:subject:identity" 
-      /> <arg name="AM_IP" argument="146.48.99.81"></arg> <arg name="AM_PORT" argument="9890"></arg> 
-      <arg name="EXPECTED_CATEGORY" argument="urn:oasis:names:tc:xacml:1.0:subject-category:access-subject"></arg>
-      </attributes> </pip>  -->
-		<!-- <pip id="PIPReaderSub" class="it.cnr.iit.pip.piprole.PIPRole"
+		<pip id="PIPReaderEnv" class="iit.cnr.it.pipreader.PIPReader"
 			retrieval="false">
 			<attributes>
-				arguments required
 				<arg name="CATEGORY"
 					argument="urn:oasis:names:tc:xacml:1.0:subject-category:access-subject" />
 				<arg name="DATA_TYPE"
 					argument="http://www.w3.org/2001/XMLSchema#string" />
 				<arg name="ATTRIBUTE_ID"
 					argument="urn:oasis:names:tc:xacml:1.0:subject:role" />
-				<arg name="FILE_PATH"
-					argument="/home/antonio/projects/pips/subject.txt"></arg>
+				<arg name="FILE_PATH" argument="INSERT_FILEPATH_HERE"></arg>
 				<arg name="EXPECTED_CATEGORY"
 					argument="urn:oasis:names:tc:xacml:1.0:subject-category:access-subject"></arg>
-				<arg name="hibernate.connection.driver_class"
-					argument="com.mysql.jdbc.Driver"></arg>
-				<arg name="hibernate.connection.url"
-					argument="jdbc:mysql://localhost/pip"></arg>
-				<arg name="hibernate.connection.username" argument="root"></arg>
-				<arg name="hibernate.connection.password" argument="root"></arg>
-				<arg name="hibernate.connection.pool_size" argument="3"></arg>
 			</attributes>
-		</pip> -->
-		<!-- <pip id="PIPReaderEnv" class="it.cnr.iit.pipsocket.PIPUDPSocket"
+		</pip>
+		<pip id="PIPReaderEnv" class="iit.cnr.it.pipreader.PIPReader"
 			retrieval="false">
 			<attributes>
 				<arg name="CATEGORY"
 					argument="urn:oasis:names:tc:xacml:3.0:attribute-category:environment" />
 				<arg name="DATA_TYPE"
-					argument="http://www.w3.org/2001/XMLSchema#integer" />
+					argument="http://www.w3.org/2001/XMLSchema#double" />
 				<arg name="ATTRIBUTE_ID"
-					argument="urn:oasis:names:tc:xacml:3.0:environment:light1" />
-				<arg name="AM_IP" argument="146.48.99.159"></arg>
-				<arg name="AM_PORT" argument="7890"></arg>
+					argument="urn:oasis:names:tc:xacml:3.0:environment:light" />
+				<arg name="FILE_PATH" argument="INSERT_FILE_PATH_HERE"></arg>
 			</attributes>
-		</pip>  -->
-		<pip id="PIPReaderEnv" class="it.cnr.iit.pipsocket.PIPUDPSocket"
-      retrieval="false">
-      <attributes>
-        <arg name="CATEGORY"
-          argument="urn:oasis:names:tc:xacml:3.0:attribute-category:environment" />
-        <arg name="DATA_TYPE"
-          argument="http://www.w3.org/2001/XMLSchema#integer" />
-        <arg name="ATTRIBUTE_ID"
-          argument="urn:oasis:names:tc:xacml:3.0:environment:light" />
-        <arg name="AM_IP" argument="10.0.0.23"></arg>
-        <arg name="AM_PORT" argument="7890"></arg>
-      </attributes>
-    </pip>
-		<!-- <pip id="PIPReaderSub" class="iit.cnr.it.pipreader.PIPReader" retrieval="false"> 
-		<attributes>
-      arguments required <arg name="CATEGORY" argument="urn:oasis:names:tc:xacml:1.0:subject-category:access-subject" 
-      /> <arg name="DATA_TYPE" argument="http://www.w3.org/2001/XMLSchema#string" 
-      /> <arg name="ATTRIBUTE_ID" argument="urn:oasis:names:tc:xacml:1.0:subject:identity" 
-      /> <arg name="FILE_PATH" argument="/home/antonio/projects/pips/subject1.txt"></arg> 
-      <arg name="EXPECTED_CATEGORY" argument="urn:oasis:names:tc:xacml:1.0:subject-category:access-subject"></arg> 
-       </attributes>
-       </pip>  --> 
-		<!-- <pip id="PIPReaderEnv" class="iit.cnr.it.pipreader.PIPReader" retrieval="false"> 
-      <attributes> arguments required <arg name="CATEGORY" argument="urn:oasis:names:tc:xacml:3.0:attribute-category:environment" 
-      /> <arg name="DATA_TYPE" argument="http://www.w3.org/2001/XMLSchema#integer" 
-      /> <arg name="ATTRIBUTE_ID" argument="urn:oasis:names:tc:xacml:3.0:environment:light" 
-      /> <arg name="FILE_PATH" argument="/home/antonio/projects/pips/temperature.txt"></arg> 
-      </attributes> </pip> -->
-    
-		<!-- <pip id="PIPReaderEnv" class="iit.cnr.it.pipreader.PIPReader" retrieval="false"> 
-      <attributes> arguments required <arg name="CATEGORY" argument="urn:oasis:names:tc:xacml:3.0:attribute-category:environment" 
-      /> <arg name="DATA_TYPE" argument="http://www.w3.org/2001/XMLSchema#integer" 
-      /> <arg name="ATTRIBUTE_ID" argument="urn:oasis:names:tc:xacml:3.0:environment:light" 
-      /> <arg name="FILE_PATH" argument="/home/antonio/projects/pips/temperature.txt"></arg> 
-      </attributes> </pip> -->
-    <!-- <pip id="PIPRetrieval" class="it.cnr.iit.kademlia.pipretrieval.KademliaPIPRetrieval" 
-      retrieval="TRUE"> <connection>REST_API</connection> <arg name="HOST" argument="192.168.83.1"></arg> 
-      </pip> -->
-		<!-- <pip id="PIPReaderEnv" class="iit.cnr.it.pipreader.PIPReader" retrieval="false"> 
-			<attributes> arguments required <arg name="CATEGORY" argument="urn:oasis:names:tc:xacml:3.0:attribute-category:environment" 
-			/> <arg name="DATA_TYPE" argument="http://www.w3.org/2001/XMLSchema#integer" 
-			/> <arg name="ATTRIBUTE_ID" argument="urn:oasis:names:tc:xacml:3.0:environment:light" 
-			/> <arg name="FILE_PATH" argument="/home/antonio/projects/pips/temperature.txt"></arg> 
-			</attributes> </pip> -->
-		<!-- <pip id="PIPRetrieval" class="it.cnr.iit.kademlia.pipretrieval.KademliaPIPRetrieval" 
-			retrieval="TRUE"> <connection>REST_API</connection> <arg name="HOST" argument="192.168.83.1"></arg> 
-			</pip> -->
-		<!-- <pip id="PIPHistory" class="iit.cnr.it.piphistory.PIPHistory" retrieval="false"> 
-			<arg name="CATEGORY" argument="urn:oasis:names:tc:xacml:3.0:attribute-category:environment" 
-			/> <arg name="DATA_TYPE" argument="http://www.w3.org/2001/XMLSchema#string" 
-			/> <arg name="ATTRIBUTE_ID" argument="urn:oasis:names:tc:xacml:3.0:environment:state" 
-			/> <arg name="FILE_PATH" argument="/home/antonio/projects/pips/state.txt"></arg> 
-			</pip> -->
+		</pip>
+		<pip id="PIPReaderEnv" class="iit.cnr.it.pipreader.PIPReader"
+			retrieval="false">
+			<attributes>
+				<arg name="CATEGORY"
+					argument="urn:oasis:names:tc:xacml:3.0:attribute-category:environment" />
+				<arg name="DATA_TYPE"
+					argument="http://www.w3.org/2001/XMLSchema#double" />
+				<arg name="ATTRIBUTE_ID"
+					argument="urn:oasis:names:tc:xacml:3.0:environment:camera" />
+				<arg name="FILE_PATH" argument="INSERT_FILE_PATH_HERE"></arg>
+			</attributes>
+		</pip>
+
 	</pips>
 	<sessionmanager>
 		<!-- <class>iit.cnr.it.distributedsessionmanager.DistributedSessionManager</class> -->
@@ -134,11 +64,10 @@
 		<replicator>2</replicator>
 		<username>root</username>
 		<password>root</password>
-		<!-- 
-		<driver>jdbc:mysql://localhost/session_manager?user=root&amp;password=root</driver>
-		-->
-		<driver>jdbc:hsqldb:hsql://localhost/session_manager;sql.syntax_pgs=true?user=sa&amp;password=</driver>
-		 
+		<!-- <driver>jdbc:mysql://localhost/session_manager?user=root&amp;password=root</driver> -->
+		<driver>jdbc:hsqldb:hsql://localhost/session_manager;sql.syntax_pgs=true?user=sa&amp;password=
+		</driver>
+
 		<tables>
 			<table name="sessions">
 				<field>
@@ -198,7 +127,8 @@
 	</sessionmanager>
 	<!-- classes to be used -->
 	<contexthandler>
-		<class>it.cnr.iit.usagecontrolframework.contexthandler.ContextHandlerLC</class>
+		<class>it.cnr.iit.usagecontrolframework.contexthandler.ContextHandlerLC
+		</class>
 		<thread></thread>
 		<communication>API</communication>
 		<ip>localhost</ip>
@@ -209,23 +139,27 @@
 			<host>192.168.83.1</host> <port>8080</port> </pipregister> -->
 	</contexthandler>
 	<pdp>
-		<class>iit.cnr.it.usagecontrolframework.pdp.PolicyDecisionPoint</class>
+		<class>iit.cnr.it.usagecontrolframework.pdp.PolicyDecisionPoint
+		</class>
 		<thread>tbd</thread>
 		<communication>API</communication>
 	</pdp>
 	<pap>
-		<class>iit.cnr.it.usagecontrolframework.pap.PolicyAdministrationPoint</class>
+		<class>iit.cnr.it.usagecontrolframework.pap.PolicyAdministrationPoint
+		</class>
 		<thread>tbd</thread>
 		<communication>API</communication>
 	</pap>
 	<requestmanager>
-		<class>it.cnr.iit.usagecontrolframework.requestmanager.RequestManagerLC</class>
+		<class>it.cnr.iit.usagecontrolframework.requestmanager.RequestManagerLC
+		</class>
 		<thread>1</thread>
 		<communication>REST</communication>
 		<remoteResponse>/retrieveRemoteResponse</remoteResponse>
 	</requestmanager>
 	<obligationmanager>
-		<class>iit.cnr.it.usagecontrolframework.obligationmanager.ObligationManager</class>
+		<class>iit.cnr.it.usagecontrolframework.obligationmanager.ObligationManager
+		</class>
 	</obligationmanager>
 	<peps>
 		<pep>
@@ -251,16 +185,16 @@
 			<endAccessApi>endAccessResponse</endAccessApi>
 		</pep>
 		<pep>
-      <id>1</id>
-      <class>iit.cnr.it.ucsinterface.pep.AbstractPEP</class>
-      <communication>REST_API</communication>
-      <ip>10.0.0.12</ip>
-      <port>9999</port>
-      <oeApi>onGoingEvaluation</oeApi>
-      <tryAccessApi>tryAccessResponse</tryAccessApi>
-      <startAccessApi>startAccessResponse</startAccessApi>
-      <endAccessApi>endAccessResponse</endAccessApi>
-    </pep>
+			<id>1</id>
+			<class>iit.cnr.it.ucsinterface.pep.AbstractPEP</class>
+			<communication>REST_API</communication>
+			<ip>10.0.0.12</ip>
+			<port>9999</port>
+			<oeApi>onGoingEvaluation</oeApi>
+			<tryAccessApi>tryAccessResponse</tryAccessApi>
+			<startAccessApi>startAccessResponse</startAccessApi>
+			<endAccessApi>endAccessResponse</endAccessApi>
+		</pep>
 		<!-- <pep> <id>2</id> <class>iit.cnr.it.ucsinterface.pep.AbstractPEP</class> 
 			<communication>REST_API</communication> <ip>192.168.83.1</ip> <port>6789</port> 
 			<oeApi>onGoingEvaluation</oeApi> <tryAccessApi>tryAccessResponse</tryAccessApi> 
