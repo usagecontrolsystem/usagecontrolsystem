@@ -20,6 +20,8 @@ import java.util.List;
 
 import org.wso2.balana.ctx.ResponseCtx;
 
+import com.google.common.annotations.VisibleForTesting;
+
 import iit.cnr.it.ucsinterface.pdp.PDPEvaluation;
 import iit.cnr.it.ucsinterface.pdp.PDPObligationInterface;
 import it.cnr.iit.xacmlutilities.policy.utility.JAXBUtility;
@@ -173,4 +175,8 @@ public final class PDPResponse implements PDPEvaluation {
 		return firingRules;
 	}
 	
+	@VisibleForTesting
+	public void setInitialized(boolean initialized) {
+		this.initialized = initialized;
+	}
 }

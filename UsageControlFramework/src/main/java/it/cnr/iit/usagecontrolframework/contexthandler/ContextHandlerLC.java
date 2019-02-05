@@ -255,15 +255,18 @@ final public class ContextHandlerLC extends AbstractContextHandler {
 			System.out.println(
 			    "[TIME] PERMIT tryaccess ends at " + System.currentTimeMillis());
 			
-			// obligation
-			getObligationManager().translateObligations(pdpEvaluation, sessionId,
-			    TRY_STATUS);
-		} else { // response is DENY, INDETERMINATE or NOT APPLICABLE
-			
-			// obligation
-			getObligationManager().translateObligations(pdpEvaluation, sessionId,
-			    TRY_STATUS);
+//			// obligation
+//			getObligationManager().translateObligations(pdpEvaluation, sessionId,
+//			    TRY_STATUS);
+//		} else { // response is DENY, INDETERMINATE or NOT APPLICABLE
+//			
+//			// obligation
+//			getObligationManager().translateObligations(pdpEvaluation, sessionId,
+//			    TRY_STATUS);
 		}
+		// obligation
+		getObligationManager().translateObligations(pdpEvaluation, sessionId, TRY_STATUS);		
+
 		TryAccessResponse tryAccessResponse = new TryAccessResponse(getIp(),
 		    tryAccess.getSource(), message.getID());
 		TryAccessResponseContent tryAccessResponseContent = new TryAccessResponseContent();

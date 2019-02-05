@@ -134,7 +134,11 @@
 		<replicator>2</replicator>
 		<username>root</username>
 		<password>root</password>
+		<!-- 
 		<driver>jdbc:mysql://localhost/session_manager?user=root&amp;password=root</driver>
+		-->
+		<driver>jdbc:hsqldb:hsql://localhost/session_manager;sql.syntax_pgs=true?user=sa&amp;password=</driver>
+		 
 		<tables>
 			<table name="sessions">
 				<field>
