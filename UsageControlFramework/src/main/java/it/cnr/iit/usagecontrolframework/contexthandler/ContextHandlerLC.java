@@ -198,7 +198,7 @@ final public class ContextHandlerLC extends AbstractContextHandler {
 		System.out.println(
 		    "[TIME] tryaccess begin scheduling " + System.currentTimeMillis());
 		HashMap<String, Integer> attributesIP = retrieveAttributesIp(attributes);
-		if (!tryAccess.getScheduled()) {
+		/*if (!tryAccess.getScheduled()) {
 			String ip = scheduler.getIp(attributesIP);
 			if (!ip.equals(getIp()) && !ip.equals("localhost")
 			    && !ip.equals("UNAVAILABLE")) {
@@ -209,7 +209,7 @@ final public class ContextHandlerLC extends AbstractContextHandler {
 				    "[TIME] tryaccess end scheduling at " + System.currentTimeMillis());
 				return;
 			}
-		}
+		}*/
 		
 		// Assign the session id
 		String sessionId = createSessionId();
@@ -688,7 +688,7 @@ final public class ContextHandlerLC extends AbstractContextHandler {
 		System.out.println(
 		    "[TIME] startaccess begin scheduling at " + System.currentTimeMillis());
 		HashMap<String, Integer> attributesIP = retrieveAttributesIp(attributes);
-		if (!startAccessMessage.getScheduled()) {
+		/*if (!startAccessMessage.getScheduled()) {
 			String ip = scheduler.getIp(attributesIP);
 			if (!ip.equals(getIp()) && !ip.equals("localhost")) {
 				schedule(startAccessMessage, null, ip, STATUS.STARTACCESS);
@@ -696,7 +696,7 @@ final public class ContextHandlerLC extends AbstractContextHandler {
 				    + System.currentTimeMillis());
 				return;
 			}
-		}
+		}*/
 		
 		StartAccessResponse response = new StartAccessResponse(
 		    startAccessMessage.getDestination(), startAccessMessage.getSource(),
@@ -1019,7 +1019,7 @@ final public class ContextHandlerLC extends AbstractContextHandler {
 			List<Attribute> attributes = policyHelper
 			    .getAttributesForCondition(ENDACCESS_POLICY);
 			HashMap<String, Integer> attributesIP = retrieveAttributesIp(attributes);
-			if (!endAccessMessage.getScheduled()) {
+			/*if (!endAccessMessage.getScheduled()) {
 				String ip = scheduler.getIp(attributesIP);
 				if (!ip.equals(getIp()) && !ip.equals("localhost")) {
 					schedule(endAccessMessage, null, ip, STATUS.ENDACCESS);
@@ -1027,7 +1027,7 @@ final public class ContextHandlerLC extends AbstractContextHandler {
 					    + System.currentTimeMillis());
 					return;
 				}
-			}
+			}*/
 			
 			String request = sessionToReevaluate.getOriginalRequest();
 			
@@ -1434,7 +1434,7 @@ final public class ContextHandlerLC extends AbstractContextHandler {
 				    .getAttributesForCondition(STARTACCESS_POLICY);
 				HashMap<String, Integer> attributesIP = retrieveAttributesIp(
 				    attributes);
-				String ip = scheduler.getIp(attributesIP);
+				/*String ip = scheduler.getIp(attributesIP);
 				if (!ip.equals(getIp()) && !ip.equals("localhost")) {
 					if (!remoteSessions.containsKey(ip)) {
 						remoteSessions.put(ip, new ArrayList<>());
@@ -1442,7 +1442,7 @@ final public class ContextHandlerLC extends AbstractContextHandler {
 					remoteSessions.get(ip).add(interestedSessions.remove(i).getId());
 				} else {
 					i++;
-				}
+				}*/
 			}
 			
 			return remoteSessions;
@@ -1514,8 +1514,8 @@ final public class ContextHandlerLC extends AbstractContextHandler {
 				    + System.currentTimeMillis());
 				HashMap<String, Integer> attributesIP = retrieveAttributesIp(
 				    attributes);
-				String ip = scheduler.getIp(attributesIP);
-				if (!ip.equals(getIp()) && !ip.equals("localhost")
+				//String ip = scheduler.getIp(attributesIP);
+				/*if (!ip.equals(getIp()) && !ip.equals("localhost")
 				    && !ip.equals("UNAVAILABLE")) {
 					ReevaluationMessage reevaluationMessage = new ReevaluationMessage(
 					    BasicConfiguration.getBasicConfiguration().getIp(), ip);
@@ -1524,7 +1524,7 @@ final public class ContextHandlerLC extends AbstractContextHandler {
 					System.out.println("[TIME] reevaluation scheduler ends at "
 					    + System.currentTimeMillis());
 					return null;
-				} else {
+				} else {*/
 					ReevaluationMessage reevaluationMessage = new ReevaluationMessage(
 					    BasicConfiguration.getBasicConfiguration().getIp(),
 					    BasicConfiguration.getBasicConfiguration().getIp());
@@ -1535,7 +1535,7 @@ final public class ContextHandlerLC extends AbstractContextHandler {
 					System.out.println(
 					    "[TIME] reevaluation ends at " + System.currentTimeMillis());
 					getSessionManagerInterface().stopSession(session);
-				}
+				//}
 				
 			} catch (Exception e) {
 				LOGGER.log(Level.SEVERE, "Error in PIP retrieve");
