@@ -31,7 +31,7 @@
 				<arg name="CATEGORY"
 					argument="urn:oasis:names:tc:xacml:3.0:attribute-category:environment" />
 				<arg name="DATA_TYPE"
-					argument="http://www.w3.org/2001/XMLSchema#double" />
+					argument="http://www.w3.org/2001/XMLSchema#integer" />
 				<arg name="ATTRIBUTE_ID"
 					argument="urn:oasis:names:tc:xacml:3.0:environment:light" />
 				<arg name="FILE_PATH" argument="INSERT_FILE_PATH_HERE"></arg>
@@ -43,7 +43,7 @@
 				<arg name="CATEGORY"
 					argument="urn:oasis:names:tc:xacml:3.0:attribute-category:environment" />
 				<arg name="DATA_TYPE"
-					argument="http://www.w3.org/2001/XMLSchema#double" />
+					argument="http://www.w3.org/2001/XMLSchema#integer" />
 				<arg name="ATTRIBUTE_ID"
 					argument="urn:oasis:names:tc:xacml:3.0:environment:camera" />
 				<arg name="FILE_PATH" argument="INSERT_FILE_PATH_HERE"></arg>
