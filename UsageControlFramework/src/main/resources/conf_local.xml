@@ -65,8 +65,7 @@
 		<username>root</username>
 		<password>root</password>
 		<!-- <driver>jdbc:mysql://localhost/session_manager?user=root&amp;password=root</driver> -->
-		<driver>jdbc:hsqldb:hsql://localhost/session_manager;sql.syntax_pgs=true?user=sa&amp;password=
-		</driver>
+		<driver>jdbc:hsqldb:hsql://localhost/session_manager;sql.syntax_pgs=true?user=sa&amp;password=</driver>
 
 		<tables>
 			<table name="sessions">
@@ -127,8 +126,7 @@
 	</sessionmanager>
 	<!-- classes to be used -->
 	<contexthandler>
-		<class>it.cnr.iit.usagecontrolframework.contexthandler.ContextHandlerLC
-		</class>
+		<class>it.cnr.iit.usagecontrolframework.contexthandler.ContextHandlerLC</class>
 		<thread></thread>
 		<communication>API</communication>
 		<ip>localhost</ip>
@@ -139,27 +137,23 @@
 			<host>192.168.83.1</host> <port>8080</port> </pipregister> -->
 	</contexthandler>
 	<pdp>
-		<class>iit.cnr.it.usagecontrolframework.pdp.PolicyDecisionPoint
-		</class>
+		<class>iit.cnr.it.usagecontrolframework.pdp.PolicyDecisionPoint</class>
 		<thread>tbd</thread>
 		<communication>API</communication>
 	</pdp>
 	<pap>
-		<class>iit.cnr.it.usagecontrolframework.pap.PolicyAdministrationPoint
-		</class>
+		<class>iit.cnr.it.usagecontrolframework.pap.PolicyAdministrationPoint</class>
 		<thread>tbd</thread>
 		<communication>API</communication>
 	</pap>
 	<requestmanager>
-		<class>it.cnr.iit.usagecontrolframework.requestmanager.RequestManagerLC
-		</class>
+		<class>it.cnr.iit.usagecontrolframework.requestmanager.RequestManagerLC</class>
 		<thread>1</thread>
 		<communication>REST</communication>
 		<remoteResponse>/retrieveRemoteResponse</remoteResponse>
 	</requestmanager>
 	<obligationmanager>
-		<class>iit.cnr.it.usagecontrolframework.obligationmanager.ObligationManager
-		</class>
+		<class>iit.cnr.it.usagecontrolframework.obligationmanager.ObligationManager</class>
 	</obligationmanager>
 	<peps>
 		<pep>
@@ -188,7 +182,7 @@
 			<id>1</id>
 			<class>iit.cnr.it.ucsinterface.pep.AbstractPEP</class>
 			<communication>REST_API</communication>
-			<ip>10.0.0.12</ip>
+			<ip>10.221.99.190</ip>
 			<port>9999</port>
 			<oeApi>onGoingEvaluation</oeApi>
 			<tryAccessApi>tryAccessResponse</tryAccessApi>
