@@ -16,6 +16,8 @@ import com.datastax.driver.core.utils.UUIDs;
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.dao.DaoManager;
 import com.j256.ormlite.dao.ForeignCollection;
+import com.j256.ormlite.db.DatabaseType;
+import com.j256.ormlite.db.HsqldbDatabaseType;
 import com.j256.ormlite.jdbc.JdbcConnectionSource;
 import com.j256.ormlite.stmt.QueryBuilder;
 import com.j256.ormlite.support.ConnectionSource;
@@ -96,6 +98,9 @@ final public class SessionManagerDesktop implements SessionManagerInterface {
 			connection = new JdbcConnectionSource(databaseURL);
 			sessionDao = DaoManager.createDao(connection, Session.class);
 			attributesDao = DaoManager.createDao(connection, OnGoingAttribute.class);
+			
+			cleanDbForTestRun(); //FIXME: needs to check state i.e. if test mode etc..
+			
 			TableUtils.createTableIfNotExists(connection, Session.class);
 			TableUtils.createTableIfNotExists(connection, OnGoingAttribute.class);
 		} catch (SQLException ex) {
@@ -104,6 +109,21 @@ final public class SessionManagerDesktop implements SessionManagerInterface {
 			return false;
 		}
 		return true;
+	}
+
+	/**
+	 * This is a work around because ormlite still thinks that 
+	 * hsqldb cannot handle keyword 'if exists' in create 
+	 * so drop the tables first
+	 * 
+	 * @throws SQLException
+	 */
+	private void cleanDbForTestRun() throws SQLException {
+		DatabaseType databaseType = connection.getDatabaseType();
+		if (databaseType instanceof HsqldbDatabaseType) {
+			TableUtils.dropTable(connection, Session.class, true);
+			TableUtils.dropTable(connection, OnGoingAttribute.class, true);
+		}
 	}
 	
 	/**

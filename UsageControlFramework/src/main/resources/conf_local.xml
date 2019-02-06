@@ -20,7 +20,7 @@
 					argument="http://www.w3.org/2001/XMLSchema#string" />
 				<arg name="ATTRIBUTE_ID"
 					argument="urn:oasis:names:tc:xacml:1.0:subject:role" />
-				<arg name="FILE_PATH" argument="INSERT_FILEPATH_HERE"></arg>
+				<arg name="FILE_PATH" argument="/D:/git/usagecontrolsystem/PIPReader/src/test/resources/subject.txt"></arg>
 				<arg name="EXPECTED_CATEGORY"
 					argument="urn:oasis:names:tc:xacml:1.0:subject-category:access-subject"></arg>
 			</attributes>
@@ -34,7 +34,7 @@
 					argument="http://www.w3.org/2001/XMLSchema#integer" />
 				<arg name="ATTRIBUTE_ID"
 					argument="urn:oasis:names:tc:xacml:3.0:environment:light" />
-				<arg name="FILE_PATH" argument="INSERT_FILE_PATH_HERE"></arg>
+				<arg name="FILE_PATH" argument="/D:/git/usagecontrolsystem/PIPReader/src/test/resources/light.txt"></arg>
 			</attributes>
 		</pip>
 		<pip id="PIPReaderEnv" class="iit.cnr.it.pipreader.PIPReader"
@@ -46,7 +46,7 @@
 					argument="http://www.w3.org/2001/XMLSchema#integer" />
 				<arg name="ATTRIBUTE_ID"
 					argument="urn:oasis:names:tc:xacml:3.0:environment:camera" />
-				<arg name="FILE_PATH" argument="INSERT_FILE_PATH_HERE"></arg>
+				<arg name="FILE_PATH" argument="/D:/git/usagecontrolsystem/PIPReader/src/test/resources/camera.txt"></arg>
 			</attributes>
 		</pip>
 
