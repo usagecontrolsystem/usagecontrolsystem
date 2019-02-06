@@ -364,9 +364,9 @@ final public class PIPReader extends PIPBase {
 	 * @throws PIPException
 	 */
 	private String read() throws PIPException {
-		try {
-			BufferedInputStream fileInputStream = new BufferedInputStream(
-			    new FileInputStream(new File(filePath)));
+		try ( BufferedInputStream fileInputStream = new BufferedInputStream(
+					new FileInputStream(new File(filePath)));				
+		) {
 			// BufferedInputStream fileInputStream = new BufferedInputStream(
 			// new FileInputStream(new File("/home/antonio/temperature.txt")));
 			int content;
@@ -376,7 +376,6 @@ final public class PIPReader extends PIPBase {
 			}
 			output = output.trim();
 			// LOGGER.log(Level.INFO, "[PIPReader] value read is " + output);
-			fileInputStream.close();
 			return output;
 		} catch (IOException ioException) {
 			throw new PIPException(ioException.getMessage());
@@ -401,8 +400,9 @@ final public class PIPReader extends PIPBase {
 	 * @throws PIPException
 	 */
 	private String read(String filter) throws PIPException {
-		try {
+		try (			
 			Scanner fileInputStream = new Scanner(new File(filePath));
+		){
 			// BufferedInputStream fileInputStream = new BufferedInputStream(
 			// new FileInputStream(new File("/home/antonio/temperature.txt")));
 			String line = "";
@@ -413,7 +413,6 @@ final public class PIPReader extends PIPBase {
 					break;
 				}
 			}
-			fileInputStream.close();
 			// LOGGER.log(Level.INFO,
 			// "[PIPReader] value read is " + line.split("\t")[1]);
 			return line.split("\t")[1];
