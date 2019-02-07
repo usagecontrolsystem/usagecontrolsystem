@@ -73,7 +73,7 @@ final public class PIPReader extends PIPBase {
 	private String														filePath;
 	
 	// states if the pip has been correctly initialized
-	private volatile boolean									initialized		= false;
+	public volatile boolean									initialized		= false;
 	
 	// list that stores the attributes on which a subscribe has been performed
 	protected final BlockingQueue<Attribute>	subscriptions	= new LinkedBlockingQueue<>();
@@ -107,7 +107,7 @@ final public class PIPReader extends PIPBase {
 			    subscriptions, filePath);
 			timer.scheduleAtFixedRate(subscriberTimer, 0, 10 * 1000);
 		} else {
-			return;
+			;
 		}
 	}
 	
@@ -149,7 +149,7 @@ final public class PIPReader extends PIPBase {
 				return false;
 			}
 			return true;
-		} catch (JAXBException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 			return false;
 		}
