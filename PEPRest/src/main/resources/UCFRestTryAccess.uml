@@ -1,58 +1,42 @@
+To view the content as a UML diagram, use PlantUML in eclipse see: http://plantuml.com/eclipse
 @startuml
-actor Device #red
-participant PEPRest
-participant RequestManager
-actor UCFRestController
-Device->PEPRest : tryAccess
-PEPRest->PEPRest : setup message  
-note right:PEP URI, policy, request,\ncallback interface response
-PEPRest->RequestManager : sendMessage to context handler via REST
-RequestManager->UCFRestController : forwards it to context handler
-PEPRest->PEPRest : put msgID into thread
-PEPRest->PEPRest : wait for response (from the Executer service) 
-UCFRestController->PEPRest : tryAccessResponse
-alt PERMIT
-
-	PEPRest->PEPRest : startAccess
-	PEPRest->PEPRest : setup message to be sent
-	PEPRest->RequestManager : sendMessage to context handler via REST
-	RequestManager->UCFRestController : forwards it to context handler
-	PEPRest->PEPRest : put msgID into thread
-	PEPRest->PEPRest : wait for response (from the Executer service)
-	UCFRestController->PEPRest : startAccessResponse
-	alt PERMIT
-	
-		PEPRest->PEPRest : end
-	else DEMNY
-		 PEPRest->PEPRest : log
-	end  
+actor PEP #red
+participant UCFRestController
+participant ContextHandlerLC
+participant PIPReader
+participant PolicyAdministrationPoint
+participant PolicyDecisionPoint
+participant SessionManagerDeskTop
+participant ObligatonManager 
+PEP->UCFRestController : tryAccessRequest
+UCFRestController->ContextHandlerLC : forward message
+activate ContextHandlerLC  
+ContextHandlerLC->PIPReader : get additional \npolicy attributes
+activate PIPReader  
+PIPReader->PIPReader : read attributes\n from text files
+ 
+alt Request without POLICY 
+	ContextHandlerLC->PolicyAdministrationPoint :  get policy 
 end
+deactivate PIPReader 
+ContextHandlerLC->ContextHandlerLC : enrich policy 
+ContextHandlerLC->PolicyDecisionPoint : full policy
+activate PolicyDecisionPoint 
+PolicyDecisionPoint->PolicyDecisionPoint : evaluate policy
+alt PERMIT
+	
+	ContextHandlerLC->SessionManagerDeskTop : create session
+	activate SessionManagerDeskTop 
+	SessionManagerDeskTop->SessionManagerDeskTop : add sessionID into DB 
+end
+deactivate SessionManagerDeskTop
+deactivate PolicyDecisionPoint 
+ContextHandlerLC->ObligatonManager : notify
+activate ObligatonManager
+ObligatonManager->ObligatonManager : perform rules
+ContextHandlerLC->PEP : tryAccessResponse
+deactivate ObligatonManager
+deactivate ContextHandlerLC
 @enduml
-actor Device #red
-participant PEPRest
-participant RequestManager
-actor UCFRestController
-Device->PEPRest : tryAccess
-PEPRest->PEPRest : setup message  
-note right:PEP URI, policy, request,\ncallback interface response
-PEPRest->RequestManager : sendMessage to context handler via REST
-RequestManager->UCFRestController : forwards it to context handler
-PEPRest->PEPRest : put msgID into thread
-PEPRest->PEPRest : wait for response (from the Executer service) 
-UCFRestController->PEPRest : tryAccessResponse
-alt PERMIT
 
-	PEPRest->PEPRest : startAccess
-	PEPRest->PEPRest : setup message to be sent
-	PEPRest->RequestManager : sendMessage to context handler via REST
-	RequestManager->UCFRestController : forwards it to context handler
-	PEPRest->PEPRest : put msgID into thread
-	PEPRest->PEPRest : wait for response (from the Executer service)
-	UCFRestController->PEPRest : startAccessResponse
-	alt PERMIT
-	
-		PEPRest->PEPRest : end
-	else DEMNY
-		 PEPRest->PEPRest : log
-	end  
-end
+

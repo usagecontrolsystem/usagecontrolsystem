@@ -1,3 +1,4 @@
+To view the content as a UML diagram, use PlantUML in eclipse see: http://plantuml.com/eclipse
 @startuml
 actor Device #red
 participant PEPRest
