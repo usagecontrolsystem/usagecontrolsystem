@@ -8,7 +8,8 @@ Device->PEPRest : tryAccess
 PEPRest->PEPRest : setup message  
 note right:PEP URI, policy, request,\ncallback interface response
 PEPRest->RequestManager : sendMessage to context handler via REST
-RequestManager->UCFRestController : forwards it to context handler
+RequestManager->UCFRestController : tryAccess() 
+note right : forwards it to context handler
 PEPRest->PEPRest : put msgID into thread
 PEPRest->PEPRest : wait for response (from the Executer service) 
 UCFRestController->PEPRest : tryAccessResponse
