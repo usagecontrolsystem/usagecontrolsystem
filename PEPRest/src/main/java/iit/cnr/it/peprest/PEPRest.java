@@ -325,11 +325,6 @@ public class PEPRest implements PEPInterface, Runnable {
 	}
 
 	private String buildOnGoingEvaluationInterface() {
-//		StringBuilder response = new StringBuilder();
-//		response.append("http://" + ip + ":");
-//		response.append(port + "/");
-//		response.append(onGoingEvaluationInterface);
-//		return response.toString();
 		return buildResponseInterface(onGoingEvaluationInterface);
 	}
 
@@ -340,4 +335,7 @@ public class PEPRest implements PEPInterface, Runnable {
 		LOGGER.log(Level.INFO, "[TIME] END ACCESS RESPONSE: " + System.currentTimeMillis());
 	}
 
+	public HashMap<String, Message> getUnanswered() {
+		return unanswered;
+	}
 }

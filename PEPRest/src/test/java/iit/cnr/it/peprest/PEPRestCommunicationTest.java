@@ -13,6 +13,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.verify;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.options;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.doCallRealMethod;
 import static org.mockito.Mockito.when;
@@ -41,6 +42,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import com.google.gson.Gson;
 
+import iit.cnr.it.peprest.proxy.ProxyRequestManager;
 import iit.cnr.it.ucsinterface.message.Message;
 import iit.cnr.it.ucsinterface.message.PDPResponse;
 import iit.cnr.it.ucsinterface.message.PURPOSE;
@@ -72,6 +74,8 @@ public class PEPRestCommunicationTest extends PEPRestAbstractTest {
 	@MockBean
 	private PEPRest pepRest;
 
+    @MockBean
+    private ProxyRequestManager proxyRequestManager;
 	
    @Override
    @Before
@@ -192,6 +196,8 @@ public class PEPRestCommunicationTest extends PEPRestAbstractTest {
 	
 	@Test
 	public void performSendWithDenyResponse() throws Exception {
+    	Mockito.when(proxyRequestManager.sendMessageToCH(any())).thenReturn(new Message());    	
+
 		doCallRealMethod().when(pepRest).run();
 
 		when(pepRest.tryAccess()).thenReturn(SESSION_ID_01);
