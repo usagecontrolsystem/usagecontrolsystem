@@ -80,6 +80,8 @@ public class Message implements Comparable<Message>, Serializable {
 
   private volatile boolean initialized = false;
 
+  private boolean deliveredToDestination = false;
+  
   /**
    * Constructor for the message class.
    * 
@@ -277,5 +279,13 @@ public class Message implements Comparable<Message>, Serializable {
   public boolean getDestinationType() {
     return ucsDestination;
   }
+
+public boolean isDeliveredToDestination() {
+	return deliveredToDestination;
+}
+
+public void setDeliveredToDestination(boolean deliveredToDestination) {
+	this.deliveredToDestination = deliveredToDestination;
+}
 
 }

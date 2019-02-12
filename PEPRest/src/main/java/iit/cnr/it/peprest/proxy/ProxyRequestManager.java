@@ -38,8 +38,9 @@ public class ProxyRequestManager implements RequestManagerToExternalInterface {
 
   @Override
   public Message sendMessageToCH(Message message) {
+	String result="";
     if (message.getPurpose() == PURPOSE.TRYACCESS) {
-      RESTUtils.asyncPost(buildUrl(tryAccess), message);
+      result = RESTUtils.asyncPostWithResult(buildUrl(tryAccess), message);
     }
     if (message.getPurpose() == PURPOSE.STARTACCESS) {
       RESTUtils.asyncPost(buildUrl(startAccess), message);
@@ -47,7 +48,10 @@ public class ProxyRequestManager implements RequestManagerToExternalInterface {
     if (message.getPurpose() == PURPOSE.ENDACCESS) {
       RESTUtils.asyncPost(buildUrl(endAccess), message);
     }
-    return null;
+    if ("{result:'success'}".equals(result)){
+    	message.setDeliveredToDestination(true);
+    }
+    return message;
   }
 
   private String buildUrl(String api) {

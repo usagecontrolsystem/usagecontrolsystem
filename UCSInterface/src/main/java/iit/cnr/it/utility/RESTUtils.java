@@ -15,6 +15,7 @@
  ******************************************************************************/
 package iit.cnr.it.utility;
 
+import java.util.concurrent.ExecutionException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -24,6 +25,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.concurrent.ListenableFuture;
 import org.springframework.web.client.AsyncRestTemplate;
+import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import com.google.gson.Gson;
@@ -126,6 +128,28 @@ final public class RESTUtils {
 		HttpEntity<E> entity = new HttpEntity<>(obj, headers);
 		AsyncRestTemplate restTemplate = new AsyncRestTemplate();
 		restTemplate.postForEntity(url, entity, Void.class);
+	}
+	
+	public static <E> String asyncPostWithResult(String url, E obj) {
+		HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(MediaType.APPLICATION_JSON);
+		HttpEntity<E> entity = new HttpEntity<>(obj, headers);
+		AsyncRestTemplate restTemplate = new AsyncRestTemplate();
+		restTemplate.postForEntity(url, entity, Void.class);
+		ListenableFuture<ResponseEntity<Void>> future = restTemplate.postForEntity(url, entity, Void.class);
+        String returnValue = "";
+        try {
+        	if (future == null || !future.get().getStatusCode().is2xxSuccessful()) {
+				returnValue = "{result:'fail'}";
+        	} else {
+                returnValue = "{result:'success'}";
+            }
+        } catch (InterruptedException | ExecutionException e) {
+            if (e.getCause() instanceof HttpServerErrorException) {
+                returnValue = "{result: 'server error'}";
+            }
+        }
+        return returnValue;
 	}
 	
 	/**
