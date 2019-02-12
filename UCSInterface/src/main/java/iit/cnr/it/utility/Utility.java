@@ -59,7 +59,7 @@ final public class Utility {
 			scanner.close();
 			return stringB.toString();
 		} catch (IOException ioexception) {
-			ioexception.printStackTrace();
+			LOGGER.log(Level.SEVERE, "Unable to read file due to error: "+ioexception.getLocalizedMessage());
 			return null;
 		}
 	}

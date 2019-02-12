@@ -23,8 +23,8 @@
     <statuschanged>onGoingEvaluation</statuschanged>
     <!-- policypath>/home/antonio/projects/PaperHistory/policy_spolped.xml</policypath>
     <requestpath>/home/antonio/projects/PaperHistory/request_P2.xml</requestpath-->  
-    <policypath>/D:/git/faceobjdemo/video_scripts/pep/PolicyWatch.xml</policypath>
-    <requestpath>/D:/git/faceobjdemo/video_scripts/pep/RequestAntonio.xml</requestpath>  
+    <policypath>policies/PolicyWatch.xml</policypath>
+    <requestpath>requests/RequestAntonio.xml</requestpath>  
   </pep>
   
   <requestmanager>
