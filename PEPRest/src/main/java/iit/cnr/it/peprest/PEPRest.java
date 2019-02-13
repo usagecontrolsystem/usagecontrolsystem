@@ -140,12 +140,6 @@ public class PEPRest implements PEPInterface, Runnable {
 			policy = Utility.readFileAbsPath(POLICY_PATH);
 			request = Utility.readFileAbsPath(REQUEST_PATH);
 		}
-		if (null == policy ){
-			policy = Utility.readFileAbsPath(findFileAbsPathUsingClassLoader(POLICY_PATH));
-		}
-		if (null == request){
-			request = Utility.readFileAbsPath(findFileAbsPathUsingClassLoader(REQUEST_PATH));
-		}
 		//TODO: need a more efficient solution - end block
 		
 		TryAccessMessageBuilder tryAccessBuilder = new TryAccessMessageBuilder(configuration.getPepConf().getId(),
@@ -159,25 +153,10 @@ public class PEPRest implements PEPInterface, Runnable {
 		// System.out.println(s);
 		System.out.println("[TIME] TRYACCESS " + System.currentTimeMillis());
 		Message message = requestManager.sendMessageToCH(tryAccessMessage);
+		System.out.println("isDeliveredToDestination: "+ message.isDeliveredToDestination());
 		return tryAccessMessage.getID();
 
 		// return (TryAccessResponse) contextHandler.tryAccess(tryAccessMessage);
-	}
-
-	/**
-	 * Return the absolute location of the file for the reader
-	 * @param path
-	 * @return
-	 */
-	private String findFileAbsPathUsingClassLoader(String path) {
-		try {
-			ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-			URL input = classLoader.getResource(path);
-			return input.getPath();
-		} catch (Exception e) {
-			System.err.println("Unable to find absolute path due to error: "+ e.getMessage());
-			return null;
-		}
 	}
 
 	public String startAccess(String sessionId) {
