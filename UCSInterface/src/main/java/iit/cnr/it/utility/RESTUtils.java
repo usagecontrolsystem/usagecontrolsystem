@@ -15,7 +15,6 @@
  ******************************************************************************/
 package iit.cnr.it.utility;
 
-import java.util.concurrent.ExecutionException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -122,34 +121,25 @@ final public class RESTUtils {
 	 * @param obj
 	 *          the object to send using the post http method
 	 */
-	public static <E> void asyncPost(String url, E obj) {
+	public static <E> RESTAsynchPostStatus asyncPost(String url, E obj) {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.APPLICATION_JSON);
 		HttpEntity<E> entity = new HttpEntity<>(obj, headers);
 		AsyncRestTemplate restTemplate = new AsyncRestTemplate();
 		restTemplate.postForEntity(url, entity, Void.class);
-	}
-	
-	public static <E> String asyncPostWithResult(String url, E obj) {
-		HttpHeaders headers = new HttpHeaders();
-		headers.setContentType(MediaType.APPLICATION_JSON);
-		HttpEntity<E> entity = new HttpEntity<>(obj, headers);
-		AsyncRestTemplate restTemplate = new AsyncRestTemplate();
-		restTemplate.postForEntity(url, entity, Void.class);
+
 		ListenableFuture<ResponseEntity<Void>> future = restTemplate.postForEntity(url, entity, Void.class);
-        String returnValue = "";
         try {
         	if (future == null || !future.get().getStatusCode().is2xxSuccessful()) {
-				returnValue = "{result:'fail'}";
-        	} else {
-                returnValue = "{result:'success'}";
-            }
-        } catch (InterruptedException | ExecutionException e) {
+				return RESTAsynchPostStatus.FAILURE;
+        	} 
+            return RESTAsynchPostStatus.SUCCESS;
+        } catch (Exception e) {
             if (e.getCause() instanceof HttpServerErrorException) {
-                returnValue = "{result: 'server error'}";
+                return RESTAsynchPostStatus.SERVER_ERROR;
             }
+            return RESTAsynchPostStatus.FAILURE;
         }
-        return returnValue;
 	}
 	
 	/**
