@@ -15,14 +15,9 @@
  ******************************************************************************/
 package iit.cnr.it.peprest;
 
-import static com.google.common.base.MoreObjects.firstNonNull;
-import static java.lang.Thread.currentThread;
-
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.net.URL;
 import java.util.HashMap;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
@@ -32,13 +27,10 @@ import java.util.concurrent.Executors;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.Resource;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 import com.google.common.annotations.VisibleForTesting;
-import com.google.common.io.Resources;
 
 import iit.cnr.it.peprest.configuration.Configuration;
 import iit.cnr.it.peprest.configuration.PEPConf;
@@ -140,12 +132,6 @@ public class PEPRest implements PEPInterface, Runnable {
 			policy = Utility.readFileAbsPath(POLICY_PATH);
 			request = Utility.readFileAbsPath(REQUEST_PATH);
 		}
-		if (null == policy ){
-			policy = Utility.readFileAbsPath(findFileAbsPathUsingClassLoader(POLICY_PATH));
-		}
-		if (null == request){
-			request = Utility.readFileAbsPath(findFileAbsPathUsingClassLoader(REQUEST_PATH));
-		}
 		//TODO: need a more efficient solution - end block
 		
 		TryAccessMessageBuilder tryAccessBuilder = new TryAccessMessageBuilder(configuration.getPepConf().getId(),
@@ -159,25 +145,10 @@ public class PEPRest implements PEPInterface, Runnable {
 		// System.out.println(s);
 		System.out.println("[TIME] TRYACCESS " + System.currentTimeMillis());
 		Message message = requestManager.sendMessageToCH(tryAccessMessage);
+		System.out.println("isDeliveredToDestination: "+ message.isDeliveredToDestination());
 		return tryAccessMessage.getID();
 
 		// return (TryAccessResponse) contextHandler.tryAccess(tryAccessMessage);
-	}
-
-	/**
-	 * Return the absolute location of the file for the reader
-	 * @param path
-	 * @return
-	 */
-	private String findFileAbsPathUsingClassLoader(String path) {
-		try {
-			ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-			URL input = classLoader.getResource(path);
-			return input.getPath();
-		} catch (Exception e) {
-			System.err.println("Unable to find absolute path due to error: "+ e.getMessage());
-			return null;
-		}
 	}
 
 	public String startAccess(String sessionId) {
