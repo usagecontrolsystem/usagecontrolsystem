@@ -15,6 +15,7 @@
  ******************************************************************************/
 package iit.cnr.it.utility;
 
+import java.util.concurrent.ExecutionException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
