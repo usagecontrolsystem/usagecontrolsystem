@@ -19,7 +19,6 @@ import iit.cnr.it.peprest.configuration.RequestManagerConf;
 import iit.cnr.it.ucsinterface.message.Message;
 import iit.cnr.it.ucsinterface.message.PURPOSE;
 import iit.cnr.it.ucsinterface.requestmanager.RequestManagerToExternalInterface;
-import iit.cnr.it.utility.RESTAsynchPostStatus;
 import iit.cnr.it.utility.RESTUtils;
 
 public class ProxyRequestManager implements RequestManagerToExternalInterface {
@@ -39,17 +38,17 @@ public class ProxyRequestManager implements RequestManagerToExternalInterface {
 
   @Override
   public Message sendMessageToCH(Message message) {
-	RESTAsynchPostStatus postStatus = RESTAsynchPostStatus.PENDING;
+	String result="";
     if (message.getPurpose() == PURPOSE.TRYACCESS) {
-      postStatus = RESTUtils.asyncPost(buildUrl(tryAccess), message);
+      result = RESTUtils.asyncPostWithResult(buildUrl(tryAccess), message);
     }
     if (message.getPurpose() == PURPOSE.STARTACCESS) {
-    	postStatus = RESTUtils.asyncPost(buildUrl(startAccess), message);
+      RESTUtils.asyncPost(buildUrl(startAccess), message);
     }
     if (message.getPurpose() == PURPOSE.ENDACCESS) {
-    	postStatus = RESTUtils.asyncPost(buildUrl(endAccess), message);
+      RESTUtils.asyncPost(buildUrl(endAccess), message);
     }
-    if ( postStatus == RESTAsynchPostStatus.SUCCESS ){
+    if ("{result:'success'}".equals(result)){
     	message.setDeliveredToDestination(true);
     }
     return message;

@@ -17,7 +17,6 @@ package iit.cnr.it.utility;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URL;
 import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -45,18 +44,14 @@ final public class Utility {
 	 *          a string that represents the absolute path to the file
 	 * @return the String that represents the content of the file
 	 */
-	public static String readFileAbsPath(String filePath) {
-		if (!isValidPath(filePath)){
-			return null;
+	public static String readFileAbsPath(String string) {
+		// BEGIN parameter checking
+		if (string == null || string.isEmpty()) {
+			LOGGER.log(Level.SEVERE, "String for filePath is not valid");
 		}
-		String absFilePath = findFileAbsPathUsingClassLoader(filePath);
-		if (absFilePath != null){
-			filePath = absFilePath;
-		}else{
-			LOGGER.log(Level.SEVERE, "Attempting to read file using provided filePath.");
-		}
+		// END parameter checking
 		try {
-			Scanner scanner = new Scanner(new File(filePath));
+			Scanner scanner = new Scanner(new File(string));
 			StringBuilder stringB = new StringBuilder();
 			while (scanner.hasNext()) {
 				stringB.append(scanner.nextLine());
@@ -65,35 +60,6 @@ final public class Utility {
 			return stringB.toString();
 		} catch (IOException ioexception) {
 			LOGGER.log(Level.SEVERE, "Unable to read file due to error: "+ioexception.getLocalizedMessage());
-			return null;
-		}
-	}
-
-	private static boolean isValidPath(String filePath) {
-		// BEGIN parameter checking
-		if (filePath == null || filePath.isEmpty()) {
-			LOGGER.log(Level.SEVERE, "String for filePath can not be empty.");
-			return false;
-		}
-		return true;
-		// END parameter checking
-	}
-	
-	/**
-	 * Return the absolute location of the file for the reader
-	 * @param relPath
-	 * @return
-	 */
-	public static String findFileAbsPathUsingClassLoader(String relPath) {
-		if (!isValidPath(relPath)){
-			return null;
-		}
-		try {
-			ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-			URL input = classLoader.getResource(relPath);
-			return input.getPath();
-		} catch (Exception e) {
-			LOGGER.log(Level.SEVERE, "Unable to find absolute path due to error: "+ e.getMessage());
 			return null;
 		}
 	}
