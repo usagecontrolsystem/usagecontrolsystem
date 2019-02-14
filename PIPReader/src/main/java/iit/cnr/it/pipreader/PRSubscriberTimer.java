@@ -15,9 +15,7 @@
  ******************************************************************************/
 package iit.cnr.it.pipreader;
 
-import java.io.BufferedInputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Scanner;
 import java.util.TimerTask;
@@ -30,6 +28,7 @@ import iit.cnr.it.ucsinterface.message.PART;
 import iit.cnr.it.ucsinterface.message.remoteretrieval.MessagePipCh;
 import iit.cnr.it.ucsinterface.message.remoteretrieval.PipChContent;
 import iit.cnr.it.ucsinterface.pip.exception.PIPException;
+import iit.cnr.it.utility.Utility;
 import it.cnr.iit.xacmlutilities.Attribute;
 import it.cnr.iit.xacmlutilities.Category;
 
@@ -115,6 +114,17 @@ final class PRSubscriberTimer extends TimerTask {
 	}
 	
 	/**
+	 * Effective retrieval of the monitored value, before this retrieval many
+	 * checks may have to be performed
+	 * 
+	 * @return the requested string
+	 * @throws PIPException
+	 */
+	private String read() {
+		return Utility.readFileAbsPath(path);
+	}
+	
+	/**
 	 * Reads the file looking for the line containing the filter we are passing as
 	 * argument and the role stated as other parameter
 	 * 
@@ -131,9 +141,12 @@ final class PRSubscriberTimer extends TimerTask {
 	 * 
 	 * @throws PIPException
 	 */
-	private String read(String filter) {
-		try {
+	private String read(String filter)  {
+		try (			
 			Scanner fileInputStream = new Scanner(new File(path));
+		){
+			// BufferedInputStream fileInputStream = new BufferedInputStream(
+			// new FileInputStream(new File("/home/antonio/temperature.txt")));
 			String line = "";
 			while (fileInputStream.hasNextLine()) {
 				String tmp = fileInputStream.nextLine();
@@ -142,38 +155,12 @@ final class PRSubscriberTimer extends TimerTask {
 					break;
 				}
 			}
-			fileInputStream.close();
+			// LOGGER.log(Level.INFO,
+			// "[PIPReader] value read is " + line.split("\t")[1]);
 			return line.split("\t")[1];
-		} catch (Exception ioException) {
-			System.err.println(ioException.getMessage() + "\t" + path);
-			return null;
-		}
-	}
-	
-	/**
-	 * Effective retrieval of the monitored value, before this retrieval many
-	 * checks may have to be performed
-	 * 
-	 * @return the requested string
-	 * @throws PIPException
-	 */
-	private String read() {
-		try {
-			BufferedInputStream fileInputStream = new BufferedInputStream(
-			    new FileInputStream(new File(path)));
-			// BufferedInputStream fileInputStream = new BufferedInputStream(
-			// new FileInputStream(new File("/home/antonio/temperature.txt")));
-			int content;
-			String output = "";
-			while ((content = fileInputStream.read()) != -1) {
-				output += (char) content;
-			}
-			output = output.trim();
-			fileInputStream.close();
-			return output;
 		} catch (IOException ioException) {
 			ioException.printStackTrace();
-			return null;
+			return "";
 		}
 	}
 	
