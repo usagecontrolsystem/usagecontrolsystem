@@ -16,8 +16,6 @@
 package iit.cnr.it.pipreader;
 
 import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
@@ -28,8 +26,6 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import javax.xml.bind.JAXBException;
 
 import iit.cnr.it.ucsinterface.obligationmanager.ObligationInterface;
 import iit.cnr.it.ucsinterface.pip.PIPBase;
@@ -264,12 +260,12 @@ final public class PIPReadResources extends PIPBase {
 	 *          the list of attributes that must be unsubscribed
 	 */
 	@Override
-	public void unsubscribe(List<Attribute> attributes) throws PIPException {
+	public boolean unsubscribe(List<Attribute> attributes) throws PIPException {
 		// BEGIN parameter checking
 		if (attributes == null || !initialized || !isInitialized()) {
 			LOGGER.log(Level.SEVERE, "[PIPReadResources] wrong initialization" + initialized
 			    + "\t" + isInitialized());
-			return;
+			return false;
 		}
 		// END parameter checking
 		
@@ -279,12 +275,13 @@ final public class PIPReadResources extends PIPBase {
 					if (attributeS.getAdditionalInformations()
 					    .equals(attribute.getAdditionalInformations())) {
 						subscriptions.remove(attributeS);
-						System.out.println("UNSUB " + subscriptions.size());
-						return;
+						LOGGER.info("UNSUB " + subscriptions.size());
+						return true;
 					}
 				}
 			}
 		}
+		return false;
 	}
 	
 	/**
