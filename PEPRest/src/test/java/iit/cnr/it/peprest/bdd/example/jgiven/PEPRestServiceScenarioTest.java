@@ -1,31 +1,15 @@
 package iit.cnr.it.peprest.bdd.example.jgiven;
 
-import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
-import static com.github.tomakehurst.wiremock.client.WireMock.post;
-import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
-import static com.github.tomakehurst.wiremock.client.WireMock.urlPathMatching;
-
-import org.junit.Rule;
 import org.junit.Test;
 
-import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import com.tngtech.jgiven.junit.ScenarioTest;
 
-import iit.cnr.it.peprest.bdd.example.jgiven.states.GivenNodes;
-import iit.cnr.it.peprest.bdd.example.jgiven.states.ThenMessage;
-import iit.cnr.it.peprest.bdd.example.jgiven.states.WhenTransmit;
+import iit.cnr.it.peprest.bdd.example.jgiven.stages.GivenNodes;
+import iit.cnr.it.peprest.bdd.example.jgiven.stages.ThenMessage;
+import iit.cnr.it.peprest.bdd.example.jgiven.stages.WhenTransmit;
 
 public class PEPRestServiceScenarioTest extends ScenarioTest<GivenNodes, WhenTransmit, ThenMessage> {
-    
-	@Rule
-	public WireMockRule wireMockRule = new WireMockRule(
-	//		options().port(Integer.parseInt(PORT))
-	// Set the root of the filesystem WireMock will look under for files and mappings
-	//		.usingFilesUnderDirectory("D:\\git")
-	// Set a path within the classpath as the filesystem root
-	//		.usingFilesUnderClasspath("src/test/resources")
-			 );
-	
+
 	@Test
 	public void we_can_transmit_a_message_with_ten_units_from_device_to_UCS(){
 	    given().an_origin_node("Device")
@@ -47,14 +31,9 @@ public class PEPRestServiceScenarioTest extends ScenarioTest<GivenNodes, WhenTra
 	    then().message_is_put_in_unanswered_queue()
 	    	.and().message_id_in_unanswered_queue_matches_the_sent_one();
 	}
-	
+
 	@Test
 	public void a_tryAccess_message_can_be_delivered_to_UCS(){
- 	   stubFor(post(urlPathMatching("/tryAccess"))
-			   .willReturn(aResponse()
-			   .withStatus(200)
-			   .withHeader("Content-Type", "application/json")
-			   .withBody("\"testing-library\": \"WireMock\"")));
 	    given().a_test_configuration_for_request_with_policy()
 	            .and().a_mocked_context_handler_for_tryAccess()
 	            .with().configuration_to_respond_success();
