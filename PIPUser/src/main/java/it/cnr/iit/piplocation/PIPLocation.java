@@ -193,12 +193,12 @@ public class PIPLocation extends PIPBase {
 	}
 	
 	@Override
-	public void unsubscribe(List<Attribute> attributes) throws PIPException {
+	public boolean unsubscribe(List<Attribute> attributes) throws PIPException {
 		// BEGIN parameter checking
 		if (attributes == null || !initialized || !isInitialized()) {
 			LOGGER.log(Level.SEVERE, "[PIPREader] wrong initialization" + initialized
 			    + "\t" + isInitialized());
-			return;
+			return false;
 		}
 		// END parameter checking
 		
@@ -209,11 +209,12 @@ public class PIPLocation extends PIPBase {
 					    .equals(attribute.getAdditionalInformations())) {
 						subscriptions.remove(attributeS);
 						System.out.println("UNSUB " + subscriptions.size());
-						return;
+						return true;
 					}
 				}
 			}
 		}
+		return false;
 	}
 	
 	@Override
