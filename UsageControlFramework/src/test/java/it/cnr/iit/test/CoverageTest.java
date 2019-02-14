@@ -10,6 +10,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 
 import javax.annotation.PostConstruct;
+import javax.xml.bind.JAXBException;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -30,11 +31,14 @@ import it.cnr.iit.usagecontrolframework.configuration.xmlclasses.Configuration;
 import it.cnr.iit.usagecontrolframework.configuration.xmlclasses.XMLPip;
 import it.cnr.iit.usagecontrolframework.contexthandler.ContextHandlerLC;
 import it.cnr.iit.usagecontrolframework.contexthandler.exceptions.MalformedObjectException;
+import it.cnr.iit.usagecontrolframework.entry.UsageControlFramework;
 import it.cnr.iit.usagecontrolframework.proxies.PIPBuilder;
 import it.cnr.iit.usagecontrolframework.proxies.ProxyPAP;
 import it.cnr.iit.usagecontrolframework.proxies.ProxyPDP;
 import it.cnr.iit.usagecontrolframework.proxies.ProxySessionManager;
 import it.cnr.iit.xacmlutilities.policy.utility.JAXBUtility;
+import oasis.names.tc.xacml.core.schema.wd_17.PolicyType;
+import oasis.names.tc.xacml.core.schema.wd_17.RequestType;
 
 @EnableConfigurationProperties
 @TestPropertySource(properties = "application-test.properties")
@@ -46,7 +50,16 @@ class CoverageTest {
 
 	@Value("${ucsConfigFile}")
 	private String ucsConfigFile;
+
+	// TODO array of strings
+	@Value("${policyFile}")
+	private String policyFile;
+
+	// TODO array of strings
+	@Value("${requestFile}")
+	private String requestFile;
 	
+	// do we need these ?
 	private Configuration ucsConfiguration;
 	private ContextHandlerLC contextHandler;
 	private SessionManagerInterface sessionManager;
@@ -54,6 +67,8 @@ class CoverageTest {
 	private PDPInterface pdp;
 	private PAPInterface pap;
 	private ArrayList<PIPCHInterface> pips;
+	
+	UsageControlFramework usageControlFramework;
 	
 	@PostConstruct
 	private void init() {
@@ -78,19 +93,44 @@ class CoverageTest {
 
 		PAPInterface pap = new ProxyPAP(ucsConfiguration.getPap());
 		assertNotNull(pap);
+		
+		usageControlFramework = new UsageControlFramework();
+	}
+
+	private Object loadXMLFromFile(String fileName, Class<?> className) throws JAXBException, URISyntaxException, IOException {
+		String data = readResourceFileAsString(fileName);
+		return JAXBUtility.unmarshalToObject(className, data);
+	}
+	
+	private RequestType loadRequestType(String fileName) {
+		try {
+			return (RequestType) loadXMLFromFile(fileName, RequestType.class);
+		} catch (JAXBException | URISyntaxException | IOException e) {
+			fail("cannot load request xml");
+		}
+		
+		return null;
+	}
+	
+	private PolicyType loadPolicyType(String fileName) {
+		try {
+			return (PolicyType) loadXMLFromFile(fileName, PolicyType.class);
+		} catch (JAXBException | URISyntaxException | IOException e) {
+			fail("cannot load policy xml");
+		}
+		
+		return null;
 	}
 	
 	private void loadUCSConfiguration() {
 		try {
-			String configXml = readResourceFileAsString(ucsConfigFile);
-			ucsConfiguration = JAXBUtility
-				    .unmarshalToObject(Configuration.class, configXml);
+			ucsConfiguration = (Configuration) loadXMLFromFile(ucsConfigFile, Configuration.class);
 		} catch (Exception e) {
 			fail("cannot initialize ucs configuration xml");
 			e.printStackTrace();
 		}
 	}
-	
+
 	private void loadSessionManager() {
 		sessionManager = new ProxySessionManager(
 			    ucsConfiguration.getSessionManager());
@@ -116,8 +156,8 @@ class CoverageTest {
 	}
 
 	@Test
-	@DisplayName("Test of a test")
-	void test() {
+	@DisplayName("Init UCS Configuration")
+	void testInitConfiguration() {
 		initUCSConfig();
 		fail("Not yet implemented");
 	}
