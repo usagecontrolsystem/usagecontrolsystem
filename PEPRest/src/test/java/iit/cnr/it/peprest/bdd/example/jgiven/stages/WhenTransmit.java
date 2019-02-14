@@ -1,4 +1,4 @@
-package iit.cnr.it.peprest.bdd.example.jgiven.states;
+package iit.cnr.it.peprest.bdd.example.jgiven.stages;
 
 import static org.junit.Assert.assertNotNull;
 

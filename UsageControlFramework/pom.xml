@@ -18,6 +18,7 @@
 		<springfox.version>2.2.2</springfox.version>
 		<swagger.version>1.5.3</swagger.version>
 		<springboot.version>1.2.6.RELEASE</springboot.version>
+		 <start-class>it.cnr.iit.usagecontrolframework.communication.Main</start-class>
 	</properties>
 
 	<parent>

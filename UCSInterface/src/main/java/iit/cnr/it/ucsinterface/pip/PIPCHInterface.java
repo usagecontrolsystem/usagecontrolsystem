@@ -64,7 +64,7 @@ public interface PIPCHInterface extends PIPBaseInterface {
 	 *          will be retrieved
 	 * @throws PIPException
 	 */
-	public void unsubscribe(List<Attribute> attributes) throws PIPException;
+	public boolean unsubscribe(List<Attribute> attributes) throws PIPException;
 	
 	/**
 	 * This retrieve function is called by the ContextHandler when it is queried
