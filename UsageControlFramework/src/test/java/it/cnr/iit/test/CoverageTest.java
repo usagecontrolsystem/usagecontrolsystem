@@ -7,14 +7,15 @@ import java.util.ArrayList;
 import javax.annotation.PostConstruct;
 import javax.xml.bind.JAXBException;
 
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.junit4.SpringRunner;
 
 import iit.cnr.it.ucsinterface.pap.PAPInterface;
 import iit.cnr.it.ucsinterface.pdp.PDPInterface;
@@ -30,7 +31,8 @@ import it.cnr.iit.usagecontrolframework.contexthandler.exceptions.MalformedObjec
 @ActiveProfiles("test")
 @SpringBootTest
 @SpringBootConfiguration
-class MainTests extends BaseTests {
+@RunWith(SpringRunner.class)
+class CoverageTests extends BaseTests {
 
 	@Value("${ucs-config-file}")
 	private String ucsConfigFile;
@@ -47,20 +49,13 @@ class MainTests extends BaseTests {
 	}
 	
 	@Test
-	@DisplayName("Init UCS Configuration")
 	void testInitConfiguration() throws JAXBException, URISyntaxException, IOException, MalformedObjectException {
 		Configuration ucsConfiguration  = getUCSConfiguration(ucsConfigFile);
-				
 		SessionManagerInterface sessionManagerInterface = getSessionManager(ucsConfiguration);
-		
 		ArrayList<PIPCHInterface> pipArray = getPIPS(ucsConfiguration);
-				
 		PAPInterface pap = getPAP(ucsConfiguration);
-		
 		PDPInterface pdp = getPDP(ucsConfiguration);
-		
 		ContextHandlerLC contextHandler = getContextHandler(ucsConfiguration);
-
 		//usageControlFramework = new UsageControlFramework();
 	}
 

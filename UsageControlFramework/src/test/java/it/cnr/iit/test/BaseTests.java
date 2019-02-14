@@ -1,6 +1,6 @@
 package it.cnr.iit.test;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.Assert.assertNotNull;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -9,7 +9,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 
-import javax.annotation.PostConstruct;
 import javax.xml.bind.JAXBException;
 
 import org.slf4j.Logger;
@@ -32,7 +31,7 @@ import oasis.names.tc.xacml.core.schema.wd_17.PolicyType;
 import oasis.names.tc.xacml.core.schema.wd_17.RequestType;
 
 public abstract class BaseTests {
-    protected Logger log = (Logger) LoggerFactory.getLogger(MainTests.class);
+    protected Logger log = (Logger) LoggerFactory.getLogger(BaseTests.class);
 	
 	protected SessionManagerInterface getSessionManager(Configuration ucsConfiguration) {
 		SessionManagerInterface sessionManager = new ProxySessionManager(
