@@ -32,7 +32,7 @@ import it.cnr.iit.usagecontrolframework.contexthandler.exceptions.MalformedObjec
 @SpringBootTest
 @SpringBootConfiguration
 @RunWith(SpringRunner.class)
-class CoverageTests extends BaseTests {
+public class CoverageTest extends BaseTests {
 
 	@Value("${ucs-config-file}")
 	private String ucsConfigFile;
@@ -49,7 +49,7 @@ class CoverageTests extends BaseTests {
 	}
 	
 	@Test
-	void testInitConfiguration() throws JAXBException, URISyntaxException, IOException, MalformedObjectException {
+	public void testInitConfiguration() throws JAXBException, URISyntaxException, IOException, MalformedObjectException {
 		Configuration ucsConfiguration  = getUCSConfiguration(ucsConfigFile);
 		SessionManagerInterface sessionManagerInterface = getSessionManager(ucsConfiguration);
 		ArrayList<PIPCHInterface> pipArray = getPIPS(ucsConfiguration);
