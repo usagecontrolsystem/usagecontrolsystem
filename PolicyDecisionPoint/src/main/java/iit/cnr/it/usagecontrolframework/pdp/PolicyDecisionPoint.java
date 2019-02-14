@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.logging.Logger;
 
 import javax.xml.bind.JAXBException;
 
@@ -80,6 +81,8 @@ public final class PolicyDecisionPoint extends AbstractPDP {
 	// Configuration of the PDP
 	private PDPConfig pdpConfig;
 	
+	private Logger LOGGER = Logger.getLogger(PolicyDecisionPoint.class.getName());
+	
 	public PolicyDecisionPoint(XMLPdp configuration) {
 		super(configuration);
 	}
@@ -128,7 +131,7 @@ public final class PolicyDecisionPoint extends AbstractPDP {
 				policyFinder.setModules(policyFinderModules);
 				policyFinder.init();
 				ResponseCtx response = evaluate(request, policyFinder);
-				System.out.println(response.encode());
+				LOGGER.info(response.encode());
 				responses.add(response);
 			}
 			ArrayList<Integer> firingRules = new ArrayList<>();
@@ -141,12 +144,10 @@ public final class PolicyDecisionPoint extends AbstractPDP {
 				mergeFiringRules(firingRules, stringPolicy);
 			}
 			return pdpResponse;
-		} catch (
-		
-		Exception e) {
-			System.err.println("ERROR: ");
+		} catch (Exception e) {
+			LOGGER.severe("ERROR: ");
 			e.printStackTrace();
-			System.err.println("END ERROR");
+			LOGGER.severe("END ERROR");
 		}
 		return null;
 	}
@@ -182,7 +183,9 @@ public final class PolicyDecisionPoint extends AbstractPDP {
 			stringPolicy.append(JAXBUtility.marshalToString(PolicyType.class,
 			    policyType, "PolicyType", JAXBUtility.SCHEMA));
 		} catch (Exception e) {
-			return;
+			LOGGER.severe("ERROR: ");
+			e.printStackTrace();
+			LOGGER.severe("END ERROR");
 		}
 		
 	}
@@ -550,12 +553,10 @@ public final class PolicyDecisionPoint extends AbstractPDP {
 			    policyType.getRuleCombiningAlgId(), firingRules);
 			PDPResponse pdpResponse = new PDPResponse(firingRule);
 			return pdpResponse;
-		} catch (
-		
-		Exception e) {
-			System.err.println("ERROR: ");
+		} catch (Exception e) {
+			LOGGER.severe("ERROR: ");
 			e.printStackTrace();
-			System.err.println("END ERROR");
+			LOGGER.severe("END ERROR");
 		}
 		return null;
 	}
