@@ -20,21 +20,11 @@ import java.io.IOException;
 import org.springframework.boot.SpringApplication;
 
 import it.cnr.iit.usagecontrolframework.communication.rest.RESTApplicationDeployer;
-import it.cnr.iit.usagecontrolframework.zzz.test.Test;
 
 public class Main {
 	
-	enum MODE {
-		REST, TEST
-	}
-	
 	public static void main(String args[])
 	    throws InterruptedException, IOException {
-		MODE mode = MODE.REST;
-		if (mode == MODE.REST) {
 			SpringApplication.run(RESTApplicationDeployer.class, args);
-		} else {
-			Test.main(args);
-		}
 	}
 }
