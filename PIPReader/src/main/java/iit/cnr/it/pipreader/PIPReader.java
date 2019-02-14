@@ -33,6 +33,7 @@ import javax.xml.bind.JAXBException;
 import iit.cnr.it.ucsinterface.obligationmanager.ObligationInterface;
 import iit.cnr.it.ucsinterface.pip.PIPBase;
 import iit.cnr.it.ucsinterface.pip.exception.PIPException;
+import iit.cnr.it.utility.Utility;
 import it.cnr.iit.usagecontrolframework.configuration.xmlclasses.XMLPip;
 import it.cnr.iit.xacmlutilities.Attribute;
 import it.cnr.iit.xacmlutilities.Category;
@@ -364,22 +365,7 @@ final public class PIPReader extends PIPBase {
 	 * @throws PIPException
 	 */
 	private String read() throws PIPException {
-		try ( BufferedInputStream fileInputStream = new BufferedInputStream(
-					new FileInputStream(new File(filePath)));				
-		) {
-			// BufferedInputStream fileInputStream = new BufferedInputStream(
-			// new FileInputStream(new File("/home/antonio/temperature.txt")));
-			int content;
-			String output = "";
-			while ((content = fileInputStream.read()) != -1) {
-				output += (char) content;
-			}
-			output = output.trim();
-			// LOGGER.log(Level.INFO, "[PIPReader] value read is " + output);
-			return output;
-		} catch (IOException ioException) {
-			throw new PIPException(ioException.getMessage());
-		}
+		return Utility.readFileAbsPath(filePath);
 	}
 	
 	/**
@@ -450,7 +436,14 @@ final public class PIPReader extends PIPBase {
 			return false;
 		}
 		// END parameter checking
-		this.filePath = filePath;
+		String absFilePath = Utility.findFileAbsPathUsingClassLoader(filePath);
+		if (absFilePath != null){
+			this.filePath = absFilePath;
+		}else{
+			this.filePath = filePath;
+			
+		}
+		LOGGER.info("FilePath: " + this.filePath);
 		return true;
 	}
 	

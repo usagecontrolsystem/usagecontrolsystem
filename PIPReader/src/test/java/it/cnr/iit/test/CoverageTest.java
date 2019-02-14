@@ -4,18 +4,12 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
 import org.junit.jupiter.api.Test;
-import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.PropertySource;
-import org.springframework.stereotype.Component;
 
 import iit.cnr.it.pipreader.PIPReader;
-import iit.cnr.it.ucsinterface.pip.exception.PIPException;
 import it.cnr.iit.xacmlutilities.Attribute;
 import it.cnr.iit.xacmlutilities.policy.utility.JAXBUtility;
 import oasis.names.tc.xacml.core.schema.wd_17.AttributeType;
@@ -41,7 +35,7 @@ public class CoverageTest {
 	public CoverageTest() {
 		try {
 			properties = new Properties();
-			InputStream resourceStream = Thread.currentThread().getContextClassLoader().getResourceAsStream("application.properties");
+			InputStream resourceStream = Thread.currentThread().getContextClassLoader().getResourceAsStream("application-test.properties");
 			properties.load(resourceStream);
 			requestType = JAXBUtility.unmarshalToObject(RequestType.class, properties.get("requestType").toString());
 			subjectAttributePip = new PIPReader(properties.get("subjectPip").toString());
