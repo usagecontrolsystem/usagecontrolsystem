@@ -12,10 +12,11 @@
   
   
   <dependencies>
-	<dependency>
-  		<groupId>iit.cnr.it.ucsinterface</groupId>
-  		<artifactId>UCSInterface</artifactId>
-  		<version>0.0.1-SNAPSHOT</version>
-  	</dependency>
+
+  <dependency>
+  	<groupId>iit.cnr.it.ucsinterface</groupId>
+  	<artifactId>UCSInterface</artifactId>
+  	<version>0.0.1-SNAPSHOT</version>
+  </dependency>
   </dependencies>
 </project>

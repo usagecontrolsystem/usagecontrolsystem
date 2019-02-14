@@ -198,12 +198,12 @@ public class PIPUDPSocket extends PIPBase {
 	}
 	
 	@Override
-	public void unsubscribe(List<Attribute> attributes) throws PIPException {
+	public boolean unsubscribe(List<Attribute> attributes) throws PIPException {
 		// BEGIN parameter checking
 		if (attributes == null || !initialized || !isInitialized()) {
 			LOGGER.log(Level.SEVERE, "[PIPREader] wrong initialization" + initialized
 			    + "\t" + isInitialized());
-			return;
+			return false;
 		}
 		// END parameter checking
 		
@@ -213,12 +213,13 @@ public class PIPUDPSocket extends PIPBase {
 					if (attributeS.getAdditionalInformations()
 					    .equals(attribute.getAdditionalInformations())) {
 						subscriptions.remove(attributeS);
-						System.out.println("UNSUB " + subscriptions.size());
-						return;
+						LOGGER.info("UNSUB " + subscriptions.size());
+						return true;
 					}
 				}
 			}
 		}
+		return false;
 	}
 	
 	@Override
