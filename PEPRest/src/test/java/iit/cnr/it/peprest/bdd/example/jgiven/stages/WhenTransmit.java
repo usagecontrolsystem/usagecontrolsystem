@@ -45,7 +45,7 @@ public class WhenTransmit extends Stage<WhenTransmit> {
         return self();
     }
     
-    public WhenTransmit tryAccess_executed() {
+    public WhenTransmit PEPRest_service_tryAccess_is_executed() {
         assertNotNull( pepRest );
         tryAccessMsgId = pepRest.tryAccess();
         return self();

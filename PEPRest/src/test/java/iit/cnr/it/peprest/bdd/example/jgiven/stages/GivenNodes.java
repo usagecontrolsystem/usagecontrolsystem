@@ -3,21 +3,26 @@ package iit.cnr.it.peprest.bdd.example.jgiven.stages;
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathMatching;
-import static iit.cnr.it.peprest.bdd.example.jgiven.PEPRestServiceScenarioTest.PORT;
 import static org.mockito.Matchers.any;
+import static org.junit.Assert.assertNotNull;
 
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
+import com.github.tomakehurst.wiremock.client.MappingBuilder;
+import com.github.tomakehurst.wiremock.client.ResponseDefinitionBuilder;
 import com.github.tomakehurst.wiremock.client.WireMock;
 import com.tngtech.jgiven.Stage;
 import com.tngtech.jgiven.annotation.BeforeScenario;
 import com.tngtech.jgiven.annotation.ProvidedScenarioState;
+import com.tngtech.jgiven.annotation.Quoted;
 import com.tngtech.jgiven.annotation.ScenarioRule;
 
 import iit.cnr.it.peprest.bdd.example.jgiven.rules.MockedHttpServiceTestRule;
+import iit.cnr.it.peprest.configuration.Configuration;
 import iit.cnr.it.peprest.proxy.ProxyRequestManager;
+import iit.cnr.it.utility.Utility;
 
 public class GivenNodes extends Stage<GivenNodes> {
 
@@ -30,17 +35,43 @@ public class GivenNodes extends Stage<GivenNodes> {
     private ProxyRequestManager proxyRequestManager;
 
     @ScenarioRule
-    MockedHttpServiceTestRule restSimulatorTestRule = new MockedHttpServiceTestRule( PORT );
+    MockedHttpServiceTestRule restSimulatorTestRule = new MockedHttpServiceTestRule( getPort() );
 
     @ProvidedScenarioState
     WireMock wireMockContextHandler;
 
+    @ProvidedScenarioState
+    Configuration configuration;
+	private ResponseDefinitionBuilder aResponse;
+	private MappingBuilder post;
+
     @BeforeScenario
     public void init() {
     	MockitoAnnotations.initMocks(this);
+    	loadConfiguration();
     }
 
-    public GivenNodes an_origin_node(String node) {
+	private void loadConfiguration() {
+		if (configuration == null){
+			configuration = Utility.retrieveConfiguration("conf.xml", Configuration.class);
+		}
+	}
+
+	private String getHost(){
+		if (configuration == null){
+			loadConfiguration();
+		}
+		return configuration.getRMConf().getIp();
+	}
+
+    private int getPort() {
+		if (configuration == null){
+			loadConfiguration();
+		}
+		return Integer.parseInt(configuration.getRMConf().getPort());
+	}
+
+	public GivenNodes an_origin_node(String node) {
         originNode = node;
         return self();
     }
@@ -51,8 +82,8 @@ public class GivenNodes extends Stage<GivenNodes> {
     }
 
     public GivenNodes a_test_configuration_for_request_with_policy() {
-    	//TODO: read config from src/test/resources
-    	return self();
+		loadConfiguration();
+		return self();
     }
 
     public GivenNodes a_mocked_proxy_request_manager() {
@@ -60,19 +91,18 @@ public class GivenNodes extends Stage<GivenNodes> {
     	return self();
     }
 
-    public GivenNodes a_mocked_context_handler_for_tryAccess_at_$_on_port_$(String host, int port) {
-    	wireMockContextHandler = new WireMock(host, port);
-    	wireMockContextHandler.register( post(urlPathMatching("/tryAccess"))
-     		   .willReturn(aResponse()
-     		   .withStatus(200)
-     		   .withHeader("Content-Type", "application/json")));
+    public GivenNodes a_mocked_context_handler_for_$( @Quoted String operation ) {
+    	wireMockContextHandler = new WireMock(getHost(), getPort());
+		post = post(urlPathMatching("/" + operation));
     	return self();
     }
 
-    public GivenNodes configuration_to_respond_success() {
-//    	assertNotNull("context handler is not initialised", willReturn);
-//    	responseActions.andExpect(method(HttpMethod.POST));
-//    	responseActions.andRespond(withSuccess());
+    public GivenNodes a_success_response_status_$( @Quoted int status ) {
+    	assertNotNull("context handler is not initialised", post);
+    	aResponse = aResponse()
+    			.withStatus(status)
+    			.withHeader("Content-Type", "application/json");
+    	wireMockContextHandler.register( post.willReturn(aResponse));
     	return self();
     }
 
