@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2018 IIT-CNR
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License.  You may obtain a copy
  * of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
@@ -15,9 +15,6 @@
  ******************************************************************************/
 package iit.cnr.it.peprest;
 
-import java.io.BufferedReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
@@ -48,11 +45,10 @@ import iit.cnr.it.ucsinterface.message.tryaccess.TryAccessResponse;
 import iit.cnr.it.ucsinterface.pep.PEPInterface;
 import iit.cnr.it.ucsinterface.requestmanager.RequestManagerToExternalInterface;
 import iit.cnr.it.utility.Utility;
-import it.cnr.iit.xacmlutilities.policy.utility.JAXBUtility;
 
 /**
  * This is the PEP using rest
- * 
+ *
  * @author antonio
  *
  */
@@ -86,7 +82,7 @@ public class PEPRest implements PEPInterface, Runnable {
 	private Object mutex = new Object();
 
 	public PEPRest() {
-		if ((configuration = retrieveConfiguration()) == null) {
+		if ((configuration = Utility.retrieveConfiguration("conf.xml", Configuration.class)) == null) {
 			return;
 		}
 		PEPConf pepConf = configuration.getPepConf();
@@ -100,25 +96,25 @@ public class PEPRest implements PEPInterface, Runnable {
 		initialized = true;
 	}
 
-	private Configuration retrieveConfiguration() {
-		try {
-			String xml = "";
-			InputStream stream = PEPRest.class.getClassLoader().getResourceAsStream("conf.xml");
-			BufferedReader buffer = new BufferedReader(new InputStreamReader(stream));
-			String line = "";
-
-			while ((line = buffer.readLine()) != null) {
-				xml += line;
-			}
-			buffer.close();
-			stream.close();
-			Configuration configuration = JAXBUtility.unmarshalToObject(Configuration.class, xml);
-			return configuration;
-		} catch (Exception e) {
-			e.printStackTrace();
-			return null;
-		}
-	}
+//	private Configuration retrieveConfiguration(String configFile) {
+//		try {
+//			String xml = "";
+//			InputStream stream = PEPRest.class.getClassLoader().getResourceAsStream(configFile);
+//			BufferedReader buffer = new BufferedReader(new InputStreamReader(stream));
+//			String line = "";
+//
+//			while ((line = buffer.readLine()) != null) {
+//				xml += line;
+//			}
+//			buffer.close();
+//			stream.close();
+//			Configuration configuration = JAXBUtility.unmarshalToObject(Configuration.class, xml);
+//			return configuration;
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//			return null;
+//		}
+//	}
 
 	public String tryAccess() {
 		//TODO: need a more efficient solution - begin block
@@ -133,7 +129,7 @@ public class PEPRest implements PEPInterface, Runnable {
 			request = Utility.readFileAbsPath(REQUEST_PATH);
 		}
 		//TODO: need a more efficient solution - end block
-		
+
 		TryAccessMessageBuilder tryAccessBuilder = new TryAccessMessageBuilder(configuration.getPepConf().getId(),
 				configuration.getPepConf().getIp());
 		tryAccessBuilder.setPepUri(buildOnGoingEvaluationInterface()).setPolicy(policy).setRequest(request);
