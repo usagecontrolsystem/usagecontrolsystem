@@ -42,8 +42,8 @@ public abstract class UCFAbstractTest {
 
 	protected ContextHandlerLC getContextHandler(Configuration ucsConfiguration) {
 		ContextHandlerLC contextHandler = new ContextHandlerLC(ucsConfiguration.getCh());
-		assertTrue(contextHandler.startContextHandlerThread());
-		contextHandler.stopContextHandlerThread();
+		assertTrue(contextHandler.startThread());
+		contextHandler.stopThread();
 		return contextHandler;
 	}
 

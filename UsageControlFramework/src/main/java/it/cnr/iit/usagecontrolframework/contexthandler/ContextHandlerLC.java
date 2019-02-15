@@ -143,7 +143,7 @@ final public class ContextHandlerLC extends AbstractContextHandler {
 	/**
 	 * starts the thread in charge of monitoring the changes notified by PIPs
 	 */
-	public boolean startContextHandlerThread() {
+	public boolean startThread() {
 		if (isInitialized()) {
 			thread.start();
 			return true;
@@ -154,7 +154,7 @@ final public class ContextHandlerLC extends AbstractContextHandler {
 	/**
 	 * stop the thread in charge of monitoring the changes notified by PIPs
 	 */
-	public boolean stopContextHandlerThread() {
+	public boolean stopThread() {
 		continueMonitor = false;
 		return false;
 	}

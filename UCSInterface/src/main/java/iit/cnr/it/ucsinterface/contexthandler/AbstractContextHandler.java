@@ -145,7 +145,7 @@ public abstract class AbstractContextHandler
 	 * @return true if everything is ok, false otherwise
 	 * @throws Exception
 	 */
-	abstract public boolean startContextHandlerThread() throws Exception;
+	abstract public boolean startThread() throws Exception;
 	
 	// ---------------------------------------------------------------------------
 	// Getter and setter already implemented

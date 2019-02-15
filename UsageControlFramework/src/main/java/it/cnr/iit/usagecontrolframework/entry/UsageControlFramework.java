@@ -408,7 +408,7 @@ public final class UsageControlFramework implements UCSInterface {
 		contextHandler.setInterfaces(proxySessionManager, requestManager, proxyPDP,
 		    proxyPAP, list, pipRetrieval, obligationManager, forwardingQueue);
 		try {
-			contextHandler.startContextHandlerThread();
+			contextHandler.startThread();
 			
 		} catch (Exception e) {
 			e.printStackTrace();
