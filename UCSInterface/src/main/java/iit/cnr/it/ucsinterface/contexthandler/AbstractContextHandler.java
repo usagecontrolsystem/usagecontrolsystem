@@ -104,7 +104,7 @@ public abstract class AbstractContextHandler
 		this.configuration = configuration;
 		ip = configuration.getIp();
 		port = configuration.getPort();
-		verify();
+		//verify();
 	}
 	
 	// ---------------------------------------------------------------------------
@@ -115,36 +115,36 @@ public abstract class AbstractContextHandler
 	}
 	
 	/**
-	 * Verifies that the status of the context handler is consistent. If it is so
-	 * then sets the initialized flag to truew, otherwise to false. Setting the
-	 * initialized flag to false makes it impossible to deal with this object
+	 * Verifies that the status of the context handler is consistent. In case it is consistent it
+	 * sets the initialized flag to true, otherwise to false.
+	 * Having the initialized flag to false makes it impossible to deal with this object
 	 */
-	private void verify() {
-		if ((configuration != null) && (sessionManagerInterface != null)
-		    && (pipList != null || pipRetrieval != null) && (papInterface != null)
-		    && (pdpInterface != null) && (requestManagerToChInterface != null)
-		    && (ip != null) && (port != null) && (forwardingQueue != null)) {
-			LOGGER.log(Level.INFO, "CH correct");
-			initialized = true;
+	public void verify() {
+		StringBuilder sb = new StringBuilder();
+
+		final String[] checkObjectsNames = {"configuration", "sessionManager", "pipList/pipRetrieval",
+				"pap", "pdp", "requestManagerToCh", "ip", "port", "forwardingQueue"};
+		final boolean[] checkObjects = {configuration == null, sessionManagerInterface == null,
+				pipList == null && pipRetrieval == null, papInterface == null,
+				pdpInterface == null, requestManagerToChInterface == null,
+				ip == null, port == null, forwardingQueue == null};
+
+		for (int i=0; i<checkObjects.length; i++) {
+			if (checkObjects[i]) {
+				sb.append(checkObjectsNames[i]).append(" ");
+			}
+		}
+
+		initialized = sb.length() == 0;
+
+		if (initialized) {
+			LOGGER.info("ContextHandler correctly initialized");
 		} else {
-			LOGGER.log(Level.WARNING,
-			    "ContextHandler uncorrectly initialized " + (configuration == null)
-			        + "\t" + (sessionManagerInterface == null) + "\t"
-			        + (pipList == null && pipRetrieval == null) + "\t"
-			        + (papInterface == null) + "\t" + (pdpInterface == null) + "\t"
-			        + (requestManagerToChInterface == null) + "\t" + (ip == null)
-			        + "\t" + (port == null));
-			initialized = false;
+			LOGGER.severe("ContextHandler incorrectly initialized");
+			LOGGER.severe("The offending components are : " + sb.toString());
 		}
 	}
-	
-	/**
-	 * Offered function to state if the context handler has been configured
-	 * correctly
-	 * 
-	 * @return true if everything is ok, false otherwise
-	 * @throws Exception
-	 */
+
 	abstract public boolean startThread() throws Exception;
 	
 	// ---------------------------------------------------------------------------
@@ -163,7 +163,7 @@ public abstract class AbstractContextHandler
 			return;
 		}
 		this.sessionManagerInterface = sessionManagerInterface;
-		verify();
+		//verify();
 	}
 	
 	final protected List<PIPCHInterface> getPipList() {
@@ -178,7 +178,7 @@ public abstract class AbstractContextHandler
 			return;
 		}
 		this.pipRetrieval = pipRetrieval;
-		verify();
+		//verify();
 	}
 	
 	final protected PIPRMInterface getPipRetrieval() {
@@ -207,7 +207,7 @@ public abstract class AbstractContextHandler
 			return;
 		}
 		this.pdpInterface = pdpInterface;
-		verify();
+		//verify();
 	}
 	
 	final protected PAPInterface getPapInterface() {
@@ -222,7 +222,7 @@ public abstract class AbstractContextHandler
 			return;
 		}
 		this.papInterface = papInterface;
-		verify();
+		//verify();
 	}
 	
 	final protected RequestManagerToCHInterface getRequestManagerToChInterface() {
@@ -238,7 +238,7 @@ public abstract class AbstractContextHandler
 			return;
 		}
 		this.requestManagerToChInterface = requestManagerToChInterface;
-		verify();
+		//verify();
 	}
 	
 	final protected String getIp() {
@@ -303,27 +303,23 @@ public abstract class AbstractContextHandler
 	    ObligationManagerInterface obligationManager) {
 		if (obligationManager != null) {
 			this.obligationManager = obligationManager;
-			verify();
+			//verify();
 		}
 	}
 	
 	final protected ObligationManagerInterface getObligationManager() {
-		// BEGIN parameter checking
 		if (initialized == false) {
 			return null;
 		}
-		// END parameter checking
 		return obligationManager;
 	}
 	
-	private void setForwardingQueue(
+	public void setForwardingQueue(
 	    ForwardingQueueToCHInterface forwardingQueue) {
-		// BEGIN parameter checking
 		if (forwardingQueue != null) {
 			this.forwardingQueue = forwardingQueue;
-			verify();
+			//verify();
 		}
-		// END parameter checking
 	}
 	
 	/**

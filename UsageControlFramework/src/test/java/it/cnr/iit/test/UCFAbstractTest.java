@@ -12,12 +12,19 @@ import java.util.ArrayList;
 
 import javax.xml.bind.JAXBException;
 
+import org.mockito.Mockito;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import iit.cnr.it.ucsinterface.contexthandler.AbstractContextHandler;
+import iit.cnr.it.ucsinterface.forwardingqueue.ForwardingQueueToCHInterface;
+import iit.cnr.it.ucsinterface.message.tryaccess.TryAccessMessage;
+import iit.cnr.it.ucsinterface.message.tryaccess.TryAccessMessageBuilder;
 import iit.cnr.it.ucsinterface.pap.PAPInterface;
 import iit.cnr.it.ucsinterface.pdp.PDPInterface;
 import iit.cnr.it.ucsinterface.pip.PIPCHInterface;
+import iit.cnr.it.ucsinterface.pip.PIPRetrieval;
+import iit.cnr.it.ucsinterface.requestmanager.RequestManagerToCHInterface;
 import iit.cnr.it.ucsinterface.sessionmanager.SessionManagerInterface;
 import it.cnr.iit.usagecontrolframework.configuration.xmlclasses.Configuration;
 import it.cnr.iit.usagecontrolframework.configuration.xmlclasses.XMLPip;
@@ -32,19 +39,63 @@ import oasis.names.tc.xacml.core.schema.wd_17.RequestType;
 
 public abstract class UCFAbstractTest {
     protected Logger log = (Logger) LoggerFactory.getLogger(UCFAbstractTest.class);
+
+    /* mocked components */
+
+	protected PIPRetrieval getMockedPipRetrieval() {
+		PIPRetrieval pipRetrieval = Mockito.mock(PIPRetrieval.class);
+		return pipRetrieval;
+	}
+
+	protected SessionManagerInterface getMockedSessionManager() {
+		SessionManagerInterface sessionManagerInterface = Mockito.mock(SessionManagerInterface.class);
+		return sessionManagerInterface;
+	}
+
+	protected RequestManagerToCHInterface getMockedRequestManagerToChInterface() {
+		RequestManagerToCHInterface requestManagerToChInterface = Mockito.mock(RequestManagerToCHInterface.class);
+		return requestManagerToChInterface;
+	}
+
+	protected ForwardingQueueToCHInterface getMockedForwardingQueueToCHInterface() {
+		ForwardingQueueToCHInterface forwardingQueueToCHInterface = Mockito.mock(ForwardingQueueToCHInterface.class);
+		return forwardingQueueToCHInterface;
+	}
+
+	protected PDPInterface getMockedPDP() {
+		PDPInterface pdp = Mockito.mock(PDPInterface.class);
+		assertNotNull(pdp);
+		return pdp;
+	}
+
+	protected PAPInterface getMockedPAP() {
+		PAPInterface pap = Mockito.mock(PAPInterface.class);
+		assertNotNull(pap);
+		return pap;
+	}
+
+	/* not mocked components */
+
+	protected ContextHandlerLC getContextHandler(Configuration ucsConfiguration) {
+		ContextHandlerLC contextHandler = new ContextHandlerLC(ucsConfiguration.getCh());
+
+		return contextHandler;
+	}
 	
+	protected void initContextHandler(ContextHandlerLC contextHandler) {
+		contextHandler.setPdpInterface(getMockedPDP());
+		contextHandler.setPapInterface(getMockedPAP());
+		contextHandler.setRequestManagerToChInterface(getMockedRequestManagerToChInterface());
+		contextHandler.setSessionManagerInterface(getMockedSessionManager());
+		contextHandler.setPIPRetrieval(getMockedPipRetrieval());
+		contextHandler.setForwardingQueue(getMockedForwardingQueueToCHInterface());
+	}
+
 	protected SessionManagerInterface getSessionManager(Configuration ucsConfiguration) {
 		SessionManagerInterface sessionManager = new ProxySessionManager(
 			    ucsConfiguration.getSessionManager());
 		assertTrue(sessionManager.isInitialized());
 		return sessionManager;
-	}
-
-	protected ContextHandlerLC getContextHandler(Configuration ucsConfiguration) {
-		ContextHandlerLC contextHandler = new ContextHandlerLC(ucsConfiguration.getCh());
-		assertTrue(contextHandler.startThread());
-		contextHandler.stopThread();
-		return contextHandler;
 	}
 
 	protected PDPInterface getPDP(Configuration ucsConfiguration) {
@@ -58,7 +109,7 @@ public abstract class UCFAbstractTest {
 		assertNotNull(pap);
 		return pap;
 	}
-	
+
 	protected ArrayList<PIPCHInterface> getPIPS(Configuration ucsConfiguration) {
 		ArrayList<PIPCHInterface>  pips = new ArrayList<>();
 
@@ -71,24 +122,42 @@ public abstract class UCFAbstractTest {
 		
 		return pips;
 	}
+
+	/* Policy/Request function */
+	
+	protected TryAccessMessage buildTryAccessMessage(String pepId, String ucsUri,
+			String policyFile, String requestFile) throws URISyntaxException, IOException {
+		TryAccessMessageBuilder builder = new TryAccessMessageBuilder(pepId, ucsUri);
+		
+		String policy = readResourceFileAsString(policyFile);
+		builder.setPolicy(policy);
+		String request = readResourceFileAsString(requestFile);
+		builder.setRequest(request);
+		
+		TryAccessMessage message = builder.build();
+			
+		return message;
+	}
 	
 	protected RequestType getRequestType(String fileName) throws JAXBException, URISyntaxException, IOException {
 		return (RequestType) loadXMLFromFile(fileName, RequestType.class);
 	}
-	
+
 	protected PolicyType getPolicyType(String fileName) throws JAXBException, URISyntaxException, IOException {
 		return (PolicyType) loadXMLFromFile(fileName, PolicyType.class);
 	}
+
+	/* Utility functions */
 	
 	protected Configuration getUCSConfiguration(String ucsConfigFile) throws JAXBException, URISyntaxException, IOException {
 		return (Configuration) loadXMLFromFile(ucsConfigFile, Configuration.class);
 	}
-	
+
 	private Object loadXMLFromFile(String fileName, Class<?> className) throws JAXBException, URISyntaxException, IOException {
 		String data = readResourceFileAsString(fileName);
 		return JAXBUtility.unmarshalToObject(className, data);
 	}
-	
+
 	protected String readResourceFileAsString(String resource) throws URISyntaxException, IOException {
 		ClassLoader classLoader = this.getClass().getClassLoader();
 		
@@ -96,6 +165,5 @@ public abstract class UCFAbstractTest {
 		Path path = Paths.get(classLoader.getResource(resource).toURI());
 		byte[] data = Files.readAllBytes(path);
 		return new String(data);
-	} 
-	
+	}
 }

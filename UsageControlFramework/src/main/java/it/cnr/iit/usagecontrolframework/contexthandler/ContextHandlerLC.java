@@ -181,22 +181,19 @@ final public class ContextHandlerLC extends AbstractContextHandler {
 	 */
 	@Override
 	public void tryAccess(Message message) {
-		// BEGIN parameter checking
 		if (!isInitialized() || message == null || !(message instanceof TryAccessMessage)) {
 			LOGGER.log(Level.SEVERE,
 					"INVALID tryAccess " + isInitialized() + "\t" + (message instanceof TryAccessMessage));
 			return;
 		}
-		// END parameter checking
 
-		System.out.println("[TIME] tryaccess received at " + System.currentTimeMillis());
+		LOGGER.log(Level.INFO, "[TIME] tryaccess received at " + System.currentTimeMillis());
 
 		TryAccessMessage tryAccess = (TryAccessMessage) message;
 
 		PolicyHelper policyHelper = PolicyHelper.buildPolicyHelper(tryAccess.getPolicy());
 
 		// eventual scheduling
-
 		List<Attribute> attributes = policyHelper.getAttributesForCondition(TRYACCESS_POLICY);
 		System.out.println("[TIME] tryaccess begin scheduling " + System.currentTimeMillis());
 		HashMap<String, Integer> attributesIP = retrieveAttributesIp(attributes);
@@ -235,12 +232,11 @@ final public class ContextHandlerLC extends AbstractContextHandler {
 		// status of the incoming request
 		String status = TRY_STATUS;
 
-		System.out.println(
-				"[TIME] tryaccess evaluated at " + System.currentTimeMillis() + " " + pdpEvaluation.getResponse());
+		String pdpResponse = pdpEvaluation.getResponse();
+		LOGGER.log(Level.INFO, "[TIME] tryaccess evaluated at " + System.currentTimeMillis() + " " + pdpResponse );
 
 		// if access decision is PERMIT - update SM DB entry
-		if (pdpEvaluation.getResponse().equalsIgnoreCase("Permit")) {
-
+		if (pdpResponse.equalsIgnoreCase("Permit")) {
 			/**
 			 * If tryAccess was scheduled, then the ip to be stored is the one
 			 * of the node that has the PEP attached, otherwise it is the URL of
@@ -251,7 +247,7 @@ final public class ContextHandlerLC extends AbstractContextHandler {
 							: getIp() + PEP_ID_SEPARATOR + tryAccess.getSource(),
 					policyHelper, tryAccess.getScheduled() ? tryAccess.getSource() : getIp());
 
-			System.out.println("[TIME] PERMIT tryaccess ends at " + System.currentTimeMillis());
+			LOGGER.log(Level.INFO, "[TIME] PERMIT tryaccess ends at " + System.currentTimeMillis());
 
 			// // obligation
 			// getObligationManager().translateObligations(pdpEvaluation,
@@ -270,7 +266,7 @@ final public class ContextHandlerLC extends AbstractContextHandler {
 		TryAccessResponse tryAccessResponse = new TryAccessResponse(getIp(), tryAccess.getSource(), message.getID());
 		TryAccessResponseContent tryAccessResponseContent = new TryAccessResponseContent();
 		tryAccessResponseContent.setSessionId(sessionId);
-		tryAccessResponseContent.setStatus(pdpEvaluation.getResponse());
+		tryAccessResponseContent.setStatus(pdpResponse);
 		tryAccessResponseContent.setPDPEvaluation(pdpEvaluation);
 		tryAccessResponse.setContent(tryAccessResponseContent);
 		if (tryAccess.getScheduled()) {
@@ -297,46 +293,45 @@ final public class ContextHandlerLC extends AbstractContextHandler {
 	 *            the status for which the call is issued
 	 */
 	private void schedule(Message message, String request, String ip, STATUS status) {
-
 		switch (status) {
-		case TRYACCESS:
-			// TryAccessMessage tryAccess = (TryAccessMessage) message;
-			TryAccessMessage tryAccess = new Gson().fromJson(new Gson().toJson(message), TryAccessMessage.class);
-			tryAccess.getContent().setPepUri(getIp() + PEP_ID_SEPARATOR + message.getSource());
-			tryAccess.getContent().setRequest(request);
-			getForwardingQueue().addSwappedMessage(message.getID(), message);
-			tryAccess.setSource(getIp());
-			tryAccess.setDestination(ip);
-			tryAccess.setScheduled();
-			System.out.println("[TIME] tryAccess scheduled to other node " + System.currentTimeMillis());
-			getRequestManagerToChInterface().sendMessageToOutside(tryAccess);
-			return;
-		case STARTACCESS:
-			StartAccessMessage startAccessMessage = new Gson().fromJson(new Gson().toJson(message),
-					StartAccessMessage.class);
-			getForwardingQueue().addSwappedMessage(message.getID(), message);
-			startAccessMessage.setSource(getIp());
-			startAccessMessage.setDestination(ip);
-			startAccessMessage.setScheduled();
-			System.out.println("[TIME] startAccess scheduled to other node " + System.currentTimeMillis());
-			getRequestManagerToChInterface().sendMessageToOutside(startAccessMessage);
-			return;
-		case ENDACCESS:
-			EndAccessMessage endAccessMessage = new Gson().fromJson(new Gson().toJson(message), EndAccessMessage.class);
-			getForwardingQueue().addSwappedMessage(message.getID(), message);
-			endAccessMessage.setSource(getIp());
-			endAccessMessage.setDestination(ip);
-			endAccessMessage.setScheduled();
-			System.out.println("[TIME] endAccess scheduled to other node " + System.currentTimeMillis());
-			getRequestManagerToChInterface().sendMessageToOutside(endAccessMessage);
-			return;
-		case REEVALUATION:
-			ReevaluationMessage reevaluationMessage = (ReevaluationMessage) message;
-			System.out.println("[TIME] reevaluation scheduled to other node " + System.currentTimeMillis());
-			getRequestManagerToChInterface().sendMessageToOutside(reevaluationMessage);
-			return;
-		default:
-			return;
+			case TRYACCESS:
+				// TryAccessMessage tryAccess = (TryAccessMessage) message;
+				TryAccessMessage tryAccess = new Gson().fromJson(new Gson().toJson(message), TryAccessMessage.class);
+				tryAccess.getContent().setPepUri(getIp() + PEP_ID_SEPARATOR + message.getSource());
+				tryAccess.getContent().setRequest(request);
+				getForwardingQueue().addSwappedMessage(message.getID(), message);
+				tryAccess.setSource(getIp());
+				tryAccess.setDestination(ip);
+				tryAccess.setScheduled();
+				System.out.println("[TIME] tryAccess scheduled to other node " + System.currentTimeMillis());
+				getRequestManagerToChInterface().sendMessageToOutside(tryAccess);
+				return;
+			case STARTACCESS:
+				StartAccessMessage startAccessMessage = new Gson().fromJson(new Gson().toJson(message),
+						StartAccessMessage.class);
+				getForwardingQueue().addSwappedMessage(message.getID(), message);
+				startAccessMessage.setSource(getIp());
+				startAccessMessage.setDestination(ip);
+				startAccessMessage.setScheduled();
+				System.out.println("[TIME] startAccess scheduled to other node " + System.currentTimeMillis());
+				getRequestManagerToChInterface().sendMessageToOutside(startAccessMessage);
+				return;
+			case ENDACCESS:
+				EndAccessMessage endAccessMessage = new Gson().fromJson(new Gson().toJson(message), EndAccessMessage.class);
+				getForwardingQueue().addSwappedMessage(message.getID(), message);
+				endAccessMessage.setSource(getIp());
+				endAccessMessage.setDestination(ip);
+				endAccessMessage.setScheduled();
+				System.out.println("[TIME] endAccess scheduled to other node " + System.currentTimeMillis());
+				getRequestManagerToChInterface().sendMessageToOutside(endAccessMessage);
+				return;
+			case REEVALUATION:
+				ReevaluationMessage reevaluationMessage = (ReevaluationMessage) message;
+				System.out.println("[TIME] reevaluation scheduled to other node " + System.currentTimeMillis());
+				getRequestManagerToChInterface().sendMessageToOutside(reevaluationMessage);
+				return;
+			default:
+				return;
 		}
 	}
 
@@ -492,8 +487,7 @@ final public class ContextHandlerLC extends AbstractContextHandler {
 	 *         tryaccess
 	 */
 	private synchronized String createSessionId() {
-		String stringId = "" + UUIDs.timeBased();
-		return stringId;
+		return UUIDs.timeBased().toString();
 	}
 
 	/**
@@ -920,7 +914,7 @@ final public class ContextHandlerLC extends AbstractContextHandler {
 	public void endAccess(Message message) {
 		// BEGIN parameter checking
 		if (!isInitialized()) {
-			System.err.println("CH not initialized correctly");
+			LOGGER.log(Level.SEVERE, "CH not initialized correctly");
 			return;
 		}
 		if (message == null || !(message instanceof EndAccessMessage)) {
@@ -1030,12 +1024,10 @@ final public class ContextHandlerLC extends AbstractContextHandler {
 	 */
 	@Override
 	public void attributeChanged(Message message) {
-		System.out.println("Attribute changed received " + System.currentTimeMillis());
-		// BEGIN parameter checking
+		LOGGER.log(Level.INFO, "Attribute changed received " + System.currentTimeMillis());
 		if (message == null || !(message instanceof MessagePipCh)) {
 			LOGGER.log(Level.SEVERE, "Invalid message provided");
 		}
-		// END parameter checking
 		// non blocking insertion in the queue of attributes changed
 		attributesChanged.put((MessagePipCh) message);
 	}
@@ -1213,7 +1205,7 @@ final public class ContextHandlerLC extends AbstractContextHandler {
 				// retrieve the attribute retrieval object from the JSON
 
 				// retrieve the list of interested sessions
-				System.out.println(attribute.getAttributeId());
+				LOGGER.log(Level.INFO, attribute.getAttributeId());
 				List<SessionInterface> interestedSessions = retrieveSessions(attribute);
 				if (interestedSessions == null || interestedSessions.size() == 0) {
 					LOGGER.log(Level.INFO, "There are no sessions");
@@ -1242,7 +1234,7 @@ final public class ContextHandlerLC extends AbstractContextHandler {
 				}
 				return true;
 			} catch (Exception e) {
-				System.err.println("[Reevaluate sessions]" + e.getMessage());
+				LOGGER.log(Level.SEVERE, "[Reevaluate sessions]" + e.getMessage());
 				e.printStackTrace();
 				return false;
 			}
@@ -1408,7 +1400,7 @@ final public class ContextHandlerLC extends AbstractContextHandler {
 		 */
 		private String reevaluateSession(SessionInterface session, Attribute attribute) {
 			try {
-				System.out.println("[TIME] reevaluation begins at " + System.currentTimeMillis());
+				LOGGER.log(Level.INFO, "[TIME] reevaluation begins at " + System.currentTimeMillis());
 
 				PolicyHelper policyHelper = PolicyHelper.buildPolicyHelper(session.getPolicySet());
 				if (getSessionManagerInterface().checkSession(session.getId(),
@@ -1437,9 +1429,9 @@ final public class ContextHandlerLC extends AbstractContextHandler {
 						BasicConfiguration.getBasicConfiguration().getIp(),
 						BasicConfiguration.getBasicConfiguration().getIp());
 				reevaluationMessage.setSession((Session) session);
-				System.out.println("[TIME] reevaluation starts at " + System.currentTimeMillis());
+				LOGGER.log(Level.INFO, "[TIME] reevaluation starts at " + System.currentTimeMillis());
 				reevaluate(reevaluationMessage);
-				System.out.println("[TIME] reevaluation ends at " + System.currentTimeMillis());
+				LOGGER.log(Level.INFO, "[TIME] reevaluation ends at " + System.currentTimeMillis());
 				getSessionManagerInterface().stopSession(session);
 				// }
 
