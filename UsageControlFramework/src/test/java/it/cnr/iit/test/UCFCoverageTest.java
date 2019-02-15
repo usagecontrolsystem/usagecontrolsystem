@@ -32,7 +32,7 @@ import it.cnr.iit.usagecontrolframework.contexthandler.exceptions.MalformedObjec
 @SpringBootTest
 @SpringBootConfiguration
 @RunWith(SpringRunner.class)
-public class CoverageTest extends BaseTests {
+public class UCFCoverageTest extends UCFAbstractTest {
 
 	@Value("${ucs-config-file}")
 	private String ucsConfigFile;
@@ -43,20 +43,43 @@ public class CoverageTest extends BaseTests {
 	@Value("${request-file}")
 	private String requestFile;
 	
+	private Configuration ucsConfiguration;
+	
 	@PostConstruct
-	private void init() {
-		log.info("Init coverage tests");			
+	private void setUp() throws JAXBException, URISyntaxException, IOException {
+		log.info("Init coverage tests");
+		ucsConfiguration  = getUCSConfiguration(ucsConfigFile);
+		
 	}
 	
 	@Test
-	public void testInitConfiguration() throws JAXBException, URISyntaxException, IOException, MalformedObjectException {
-		Configuration ucsConfiguration  = getUCSConfiguration(ucsConfigFile);
+	public void validateSessionManagerConfiguration() {
+		log.info("======================================");
 		SessionManagerInterface sessionManagerInterface = getSessionManager(ucsConfiguration);
+	}
+
+	@Test
+	public void validatePIPSConfiguration() {
+		log.info("======================================");
 		ArrayList<PIPCHInterface> pipArray = getPIPS(ucsConfiguration);
-		PAPInterface pap = getPAP(ucsConfiguration);
-		PDPInterface pdp = getPDP(ucsConfiguration);
+	}
+
+	@Test
+	public void validateContextHandlerConfiguration() {
+		log.info("======================================");
 		ContextHandlerLC contextHandler = getContextHandler(ucsConfiguration);
-		//usageControlFramework = new UsageControlFramework();
+	}
+	
+	@Test
+	public void validatePAPConfiguration() {
+		log.info("======================================");
+		PAPInterface pap = getPAP(ucsConfiguration);
+	}
+
+	@Test
+	public void validatePDPConfiguration() {
+		log.info("======================================");
+		PDPInterface pdp = getPDP(ucsConfiguration);
 	}
 
 }

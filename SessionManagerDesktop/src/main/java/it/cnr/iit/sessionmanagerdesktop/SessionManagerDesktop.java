@@ -841,4 +841,9 @@ final public class SessionManagerDesktop implements SessionManagerInterface {
 		// TODO Auto-generated method stub
 		return false;
 	}
+
+	@Override
+	public boolean isInitialized() {
+		return initialized;
+	}
 }

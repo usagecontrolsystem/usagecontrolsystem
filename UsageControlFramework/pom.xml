@@ -145,7 +145,7 @@
 			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
 		<dependency>
-			<groupId>iit.cnr.it.usagecontrolframework.pdp</groupId>
+			<groupId>it.cnr.iit.usagecontrolframework.pdp</groupId>
 			<artifactId>PolicyDecisionPoint</artifactId>
 			<version>1.0-SNAPSHOT</version>
 		</dependency>
@@ -155,12 +155,12 @@
 			<version>2.0-SNAPSHOT</version>
 		</dependency>
 		<dependency>
-			<groupId>iit.cnr.it.usagecontrolframework.pap</groupId>
+			<groupId>it.cnr.iit.usagecontrolframework.pap</groupId>
 			<artifactId>PolicyAdministrationPoint</artifactId>
 			<version>1.0-SNAPSHOT</version>
 		</dependency>
 		<dependency>
-			<groupId>iit.cnr.it.usagecontrolframework</groupId>
+			<groupId>it.cnr.iit.usagecontrolframework</groupId>
 			<artifactId>ObligationManager</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
 		</dependency>

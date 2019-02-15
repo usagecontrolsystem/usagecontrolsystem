@@ -309,4 +309,9 @@ public interface SessionManagerInterface extends ReevaluationTableInterface {
    * @return the list of ongoingattributes related to that sessio id
    */
   public List<OnGoingAttribute> getOnGoingAttributes(String sessionId);
+  
+  /**
+   * Tells if the session manager has been initialized
+   * */
+  public boolean isInitialized();
 }

@@ -15,8 +15,7 @@
 					argument="http://www.w3.org/2001/XMLSchema#string" />
 				<arg name="ATTRIBUTE_ID"
 					argument="urn:oasis:names:tc:xacml:1.0:subject:role" />
-				<arg name="FILE_PATH"
-					argument="subject.txt"></arg>
+				<arg name="FILE_PATH" argument="pip/subject.txt"></arg>
 				<arg name="EXPECTED_CATEGORY"
 					argument="urn:oasis:names:tc:xacml:1.0:subject-category:access-subject"></arg>
 			</attributes>
@@ -30,8 +29,7 @@
 					argument="http://www.w3.org/2001/XMLSchema#integer" />
 				<arg name="ATTRIBUTE_ID"
 					argument="urn:oasis:names:tc:xacml:3.0:environment:light" />
-				<arg name="FILE_PATH"
-					argument="light.txt"></arg>
+				<arg name="FILE_PATH" argument="pip/light.txt"></arg>
 			</attributes>
 		</pip>
 		<pip id="PIPReaderEnv" class="iit.cnr.it.pipreader.PIPReader"
@@ -43,16 +41,12 @@
 					argument="http://www.w3.org/2001/XMLSchema#integer" />
 				<arg name="ATTRIBUTE_ID"
 					argument="urn:oasis:names:tc:xacml:3.0:environment:camera" />
-				<arg name="FILE_PATH"
-					argument="camera.txt"></arg>
+				<arg name="FILE_PATH" argument="pip/camera.txt"></arg>
 			</attributes>
 		</pip>
-
 	</pips>
 	<sessionmanager>
-		<!-- <class>iit.cnr.it.distributedsessionmanager.DistributedSessionManager</class> -->
 		<class>it.cnr.iit.sessionmanagerdesktop.SessionManagerDesktop</class>
-		<!-- <class>iit.cnr.it.kademliasessionmanager.KademliaSessionManager</class> -->
 		<type>Local</type>
 		<ip>localhost</ip>
 		<host>localhost</host>
@@ -62,10 +56,7 @@
 		<replicator>2</replicator>
 		<username>root</username>
 		<password>root</password>
-		<!-- <driver>jdbc:mysql://localhost/session_manager?user=root&amp;password=root</driver> -->
-		<driver>jdbc:hsqldb:hsql://localhost/session_manager;sql.syntax_pgs=true?user=sa&amp;password=
-		</driver>
-
+		<driver>jdbc:hsqldb:hsql://localhost/session_manager;sql.syntax_pgs=true?user=sa&amp;password=</driver>
 		<tables>
 			<table name="sessions">
 				<field>
@@ -123,81 +114,43 @@
 			</table>
 		</tables>
 	</sessionmanager>
-	<!-- classes to be used -->
 	<contexthandler>
-		<class>it.cnr.iit.usagecontrolframework.contexthandler.ContextHandlerLC
-		</class>
+		<class>it.cnr.iit.usagecontrolframework.contexthandler.ContextHandlerLC</class>
 		<thread></thread>
 		<communication>API</communication>
 		<ip>localhost</ip>
 		<port>8080</port>
-		<!-- <pipregister> <driver></driver> <class>iit.cnr.it.ucsinterface.contexthandler.pipregister.CassandraPipRegister</class> 
-			<class>iit.cnr.it.ucsinterface.contexthandler.pipregister.KademliaPIPRegister</class> 
-			<cluster>Test Cluster</cluster> <keyspace>pipregister</keyspace> <replicator>2</replicator> 
-			<host>192.168.83.1</host> <port>8080</port> </pipregister> -->
 	</contexthandler>
 	<pdp>
-		<class>iit.cnr.it.usagecontrolframework.pdp.PolicyDecisionPoint
-		</class>
+		<class>it.cnr.iit.usagecontrolframework.pdp.PolicyDecisionPoint</class>
 		<thread>tbd</thread>
 		<communication>API</communication>
 	</pdp>
 	<pap>
-		<class>iit.cnr.it.usagecontrolframework.pap.PolicyAdministrationPoint
-		</class>
+		<class>it.cnr.iit.usagecontrolframework.pap.PolicyAdministrationPoint</class>
 		<thread>tbd</thread>
 		<communication>API</communication>
 	</pap>
 	<requestmanager>
-		<class>it.cnr.iit.usagecontrolframework.requestmanager.RequestManagerLC
-		</class>
+		<class>it.cnr.iit.usagecontrolframework.requestmanager.RequestManagerLC</class>
 		<thread>1</thread>
 		<communication>REST</communication>
 		<remoteResponse>/retrieveRemoteResponse</remoteResponse>
 	</requestmanager>
 	<obligationmanager>
-		<class>iit.cnr.it.usagecontrolframework.obligationmanager.ObligationManager
-		</class>
+		<class>it.cnr.iit.usagecontrolframework.obligationmanager.ObligationManager</class>
 	</obligationmanager>
 	<peps>
-		<pep>
-			<id>2</id>
-			<class>iit.cnr.it.ucsinterface.pep.AbstractPEP</class>
-			<communication>REST_API</communication>
-			<ip>10.0.0.22</ip>
-			<port>9999</port>
-			<oeApi>onGoingEvaluation</oeApi>
-			<tryAccessApi>tryAccessResponse</tryAccessApi>
-			<startAccessApi>startAccessResponse</startAccessApi>
-			<endAccessApi>endAccessResponse</endAccessApi>
-		</pep>
-		<pep>
-			<id>3</id>
-			<class>iit.cnr.it.ucsinterface.pep.AbstractPEP</class>
-			<communication>REST_API</communication>
-			<ip>10.0.0.11</ip>
-			<port>9999</port>
-			<oeApi>onGoingEvaluation</oeApi>
-			<tryAccessApi>tryAccessResponse</tryAccessApi>
-			<startAccessApi>startAccessResponse</startAccessApi>
-			<endAccessApi>endAccessResponse</endAccessApi>
-		</pep>
 		<pep>
 			<id>1</id>
 			<class>iit.cnr.it.ucsinterface.pep.AbstractPEP</class>
 			<communication>REST_API</communication>
-			<ip>10.221.99.190</ip>
+			<ip>localhost</ip>
 			<port>9999</port>
 			<oeApi>onGoingEvaluation</oeApi>
 			<tryAccessApi>tryAccessResponse</tryAccessApi>
 			<startAccessApi>startAccessResponse</startAccessApi>
 			<endAccessApi>endAccessResponse</endAccessApi>
 		</pep>
-		<!-- <pep> <id>2</id> <class>iit.cnr.it.ucsinterface.pep.AbstractPEP</class> 
-			<communication>REST_API</communication> <ip>192.168.83.1</ip> <port>6789</port> 
-			<oeApi>onGoingEvaluation</oeApi> <tryAccessApi>tryAccessResponse</tryAccessApi> 
-			<startAccessApi>startAccessResponse</startAccessApi> <endAccessApi>endAccessResponse</endAccessApi> 
-			</pep> -->
 	</peps>
-
 </ucs>

@@ -3,7 +3,7 @@
  * CONTROL CHANGED by CNR-IIT : THIS SHOULD BE MOVED TO PDP (CORE)
  */
 
-package iit.cnr.it.usagecontrolframework.pdp;
+package it.cnr.iit.usagecontrolframework.pdp;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;

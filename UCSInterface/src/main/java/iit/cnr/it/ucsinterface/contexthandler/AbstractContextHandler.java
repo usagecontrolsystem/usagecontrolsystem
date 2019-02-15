@@ -145,7 +145,7 @@ public abstract class AbstractContextHandler
 	 * @return true if everything is ok, false otherwise
 	 * @throws Exception
 	 */
-	abstract public boolean isOk() throws Exception;
+	abstract public boolean startContextHandlerThread() throws Exception;
 	
 	// ---------------------------------------------------------------------------
 	// Getter and setter already implemented
@@ -334,6 +334,5 @@ public abstract class AbstractContextHandler
 	final protected ForwardingQueueToCHInterface getForwardingQueue() {
 		return this.forwardingQueue;
 	}
-	
 	
 }

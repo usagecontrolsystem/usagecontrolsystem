@@ -1,6 +1,7 @@
 package it.cnr.iit.test;
 
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -21,7 +22,6 @@ import iit.cnr.it.ucsinterface.sessionmanager.SessionManagerInterface;
 import it.cnr.iit.usagecontrolframework.configuration.xmlclasses.Configuration;
 import it.cnr.iit.usagecontrolframework.configuration.xmlclasses.XMLPip;
 import it.cnr.iit.usagecontrolframework.contexthandler.ContextHandlerLC;
-import it.cnr.iit.usagecontrolframework.contexthandler.exceptions.MalformedObjectException;
 import it.cnr.iit.usagecontrolframework.proxies.PIPBuilder;
 import it.cnr.iit.usagecontrolframework.proxies.ProxyPAP;
 import it.cnr.iit.usagecontrolframework.proxies.ProxyPDP;
@@ -30,19 +30,20 @@ import it.cnr.iit.xacmlutilities.policy.utility.JAXBUtility;
 import oasis.names.tc.xacml.core.schema.wd_17.PolicyType;
 import oasis.names.tc.xacml.core.schema.wd_17.RequestType;
 
-public abstract class BaseTests {
-    protected Logger log = (Logger) LoggerFactory.getLogger(BaseTests.class);
+public abstract class UCFAbstractTest {
+    protected Logger log = (Logger) LoggerFactory.getLogger(UCFAbstractTest.class);
 	
 	protected SessionManagerInterface getSessionManager(Configuration ucsConfiguration) {
 		SessionManagerInterface sessionManager = new ProxySessionManager(
 			    ucsConfiguration.getSessionManager());
-		assertNotNull(sessionManager);
+		assertTrue(sessionManager.isInitialized());
 		return sessionManager;
 	}
 
-	protected ContextHandlerLC getContextHandler(Configuration ucsConfiguration) throws MalformedObjectException {
+	protected ContextHandlerLC getContextHandler(Configuration ucsConfiguration) {
 		ContextHandlerLC contextHandler = new ContextHandlerLC(ucsConfiguration.getCh());
-		log.info("Context handler status : " + contextHandler.isOk());
+		assertTrue(contextHandler.startContextHandlerThread());
+		contextHandler.stopContextHandlerThread();
 		return contextHandler;
 	}
 

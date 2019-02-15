@@ -14,7 +14,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import iit.cnr.it.ucsinterface.contexthandler.STATUS;
 import iit.cnr.it.ucsinterface.pdp.PDPEvaluation;
-import iit.cnr.it.usagecontrolframework.pdp.PolicyDecisionPoint;
+import it.cnr.iit.usagecontrolframework.pdp.PolicyDecisionPoint;
 
 @EnableConfigurationProperties
 @TestPropertySource(properties = "application-test.properties")

@@ -13,7 +13,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  ******************************************************************************/
-package iit.cnr.it.usagecontrolframework.pap;
+package it.cnr.iit.usagecontrolframework.pap;
 
 import java.io.BufferedReader;
 import java.io.File;

@@ -13,7 +13,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  ******************************************************************************/
-package iit.cnr.it.usagecontrolframework.pdp;
+package it.cnr.iit.usagecontrolframework.pdp;
 
 public enum RULE_COMBINING {
 	DENY_UNLESS_PERMIT(

@@ -13,7 +13,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  ******************************************************************************/
-package iit.cnr.it.usagecontrolframework.obligationmanager;
+package it.cnr.iit.usagecontrolframework.obligationmanager;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;

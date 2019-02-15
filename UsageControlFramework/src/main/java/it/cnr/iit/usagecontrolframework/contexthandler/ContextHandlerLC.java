@@ -140,16 +140,23 @@ final public class ContextHandlerLC extends AbstractContextHandler {
 		super(configuration);
 	}
 
-	@Override
-	public boolean isOk() throws MalformedObjectException {
+	/**
+	 * starts the thread in charge of monitoring the changes notified by PIPs
+	 */
+	public boolean startContextHandlerThread() {
 		if (isInitialized()) {
-			// starts the thread in charge of monitoring the changes notified by
-			// PIPs
 			thread.start();
 			return true;
-		} else {
-			throw new MalformedObjectException("ContextHandlerLC is not well formed");
 		}
+		return false;
+	}
+
+	/**
+	 * stop the thread in charge of monitoring the changes notified by PIPs
+	 */
+	public boolean stopContextHandlerThread() {
+		continueMonitor = false;
+		return false;
 	}
 
 	// ---------------------------------------------------------------------------

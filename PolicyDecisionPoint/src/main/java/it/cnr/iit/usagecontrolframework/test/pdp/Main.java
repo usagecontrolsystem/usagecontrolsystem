@@ -13,12 +13,12 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  ******************************************************************************/
-package iit.cnr.it.usagecontrolframework.test.pdp;
+package it.cnr.iit.usagecontrolframework.test.pdp;
 
 import java.io.File;
 import java.util.Scanner;
 
-import iit.cnr.it.usagecontrolframework.pdp.PolicyDecisionPoint;
+import it.cnr.iit.usagecontrolframework.pdp.PolicyDecisionPoint;
 import it.cnr.iit.xacmlutilities.policy.PolicyHelper;
 import it.cnr.iit.xacmlutilities.policy.utility.JAXBUtility;
 import oasis.names.tc.xacml.core.schema.wd_17.PolicyType;
