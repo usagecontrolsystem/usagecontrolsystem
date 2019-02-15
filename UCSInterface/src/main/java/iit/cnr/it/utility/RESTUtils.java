@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2018 IIT-CNR
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License.  You may obtain a copy
  * of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
@@ -15,7 +15,6 @@
  ******************************************************************************/
 package iit.cnr.it.utility;
 
-import java.util.concurrent.ExecutionException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -32,23 +31,23 @@ import com.google.gson.Gson;
 
 /**
  * This class provides some static methods to perform a rest request
- * 
+ *
  * @author antonio
  *
  */
 final public class RESTUtils {
-	
+
 	private static final Logger LOGGER = Logger
 	    .getLogger(RESTUtils.class.getName());
-	
+
 	private RESTUtils() {
-		
+
 	}
-	
+
 	/**
 	 * Post an object to the host specified by the url parameter, expecting no
 	 * returning object.
-	 * 
+	 *
 	 * @param url
 	 *          the complete url of the host
 	 * @param obj
@@ -62,11 +61,11 @@ final public class RESTUtils {
 			LOGGER.log(Level.INFO, "FAIL: " + url);
 		}
 	}
-	
+
 	/**
 	 * Post an object to the host specified by the url parameter, expecting a
 	 * returning object of the class specified by the parameter responseType.
-	 * 
+	 *
 	 * @param url
 	 *          url the complete url of the host
 	 * @param obj
@@ -86,11 +85,11 @@ final public class RESTUtils {
 		}
 		return response.getBody();
 	}
-	
+
 	/**
 	 * Post an object to the host specified by the url parameter, expecting a
 	 * returning object of the class specified by the parameter responseType.
-	 * 
+	 *
 	 * @param url
 	 *          url the complete url of the host
 	 * @param obj
@@ -112,11 +111,11 @@ final public class RESTUtils {
 		}
 		return response.getBody();
 	}
-	
+
 	/**
 	 * Post an object to the host specified by the url parameter, expecting no
 	 * returning object.
-	 * 
+	 *
 	 * @param url
 	 *          the complete url of the host
 	 * @param obj
@@ -133,7 +132,7 @@ final public class RESTUtils {
         try {
         	if (future == null || !future.get().getStatusCode().is2xxSuccessful()) {
 				return RESTAsynchPostStatus.FAILURE;
-        	} 
+        	}
             return RESTAsynchPostStatus.SUCCESS;
         } catch (Exception e) {
             if (e.getCause() instanceof HttpServerErrorException) {
@@ -142,11 +141,11 @@ final public class RESTUtils {
             return RESTAsynchPostStatus.FAILURE;
         }
 	}
-	
+
 	/**
 	 * Post an object to the host specified by the url parameter, expecting a
 	 * returning object of the class specified by the parameter responseType.
-	 * 
+	 *
 	 * @param url
 	 *          url the complete url of the host
 	 * @param obj
@@ -174,13 +173,13 @@ final public class RESTUtils {
 			e.printStackTrace();
 			return null;
 		}
-		
+
 	}
-	
+
 	/**
 	 * Post an object to the host specified by the url parameter, expecting a
 	 * returning object of the class specified by the parameter responseType.
-	 * 
+	 *
 	 * @param url
 	 *          url the complete url of the host
 	 * @param obj
@@ -211,11 +210,11 @@ final public class RESTUtils {
 			return null;
 		}
 	}
-	
+
 	/**
 	 * Post an object to the host specified by the url parameter, expecting a
 	 * returning object of the class specified by the parameter responseType.
-	 * 
+	 *
 	 * @param url
 	 *          url the complete url of the host
 	 * @param obj
@@ -233,5 +232,5 @@ final public class RESTUtils {
 		HttpEntity<String> entity = new HttpEntity<>(string, headers);
 		restTemplate.postForEntity(url, entity, Void.class);
 	}
-	
+
 }

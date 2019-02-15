@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2018 IIT-CNR
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License.  You may obtain a copy
  * of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
@@ -15,32 +15,37 @@
  ******************************************************************************/
 package iit.cnr.it.utility;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import it.cnr.iit.xacmlutilities.policy.utility.JAXBUtility;
+
 /**
  * This class contains all the utility function we need throughout this project.
- * 
+ *
  * @author antonio
  *
  */
 final public class Utility {
-	
+
 	private static final Logger LOGGER = Logger
 	    .getLogger(Utility.class.getName());
-	
+
 	private Utility() {
-		
+
 	}
-	
+
 	/**
 	 * Reads a file using the passed parameter as absolute path. Returns a String
 	 * representing the content of the file.
-	 * 
+	 *
 	 * @param string
 	 *          a string that represents the absolute path to the file
 	 * @return the String that represents the content of the file
@@ -78,7 +83,7 @@ final public class Utility {
 		return true;
 		// END parameter checking
 	}
-	
+
 	/**
 	 * Return the absolute location of the file for the reader
 	 * @param relPath
@@ -97,12 +102,29 @@ final public class Utility {
 			return null;
 		}
 	}
-	
+
 	/**
 	 * Secfure reading of the file from the absolute path TODO
 	 */
 	public static String secureReadFileAbsPath(String string) {
 		return null;
 	}
-	
+
+	public static <T> T retrieveConfiguration(String configFile, Class<T> configClass) {
+		try (
+			InputStream stream =
+			Thread.currentThread().getContextClassLoader().getResource(configFile).openStream();
+			BufferedReader buffer = new BufferedReader(new InputStreamReader(stream));
+		){
+			String xml = "", line = "";
+			while ((line = buffer.readLine()) != null) {
+				xml += line;
+			}
+			T configObj = JAXBUtility.unmarshalToObject(configClass, xml);
+			return configObj;
+		} catch (Exception e) {
+			LOGGER.log(Level.SEVERE, "Unable to read config file due to error: "+e.getLocalizedMessage());
+			throw new IllegalStateException("Unable to read config file due to error: "+e.getLocalizedMessage());
+		}
+	}
 }
