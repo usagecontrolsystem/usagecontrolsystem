@@ -9,7 +9,6 @@ import static org.junit.Assert.assertTrue;
 import com.github.tomakehurst.wiremock.client.WireMock;
 import com.tngtech.jgiven.Stage;
 import com.tngtech.jgiven.annotation.ExpectedScenarioState;
-import com.tngtech.jgiven.annotation.ScenarioState.Resolution;
 
 import iit.cnr.it.peprest.PEPRest;
 import iit.cnr.it.peprest.bdd.example.jgiven.Message;
@@ -25,7 +24,7 @@ public class ThenMessage extends Stage<ThenMessage> {
 	@ExpectedScenarioState
 	String tryAccessMsgId;
 
-	@ExpectedScenarioState( resolution = Resolution.NAME )
+	@ExpectedScenarioState
 	WireMock wireMockContextHandler;
 
 	public void the_resulting_message_should_be_valid_for_transmission_from_Device_to_UCS() {
@@ -47,7 +46,8 @@ public class ThenMessage extends Stage<ThenMessage> {
 	}
 
 	@SuppressWarnings("static-access")
-	public ThenMessage mocked_context_handler_is_called() {
+	public ThenMessage mocked_context_handler_is_called_at_$_on_port_$(String host, int port) {
+		wireMockContextHandler.configureFor(host, port);
 		wireMockContextHandler.verify(postRequestedFor(urlEqualTo("/tryAccess"))
 		        .withHeader("Content-Type", equalTo("application/json")));
 		return self();

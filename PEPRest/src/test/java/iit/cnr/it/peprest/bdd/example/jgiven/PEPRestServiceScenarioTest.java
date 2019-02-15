@@ -10,6 +10,9 @@ import iit.cnr.it.peprest.bdd.example.jgiven.stages.WhenTransmit;
 
 public class PEPRestServiceScenarioTest extends ScenarioTest<GivenNodes, WhenTransmit, ThenMessage> {
 
+	public static final String HOST="localhost";
+	public static final int PORT= 8081;
+	
 	@Test
 	public void we_can_transmit_a_message_with_ten_units_from_device_to_UCS(){
 	    given().an_origin_node("Device")
@@ -35,13 +38,13 @@ public class PEPRestServiceScenarioTest extends ScenarioTest<GivenNodes, WhenTra
 	@Test
 	public void a_tryAccess_message_can_be_delivered_to_UCS(){
 	    given().a_test_configuration_for_request_with_policy()
-	            .and().a_mocked_context_handler_for_tryAccess()
+	            .and().a_mocked_context_handler_for_tryAccess_at_$_on_port_$(HOST, PORT)
 	            .with().configuration_to_respond_success();
 
 	    when().tryAccess_executed();
 
 	    then().message_is_put_in_unanswered_queue()
 	    	.and().message_id_in_unanswered_queue_matches_the_sent_one()
-	    	.and().mocked_context_handler_is_called();
+	    	.and().mocked_context_handler_is_called_at_$_on_port_$(HOST, PORT);
 	}
 }
