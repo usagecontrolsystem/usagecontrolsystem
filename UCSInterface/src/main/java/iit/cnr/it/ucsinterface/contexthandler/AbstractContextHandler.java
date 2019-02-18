@@ -123,11 +123,11 @@ public abstract class AbstractContextHandler
 		StringBuilder sb = new StringBuilder();
 
 		final String[] checkObjectsNames = {"configuration", "sessionManager", "pipList/pipRetrieval",
-				"pap", "pdp", "requestManagerToCh", "ip", "port", "forwardingQueue"};
+				"pap", "pdp", "requestManagerToCh", "ip", "port", "forwardingQueue", "obligationManager"};
 		final boolean[] checkObjects = {configuration == null, sessionManagerInterface == null,
 				pipList == null && pipRetrieval == null, papInterface == null,
 				pdpInterface == null, requestManagerToChInterface == null,
-				ip == null, port == null, forwardingQueue == null};
+				ip == null, port == null, forwardingQueue == null, obligationManager == null};
 
 		for (int i=0; i<checkObjects.length; i++) {
 			if (checkObjects[i]) {
@@ -299,7 +299,7 @@ public abstract class AbstractContextHandler
 	 * @param obligationManager
 	 *          the obligation manager to be used
 	 */
-	private void setObligationManager(
+	public  void setObligationManager(
 	    ObligationManagerInterface obligationManager) {
 		if (obligationManager != null) {
 			this.obligationManager = obligationManager;

@@ -31,7 +31,7 @@ import iit.cnr.it.ucsinterface.pdp.PDPEvaluation;
  */
 final public class TryAccessResponseContent {
 	// the evaluation provided by the PDP
-	private PDPResponse				pdpEvaluation;
+	private PDPEvaluation				pdpEvaluation;
 	// the id of the session
 	private String						newSessionId;
 	// the status of the tryAccess
@@ -49,7 +49,7 @@ final public class TryAccessResponseContent {
 	// ---------------------------------------------------------------------------
 	// GETTERS and SETTERS
 	// ---------------------------------------------------------------------------
-	public boolean setPDPEvaluation(PDPResponse pdpEvaluation) {
+	public boolean setPDPEvaluation(PDPEvaluation pdpEvaluation) {
 		// BEGIN parameter checking
 		if (pdpEvaluation == null) {
 			contentInitialized = false;
