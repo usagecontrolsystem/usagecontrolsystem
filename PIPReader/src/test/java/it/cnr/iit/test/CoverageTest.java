@@ -11,6 +11,8 @@ import java.util.ArrayList;
 import java.util.Properties;
 import java.util.logging.Logger;
 
+import javax.xml.bind.JAXBException;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
@@ -41,6 +43,8 @@ import oasis.names.tc.xacml.core.schema.wd_17.RequestType;
 @SpringBootConfiguration
 public class CoverageTest {
 	
+	//FILES in the FILESYSTEM
+	
 	@Value("${environment.filepath}")
 	private String environmentFilePath;
 	
@@ -59,12 +63,49 @@ public class CoverageTest {
 	@Value("${environmentPip}")
 	private String environmentPip;
 	
+	//FILES STORED in RESOURCES
+	@Value("${environment.filepath}")
+	private String environmentFilePathResources;
+	
+	@Value("${subjectPip.resources}")
+	private String subjectPipResources;
+	
+	@Value("${resourcePip.resources}")
+	private String resourcePipResources;
+	
+	@Value("${actionPip.resources}")
+	private String actionPipResources;
+	
+	@Value("${environmentPip.resources}")
+	private String environmentPipResources;
+	
+	@Value("${missingCategory}")
+	private String missingCategory;
+	
+	@Value("${missingAttributeId}")
+	private String missingAttributeId;
+	
+	@Value("${missingDataType}")
+	private String missingDataType;
+	
+	@Value("${missingFilePath}")
+	private String missingFilePath;
+	
+	@Value("${missingExpectedCategory}")
+	private String missingExpectedCategory;
+	
+	@Value("${malformedInput}")
+	private String malformedInput;
 	
 	private RequestType requestType = new RequestType();
 	private PIPReader subjectAttributePip;
 	private PIPReader resourceAttributePip;
 	private PIPReader actionAttributePip;
 	private PIPReader environmentAttributePip;
+	private PIPReader environmentAttributePipResources;
+	private PIPReader subjectAttributePipResources;
+	private PIPReader resourceAttributePipResources;
+	private PIPReader actionAttributePipResources;
 	private PIPReader fault;
 	private Attribute subjectAttribute = new Attribute();
 	private Attribute resourceAttribute = new Attribute();
@@ -78,23 +119,36 @@ public class CoverageTest {
 	
 	public void init() {
 		try {
+			resetRequest();
 			abstractContextHandler = Mockito.mock(AbstractContextHandler.class);
-		    // Change behaviour of `resource`
-			properties = new Properties();
-			InputStream resourceStream = Thread.currentThread().getContextClassLoader().getResourceAsStream("application-test.properties");
-			properties.load(resourceStream);
-			requestType = JAXBUtility.unmarshalToObject(RequestType.class, requestS);
 			subjectAttributePip = new PIPReader(subjectPip);
 			resourceAttributePip = new PIPReader(resourcePip);
 			actionAttributePip = new PIPReader(actionPip);
 			environmentAttributePip = new PIPReader(environmentPip);
+			environmentAttributePipResources = new PIPReader(environmentPipResources);
+			subjectAttributePipResources = new PIPReader(subjectPipResources);
+			resourceAttributePipResources = new PIPReader(resourcePipResources);
+			actionAttributePipResources = new PIPReader(actionPipResources);
 			assertTrue(subjectAttributePip.initialized);
 			initAttributes();
 			subjectAttributePip.setContextHandlerInterface(abstractContextHandler);
 			resourceAttributePip.setContextHandlerInterface(abstractContextHandler);
 			actionAttributePip.setContextHandlerInterface(abstractContextHandler);
 			environmentAttributePip.setContextHandlerInterface(abstractContextHandler);
+			subjectAttributePipResources.setContextHandlerInterface(abstractContextHandler);
+			resourceAttributePipResources.setContextHandlerInterface(abstractContextHandler);
+			actionAttributePipResources.setContextHandlerInterface(abstractContextHandler);
+			environmentAttributePipResources.setContextHandlerInterface(abstractContextHandler);
 		} catch(Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	private void resetRequest() {
+		try {
+			requestType = JAXBUtility.unmarshalToObject(RequestType.class, requestS);
+		} catch (JAXBException e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
@@ -135,20 +189,19 @@ public class CoverageTest {
 	public void testInitialization() {
 		fault = new PIPReader(null);
 		fault = new PIPReader("");
-		System.out.println(properties.get("missingCategory").toString());
-		fault = new PIPReader(properties.get("missingCategory").toString());
+		fault = new PIPReader(missingCategory);
 		assertEquals(fault.initialized, false);
-		System.out.println(properties.get("missingAttributeId").toString());
-		fault = new PIPReader(properties.get("missingAttributeId").toString());
+		System.out.println(missingAttributeId);
+		fault = new PIPReader(missingAttributeId);
 		assertEquals(fault.initialized, false);
 		fault = null;
-		fault = new PIPReader(properties.get("missingExpectedCategory").toString());
+		fault = new PIPReader(missingExpectedCategory);
 		assertEquals(fault.initialized, false);
-		fault = new PIPReader(properties.get("missingDataType").toString());
+		fault = new PIPReader(missingDataType);
 		assertEquals(fault.initialized, false);
-		fault = new PIPReader(properties.get("missingFilePath").toString());
+		fault = new PIPReader(missingFilePath);
 		assertEquals(fault.initialized, false);
-		fault = new PIPReader(properties.get("malformedInput").toString());
+		fault = new PIPReader(malformedInput);
 		assertEquals(fault.initialized, false);
 	}
 	
@@ -157,7 +210,7 @@ public class CoverageTest {
 		LOGGER.info("*****************BEGIN RETIREVE TEST*******************");
 		remoteRetrievalTest();
 		localTest();
-		LOGGER.info("*****************END RETIREVE TEST*******************");
+		LOGGER.info("*****************END RETRIEVE TEST*******************");
 		} catch(Exception e) {
 			LOGGER.severe(e.getMessage());
 		}
@@ -172,6 +225,14 @@ public class CoverageTest {
 		assertTrue(value.equals("ANALYZE"));
 		value = testRetrieveAttribute(environmentAttribute, environmentAttributePip);
 		assertTrue(value.equals("30.0"));
+		value = testRetrieveAttribute(environmentAttribute, environmentAttributePipResources);
+		assertTrue(value.equals("30.0"));
+		value = testRetrieveAttribute(subjectAttribute, subjectAttributePipResources);
+		assertTrue(value.equals("IIT"));
+		value = testRetrieveAttribute(resourceAttribute, resourceAttributePipResources);
+		assertTrue(value.equals("SECRET"));
+		value = testRetrieveAttribute(actionAttribute, actionAttributePipResources);
+		assertTrue(value.equals("ANALYZE"));
 		value = testRetrieveAttribute(subjectAttribute, fault);
 	}
 
@@ -195,6 +256,15 @@ public class CoverageTest {
 		testRetrieveAndEnrichment(requestType, actionAttributePip);
 		assertTrue(verifyRequest(requestType, actionAttribute).equals("[ANALYZE]"));
 		testRetrieveAndEnrichment(requestType, environmentAttributePip);
+		assertTrue(verifyRequest(requestType, environmentAttribute).equals("[30.0]"));
+		resetRequest();
+		testRetrieveAndEnrichment(requestType, subjectAttributePipResources);
+		assertTrue(verifyRequest(requestType, subjectAttribute).equals("[IIT]"));
+		testRetrieveAndEnrichment(requestType, resourceAttributePipResources);
+		assertTrue(verifyRequest(requestType, resourceAttribute).equals("[SECRET]"));
+		testRetrieveAndEnrichment(requestType, actionAttributePipResources);
+		assertTrue(verifyRequest(requestType, actionAttribute).equals("[ANALYZE]"));
+		testRetrieveAndEnrichment(requestType, environmentAttributePipResources);
 		assertTrue(verifyRequest(requestType, environmentAttribute).equals("[30.0]"));
 		Attribute dummySubjectAttribute = new Attribute();
 		dummySubjectAttribute.createAttributeId("subjectId");
@@ -235,6 +305,15 @@ public class CoverageTest {
 		assertTrue(verifyRequest(requestType, actionAttribute).equals("[ANALYZE]"));
 		testSubscribeAndEnrichment(requestType, environmentAttributePip);
 		assertTrue(verifyRequest(requestType, environmentAttribute).equals("[30.0]"));
+		resetRequest();
+		testSubscribeAndEnrichment(requestType, subjectAttributePipResources);
+		assertTrue(verifyRequest(requestType, subjectAttribute).equals("[IIT]"));
+		testSubscribeAndEnrichment(requestType, resourceAttributePipResources);
+		assertTrue(verifyRequest(requestType, resourceAttribute).equals("[SECRET]"));
+		testSubscribeAndEnrichment(requestType, actionAttributePipResources);
+		assertTrue(verifyRequest(requestType, actionAttribute).equals("[ANALYZE]"));
+		testSubscribeAndEnrichment(requestType, environmentAttributePipResources);
+		assertTrue(verifyRequest(requestType, environmentAttribute).equals("[30.0]"));
 		Attribute dummySubjectAttribute = new Attribute();
 		dummySubjectAttribute.createAttributeId("subjectId");
 		testSubscribeAndEnrichment(requestType, fault);
@@ -262,7 +341,16 @@ public class CoverageTest {
 		assertTrue(value.equals("ANALYZE"));
 		value = testSubscribeAttribute(environmentAttribute, environmentAttributePip);
 		assertTrue(value.equals("30.0"));
+		value = testSubscribeAttribute(subjectAttribute, subjectAttributePipResources);
+		assertTrue(value.equals("IIT"));
+		value = testSubscribeAttribute(resourceAttribute, resourceAttributePipResources);
+		assertTrue(value.equals("SECRET"));
+		value = testSubscribeAttribute(actionAttribute, actionAttributePipResources);
+		assertTrue(value.equals("ANALYZE"));
+		value = testSubscribeAttribute(environmentAttribute, environmentAttributePipResources);
+		assertTrue(value.equals("30.0"));
 		value = testSubscribeAttribute(subjectAttribute, fault);
+		value = testSubscribeAttribute(null, fault);
 	}
 
 	private String testSubscribeAttribute(Attribute attribute, PIPReader pipReader) {
@@ -313,6 +401,17 @@ public class CoverageTest {
 		value = testUnsubscribeAttribute(actionAttribute, actionAttributePip);
 		assertTrue(value);
 		value = testUnsubscribeAttribute(environmentAttribute, environmentAttributePip);
+		assertTrue(value);
+		value = testUnsubscribeAttribute(subjectAttribute, fault);
+		assertFalse(value);
+		value = testUnsubscribeAttribute(subjectAttribute, resourceAttributePip);
+		value = testUnsubscribeAttribute(subjectAttribute, subjectAttributePipResources);
+		assertTrue(value);
+		value = testUnsubscribeAttribute(resourceAttribute, resourceAttributePipResources);
+		assertTrue(value);
+		value = testUnsubscribeAttribute(actionAttribute, actionAttributePipResources);
+		assertTrue(value);
+		value = testUnsubscribeAttribute(environmentAttribute, environmentAttributePipResources);
 		assertTrue(value);
 		value = testUnsubscribeAttribute(subjectAttribute, fault);
 		assertFalse(value);
