@@ -54,17 +54,6 @@ public class ContextHandlerTests extends UCFAbstractTest {
 	}
 
 	@Test
-	public void validateContextHandlerConfiguration() throws JAXBException, URISyntaxException, IOException {
-		Configuration ucsConfiguration = getUCSConfiguration(ucsConfigFile);
-		ContextHandlerLC contextHandler = getContextHandler(ucsConfiguration);
-		initContextHandler(contextHandler);
-
-		contextHandler.verify();
-		assertTrue(contextHandler.startThread());
-		contextHandler.stopThread();
-	}
-
-	@Test
 	public void validateContextHandlerConfigurationShouldFail() throws JAXBException, URISyntaxException, IOException {
 		Configuration ucsConfiguration = getUCSConfiguration(ucsConfigFile);
 		ContextHandlerLC contextHandler = getContextHandler(ucsConfiguration);
@@ -91,6 +80,8 @@ public class ContextHandlerTests extends UCFAbstractTest {
 		Configuration ucsConfiguration = getUCSConfiguration(ucsConfigFile);
 		ContextHandlerLC contextHandler = getContextHandler(ucsConfiguration);
 		initContextHandler(contextHandler);
+		// set Deny pdp response
+		contextHandler.setPdpInterface(getMockedPDP(getMockedPDPEvaluationDeny()));
 		
 		contextHandler.verify();
 		assertTrue(contextHandler.startThread());

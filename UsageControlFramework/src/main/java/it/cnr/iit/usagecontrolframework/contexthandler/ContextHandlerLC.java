@@ -224,7 +224,7 @@ final public class ContextHandlerLC extends AbstractContextHandler {
 
 		// perform the evaluation
 		StringBuilder policyBuilder = new StringBuilder();
-		PDPResponse pdpEvaluation = (PDPResponse) getPdpInterface().evaluate(requestFull, policyBuilder.append(policy),
+		PDPEvaluation pdpEvaluation = getPdpInterface().evaluate(requestFull, policyBuilder.append(policy),
 				STATUS.TRYACCESS);
 
 		policy = policyBuilder.toString();

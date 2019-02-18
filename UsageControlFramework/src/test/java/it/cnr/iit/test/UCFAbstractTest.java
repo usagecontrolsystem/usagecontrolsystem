@@ -12,15 +12,20 @@ import java.util.ArrayList;
 
 import javax.xml.bind.JAXBException;
 
+import org.mockito.Matchers;
 import org.mockito.Mockito;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import iit.cnr.it.ucsinterface.contexthandler.AbstractContextHandler;
+import iit.cnr.it.ucsinterface.contexthandler.STATUS;
 import iit.cnr.it.ucsinterface.forwardingqueue.ForwardingQueueToCHInterface;
+import iit.cnr.it.ucsinterface.message.PDPResponse;
 import iit.cnr.it.ucsinterface.message.tryaccess.TryAccessMessage;
 import iit.cnr.it.ucsinterface.message.tryaccess.TryAccessMessageBuilder;
+import iit.cnr.it.ucsinterface.obligationmanager.ObligationManagerInterface;
 import iit.cnr.it.ucsinterface.pap.PAPInterface;
+import iit.cnr.it.ucsinterface.pdp.PDPEvaluation;
 import iit.cnr.it.ucsinterface.pdp.PDPInterface;
 import iit.cnr.it.ucsinterface.pip.PIPCHInterface;
 import iit.cnr.it.ucsinterface.pip.PIPRetrieval;
@@ -29,6 +34,8 @@ import iit.cnr.it.ucsinterface.sessionmanager.SessionManagerInterface;
 import it.cnr.iit.usagecontrolframework.configuration.xmlclasses.Configuration;
 import it.cnr.iit.usagecontrolframework.configuration.xmlclasses.XMLPip;
 import it.cnr.iit.usagecontrolframework.contexthandler.ContextHandlerLC;
+import it.cnr.iit.usagecontrolframework.obligationmanager.ObligationManager;
+import it.cnr.iit.usagecontrolframework.pdp.PolicyDecisionPoint;
 import it.cnr.iit.usagecontrolframework.proxies.PIPBuilder;
 import it.cnr.iit.usagecontrolframework.proxies.ProxyPAP;
 import it.cnr.iit.usagecontrolframework.proxies.ProxyPDP;
@@ -62,23 +69,68 @@ public abstract class UCFAbstractTest {
 		return forwardingQueueToCHInterface;
 	}
 
+	/* Mocked PDP */
+	
+	protected ObligationManagerInterface getMockedObligationManager() {
+		ObligationManagerInterface obligationManager = (ObligationManagerInterface) Mockito.mock(ObligationManagerInterface.class);
+		Mockito.when(
+				obligationManager.translateObligations(
+						Matchers.<PDPEvaluation>any(),
+						Matchers.<String>any(),
+						Matchers.<String>any())
+			).thenReturn(null);		
+		return obligationManager;
+	}
+
+	/* Mocked PDP */
+	
 	protected PDPInterface getMockedPDP() {
-		PDPInterface pdp = Mockito.mock(PDPInterface.class);
+		return getMockedPDP(getMockedPDPEvaluationPermit());
+	}
+	
+	protected PDPInterface getMockedPDP(PDPEvaluation pdpEval) {
+		PDPInterface pdp = (PDPInterface) Mockito.mock(PDPInterface.class);
+		Mockito.when(
+					pdp.evaluate(
+						Matchers.<String>any(),
+						Matchers.<StringBuilder>any(),
+						Matchers.<STATUS>any())
+				)
+				.thenReturn(pdpEval);
 		assertNotNull(pdp);
 		return pdp;
 	}
 
+	protected PDPEvaluation getMockedPDPEvaluationPermit() {
+		return getMockedPDPEvaluation("Permit");
+	}
+	
+	protected PDPEvaluation getMockedPDPEvaluationDeny() {
+		return getMockedPDPEvaluation("Deny");
+	}
+	
+	private PDPEvaluation getMockedPDPEvaluation(String message) {
+		PDPEvaluation pdpEvaluation = Mockito.mock(PDPEvaluation.class);
+		Mockito.when(
+				pdpEvaluation.getResponse()
+			)
+			.thenReturn("Deny");
+		assertNotNull(pdpEvaluation);
+			return pdpEvaluation;
+	}
+
+	/* Mocked PAP */
+	
 	protected PAPInterface getMockedPAP() {
 		PAPInterface pap = Mockito.mock(PAPInterface.class);
 		assertNotNull(pap);
 		return pap;
 	}
 
-	/* not mocked components */
+	/* non mocked components */
 
 	protected ContextHandlerLC getContextHandler(Configuration ucsConfiguration) {
 		ContextHandlerLC contextHandler = new ContextHandlerLC(ucsConfiguration.getCh());
-
 		return contextHandler;
 	}
 	
@@ -89,6 +141,7 @@ public abstract class UCFAbstractTest {
 		contextHandler.setSessionManagerInterface(getMockedSessionManager());
 		contextHandler.setPIPRetrieval(getMockedPipRetrieval());
 		contextHandler.setForwardingQueue(getMockedForwardingQueueToCHInterface());
+		contextHandler.setObligationManager(getMockedObligationManager());
 	}
 
 	protected SessionManagerInterface getSessionManager(Configuration ucsConfiguration) {
@@ -123,7 +176,7 @@ public abstract class UCFAbstractTest {
 		return pips;
 	}
 
-	/* Policy/Request function */
+	/* Policy/Request/Messages functions */
 	
 	protected TryAccessMessage buildTryAccessMessage(String pepId, String ucsUri,
 			String policyFile, String requestFile) throws URISyntaxException, IOException {
