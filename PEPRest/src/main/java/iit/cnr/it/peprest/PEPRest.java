@@ -96,26 +96,6 @@ public class PEPRest implements PEPInterface, Runnable {
 		initialized = true;
 	}
 
-//	private Configuration retrieveConfiguration(String configFile) {
-//		try {
-//			String xml = "";
-//			InputStream stream = PEPRest.class.getClassLoader().getResourceAsStream(configFile);
-//			BufferedReader buffer = new BufferedReader(new InputStreamReader(stream));
-//			String line = "";
-//
-//			while ((line = buffer.readLine()) != null) {
-//				xml += line;
-//			}
-//			buffer.close();
-//			stream.close();
-//			Configuration configuration = JAXBUtility.unmarshalToObject(Configuration.class, xml);
-//			return configuration;
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//			return null;
-//		}
-//	}
-
 	public String tryAccess() {
 		//TODO: need a more efficient solution - begin block
 		String request;
@@ -135,16 +115,15 @@ public class PEPRest implements PEPInterface, Runnable {
 		tryAccessBuilder.setPepUri(buildOnGoingEvaluationInterface()).setPolicy(policy).setRequest(request);
 		TryAccessMessage tryAccessMessage = tryAccessBuilder.build();
 		tryAccessMessage.setCallback(buildResponseInterface("tryAccessResponse"), MEAN.REST);
-		unanswered.put(tryAccessMessage.getID(), tryAccessMessage);
-		// Gson gson = new Gson();
-		// String s = gson.toJson(tryAccessMessage);
-		// System.out.println(s);
 		System.out.println("[TIME] TRYACCESS " + System.currentTimeMillis());
 		Message message = requestManager.sendMessageToCH(tryAccessMessage);
-		System.out.println("isDeliveredToDestination: "+ message.isDeliveredToDestination());
-		return tryAccessMessage.getID();
-
-		// return (TryAccessResponse) contextHandler.tryAccess(tryAccessMessage);
+		if (message.isDeliveredToDestination()) {			
+			unanswered.put(tryAccessMessage.getID(), tryAccessMessage);
+			return tryAccessMessage.getID();
+		} else {
+			System.out.println("isDeliveredToDestination: "+ message.isDeliveredToDestination());
+			return null; //TODO: perhaps an exception
+		}
 	}
 
 	public String startAccess(String sessionId) {
@@ -152,19 +131,20 @@ public class PEPRest implements PEPInterface, Runnable {
 				configuration.getPepConf().getIp());
 		startAccessMessage.setSessionId(sessionId);
 		startAccessMessage.setCallback(buildResponseInterface("startAccessResponse"), MEAN.REST);
-		unanswered.put(startAccessMessage.getID(), startAccessMessage);
 		try {
 			System.out.println("[TIME] STARTACCESS " + System.currentTimeMillis());
 			Message message = requestManager.sendMessageToCH(startAccessMessage);
-
-			// return (StartAccessResponse) contextHandler
-			// .startAccess(startAccessMessage);
+			if (message.isDeliveredToDestination()) {			
+				unanswered.put(startAccessMessage.getID(), startAccessMessage);
+				return startAccessMessage.getID();
+			} else {
+				System.out.println("isDeliveredToDestination: "+ message.isDeliveredToDestination());
+				return null; //TODO: perhaps an exception
+			}
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			// TODO: proper exception handling. Can it ever throw an exception?
 			return null;
 		}
-		return startAccessMessage.getID();
 	}
 
 	@VisibleForTesting
@@ -173,21 +153,20 @@ public class PEPRest implements PEPInterface, Runnable {
 				configuration.getPepConf().getIp());
 		endAccessMessage.setSessionId(sessionId);
 		endAccessMessage.setCallback(buildResponseInterface("endAccessResponse"), MEAN.REST);
-		unanswered.put(endAccessMessage.getID(), endAccessMessage);
 		try {
 			System.out.println("[TIME] ENDACCESS " + System.currentTimeMillis());
 			Message message = requestManager.sendMessageToCH(endAccessMessage);
-			//message = waitForResponse(endAccessMessage.getID());
-			//System.out.println("[TIME] ENDACCESS END" + System.currentTimeMillis());
-			//System.exit(0);
-			// return (StartAccessResponse) contextHandler
-			// .startAccess(startAccessMessage);
+			if (message.isDeliveredToDestination()) {			
+				unanswered.put(endAccessMessage.getID(), endAccessMessage);
+				return endAccessMessage.getID();
+			} else {
+				System.out.println("isDeliveredToDestination: "+ message.isDeliveredToDestination());
+				return null; //TODO: perhaps an exception
+			}
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			// TODO: proper exception handling. Can it ever throw an exception?
 			return null;
 		}
-		return endAccessMessage.getID();
 	}
 
 	/*
