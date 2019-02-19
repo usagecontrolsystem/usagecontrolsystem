@@ -1,4 +1,4 @@
-package iit.cnr.it.peprest.bdd.example.jgiven.rules;
+package iit.cnr.it.peprest.jgiven.rules;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
 
 import java.util.List;
