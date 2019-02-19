@@ -20,6 +20,7 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import iit.cnr.it.ucsinterface.message.Message;
+import iit.cnr.it.ucsinterface.message.startaccess.StartAccessMessage;
 import iit.cnr.it.ucsinterface.message.tryaccess.TryAccessMessage;
 import iit.cnr.it.ucsinterface.message.tryaccess.TryAccessMessageBuilder;
 import it.cnr.iit.usagecontrolframework.configuration.xmlclasses.Configuration;
@@ -63,7 +64,7 @@ public class ContextHandlerTests extends UCFAbstractTest {
 	}
 	
 	@Test
-	public void validateContextHandlerTryAccess() throws JAXBException, URISyntaxException, IOException {
+	public void validateContextHandlerTryAccess() throws JAXBException, URISyntaxException, IOException, Exception {
 		Configuration ucsConfiguration = getUCSConfiguration(ucsConfigFile);
 		ContextHandlerLC contextHandler = getContextHandler(ucsConfiguration);
 		initContextHandler(contextHandler);
@@ -71,8 +72,15 @@ public class ContextHandlerTests extends UCFAbstractTest {
 		contextHandler.verify();
 		assertTrue(contextHandler.startThread());
 		
-		TryAccessMessage message = buildTryAccessMessage(pepId, ucsUri, policyFile, requestFile);
-		contextHandler.tryAccess(message);
+		TryAccessMessage tryAccessMessage = buildTryAccessMessage(pepId, ucsUri, policyFile, requestFile);
+		contextHandler.tryAccess(tryAccessMessage);
+		
+		String id = tryAccessMessage.getID();
+		log.info(String.format("TRYACCESS { id=" + id + " }"));
+		
+		String sessionId ="session-111-222-333";
+		StartAccessMessage startAccessMessage = buildStartAccessMessage(sessionId);
+		contextHandler.startAccess(startAccessMessage);
 	}
 
 	@Test

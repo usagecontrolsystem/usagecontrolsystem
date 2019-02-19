@@ -21,6 +21,7 @@ import iit.cnr.it.ucsinterface.contexthandler.AbstractContextHandler;
 import iit.cnr.it.ucsinterface.contexthandler.STATUS;
 import iit.cnr.it.ucsinterface.forwardingqueue.ForwardingQueueToCHInterface;
 import iit.cnr.it.ucsinterface.message.PDPResponse;
+import iit.cnr.it.ucsinterface.message.startaccess.StartAccessMessage;
 import iit.cnr.it.ucsinterface.message.tryaccess.TryAccessMessage;
 import iit.cnr.it.ucsinterface.message.tryaccess.TryAccessMessageBuilder;
 import iit.cnr.it.ucsinterface.obligationmanager.ObligationManagerInterface;
@@ -30,6 +31,7 @@ import iit.cnr.it.ucsinterface.pdp.PDPInterface;
 import iit.cnr.it.ucsinterface.pip.PIPCHInterface;
 import iit.cnr.it.ucsinterface.pip.PIPRetrieval;
 import iit.cnr.it.ucsinterface.requestmanager.RequestManagerToCHInterface;
+import iit.cnr.it.ucsinterface.sessionmanager.SessionInterface;
 import iit.cnr.it.ucsinterface.sessionmanager.SessionManagerInterface;
 import it.cnr.iit.usagecontrolframework.configuration.xmlclasses.Configuration;
 import it.cnr.iit.usagecontrolframework.configuration.xmlclasses.XMLPip;
@@ -56,7 +58,16 @@ public abstract class UCFAbstractTest {
 
 	protected SessionManagerInterface getMockedSessionManager() {
 		SessionManagerInterface sessionManagerInterface = Mockito.mock(SessionManagerInterface.class);
+		Mockito.when(
+				sessionManagerInterface.getSessionForId(
+						Matchers.<String>any())
+				).thenReturn(getMockedSessionInterface());
 		return sessionManagerInterface;
+	}
+
+	protected SessionInterface getMockedSessionInterface() {
+		SessionInterface sessionInterface = Mockito.mock(SessionInterface.class);
+		return sessionInterface;
 	}
 
 	protected RequestManagerToCHInterface getMockedRequestManagerToChInterface() {
@@ -114,7 +125,7 @@ public abstract class UCFAbstractTest {
 		Mockito.when(
 				pdpEvaluation.getResponse()
 			)
-			.thenReturn("Deny");
+			.thenReturn(message);
 		assertNotNull(pdpEvaluation);
 			return pdpEvaluation;
 	}
@@ -189,6 +200,12 @@ public abstract class UCFAbstractTest {
 		
 		TryAccessMessage message = builder.build();
 			
+		return message;
+	}
+	
+	protected StartAccessMessage buildStartAccessMessage(String sessionId) {
+		StartAccessMessage message = new StartAccessMessage("","");
+		
 		return message;
 	}
 	
