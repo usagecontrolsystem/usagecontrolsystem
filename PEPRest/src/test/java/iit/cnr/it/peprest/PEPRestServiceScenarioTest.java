@@ -2,14 +2,18 @@ package iit.cnr.it.peprest;
 
 import org.apache.http.HttpStatus;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 
+import com.tngtech.java.junit.dataprovider.DataProvider;
+import com.tngtech.java.junit.dataprovider.DataProviderRunner;
+import com.tngtech.java.junit.dataprovider.UseDataProvider;
 import com.tngtech.jgiven.junit.ScenarioTest;
 
 import iit.cnr.it.peprest.jgiven.stages.GivenContextHandlerRestSimulator;
 import iit.cnr.it.peprest.jgiven.stages.ThenMessage;
 import iit.cnr.it.peprest.jgiven.stages.WhenPEPRestService;
 
-
+@RunWith(DataProviderRunner.class)
 public class PEPRestServiceScenarioTest 
 	extends ScenarioTest<GivenContextHandlerRestSimulator, WhenPEPRestService, ThenMessage> {
 
@@ -17,8 +21,41 @@ public class PEPRestServiceScenarioTest
 	private static final String START_ACCESS = "startAccess";	
 	private static final String END_ACCESS = "endAccess";
 	
-	@Test
-	public void a_tryAccess_message_can_be_delivered_to_UCS(){
+	enum PEPRestOperation{
+		TRY_ACCESS("tryAccess"),
+		START_ACCESS("startAccess"),
+		END_ACCESS("endAccess");
+		
+		private String operation;
+		
+		PEPRestOperation(String operation){
+			this.operation = operation;
+		}
+		public String getOperation() {
+			return this.operation;
+		}
+	}
+	
+    @DataProvider
+    public static Object[][] dataPepRestOperations() {
+//        // @formatter:off
+//        return new Object[] {
+//                TRY_ACCESS, START_ACCESS, END_ACCESS
+//        };
+//        // @formatter:on
+//    }
+        // @formatter:off
+        return new Object[][] {
+                { 1, "tryAccess" },
+                { 2, "startAccess" },
+                { 3, "endAccess" },
+        };
+        // @formatter:on
+    }    	
+	
+    @Test
+    @UseDataProvider("dataPepRestOperations")
+	public void a_tryAccess_message_can_be_delivered_to_UCS(int a, String restOperation){
 	    given().a_test_configuration_for_request_with_policy()
 	    	.and().a_mocked_context_handler_for_$(TRY_ACCESS)
 	    	.with().a_success_response_status_$(HttpStatus.SC_OK);
