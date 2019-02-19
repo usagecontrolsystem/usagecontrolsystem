@@ -14,6 +14,8 @@ import com.tngtech.jgiven.annotation.Quoted;
 import iit.cnr.it.peprest.PEPRest;
 import iit.cnr.it.peprest.bdd.example.jgiven.Message;
 import iit.cnr.it.peprest.configuration.Configuration;
+import iit.cnr.it.ucsinterface.message.endaccess.EndAccessMessage;
+import iit.cnr.it.ucsinterface.message.startaccess.StartAccessMessage;
 import iit.cnr.it.ucsinterface.message.tryaccess.TryAccessMessage;
 
 public class ThenMessage extends Stage<ThenMessage> {
@@ -44,6 +46,22 @@ public class ThenMessage extends Stage<ThenMessage> {
 		assertTrue( pepRest.getUnanswered().size() > 0 );
 		assertTrue(	pepRest.getUnanswered().entrySet().stream().findFirst().get().getValue()
 				instanceof TryAccessMessage );
+		return self();
+	}
+	
+	public ThenMessage a_startAccessMessage_is_put_in_the_unanswered_queue() {
+		assertNotNull( pepRest.getUnanswered() );
+		assertTrue( pepRest.getUnanswered().size() > 0 );
+		assertTrue(	pepRest.getUnanswered().entrySet().stream().findFirst().get().getValue()
+				instanceof StartAccessMessage );
+		return self();
+	}
+	
+	public ThenMessage a_endAccessMessage_is_put_in_the_unanswered_queue() {
+		assertNotNull( pepRest.getUnanswered() );
+		assertTrue( pepRest.getUnanswered().size() > 0 );
+		assertTrue(	pepRest.getUnanswered().entrySet().stream().findFirst().get().getValue()
+				instanceof EndAccessMessage );
 		return self();
 	}
 

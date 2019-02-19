@@ -2,6 +2,8 @@ package iit.cnr.it.peprest.bdd.example.jgiven.stages;
 
 import static org.junit.Assert.assertNotNull;
 
+import java.util.UUID;
+
 import com.tngtech.jgiven.Stage;
 import com.tngtech.jgiven.annotation.ExpectedScenarioState;
 import com.tngtech.jgiven.annotation.ProvidedScenarioState;
@@ -28,6 +30,10 @@ public class WhenTransmit extends Stage<WhenTransmit> {
     @ProvidedScenarioState
 	String tryAccessMsgId;
     
+    @ProvidedScenarioState
+    String sessionId = UUID.randomUUID().toString();
+    
+    
     public WhenTransmit(){
         pEPRestService = new PEPRestService();
         pepRest = new PEPRest();
@@ -48,6 +54,20 @@ public class WhenTransmit extends Stage<WhenTransmit> {
     public WhenTransmit PEPRest_service_tryAccess_is_executed() {
         assertNotNull( pepRest );
         tryAccessMsgId = pepRest.tryAccess();
+        return self();
+    }
+    
+    public WhenTransmit PEPRest_service_startAccess_is_executed() {
+        assertNotNull( pepRest );
+        assertNotNull( sessionId );
+        tryAccessMsgId = pepRest.startAccess(sessionId);
+        return self();
+    }
+    
+    public WhenTransmit PEPRest_service_endAccess_is_executed() {
+        assertNotNull( pepRest );
+        assertNotNull( sessionId );
+        tryAccessMsgId = pepRest.endAccess(sessionId);
         return self();
     }
 }

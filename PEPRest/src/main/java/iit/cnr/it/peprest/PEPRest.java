@@ -168,7 +168,7 @@ public class PEPRest implements PEPInterface, Runnable {
 	}
 
 	@VisibleForTesting
-	String endAccess(String sessionId) {
+	public String endAccess(String sessionId) {
 		EndAccessMessage endAccessMessage = new EndAccessMessage(configuration.getPepConf().getId(),
 				configuration.getPepConf().getIp());
 		endAccessMessage.setSessionId(sessionId);
@@ -177,9 +177,9 @@ public class PEPRest implements PEPInterface, Runnable {
 		try {
 			System.out.println("[TIME] ENDACCESS " + System.currentTimeMillis());
 			Message message = requestManager.sendMessageToCH(endAccessMessage);
-			message = waitForResponse(endAccessMessage.getID());
-			System.out.println("[TIME] ENDACCESS END" + System.currentTimeMillis());
-			System.exit(0);
+			//message = waitForResponse(endAccessMessage.getID());
+			//System.out.println("[TIME] ENDACCESS END" + System.currentTimeMillis());
+			//System.exit(0);
 			// return (StartAccessResponse) contextHandler
 			// .startAccess(startAccessMessage);
 		} catch (Exception e) {

@@ -12,7 +12,9 @@ import iit.cnr.it.peprest.bdd.example.jgiven.stages.WhenTransmit;
 public class PEPRestServiceScenarioTest extends ScenarioTest<GivenNodes, WhenTransmit, ThenMessage> {
 
 	private static final String TRY_ACCESS = "tryAccess";
-
+	private static final String START_ACCESS = "startAccess";
+	private static final String END_ACCESS = "endAccess";
+	
 	@Test
 	public void we_can_transmit_a_message_with_ten_units_from_device_to_UCS(){
 	    given().an_origin_node("Device")
@@ -47,5 +49,33 @@ public class PEPRestServiceScenarioTest extends ScenarioTest<GivenNodes, WhenTra
 	    then().a_tryAccessMessage_is_put_in_the_unanswered_queue()
 	    	.and().the_message_id_in_the_unanswered_queue_matches_the_sent_one()
 	    	.and().the_asynch_HTTP_POST_request_for_$_was_received_by_context_handler(TRY_ACCESS);
+	}
+	
+	@Test
+	public void a_startAccess_message_can_be_delivered_to_UCS(){
+
+	    given().a_test_session_id()
+	    	.and().a_mocked_context_handler_for_$(START_ACCESS)
+	    	.with().a_success_response_status_$(HttpStatus.SC_OK);
+
+	    when().PEPRest_service_startAccess_is_executed();
+
+	    then().a_startAccessMessage_is_put_in_the_unanswered_queue()
+	    	.and().the_message_id_in_the_unanswered_queue_matches_the_sent_one()
+	    	.and().the_asynch_HTTP_POST_request_for_$_was_received_by_context_handler(START_ACCESS);
+	}
+	
+	@Test
+	public void a_endAccess_message_can_be_delivered_to_UCS(){
+
+	    given().a_test_session_id()
+	    	.and().a_mocked_context_handler_for_$(END_ACCESS)
+	    	.with().a_success_response_status_$(HttpStatus.SC_OK);
+
+	    when().PEPRest_service_endAccess_is_executed();
+
+	    then().a_endAccessMessage_is_put_in_the_unanswered_queue()
+	    	.and().the_message_id_in_the_unanswered_queue_matches_the_sent_one()
+	    	.and().the_asynch_HTTP_POST_request_for_$_was_received_by_context_handler(END_ACCESS);
 	}
 }

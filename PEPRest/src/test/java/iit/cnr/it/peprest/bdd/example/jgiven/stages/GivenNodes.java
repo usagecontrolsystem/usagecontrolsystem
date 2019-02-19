@@ -5,6 +5,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathMatching;
 import static org.mockito.Matchers.any;
 import static org.junit.Assert.assertNotNull;
+import java.util.UUID;
 
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -30,6 +31,9 @@ public class GivenNodes extends Stage<GivenNodes> {
     String originNode;
     @ProvidedScenarioState
     String destinationNode;
+    
+    @ProvidedScenarioState
+    String sessionId = UUID.randomUUID().toString();
 
     @Mock
     private ProxyRequestManager proxyRequestManager;
@@ -103,6 +107,11 @@ public class GivenNodes extends Stage<GivenNodes> {
     			.withStatus(status)
     			.withHeader("Content-Type", "application/json");
     	wireMockContextHandler.register( post.willReturn(aResponse));
+    	return self();
+    }
+    
+    public GivenNodes a_test_session_id() {
+    	assertNotNull(sessionId);
     	return self();
     }
 
