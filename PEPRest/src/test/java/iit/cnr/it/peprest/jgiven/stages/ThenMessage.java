@@ -5,6 +5,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import com.github.tomakehurst.wiremock.client.WireMock;
 import com.tngtech.jgiven.Stage;
@@ -12,7 +13,9 @@ import com.tngtech.jgiven.annotation.ExpectedScenarioState;
 import com.tngtech.jgiven.annotation.Quoted;
 
 import iit.cnr.it.peprest.PEPRest;
+import iit.cnr.it.peprest.PEPRestServiceScenarioTest.PEPRestOperation;
 import iit.cnr.it.peprest.configuration.Configuration;
+import iit.cnr.it.ucsinterface.message.Message;
 import iit.cnr.it.ucsinterface.message.endaccess.EndAccessMessage;
 import iit.cnr.it.ucsinterface.message.startaccess.StartAccessMessage;
 import iit.cnr.it.ucsinterface.message.tryaccess.TryAccessMessage;
@@ -24,6 +27,9 @@ public class ThenMessage extends Stage<ThenMessage> {
 
 	@ExpectedScenarioState
 	String tryAccessMsgId;
+
+	@ExpectedScenarioState
+	String messageId;
 
 	@ExpectedScenarioState
 	WireMock wireMockContextHandler;
@@ -39,9 +45,36 @@ public class ThenMessage extends Stage<ThenMessage> {
 		return self();
 	}
 
+	public ThenMessage the_$_message_is_put_in_the_unanswered_queue(PEPRestOperation restOperation) {
+		assertNotNull( pepRest.getUnanswered() );
+		assertTrue( pepRest.getUnanswered().size() > 0 );
+		Message messageType = pepRest.getUnanswered().entrySet().stream().findFirst().get().getValue();
+        switch (restOperation) {
+		case TRY_ACCESS:
+			assertTrue(	messageType instanceof TryAccessMessage );
+			break;
+		case START_ACCESS:
+			assertTrue(	messageType instanceof StartAccessMessage );
+			break;
+		case END_ACCESS:
+			assertTrue(	messageType instanceof EndAccessMessage );
+			break;
+		default:
+			fail("Unknown message type in unanswered map");
+			break;
+		}
+		return self();
+	}
+
 	public ThenMessage the_message_id_in_the_unanswered_queue_matches_the_sent_one() {
 		assertNotNull( pepRest.getUnanswered() );
 		assertNotNull( pepRest.getUnanswered().get( tryAccessMsgId ) );
+		return self();
+	}
+
+	public ThenMessage the_message_id_in_the_unanswered_queue_matches_the_one_sent() {
+		assertNotNull( pepRest.getUnanswered() );
+		assertNotNull( pepRest.getUnanswered().get( messageId ) );
 		return self();
 	}
 
@@ -52,7 +85,7 @@ public class ThenMessage extends Stage<ThenMessage> {
 				instanceof StartAccessMessage );
 		return self();
 	}
-	
+
 	public ThenMessage a_endAccessMessage_is_put_in_the_unanswered_queue() {
 		assertNotNull( pepRest.getUnanswered() );
 		assertTrue( pepRest.getUnanswered().size() > 0 );
@@ -60,13 +93,13 @@ public class ThenMessage extends Stage<ThenMessage> {
 				instanceof EndAccessMessage );
 		return self();
 	}
-	
+
 	public ThenMessage the_asynch_HTTP_POST_request_for_$_was_received_by_context_handler( @Quoted String operation) {
 		wireMockContextHandler.verifyThat( postRequestedFor( urlEqualTo("/"+operation) )
 		        .withHeader( "Content-Type", equalTo("application/json")) );
 		return self();
 	}
-	
+
 	public ThenMessage a_tryAccessMessage_is_not_placed_into_the_unanswered_queue() {
 		assertNotNull( pepRest.getUnanswered() );
 		assertTrue( pepRest.getUnanswered().size() < 1 );

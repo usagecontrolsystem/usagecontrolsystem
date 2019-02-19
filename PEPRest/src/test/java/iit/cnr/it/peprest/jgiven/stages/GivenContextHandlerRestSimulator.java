@@ -31,9 +31,9 @@ public class GivenContextHandlerRestSimulator extends Stage<GivenContextHandlerR
 
     @ProvidedScenarioState
     Configuration configuration;
-    
+
     @ProvidedScenarioState
-    String sessionId = UUID.randomUUID().toString();
+    String sessionId;
 
 	private ResponseDefinitionBuilder aResponse;
 	private MappingBuilder post;
@@ -89,9 +89,9 @@ public class GivenContextHandlerRestSimulator extends Stage<GivenContextHandlerR
     	wireMockContextHandler.register( post.willReturn(aResponse));
     	return self();
     }
-    
+
     public GivenContextHandlerRestSimulator a_test_session_id() {
-    	assertNotNull(sessionId);
+    	sessionId = UUID.randomUUID().toString();
     	return self();
     }
 }

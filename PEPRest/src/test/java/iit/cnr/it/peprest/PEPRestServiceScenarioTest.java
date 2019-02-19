@@ -14,20 +14,20 @@ import iit.cnr.it.peprest.jgiven.stages.ThenMessage;
 import iit.cnr.it.peprest.jgiven.stages.WhenPEPRestService;
 
 @RunWith(DataProviderRunner.class)
-public class PEPRestServiceScenarioTest 
+public class PEPRestServiceScenarioTest
 	extends ScenarioTest<GivenContextHandlerRestSimulator, WhenPEPRestService, ThenMessage> {
 
 	private static final String TRY_ACCESS = "tryAccess";
-	private static final String START_ACCESS = "startAccess";	
+	private static final String START_ACCESS = "startAccess";
 	private static final String END_ACCESS = "endAccess";
-	
-	enum PEPRestOperation{
+
+	public enum PEPRestOperation{
 		TRY_ACCESS("tryAccess"),
 		START_ACCESS("startAccess"),
 		END_ACCESS("endAccess");
-		
+
 		private String operation;
-		
+
 		PEPRestOperation(String operation){
 			this.operation = operation;
 		}
@@ -35,38 +35,31 @@ public class PEPRestServiceScenarioTest
 			return this.operation;
 		}
 	}
-	
+
     @DataProvider
     public static Object[][] dataPepRestOperations() {
-//        // @formatter:off
-//        return new Object[] {
-//                TRY_ACCESS, START_ACCESS, END_ACCESS
-//        };
-//        // @formatter:on
-//    }
-        // @formatter:off
         return new Object[][] {
-                { 1, "tryAccess" },
-                { 2, "startAccess" },
-                { 3, "endAccess" },
+                { PEPRestOperation.TRY_ACCESS },
+                { PEPRestOperation.START_ACCESS },
+                { PEPRestOperation.END_ACCESS },
         };
-        // @formatter:on
-    }    	
-	
+    }
+
     @Test
     @UseDataProvider("dataPepRestOperations")
-	public void a_tryAccess_message_can_be_delivered_to_UCS(int a, String restOperation){
+	public void a_tryAccess_message_can_be_delivered_to_UCS(PEPRestOperation restOperation){
 	    given().a_test_configuration_for_request_with_policy()
-	    	.and().a_mocked_context_handler_for_$(TRY_ACCESS)
+	    	.with().a_test_session_id()
+	    	.and().a_mocked_context_handler_for_$(restOperation.getOperation())
 	    	.with().a_success_response_status_$(HttpStatus.SC_OK);
 
-	    when().PEPRest_service_tryAccess_is_executed();
+	    when().PEPRest_service_$_is_executed(restOperation);
 
-	    then().a_tryAccessMessage_is_put_in_the_unanswered_queue()
-	    	.and().the_message_id_in_the_unanswered_queue_matches_the_sent_one()
-	    	.and().the_asynch_HTTP_POST_request_for_$_was_received_by_context_handler(TRY_ACCESS);
+	    then().the_$_message_is_put_in_the_unanswered_queue(restOperation)
+	    	.and().the_message_id_in_the_unanswered_queue_matches_the_one_sent()
+	    	.and().the_asynch_HTTP_POST_request_for_$_was_received_by_context_handler(restOperation.getOperation());
 	}
-	
+
 	@Test
 	public void ignore_tryAccess_message_delivered_to_UCS_if_fault_response_received(){
 	    given().a_test_configuration_for_request_with_policy()
@@ -78,7 +71,7 @@ public class PEPRestServiceScenarioTest
 	    then().a_tryAccessMessage_is_not_placed_into_the_unanswered_queue()
 	    	.but().the_asynch_HTTP_POST_request_for_$_was_received_by_context_handler(TRY_ACCESS);
 	}
-	
+
 	@Test
 	public void a_startAccess_message_can_be_delivered_to_UCS(){
 	    given().a_test_session_id()
@@ -91,7 +84,7 @@ public class PEPRestServiceScenarioTest
 	    	.and().the_message_id_in_the_unanswered_queue_matches_the_sent_one()
 	    	.and().the_asynch_HTTP_POST_request_for_$_was_received_by_context_handler(START_ACCESS);
 	}
-	
+
 	@Test
 	public void a_endAccess_message_can_be_delivered_to_UCS(){
 	    given().a_test_session_id()
