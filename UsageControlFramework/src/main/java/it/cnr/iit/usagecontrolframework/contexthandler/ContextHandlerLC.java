@@ -614,7 +614,6 @@ final public class ContextHandlerLC extends AbstractContextHandler {
 	 */
 	@Override
 	public void startAccess(Message message) throws Exception {
-
 		// BEGIN parameter checking
 		if (!isInitialized() || message == null || !(message instanceof StartAccessMessage)) {
 			LOGGER.log(Level.SEVERE,
@@ -624,9 +623,6 @@ final public class ContextHandlerLC extends AbstractContextHandler {
 		// END parameter checking
 
 		System.out.println("[TIME] startaccess begins at " + System.currentTimeMillis());
-
-		// LOGGER.log(Level.INFO,
-		// "[Context Handler] Startaccess is received for session ID: " + sId);
 
 		StartAccessMessage startAccessMessage = (StartAccessMessage) message;
 		String sessionId = startAccessMessage.getSessionId();
@@ -672,7 +668,7 @@ final public class ContextHandlerLC extends AbstractContextHandler {
 				STATUS.STARTACCESS, true);
 
 		// perform the evaluation
-		PDPResponse pdpEvaluation = (PDPResponse) getPdpInterface().evaluate(requestFull,
+		PDPEvaluation pdpEvaluation = getPdpInterface().evaluate(requestFull,
 				policyHelper.getConditionForEvaluation(STARTACCESS_POLICY));
 
 		System.out.println("[TIME] startaccess evaluation ends at " + System.currentTimeMillis());
@@ -695,7 +691,6 @@ final public class ContextHandlerLC extends AbstractContextHandler {
 			System.out.println("[TIME] PERMIT startaccess ends at " + System.currentTimeMillis());
 			response.setStatus(pdpEvaluation.getResponse());
 		}
-
 		else { // PDP returns DENY, INDETERMINATE or NOT APPLICABLE
 
 			// obligation
