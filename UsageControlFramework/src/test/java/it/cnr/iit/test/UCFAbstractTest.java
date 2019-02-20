@@ -18,12 +18,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import iit.cnr.it.ucsinterface.contexthandler.AbstractContextHandler;
+import iit.cnr.it.ucsinterface.contexthandler.ContextHandlerInterface;
 import iit.cnr.it.ucsinterface.contexthandler.STATUS;
 import iit.cnr.it.ucsinterface.forwardingqueue.ForwardingQueueToCHInterface;
 import iit.cnr.it.ucsinterface.message.PDPResponse;
+import iit.cnr.it.ucsinterface.message.endaccess.EndAccessMessage;
 import iit.cnr.it.ucsinterface.message.startaccess.StartAccessMessage;
 import iit.cnr.it.ucsinterface.message.tryaccess.TryAccessMessage;
 import iit.cnr.it.ucsinterface.message.tryaccess.TryAccessMessageBuilder;
+import iit.cnr.it.ucsinterface.message.tryaccess.TryAccessResponse;
 import iit.cnr.it.ucsinterface.obligationmanager.ObligationManagerInterface;
 import iit.cnr.it.ucsinterface.pap.PAPInterface;
 import iit.cnr.it.ucsinterface.pdp.PDPEvaluation;
@@ -64,6 +67,15 @@ public abstract class UCFAbstractTest {
 				sessionManagerInterface.getSessionForId(
 						Matchers.<String>any())
 				).thenReturn(sessionInterface);
+		// TODO add ongoing attributes
+		Mockito.when(
+				sessionManagerInterface.getOnGoingAttributes(
+						Matchers.<String>any())
+				).thenReturn(null);
+		Mockito.when(
+				sessionManagerInterface.deleteEntry(
+						Matchers.<String>any())
+				).thenReturn(true);
 		return sessionManagerInterface;
 	}
 
@@ -166,7 +178,7 @@ public abstract class UCFAbstractTest {
 	}
 
 	/* non mocked components */
-
+	
 	protected ContextHandlerLC getContextHandler(Configuration ucsConfiguration) {
 		ContextHandlerLC contextHandler = new ContextHandlerLC(ucsConfiguration.getCh());
 		return contextHandler;
@@ -183,6 +195,25 @@ public abstract class UCFAbstractTest {
 		contextHandler.setForwardingQueue(getMockedForwardingQueueToCHInterface());
 		contextHandler.setObligationManager(getMockedObligationManager());
 	}
+	
+    protected ContextHandlerLC getContextHandlerCorrectlyInitialized(Configuration ucsConfiguration, String policy, String request) {
+		ContextHandlerLC contextHandler = getContextHandler(ucsConfiguration);
+		initContextHandler(contextHandler);
+		SessionInterface sessionInterface = 
+				getMockedSessionInterface(policy, request,  ContextHandlerInterface.TRY_STATUS); 
+		SessionManagerInterface sessionManagerInterface = 
+				getMockedSessionManager(sessionInterface);
+		contextHandler.setSessionManagerInterface(sessionManagerInterface);
+
+		contextHandler.verify();
+		assertTrue(contextHandler.startThread());
+		
+		return contextHandler;
+    }
+    
+    protected void setupContextHandlerForStartAccess(ContextHandlerLC contextHandler) {
+    	// stub
+    }
 
 	protected SessionManagerInterface getSessionManager(Configuration ucsConfiguration) {
 		SessionManagerInterface sessionManager = new ProxySessionManager(
@@ -216,7 +247,7 @@ public abstract class UCFAbstractTest {
 		return pips;
 	}
 
-	/* Policy/Request/Messages functions */
+	/* Messages functions */
 	
 	protected TryAccessMessage buildTryAccessMessage(String pepId, String ucsUri,
 			String policy, String request) throws URISyntaxException, IOException {
@@ -229,11 +260,21 @@ public abstract class UCFAbstractTest {
 		return message;
 	}
 	
-	protected StartAccessMessage buildStartAccessMessage(String sessionId) {
-		StartAccessMessage message = new StartAccessMessage("","");
+	// TODO set source dest
+	protected StartAccessMessage buildStartAccessMessage(String sessionId, String src, String dest) {
+		StartAccessMessage message = new StartAccessMessage(src, dest);
 		
 		return message;
 	}
+
+	// TODO set source dest
+	protected EndAccessMessage buildEndAccessMessage(String sessionId, String src, String dest) {
+		EndAccessMessage message = new EndAccessMessage("","");
+		
+		return message;
+	}
+
+	/* Policy/Request functions */
 	
 	protected RequestType getRequestType(String fileName) throws JAXBException, URISyntaxException, IOException {
 		return (RequestType) loadXMLFromFile(fileName, RequestType.class);

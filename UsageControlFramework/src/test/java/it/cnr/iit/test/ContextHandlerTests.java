@@ -21,6 +21,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import iit.cnr.it.ucsinterface.contexthandler.ContextHandlerInterface;
 import iit.cnr.it.ucsinterface.message.Message;
+import iit.cnr.it.ucsinterface.message.endaccess.EndAccessMessage;
 import iit.cnr.it.ucsinterface.message.startaccess.StartAccessMessage;
 import iit.cnr.it.ucsinterface.message.tryaccess.TryAccessMessage;
 import iit.cnr.it.ucsinterface.message.tryaccess.TryAccessMessageBuilder;
@@ -31,9 +32,9 @@ import it.cnr.iit.usagecontrolframework.contexthandler.ContextHandlerLC;
 
 @EnableConfigurationProperties
 @TestPropertySource(properties = "application-test.properties")
+@SpringBootConfiguration
 @ActiveProfiles("test")
 @SpringBootTest
-@SpringBootConfiguration
 @RunWith(SpringRunner.class)
 public class ContextHandlerTests extends UCFAbstractTest {
 
@@ -49,72 +50,102 @@ public class ContextHandlerTests extends UCFAbstractTest {
 	@Value("${pep-id}")
 	private String pepId;
 
+	@Value("${session-id}")
+	private String sessionId;
+
 	@Value("${ucs-uri}")
 	private String ucsUri;
-	
+
 	@PostConstruct
-	private void setUp() {
-		log.info("Init coverage tests");
+	private void setUp() throws URISyntaxException, IOException {
+		log.info("Init tests");
+		policy = readResourceFileAsString(policyFile);
+		request = readResourceFileAsString(requestFile);
 	}
+	
+	private String policy;
+	private String request;
 
 	@Test
-	public void validateContextHandlerConfigurationShouldFail() throws JAXBException, URISyntaxException, IOException {
+	public void contextHandlerConfigurationShouldFail() throws JAXBException, URISyntaxException, IOException {
 		Configuration ucsConfiguration = getUCSConfiguration(ucsConfigFile);
-		ContextHandlerLC contextHandler = getContextHandler(ucsConfiguration);
 
+		/* incorrect CH initialisation */
+		ContextHandlerLC contextHandler = getContextHandler(ucsConfiguration);
 		contextHandler.verify();
 		assertFalse(contextHandler.startThread());
 	}
 	
 	@Test
-	public void validateContextHandlerTryAccessShouldFail() throws JAXBException, URISyntaxException, IOException {
+	public void contextHandlerTryAccessShouldFail() throws JAXBException, URISyntaxException, IOException {
 		Configuration ucsConfiguration = getUCSConfiguration(ucsConfigFile);
+
+		/* CH initialisation with deny */
 		ContextHandlerLC contextHandler = getContextHandler(ucsConfiguration);
 		initContextHandler(contextHandler);
-		// set Deny pdp response
+		// set the pdp response to return deny
 		contextHandler.setPdpInterface(getMockedPDP(getMockedPDPEvaluationDeny()));
-		
 		contextHandler.verify();
 		assertTrue(contextHandler.startThread());
 
+		/* tryAccess */
 		contextHandler.tryAccess(null);
 	}
-	
-	@Test
-	public void validateContextHandlerTryAccess() throws JAXBException, URISyntaxException, IOException, Exception {
-		String sessionId ="session-111-222-333";
-		String policy = readResourceFileAsString(policyFile);
-		String request = readResourceFileAsString(requestFile);
-		SessionInterface sessionInterface = 
-				getMockedSessionInterface(policy, request,  ContextHandlerInterface.TRY_STATUS); 
-		SessionManagerInterface sessionManagerInterface = 
-				getMockedSessionManager(sessionInterface);
-		
-		/* CH initialization */
-		Configuration ucsConfiguration = getUCSConfiguration(ucsConfigFile);
-		ContextHandlerLC contextHandler = getContextHandler(ucsConfiguration);
-		initContextHandler(contextHandler);
-		contextHandler.setSessionManagerInterface(sessionManagerInterface);
 
-		contextHandler.verify();
-		assertTrue(contextHandler.startThread());
+	@Test
+	public void contextHandlerStartAccessShouldFail() throws JAXBException, URISyntaxException, IOException, Exception {
+		Configuration ucsConfiguration = getUCSConfiguration(ucsConfigFile);
+
+		/* CH initialisation */
+		ContextHandlerLC contextHandler = getContextHandlerCorrectlyInitialized(ucsConfiguration, policy, request);
 		
 		/* tryAccess */
 		TryAccessMessage tryAccessMessage = buildTryAccessMessage(pepId, ucsUri, policy, request);
 		contextHandler.tryAccess(tryAccessMessage);
-		String id = tryAccessMessage.getID();
-		log.info(String.format("TRYACCESS { id=" + id + " }"));
 
 		/* startAccess */
-		StartAccessMessage startAccessMessage = buildStartAccessMessage(sessionId);
-		sessionInterface = 
+		StartAccessMessage startAccessMessage = buildStartAccessMessage(sessionId, "", "");
+		SessionInterface sessionInterface = 
 				getMockedSessionInterface(policy, request,  ContextHandlerInterface.TRY_STATUS); 
+		SessionManagerInterface sessionManagerInterface = 
+				getMockedSessionManager(sessionInterface);
+		// set the session interface to return the policy and correct status
+		contextHandler.setSessionManagerInterface(sessionManagerInterface);
+		// this line makes the start access to take the deny path
+		contextHandler.setPdpInterface(getMockedPDP(getMockedPDPEvaluationDeny()));
+		contextHandler.startAccess(startAccessMessage);
+	}
+	
+	@Test
+	public void contextHandlerStartAccess() throws JAXBException, URISyntaxException, IOException, Exception {
+		Configuration ucsConfiguration = getUCSConfiguration(ucsConfigFile);
+		
+		/* CH initialisation */
+		ContextHandlerLC contextHandler = getContextHandlerCorrectlyInitialized(ucsConfiguration, policy, request);
+
+		/* tryAccess */
+		TryAccessMessage tryAccessMessage = buildTryAccessMessage(pepId, ucsUri, policy, request);
+		contextHandler.tryAccess(tryAccessMessage);
+
+		/* startAccess */
+		StartAccessMessage startAccessMessage = buildStartAccessMessage(sessionId, "", "");
+		SessionInterface sessionInterface = 
+				getMockedSessionInterface(policy, request,  ContextHandlerInterface.TRY_STATUS); 
+		SessionManagerInterface sessionManagerInterface = 
+				getMockedSessionManager(sessionInterface);
+		// set the session interface to return the policy and correct status
+		contextHandler.setSessionManagerInterface(sessionManagerInterface);
+		contextHandler.startAccess(startAccessMessage);
+		
+		/* endAccess */
+		EndAccessMessage endAccessMessage = buildEndAccessMessage(sessionId, "", "");
+		sessionInterface = 
+				getMockedSessionInterface(policy, request,  ContextHandlerInterface.START_STATUS); 
 		sessionManagerInterface = 
 				getMockedSessionManager(sessionInterface);
 		// set the session interface to return the policy and correct status
 		contextHandler.setSessionManagerInterface(sessionManagerInterface);
-
-		contextHandler.startAccess(startAccessMessage);
+		contextHandler.endAccess(endAccessMessage);
 	}
 	
 }

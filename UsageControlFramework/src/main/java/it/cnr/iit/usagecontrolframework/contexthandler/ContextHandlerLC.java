@@ -966,26 +966,18 @@ final public class ContextHandlerLC extends AbstractContextHandler {
 
 			System.out.println("[TIME] EndAccess evaluation ends at " + System.currentTimeMillis());
 
-			if (pdpEvaluation.getResponse().equalsIgnoreCase("Permit")) { // PDP
-				// returns
-				// PERMIT
-
-				// obligation
+			if (pdpEvaluation.getResponse().equalsIgnoreCase("Permit")) {
+				// PDP returns PERMIT obligation
 				getObligationManager().translateObligations(pdpEvaluation, sessionId, END_STATUS);
-
 			}
-
 			else {
-				// PDP returns DENY, INDETERMINATE or NOT APPLICABLE
-
-				// obligation
+				// PDP returns DENY, INDETERMINATE or NOT APPLICABLE obligation
 				getObligationManager().translateObligations(pdpEvaluation, sessionId, END_STATUS);
-
 			}
 
 			EndAccessResponse response = new EndAccessResponse(endAccessMessage.getDestination(),
 					endAccessMessage.getSource(), message.getID());
-			response.setResponse((PDPResponse) pdpEvaluation);
+			response.setResponse(pdpEvaluation);
 			response.setStatus(pdpEvaluation.getResponse());
 
 			if (endAccessMessage.getScheduled()) {
@@ -994,12 +986,7 @@ final public class ContextHandlerLC extends AbstractContextHandler {
 
 			// access must be revoked
 			if (revoke(sessionToReevaluate, attributesIP)) {
-				// LOGGER.log(Level.INFO, "[Context Handler] Endaccess: Session
-				// with ID
-				// "
-				// + sId + " is terminated");
 				System.out.println("[TIME] endaccess evaluation with revoke ends at " + System.currentTimeMillis());
-
 			}
 
 			getRequestManagerToChInterface().sendMessageToOutside(response);
