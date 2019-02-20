@@ -36,7 +36,7 @@ public class EndAccessResponse extends Message {
 	// status of the startaccess
 	private String						status;
 	// the evaluation provided by the PDP
-	private PDPResponse				pdpEvaluation;
+	private PDPEvaluation			pdpEvaluation;
 	
 	/**
 	 * Constructor for an EndAccessResponse
@@ -91,7 +91,7 @@ public class EndAccessResponse extends Message {
 		return 0;
 	}
 	
-	public boolean setResponse(PDPResponse pdpEvaluation) {
+	public boolean setResponse(PDPEvaluation pdpEvaluation) {
 		// BEGIN parameter checking
 		if (pdpEvaluation == null) {
 			return false;
