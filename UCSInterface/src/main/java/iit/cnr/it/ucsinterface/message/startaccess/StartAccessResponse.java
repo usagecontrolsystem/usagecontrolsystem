@@ -17,7 +17,6 @@ package iit.cnr.it.ucsinterface.message.startaccess;
 
 import iit.cnr.it.ucsinterface.message.Message;
 import iit.cnr.it.ucsinterface.message.PART;
-import iit.cnr.it.ucsinterface.message.PDPResponse;
 import iit.cnr.it.ucsinterface.message.PURPOSE;
 import iit.cnr.it.ucsinterface.pdp.PDPEvaluation;
 
@@ -35,7 +34,7 @@ public final class StartAccessResponse extends Message {
 	// status of the startaccess
 	private String						status;
 	// the evaluation provided by the PDP
-	private PDPResponse				pdpEvaluation;
+	private PDPEvaluation				pdpEvaluation;
 	
 	/**
 	 * Constructor of the StartAccessResponse
@@ -90,7 +89,7 @@ public final class StartAccessResponse extends Message {
 		return 0;
 	}
 	
-	public boolean setResponse(PDPResponse pdpEvaluation) {
+	public boolean setResponse(PDPEvaluation pdpEvaluation) {
 		// BEGIN parameter checking
 		if (pdpEvaluation == null) {
 			return false;
