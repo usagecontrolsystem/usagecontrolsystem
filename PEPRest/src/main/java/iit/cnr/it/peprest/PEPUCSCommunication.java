@@ -1,8 +1,10 @@
 package iit.cnr.it.peprest;
 
+import org.apache.http.HttpStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.http.MediaType;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -30,7 +32,7 @@ public class PEPUCSCommunication {
 	  @Autowired
 	  private PEPRest pepRest;
 	  
-	  @ApiOperation(httpMethod = "POST", value = "Receives request from PEP for tryaccess operation")
+	  @ApiOperation(httpMethod = "POST", value = "Receives request from CH for onGoingEvaluation operation")
 	  // provides a documentation of the different http error messages and their
 	  // meaning from the application perspective
 	  @ApiResponses(value = {
@@ -48,7 +50,7 @@ public class PEPUCSCommunication {
 	    pepRest.onGoingEvaluation(reevaluation);
 	  }
 
-	  @ApiOperation(httpMethod = "POST", value = "Receives request from PEP for tryaccess operation")
+	  @ApiOperation(httpMethod = "POST", value = "Receives request from CH for tryAccess operation")
 	  // provides a documentation of the different http error messages and their
 	  // meaning from the application perspective
 	  @ApiResponses(value = {
@@ -58,13 +60,14 @@ public class PEPUCSCommunication {
 	  public void tryAccessResponse(@RequestBody() String message) {
 	    // BEGIN parameter checking
 	    if (message == null) {
+	    	throw new HttpMessageNotReadableException(HttpStatus.SC_NO_CONTENT+" : Invalid message Content");
 	    }
 	    // END parameter checking
 	    pepRest
 	        .receiveResponse(new Gson().fromJson(message, TryAccessResponse.class));
 	  }
 
-	  @ApiOperation(httpMethod = "POST", value = "Receives request from PEP for tryaccess operation")
+	  @ApiOperation(httpMethod = "POST", value = "Receives request from CH for startAccess operation")
 	  // provides a documentation of the different http error messages and their
 	  // meaning from the application perspective
 	  @ApiResponses(value = {
@@ -74,13 +77,14 @@ public class PEPUCSCommunication {
 	  public void startAccessResponse(@RequestBody() String message) {
 	    // BEGIN parameter checking
 	    if (message == null) {
+	    	throw new HttpMessageNotReadableException(HttpStatus.SC_NO_CONTENT+" : Invalid message Content");
 	    }
 	    // END parameter checking
 	    pepRest.receiveResponse(
 	        new Gson().fromJson(message, StartAccessResponse.class));
 	  }
 
-	  @ApiOperation(httpMethod = "POST", value = "Receives request from PEP for tryaccess operation")
+	  @ApiOperation(httpMethod = "POST", value = "Receives request from CH for tryAccess operation")
 	  // provides a documentation of the different http error messages and their
 	  // meaning from the application perspective
 	  @ApiResponses(value = {
@@ -90,6 +94,7 @@ public class PEPUCSCommunication {
 	  public void endAccessResponse(@RequestBody() String message) {
 	    // BEGIN parameter checking
 	    if (message == null) {
+	    	throw new HttpMessageNotReadableException(HttpStatus.SC_NO_CONTENT+" : Invalid message content");
 	    }
 	    // END parameter checking
 	    pepRest
