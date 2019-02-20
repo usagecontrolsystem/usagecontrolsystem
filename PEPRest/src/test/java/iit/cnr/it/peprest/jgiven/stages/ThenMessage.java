@@ -26,9 +26,6 @@ public class ThenMessage extends Stage<ThenMessage> {
     PEPRest pepRest;
 
 	@ExpectedScenarioState
-	String tryAccessMsgId;
-
-	@ExpectedScenarioState
 	String messageId;
 
 	@ExpectedScenarioState
@@ -36,14 +33,6 @@ public class ThenMessage extends Stage<ThenMessage> {
 
 	@ExpectedScenarioState
     Configuration configuration;
-
-	public ThenMessage a_tryAccessMessage_is_put_in_the_unanswered_queue() {
-		assertNotNull( pepRest.getUnanswered() );
-		assertTrue( pepRest.getUnanswered().size() > 0 );
-		assertTrue(	pepRest.getUnanswered().entrySet().stream().findFirst().get().getValue()
-				instanceof TryAccessMessage );
-		return self();
-	}
 
 	public ThenMessage the_$_message_is_put_in_the_unanswered_queue(PEPRestOperation restOperation) {
 		assertNotNull( pepRest.getUnanswered() );
@@ -66,31 +55,9 @@ public class ThenMessage extends Stage<ThenMessage> {
 		return self();
 	}
 
-	public ThenMessage the_message_id_in_the_unanswered_queue_matches_the_sent_one() {
-		assertNotNull( pepRest.getUnanswered() );
-		assertNotNull( pepRest.getUnanswered().get( tryAccessMsgId ) );
-		return self();
-	}
-
 	public ThenMessage the_message_id_in_the_unanswered_queue_matches_the_one_sent() {
 		assertNotNull( pepRest.getUnanswered() );
 		assertNotNull( pepRest.getUnanswered().get( messageId ) );
-		return self();
-	}
-
-	public ThenMessage a_startAccessMessage_is_put_in_the_unanswered_queue() {
-		assertNotNull( pepRest.getUnanswered() );
-		assertTrue( pepRest.getUnanswered().size() > 0 );
-		assertTrue(	pepRest.getUnanswered().entrySet().stream().findFirst().get().getValue()
-				instanceof StartAccessMessage );
-		return self();
-	}
-
-	public ThenMessage a_endAccessMessage_is_put_in_the_unanswered_queue() {
-		assertNotNull( pepRest.getUnanswered() );
-		assertTrue( pepRest.getUnanswered().size() > 0 );
-		assertTrue(	pepRest.getUnanswered().entrySet().stream().findFirst().get().getValue()
-				instanceof EndAccessMessage );
 		return self();
 	}
 
@@ -100,7 +67,7 @@ public class ThenMessage extends Stage<ThenMessage> {
 		return self();
 	}
 
-	public ThenMessage a_tryAccessMessage_is_not_placed_into_the_unanswered_queue() {
+	public ThenMessage the_Message_is_not_placed_into_the_unanswered_queue() {
 		assertNotNull( pepRest.getUnanswered() );
 		assertTrue( pepRest.getUnanswered().size() < 1 );
 		return self();
