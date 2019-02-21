@@ -34,6 +34,9 @@ public class ThenMessage extends Stage<ThenMessage> {
 	@ExpectedScenarioState
     Configuration configuration;
 
+    @ExpectedScenarioState
+    Message message;
+
 	public ThenMessage the_$_message_is_put_in_the_unanswered_queue(PEPRestOperation restOperation) {
 		assertNotNull( pepRest.getUnanswered() );
 		assertTrue( pepRest.getUnanswered().size() > 0 );

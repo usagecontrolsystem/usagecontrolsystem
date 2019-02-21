@@ -182,7 +182,16 @@ public class PEPRest implements PEPInterface, Runnable {
 					configuration.getPepConf().getIp());
 			endAccess.setCallback(null, MEAN.REST);
 			endAccess.setSessionId(chPepMessage.getPDPEvaluation().getSessionId());
-			requestManager.sendMessageToCH(endAccess);
+
+			//requestManager.sendMessageToCH(endAccess);
+			// TODO: may be as alternative? - begin block
+			message = requestManager.sendMessageToCH(endAccess);
+			if (!message.isDeliveredToDestination()) {
+				LOGGER.log(Level.INFO, "isDeliveredToDestination: "+ message.isDeliveredToDestination());
+				return message; //TODO: perhaps an exception
+			}
+			unanswered.put(message.getID(), message);
+			// TODO: may be as alternative? - end block
 
 			try {
 				message = waitForResponse(endAccess.getID());

@@ -9,6 +9,7 @@ import com.tngtech.jgiven.annotation.ProvidedScenarioState;
 
 import iit.cnr.it.peprest.PEPRest;
 import iit.cnr.it.peprest.PEPRestServiceScenarioTest.PEPRestOperation;
+import iit.cnr.it.ucsinterface.message.Message;
 
 public class WhenPEPRestService extends Stage<WhenPEPRestService> {
 
@@ -20,6 +21,9 @@ public class WhenPEPRestService extends Stage<WhenPEPRestService> {
 
     @ExpectedScenarioState
     String sessionId;
+
+    @ExpectedScenarioState
+    Message message;
 
     public WhenPEPRestService() {
     	 pepRest = new PEPRest();
@@ -38,6 +42,11 @@ public class WhenPEPRestService extends Stage<WhenPEPRestService> {
 		case END_ACCESS:
 			assertNotNull( sessionId );
 			messageId = pepRest.endAccess(sessionId);
+			break;
+		case ON_GOING_RESPONSE:
+			assertNotNull( message );
+			message = pepRest.onGoingEvaluation(message);
+			messageId = message.getID();
 			break;
 		default:
 			fail("Unknown restOperation");
