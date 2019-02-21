@@ -75,11 +75,14 @@ public class PEPRest implements PEPInterface, Runnable {
 
 	// map of unanswered messages, the key is the id of the message
 	private HashMap<String, Message> unanswered = new HashMap<>();
-	private ConcurrentHashMap<String, Message> responses = new ConcurrentHashMap<>();
+	
+	@VisibleForTesting
+	ConcurrentHashMap<String, Message> responses = new ConcurrentHashMap<>();
 
 	private volatile boolean initialized = false;
 
-	private Object mutex = new Object();
+	@VisibleForTesting
+	Object mutex = new Object();
 
 	public PEPRest() {
 		if ((configuration = Utility.retrieveConfiguration("conf.xml", Configuration.class)) == null) {
@@ -310,6 +313,7 @@ public class PEPRest implements PEPInterface, Runnable {
 		LOGGER.log(Level.INFO, "[TIME] Sending endAccess " + System.currentTimeMillis());
 		String id = endAccess(sessionId);
 		EndAccessResponse endAccessResponse = (EndAccessResponse) waitForResponse(id);
+		endAccessResponse.getID();
 		LOGGER.log(Level.INFO, "[TIME] END ACCESS RESPONSE: " + System.currentTimeMillis());
 	}
 
