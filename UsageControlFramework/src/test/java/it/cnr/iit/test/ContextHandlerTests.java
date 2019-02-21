@@ -29,6 +29,7 @@ import iit.cnr.it.ucsinterface.sessionmanager.SessionInterface;
 import iit.cnr.it.ucsinterface.sessionmanager.SessionManagerInterface;
 import it.cnr.iit.usagecontrolframework.configuration.xmlclasses.Configuration;
 import it.cnr.iit.usagecontrolframework.contexthandler.ContextHandlerLC;
+import it.cnr.iit.usagecontrolframework.contexthandler.exceptions.RevokeException;
 
 @EnableConfigurationProperties
 @TestPropertySource(properties = "application-test.properties")
@@ -92,7 +93,7 @@ public class ContextHandlerTests extends UCFAbstractTest {
 		contextHandler.tryAccess(null);
 	}
 
-	@Test
+	@Test(expected = RevokeException.class)
 	public void contextHandlerStartAccessShouldFail() throws JAXBException, URISyntaxException, IOException, Exception {
 		Configuration ucsConfiguration = getUCSConfiguration(ucsConfigFile);
 
@@ -104,20 +105,16 @@ public class ContextHandlerTests extends UCFAbstractTest {
 		contextHandler.tryAccess(tryAccessMessage);
 
 		/* startAccess */
-		StartAccessMessage startAccessMessage = buildStartAccessMessage(sessionId, "", "");
-		SessionInterface sessionInterface = 
-				getMockedSessionInterface(policy, request,  ContextHandlerInterface.TRY_STATUS); 
-		SessionManagerInterface sessionManagerInterface = 
-				getMockedSessionManager(sessionInterface);
-		// set the session interface to return the policy and correct status
-		contextHandler.setSessionManagerInterface(sessionManagerInterface);
+		contextHandler.setSessionManagerInterface(
+				getSessionManagerForStatus(sessionId, policy, request, ContextHandlerLC.TRY_STATUS));
 		// this line makes the start access to take the deny path
-		contextHandler.setPdpInterface(getMockedPDP(getMockedPDPEvaluationDeny()));
+		contextHandler.setPdpInterface(getMockedPDP(getMockedPDPEvaluationDeny()));		
+		StartAccessMessage startAccessMessage = buildStartAccessMessage(sessionId, "", "");
 		contextHandler.startAccess(startAccessMessage);
 	}
 	
 	@Test
-	public void contextHandlerStartAccess() throws JAXBException, URISyntaxException, IOException, Exception {
+	public void contextHandlerEndAccessShouldFail() throws JAXBException, URISyntaxException, IOException, Exception {
 		Configuration ucsConfiguration = getUCSConfiguration(ucsConfigFile);
 		
 		/* CH initialisation */
@@ -128,23 +125,40 @@ public class ContextHandlerTests extends UCFAbstractTest {
 		contextHandler.tryAccess(tryAccessMessage);
 
 		/* startAccess */
+		contextHandler.setSessionManagerInterface(
+				getSessionManagerForStatus(sessionId, policy, request, ContextHandlerLC.TRY_STATUS));
 		StartAccessMessage startAccessMessage = buildStartAccessMessage(sessionId, "", "");
-		SessionInterface sessionInterface = 
-				getMockedSessionInterface(policy, request,  ContextHandlerInterface.TRY_STATUS); 
-		SessionManagerInterface sessionManagerInterface = 
-				getMockedSessionManager(sessionInterface);
-		// set the session interface to return the policy and correct status
-		contextHandler.setSessionManagerInterface(sessionManagerInterface);
 		contextHandler.startAccess(startAccessMessage);
 		
 		/* endAccess */
+		contextHandler.setSessionManagerInterface(
+				getSessionManagerForStatus(sessionId, policy, request, ContextHandlerLC.START_STATUS));
+		contextHandler.setPdpInterface(getMockedPDP(getMockedPDPEvaluationDeny()));		
 		EndAccessMessage endAccessMessage = buildEndAccessMessage(sessionId, "", "");
-		sessionInterface = 
-				getMockedSessionInterface(policy, request,  ContextHandlerInterface.START_STATUS); 
-		sessionManagerInterface = 
-				getMockedSessionManager(sessionInterface);
-		// set the session interface to return the policy and correct status
-		contextHandler.setSessionManagerInterface(sessionManagerInterface);
+		contextHandler.endAccess(endAccessMessage);
+	}
+	
+	@Test
+	public void contextHandlerFullFlow() throws JAXBException, URISyntaxException, IOException, Exception {
+		Configuration ucsConfiguration = getUCSConfiguration(ucsConfigFile);
+		
+		/* CH initialisation */
+		ContextHandlerLC contextHandler = getContextHandlerCorrectlyInitialized(ucsConfiguration, policy, request);
+
+		/* tryAccess */
+		TryAccessMessage tryAccessMessage = buildTryAccessMessage(pepId, ucsUri, policy, request);
+		contextHandler.tryAccess(tryAccessMessage);
+
+		/* startAccess */
+		contextHandler.setSessionManagerInterface(
+				getSessionManagerForStatus(sessionId, policy, request, ContextHandlerLC.TRY_STATUS));
+		StartAccessMessage startAccessMessage = buildStartAccessMessage(sessionId, "", "");
+		contextHandler.startAccess(startAccessMessage);
+		
+		/* endAccess */
+		contextHandler.setSessionManagerInterface(
+				getSessionManagerForStatus(sessionId, policy, request, ContextHandlerLC.START_STATUS));
+		EndAccessMessage endAccessMessage = buildEndAccessMessage(sessionId, "", "");
 		contextHandler.endAccess(endAccessMessage);
 	}
 	

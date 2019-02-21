@@ -196,7 +196,6 @@ final public class RequestType {
 	 * @return the value of the attribute, null otherwise
 	 */
 	public String extractValue(Category subject) {
-		
 		for (AttributesType attributeType : attributes) {
 			if (attributeType.getCategory().equals(subject.toString())) {
 				return attributeType.getAttribute().get(0).getAttributeValue().get(0)
@@ -204,7 +203,26 @@ final public class RequestType {
 			}
 		}
 		return null;
+	}
+	
+	public String getAttribute(String category, String attributeId) {
+		String res = null;
 		
+		AttributesType attbs = attributes.stream()
+		    .filter(a -> a.getCategory().endsWith(category)).findFirst()
+		    .orElse(null);
+		
+		if (attbs != null) {
+			AttributeType attr = attbs.getAttribute().stream()
+			    .filter(a -> a.getAttributeId().endsWith(attributeId)).findFirst()
+			    .orElse(null);
+			
+			if (attr != null) {
+				res = attr.getAttributeValue().get(0).getContent().get(0).toString();
+			}
+		}
+		
+		return res;
 	}
 	
 	public boolean addAttribute(String category, String dataType,

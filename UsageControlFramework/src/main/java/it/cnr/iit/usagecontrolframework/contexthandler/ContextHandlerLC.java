@@ -369,17 +369,15 @@ final public class ContextHandlerLC extends AbstractContextHandler {
 			// handles all the cases except startaccess
 			if (status == STATUS.TRYACCESS || status == STATUS.ENDACCESS || status == STATUS.REVOKE) {
 				List<Attribute> external = extractExternal(attributes, requestType);
-				System.out.println(external.toString());
+				LOGGER.info(external.toString());
 				retrieveLocalAttributes(requestType);
-				if (complete) {
-					if (getPipRetrieval() != null && external.size() > 0) {
-						System.out.println("[TIME] retrieve external start at " + System.currentTimeMillis());
+				if (complete && external.size() > 0) {
+					if (getPipRetrieval() != null) {
+						LOGGER.info("[TIME] retrieve external start at " + System.currentTimeMillis());
 						getPipRetrieval().retrieve(requestType, external);
-						System.out.println("[TIME] retrieve external ends at " + System.currentTimeMillis());
-					}
-
-					if (getPipRetrieval() == null && external.size() > 0) {
-						LOGGER.log(Level.SEVERE, "Policy requires attributes that are not accessible!!");
+						LOGGER.info("[TIME] retrieve external ends at " + System.currentTimeMillis());
+					} else {
+						LOGGER.warning("Policy requires attributes that are not accessible!!");
 						return null;
 					}
 				}
@@ -392,19 +390,14 @@ final public class ContextHandlerLC extends AbstractContextHandler {
 			if (status == STATUS.STARTACCESS) {
 				List<Attribute> external = extractExternal(attributes, requestType);
 				subscribeLocalAttributes(requestType);
-				if (complete) {
-					if (getPipRetrieval() != null && external.size() > 0) {
-						System.out.println("[TIME] Subscribe external starts at " + System.currentTimeMillis());
+				if (complete && external.size() > 0) {
+					if (getPipRetrieval() != null ) {
+						LOGGER.info("[TIME] Subscribe external starts at " + System.currentTimeMillis());
 						getPipRetrieval().subscribe(requestType, external);
-						System.out.println("[TIME] subscribe external ends at " + System.currentTimeMillis());
-					}
-					if (getPipRetrieval() == null && external.size() > 0) {
-						try {
-							throw new MissingAttributeException("Policy requires attributes that are not accessible!!");
-						} catch (MissingAttributeException e) {
-							e.printStackTrace();
-							return null;
-						}
+						LOGGER.info("[TIME] subscribe external ends at " + System.currentTimeMillis());
+					} else {
+						LOGGER.warning("Policy requires attributes that are not accessible!!");
+						return null;
 					}
 				}
 			}

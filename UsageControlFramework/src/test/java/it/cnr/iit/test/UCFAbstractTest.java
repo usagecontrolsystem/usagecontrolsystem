@@ -9,9 +9,11 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.xml.bind.JAXBException;
 
+import org.assertj.core.util.Arrays;
 import org.mockito.Matchers;
 import org.mockito.Mockito;
 import org.slf4j.Logger;
@@ -45,6 +47,7 @@ import it.cnr.iit.usagecontrolframework.proxies.PIPBuilder;
 import it.cnr.iit.usagecontrolframework.proxies.ProxyPAP;
 import it.cnr.iit.usagecontrolframework.proxies.ProxyPDP;
 import it.cnr.iit.usagecontrolframework.proxies.ProxySessionManager;
+import it.cnr.iit.xacmlutilities.Attribute;
 import it.cnr.iit.xacmlutilities.policy.utility.JAXBUtility;
 import oasis.names.tc.xacml.core.schema.wd_17.PolicyType;
 import oasis.names.tc.xacml.core.schema.wd_17.RequestType;
@@ -56,6 +59,7 @@ public abstract class UCFAbstractTest {
 
 	protected PIPRetrieval getMockedPipRetrieval() {
 		PIPRetrieval pipRetrieval = Mockito.mock(PIPRetrieval.class);
+		
 		return pipRetrieval;
 	}
 
@@ -76,8 +80,28 @@ public abstract class UCFAbstractTest {
 				sessionManagerInterface.deleteEntry(
 						Matchers.<String>any())
 				).thenReturn(true);
+		Mockito.when(sessionManagerInterface.createEntry(
+				Matchers.<String>any(),
+				Matchers.<String>any(),
+				Matchers.<String>any(),
+				Matchers.<List<String>>any(),
+				Matchers.<List<String>>any(),
+				Matchers.<List<String>>any(),
+				Matchers.<List<String>>any(),
+				Matchers.<String>any(),
+				Matchers.<String>any(),
+				Matchers.<String>any(),
+				Matchers.<String>any(),
+				Matchers.<String>any(),
+				Matchers.<String>any())).thenReturn(true);
 		return sessionManagerInterface;
 	}
+	
+    protected SessionManagerInterface getSessionManagerForStatus(String sessionId, String policy, String request, String status) {
+		SessionInterface sessionInterface = 
+				getMockedSessionInterface(policy, request, status); 
+		return getMockedSessionManager(sessionInterface);
+    }
 
 	protected SessionInterface getMockedSessionInterface(String policy, String request, String status) {
 		SessionInterface sessionInterface = Mockito.mock(SessionInterface.class);
@@ -173,10 +197,33 @@ public abstract class UCFAbstractTest {
 	
 	protected PAPInterface getMockedPAP() {
 		PAPInterface pap = Mockito.mock(PAPInterface.class);
-		assertNotNull(pap);
 		return pap;
 	}
 
+	/* Mocked PIPs */
+	
+	protected PIPCHInterface getMockedPIPCHInterface(String name) {
+		PIPCHInterface pip = Mockito.mock(PIPCHInterface.class);
+		Mockito.when(
+				pip.getAttributes()
+				).thenReturn(new ArrayList<Attribute>());
+		Mockito.when(
+				pip.setContextHandlerInterface(
+						Matchers.<ContextHandlerLC>any())
+				).thenReturn(true);
+		return pip;
+	}
+	
+	protected void addPips(ContextHandlerLC contextHandler) {
+		String[] pips = {"virus", "telephone", "position", "role", "telephone", "time"};
+		for (String pipName : pips) {
+			// TODO use the pip var to parametrize the pip somehow
+			// maybe using a template xml to unmarshal a real instance.
+			// for now I'll try to mock one
+			contextHandler.addPip(getMockedPIPCHInterface(pipName));
+		}
+	}
+	
 	/* non mocked components */
 	
 	protected ContextHandlerLC getContextHandler(Configuration ucsConfiguration) {
@@ -188,22 +235,18 @@ public abstract class UCFAbstractTest {
 		contextHandler.setPdpInterface(getMockedPDP());
 		contextHandler.setPapInterface(getMockedPAP());
 		contextHandler.setRequestManagerToChInterface(getMockedRequestManagerToChInterface());
-		contextHandler.setSessionManagerInterface(getMockedSessionManager(
-				getMockedSessionInterface("", "", ContextHandlerLC.TRY_STATUS)
-		));
-		contextHandler.setPIPRetrieval(getMockedPipRetrieval());
+		contextHandler.setSessionManagerInterface(getSessionManagerForStatus("","", "", ContextHandlerLC.TRY_STATUS));
 		contextHandler.setForwardingQueue(getMockedForwardingQueueToCHInterface());
 		contextHandler.setObligationManager(getMockedObligationManager());
+		contextHandler.setPIPRetrieval(getMockedPipRetrieval());
+		addPips(contextHandler);
 	}
 	
     protected ContextHandlerLC getContextHandlerCorrectlyInitialized(Configuration ucsConfiguration, String policy, String request) {
 		ContextHandlerLC contextHandler = getContextHandler(ucsConfiguration);
 		initContextHandler(contextHandler);
-		SessionInterface sessionInterface = 
-				getMockedSessionInterface(policy, request,  ContextHandlerInterface.TRY_STATUS); 
-		SessionManagerInterface sessionManagerInterface = 
-				getMockedSessionManager(sessionInterface);
-		contextHandler.setSessionManagerInterface(sessionManagerInterface);
+		contextHandler.setSessionManagerInterface(
+				getSessionManagerForStatus("",policy, request, ContextHandlerLC.TRY_STATUS));
 
 		contextHandler.verify();
 		assertTrue(contextHandler.startThread());
@@ -211,10 +254,6 @@ public abstract class UCFAbstractTest {
 		return contextHandler;
     }
     
-    protected void setupContextHandlerForStartAccess(ContextHandlerLC contextHandler) {
-    	// stub
-    }
-
 	protected SessionManagerInterface getSessionManager(Configuration ucsConfiguration) {
 		SessionManagerInterface sessionManager = new ProxySessionManager(
 			    ucsConfiguration.getSessionManager());
@@ -263,14 +302,12 @@ public abstract class UCFAbstractTest {
 	// TODO set source dest
 	protected StartAccessMessage buildStartAccessMessage(String sessionId, String src, String dest) {
 		StartAccessMessage message = new StartAccessMessage(src, dest);
-		
 		return message;
 	}
 
 	// TODO set source dest
 	protected EndAccessMessage buildEndAccessMessage(String sessionId, String src, String dest) {
 		EndAccessMessage message = new EndAccessMessage("","");
-		
 		return message;
 	}
 
