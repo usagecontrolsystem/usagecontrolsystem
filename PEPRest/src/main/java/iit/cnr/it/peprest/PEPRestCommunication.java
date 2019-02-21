@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2018 IIT-CNR
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License.  You may obtain a copy
  * of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
@@ -17,6 +17,7 @@ package iit.cnr.it.peprest;
 
 import java.util.concurrent.ExecutionException;
 
+import org.apache.http.HttpStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -24,6 +25,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.core.task.SimpleAsyncTaskExecutor;
 import org.springframework.core.task.TaskExecutor;
 import org.springframework.http.MediaType;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -40,7 +42,7 @@ import io.swagger.annotations.ApiResponses;
 @EnableAutoConfiguration
 public class PEPRestCommunication {
   boolean initialized = false;
-  
+
   @Autowired
   private PEPRest pepRest; //= new PEPRest();
 
@@ -48,8 +50,8 @@ public class PEPRestCommunication {
   public void isAlive() {
 	  System.out.println("in isAlive():heath check OK");
   }
-  
-  
+
+
   @ApiOperation(httpMethod = "POST", value = "Starts the PEP")
   // provides a documentation of the different http error messages and their
   // meaning from the application perspective
@@ -75,6 +77,7 @@ public class PEPRestCommunication {
     // BEGIN parameter checking
     if (sessionId == null) {
       System.out.println("SESSION is null");
+      throw new HttpMessageNotReadableException(HttpStatus.SC_NO_CONTENT+" : No session id");
     }
     // END parameter checking
     pepRest.end(sessionId);

@@ -1,5 +1,7 @@
 package iit.cnr.it.peprest;
 
+import static org.apache.http.HttpStatus.SC_BAD_REQUEST;
+import static org.apache.http.HttpStatus.SC_OK;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.Matchers.any;
@@ -11,9 +13,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.MvcResult;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.mock.web.MockHttpServletResponse;
 
 import iit.cnr.it.ucsinterface.message.Message;
 import iit.cnr.it.ucsinterface.message.endaccess.EndAccessResponse;
@@ -21,7 +21,7 @@ import iit.cnr.it.ucsinterface.message.tryaccess.TryAccessResponse;
 
 @WebMvcTest(value = PEPRestCommunication.class, secure = false)
 public class PEPRestCommunicationTest extends PEPRestAbstractTest {
-	
+
     @Override
     @Before
     public void setUp() {
@@ -29,41 +29,37 @@ public class PEPRestCommunicationTest extends PEPRestAbstractTest {
     }
 
 	@Test
-	public void performSendWithDenyResponse() throws Exception {
-    	Mockito.when(proxyRequestManager.sendMessageToCH(any())).thenReturn(new Message());    	
+	public void sendRequestForTryAccessWithDenyResponsePerformsRun() throws Exception {
+    	Mockito.when(proxyRequestManager.sendMessageToCH(any())).thenReturn(new Message());
 
 		doCallRealMethod().when(pepRest).run();
 
 		when(pepRest.tryAccess()).thenReturn(SESSION_ID_01);
-		
-		TryAccessResponse tryAccessResponse = buildTryAccessResponseDeny();		
-		when(pepRest.waitForResponse(SESSION_ID_01)).thenReturn(tryAccessResponse);		
-		
+
+		TryAccessResponse tryAccessResponse = buildTryAccessResponseDeny();
+		when(pepRest.waitForResponse(SESSION_ID_01)).thenReturn(tryAccessResponse);
+
 		when(pepRest.startAccess(anyString())).thenReturn(SESSION_ID_01);
 
-	    String uri = "/send";
-	    MvcResult mvcResult = mvc.perform(MockMvcRequestBuilders.post(uri)).andReturn();
-	   
-	    int status = mvcResult.getResponse().getStatus();
-	    assertEquals(200, status);
-	    String content = mvcResult.getResponse().getContentAsString();
-	    assertNotNull(content);
+	    MockHttpServletResponse mvcResponse = postResponseToPEPRest("", SEND_URI);
+
+	    assertEquals(SC_OK, mvcResponse.getStatus());
 	}
 
 	@Test
-	public void finish() throws Exception {
+	public void finishRequestPerformsEndAccessSuccessfully() throws Exception {
 		doCallRealMethod().when(pepRest).end(SESSION_ID_01);
 		when(pepRest.endAccess(SESSION_ID_01)).thenReturn(SESSION_ID_01);
 		when(pepRest.waitForResponse(SESSION_ID_01)).thenReturn(new EndAccessResponse(SESSION_ID_01));
 
-	    String uri = "/finish";
-	    MvcResult mvcResult = mvc.perform(MockMvcRequestBuilders.post(uri)
-			   .contentType(MediaType.TEXT_PLAIN_VALUE).content(SESSION_ID_01)).andReturn();
-	   
-	    int status = mvcResult.getResponse().getStatus();
-	    assertEquals(200, status);
-	    String content = mvcResult.getResponse().getContentAsString();
-	    assertNotNull(content);
+	    MockHttpServletResponse mvcResponse = postResponseToPEPRest(SESSION_ID_01, FINISH_URI);
+
+	    assertEquals(SC_OK, mvcResponse.getStatus());
+	    assertNotNull(mvcResponse.getContentAsString());
 	}
 
+	@Test
+	public void finishRequestWithoutSessionIdResultsInBadRequestResponse() throws Exception {
+	     assertEquals(SC_BAD_REQUEST, postResponseToPEPRest("", FINISH_URI).getStatus());
+	}
 }

@@ -66,7 +66,7 @@ public class PEPRest implements PEPInterface, Runnable {
 
 	// map of unanswered messages, the key is the id of the message
 	private HashMap<String, Message> unanswered = new HashMap<>();
-	
+
 	@VisibleForTesting
 	ConcurrentHashMap<String, Message> responses = new ConcurrentHashMap<>();
 
@@ -107,7 +107,7 @@ public class PEPRest implements PEPInterface, Runnable {
 		tryAccessMessage.setCallback(buildResponseInterface("tryAccessResponse"), MEAN.REST);
 		LOGGER.log(Level.INFO, "[TIME] TRYACCESS " + System.currentTimeMillis());
 		Message message = requestManager.sendMessageToCH(tryAccessMessage);
-		if (message.isDeliveredToDestination()) {			
+		if (message.isDeliveredToDestination()) {
 			unanswered.put(tryAccessMessage.getID(), tryAccessMessage);
 			return tryAccessMessage.getID();
 		} else {
@@ -124,7 +124,7 @@ public class PEPRest implements PEPInterface, Runnable {
 		try {
 			LOGGER.log(Level.INFO, "[TIME] STARTACCESS " + System.currentTimeMillis());
 			Message message = requestManager.sendMessageToCH(startAccessMessage);
-			if (message.isDeliveredToDestination()) {			
+			if (message.isDeliveredToDestination()) {
 				unanswered.put(startAccessMessage.getID(), startAccessMessage);
 				return startAccessMessage.getID();
 			} else {
@@ -146,7 +146,7 @@ public class PEPRest implements PEPInterface, Runnable {
 		try {
 			System.out.println("[TIME] ENDACCESS " + System.currentTimeMillis());
 			Message message = requestManager.sendMessageToCH(endAccessMessage);
-			if (message.isDeliveredToDestination()) {			
+			if (message.isDeliveredToDestination()) {
 				unanswered.put(endAccessMessage.getID(), endAccessMessage);
 				return endAccessMessage.getID();
 			} else {
@@ -176,7 +176,7 @@ public class PEPRest implements PEPInterface, Runnable {
 		LOGGER.log(Level.INFO, "[TIME] ON_GOING_EVAL " + System.currentTimeMillis());
 
 		ReevaluationResponse chPepMessage = (ReevaluationResponse) message;
-		if ( pepConf.getRevoke().equals("HARD")) { //TODO: is hard still needed
+		if ( pepConf.getRevoke().equals("HARD")) { //TODO: is HARD case still needed?
 			LOGGER.log(Level.INFO, "[TIME] sending endacces " + System.currentTimeMillis());
 			EndAccessMessage endAccess = new EndAccessMessage(configuration.getPepConf().getId(),
 					configuration.getPepConf().getIp());
@@ -192,12 +192,14 @@ public class PEPRest implements PEPInterface, Runnable {
 			}
 
 		} else {
+			// TODO: How do you resume or stop?
 			if (chPepMessage.getPDPEvaluation().getResponse().contains(PERMIT)) {
 				LOGGER.log(Level.INFO, "RESUME EXECUTION");
 			}
 			if (chPepMessage.getPDPEvaluation().getResponse().contains(DENY)) {
 				LOGGER.log(Level.INFO, "STOP EXECUTION");
 			}
+			//TODO: something should happen at the end, e.g. audit log, so we can assert for success
 		}
 		// contextHandler.endAccess(endAccess);
 		message.setMotivation("OK");
@@ -232,7 +234,7 @@ public class PEPRest implements PEPInterface, Runnable {
 				LOGGER.log(Level.SEVERE, "[TIME] TRYACCESS DENIED " + System.currentTimeMillis());
 			}
 		} catch (Exception e) {
-			LOGGER.log(Level.SEVERE, e.getLocalizedMessage()); 
+			LOGGER.log(Level.SEVERE, e.getLocalizedMessage());
 		}
 	}
 
@@ -291,6 +293,7 @@ public class PEPRest implements PEPInterface, Runnable {
 		EndAccessResponse endAccessResponse = (EndAccessResponse) waitForResponse(id);
 		endAccessResponse.getID();
 		LOGGER.log(Level.INFO, "[TIME] END ACCESS RESPONSE: " + System.currentTimeMillis());
+		//TODO: something should happen at the end, e.g. audit log, so we can assert that it succeeded
 	}
 
 	public HashMap<String, Message> getUnanswered() {

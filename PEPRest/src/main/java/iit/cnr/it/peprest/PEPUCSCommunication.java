@@ -28,10 +28,10 @@ import io.swagger.annotations.ApiResponses;
 @EnableAutoConfiguration
 public class PEPUCSCommunication {
 	boolean initialized = false;
-	  
+
 	  @Autowired
 	  private PEPRest pepRest;
-	  
+
 	  @ApiOperation(httpMethod = "POST", value = "Receives request from CH for onGoingEvaluation operation")
 	  // provides a documentation of the different http error messages and their
 	  // meaning from the application perspective
@@ -42,7 +42,7 @@ public class PEPUCSCommunication {
 	  public void onGoingEvaluation(@RequestBody() String message) {
 	    // BEGIN parameter checking
 	    if (message == null) {
-	      return;
+	    	throw new HttpMessageNotReadableException(HttpStatus.SC_NO_CONTENT+" : Invalid message Content");
 	    }
 	    // END parameter checking
 	    ReevaluationResponse reevaluation = new Gson().fromJson(message,
