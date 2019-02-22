@@ -35,7 +35,7 @@ public class ReevaluationResponse extends Message {
   // flag that states the status of this class
   private volatile boolean chPepInitialized = false;
   // the PDP evaluation
-  private PDPResponse pdpEvaluation;
+  private PDPEvaluation pdpEvaluation;
   private String pepID;
 
   /**
@@ -92,7 +92,7 @@ public class ReevaluationResponse extends Message {
     return 0;
   }
 
-  public void setPDPEvaluation(PDPResponse pdpEvaluation) {
+  public void setPDPEvaluation(PDPEvaluation pdpEvaluation) {
     if (!chPepInitialized || pdpEvaluation == null) {
       System.err.println("Impossible to set the evaluation " + chPepInitialized + "\t" + (pdpEvaluation == null));
       return;

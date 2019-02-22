@@ -19,14 +19,11 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import iit.cnr.it.ucsinterface.contexthandler.ContextHandlerInterface;
-import iit.cnr.it.ucsinterface.message.Message;
 import iit.cnr.it.ucsinterface.message.endaccess.EndAccessMessage;
+import iit.cnr.it.ucsinterface.message.reevaluation.ReevaluationMessage;
 import iit.cnr.it.ucsinterface.message.startaccess.StartAccessMessage;
 import iit.cnr.it.ucsinterface.message.tryaccess.TryAccessMessage;
-import iit.cnr.it.ucsinterface.message.tryaccess.TryAccessMessageBuilder;
-import iit.cnr.it.ucsinterface.sessionmanager.SessionInterface;
-import iit.cnr.it.ucsinterface.sessionmanager.SessionManagerInterface;
+import iit.cnr.it.ucsinterface.sessionmanager.Session;
 import it.cnr.iit.usagecontrolframework.configuration.xmlclasses.Configuration;
 import it.cnr.iit.usagecontrolframework.contexthandler.ContextHandlerLC;
 import it.cnr.iit.usagecontrolframework.contexthandler.exceptions.RevokeException;
@@ -154,6 +151,12 @@ public class ContextHandlerTests extends UCFAbstractTest {
 				getSessionManagerForStatus(sessionId, policy, request, ContextHandlerLC.TRY_STATUS));
 		StartAccessMessage startAccessMessage = buildStartAccessMessage(sessionId, "", "");
 		contextHandler.startAccess(startAccessMessage);
+		
+		/* reevaluate */
+		ReevaluationMessage reevaluationMessage = buildReevaluationMessage(sessionId, "", "");
+		reevaluationMessage.setSession(
+				getMockedSessionInterface(policy, request, ContextHandlerLC.START_STATUS));
+		contextHandler.reevaluate(reevaluationMessage);
 		
 		/* endAccess */
 		contextHandler.setSessionManagerInterface(

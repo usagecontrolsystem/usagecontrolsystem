@@ -13,22 +13,18 @@ import java.util.List;
 
 import javax.xml.bind.JAXBException;
 
-import org.assertj.core.util.Arrays;
 import org.mockito.Matchers;
 import org.mockito.Mockito;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import iit.cnr.it.ucsinterface.contexthandler.AbstractContextHandler;
-import iit.cnr.it.ucsinterface.contexthandler.ContextHandlerInterface;
 import iit.cnr.it.ucsinterface.contexthandler.STATUS;
 import iit.cnr.it.ucsinterface.forwardingqueue.ForwardingQueueToCHInterface;
-import iit.cnr.it.ucsinterface.message.PDPResponse;
 import iit.cnr.it.ucsinterface.message.endaccess.EndAccessMessage;
 import iit.cnr.it.ucsinterface.message.startaccess.StartAccessMessage;
 import iit.cnr.it.ucsinterface.message.tryaccess.TryAccessMessage;
+import iit.cnr.it.ucsinterface.message.reevaluation.ReevaluationMessage;
 import iit.cnr.it.ucsinterface.message.tryaccess.TryAccessMessageBuilder;
-import iit.cnr.it.ucsinterface.message.tryaccess.TryAccessResponse;
 import iit.cnr.it.ucsinterface.obligationmanager.ObligationManagerInterface;
 import iit.cnr.it.ucsinterface.pap.PAPInterface;
 import iit.cnr.it.ucsinterface.pdp.PDPEvaluation;
@@ -41,8 +37,6 @@ import iit.cnr.it.ucsinterface.sessionmanager.SessionManagerInterface;
 import it.cnr.iit.usagecontrolframework.configuration.xmlclasses.Configuration;
 import it.cnr.iit.usagecontrolframework.configuration.xmlclasses.XMLPip;
 import it.cnr.iit.usagecontrolframework.contexthandler.ContextHandlerLC;
-import it.cnr.iit.usagecontrolframework.obligationmanager.ObligationManager;
-import it.cnr.iit.usagecontrolframework.pdp.PolicyDecisionPoint;
 import it.cnr.iit.usagecontrolframework.proxies.PIPBuilder;
 import it.cnr.iit.usagecontrolframework.proxies.ProxyPAP;
 import it.cnr.iit.usagecontrolframework.proxies.ProxyPDP;
@@ -114,6 +108,10 @@ public abstract class UCFAbstractTest {
 		Mockito.when(
 				sessionInterface.getStatus()
 				).thenReturn(status);
+		Mockito.when(
+				sessionInterface.getPEPUri()
+				).thenReturn("localhost#1");
+		
 		return sessionInterface;
 	}
 
@@ -308,6 +306,12 @@ public abstract class UCFAbstractTest {
 	// TODO set source dest
 	protected EndAccessMessage buildEndAccessMessage(String sessionId, String src, String dest) {
 		EndAccessMessage message = new EndAccessMessage("","");
+		return message;
+	}
+	
+	// TODO set source dest
+	protected ReevaluationMessage buildReevaluationMessage(String sessionId, String src, String dest) {
+		ReevaluationMessage message = new ReevaluationMessage("","");
 		return message;
 	}
 

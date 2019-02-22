@@ -51,7 +51,7 @@ public class ReevaluationMessage extends Message {
   private static final long serialVersionUID = 1L;
   // the session to be reevaluated
   private ArrayList<String> sessionId;
-  private Session session;
+  private SessionInterface session;
 
   /**
    * Constructor for the reevaluation message
@@ -78,7 +78,7 @@ public class ReevaluationMessage extends Message {
     this.sessionId = sessionId;
   }
 
-  public void setSession(Session session) {
+  public void setSession(SessionInterface session) {
     this.session = session;
   }
 

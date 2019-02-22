@@ -56,8 +56,6 @@ import iit.cnr.it.ucsinterface.sessionmanager.OnGoingAttribute;
 import iit.cnr.it.ucsinterface.sessionmanager.Session;
 import iit.cnr.it.ucsinterface.sessionmanager.SessionInterface;
 import it.cnr.iit.usagecontrolframework.configuration.xmlclasses.XMLContextHandler;
-import it.cnr.iit.usagecontrolframework.contexthandler.exceptions.MalformedObjectException;
-import it.cnr.iit.usagecontrolframework.contexthandler.exceptions.MissingAttributeException;
 import it.cnr.iit.usagecontrolframework.contexthandler.exceptions.RevokeException;
 import it.cnr.iit.usagecontrolframework.contexthandler.exceptions.SessionManagerException;
 import it.cnr.iit.usagecontrolframework.contexthandler.exceptions.WrongOrderException;
@@ -1456,7 +1454,7 @@ final public class ContextHandlerLC extends AbstractContextHandler {
 		System.out.println("DESTINATION: " + destination + "\t" + session.getStatus());
 		ReevaluationResponse chPepMessage = new ReevaluationResponse(getIp(), destination);
 		pdpEvaluation.setSessionId(session.getId());
-		chPepMessage.setPDPEvaluation((PDPResponse) pdpEvaluation);
+		chPepMessage.setPDPEvaluation(pdpEvaluation);
 		chPepMessage.setPepID(uriSplitted[uriSplitted.length - 1]);
 		getSessionManagerInterface().stopSession(session);
 		if ((session.getStatus().equals(START_STATUS) || session.getStatus().equals(TRY_STATUS))
