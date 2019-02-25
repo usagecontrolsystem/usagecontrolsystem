@@ -32,12 +32,14 @@ public class PEPUCSCommunicationTest extends PEPRestAbstractTest {
 	@Test
 	public void tryAccessResponseRequestTriggersReceiveResponse() throws Exception {
 		pepRest.responses = new ConcurrentHashMap<>();
-		pepRest.mutex= new Object();
-		doCallRealMethod().when(pepRest).receiveResponse(Mockito.any(Message.class));
+		pepRest.unanswered = new ConcurrentHashMap<>();
 
-		Message message = new Message("source", "destination", SESSION_ID_01);
-		message.setPurpose(PURPOSE.TRYACCESS);
-		String jsonMessage = new Gson().toJson(message);
+		Message tryAccessResponse = buildTryAccessResponseDeny();
+		doCallRealMethod().when(pepRest).receiveResponse(Mockito.any(Message.class));
+		
+//		Message message = new Message("source", "destination", SESSION_ID_01);
+//		message.setPurpose(PURPOSE.TRYACCESS);
+		String jsonMessage = new Gson().toJson(tryAccessResponse);
 
 	    MockHttpServletResponse mvcResponse = postResponseToPEPRest(jsonMessage, TRYACCESSRESPONSE_REST);
 
@@ -53,7 +55,7 @@ public class PEPUCSCommunicationTest extends PEPRestAbstractTest {
 	//@Test
 	public void onGoingEvaluationRequestWithPermit() throws Exception {
 		pepRest.responses = new ConcurrentHashMap<>();
-		pepRest.mutex= new Object();
+		pepRest.unanswered = new ConcurrentHashMap<>();
 		doCallRealMethod().when(pepRest).receiveResponse(Mockito.any(Message.class));
 
 		Message message = new Message("source", "destination", SESSION_ID_01);

@@ -27,6 +27,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 import com.google.common.annotations.VisibleForTesting;
+import com.google.common.base.Throwables;
 
 import iit.cnr.it.peprest.configuration.Configuration;
 import iit.cnr.it.peprest.configuration.PEPConf;
@@ -64,14 +65,14 @@ public class PEPRest implements PEPInterface, Runnable {
 	private RequestManagerToExternalInterface requestManager;
 
 	// map of unanswered messages, the key is the id of the message
-	private ConcurrentHashMap<String, Message> unanswered = new ConcurrentHashMap<>();
+	@VisibleForTesting
+	ConcurrentHashMap<String, Message> unanswered = new ConcurrentHashMap<>();
 
 	@VisibleForTesting
 	ConcurrentHashMap<String, Message> responses = new ConcurrentHashMap<>();
 
-	@VisibleForTesting
-	Object mutex = new Object();
-	
+	private Object mutex = new Object();
+
 	private volatile boolean initialized = false;
 
 	public PEPRest() {
@@ -223,7 +224,7 @@ public class PEPRest implements PEPInterface, Runnable {
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-			return "";
+			throw Throwables.propagate(e);
 		}
 	}
 
