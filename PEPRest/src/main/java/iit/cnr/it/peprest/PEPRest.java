@@ -159,8 +159,9 @@ public class PEPRest implements PEPInterface, Runnable {
 		}
 	}
 
+	@Override
 	@Async
-	public Message onGoingEvaluationOld(Message message) {
+	public Message onGoingEvaluation(Message message) {
 		// BEGIN parameter checking
 		if (message == null || !(message instanceof ReevaluationResponse)) {
 			LOGGER.log(Level.SEVERE, "Message not valid");
@@ -265,45 +266,6 @@ public class PEPRest implements PEPInterface, Runnable {
 		return response.getPDPEvaluation().getResponse();
 	}
 	
-	@Override
-	@Async
-	public Message onGoingEvaluation(Message message) {
-		// BEGIN parameter checking
-		if (message == null || !(message instanceof ReevaluationResponse)) {
-			System.err.println("Message not valid");
-			return null;
-		}
-		if (!initialized) {
-			System.err.println("Cannot answer the message");
-			return null;
-		}
-		// END parameter checking
-
-		System.out.println("[TIME] ON_GOING_EVAL " + System.currentTimeMillis());
-
-		ReevaluationResponse chPepMessage = (ReevaluationResponse) message;
-		if (pepConf.getRevoke().equals("HARD")) {
-			System.out.println("[TIME] sending endacces " + System.currentTimeMillis());
-			EndAccessMessage endAccess = new EndAccessMessage(configuration.getPepConf().getId(),
-					configuration.getPepConf().getIp());
-			endAccess.setCallback(null, MEAN.REST);
-			endAccess.setSessionId(chPepMessage.getPDPEvaluation().getSessionId());
-			requestManager.sendMessageToCH(endAccess);
-
-		} else {
-			if (chPepMessage.getPDPEvaluation().getResponse().contains("Permit")) {
-				LOGGER.log(Level.INFO, "RESUME EXECUTION");
-			}
-			if (chPepMessage.getPDPEvaluation().getResponse().contains("Deny")) {
-				LOGGER.log(Level.INFO, "STOP EXECUTION");
-			}
-		}
-		// contextHandler.endAccess(endAccess);
-		message.setMotivation("OK");
-
-		return message;
-	}
-
 
 	@Override
 	public void run() { //TODO: this method is for local demo tests and needs to be re-coded for PROD
