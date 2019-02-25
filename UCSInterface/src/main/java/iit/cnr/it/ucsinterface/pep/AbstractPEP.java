@@ -190,12 +190,9 @@ import it.cnr.iit.usagecontrolframework.configuration.xmlclasses.XMLPep;
 	}
 	
 	@Override
-	public void receiveResponse(Message message) {
+	public String receiveResponse(Message message) {
 		responses.put(message.getID(), message);
-		LOGGER.log(Level.INFO, "PEP message arrived");
-		synchronized (mutex) {
-			mutex.notifyAll();
-		}
+		return "";
 	}
 	
 	public void start() throws InterruptedException, ExecutionException {
