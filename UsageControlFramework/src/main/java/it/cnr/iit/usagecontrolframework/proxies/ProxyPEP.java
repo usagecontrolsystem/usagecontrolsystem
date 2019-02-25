@@ -249,7 +249,7 @@ public class ProxyPEP extends Proxy implements PEPInterface {
 	}
 	
 	@Override
-	public void receiveResponse(Message message) {
+	public String receiveResponse(Message message) {
 		switch (connection) {
 			case API:
 				abstractPEP.receiveResponse(message);
@@ -281,6 +281,7 @@ public class ProxyPEP extends Proxy implements PEPInterface {
 				LOGGER.log(Level.SEVERE, "Error in the receive response");
 				break;
 		}
+		return "";
 		
 	}
 	
