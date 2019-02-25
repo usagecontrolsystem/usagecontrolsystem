@@ -172,6 +172,7 @@ public class PEPRest implements PEPInterface, Runnable {
 			return null; //TODO: exception instead
 		}
 		// END parameter checking
+		responses.put(message.getID(), message);
 
 		LOGGER.log(Level.INFO, "[TIME] ON_GOING_EVAL " + System.currentTimeMillis());
 
@@ -201,6 +202,7 @@ public class PEPRest implements PEPInterface, Runnable {
 			}
 
 		} else {
+			// generic to cater for multiple scenarios, e.g. pause/resume/pause/end etc...
 			// TODO: How do you resume or stop?
 			if (chPepMessage.getPDPEvaluation().getResponse().contains(PERMIT)) {
 				LOGGER.log(Level.INFO, "RESUME EXECUTION");
