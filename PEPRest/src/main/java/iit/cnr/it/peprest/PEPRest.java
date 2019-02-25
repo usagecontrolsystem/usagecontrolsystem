@@ -112,7 +112,7 @@ public class PEPRest implements PEPInterface, Runnable {
 			return tryAccessMessage.getID();
 		} else {
 			LOGGER.log(Level.WARNING,"isDeliveredToDestination: "+ message.isDeliveredToDestination());
-			return null; //TODO: perhaps an exception
+			throw Throwables.propagate(new IllegalAccessException("Unable to deliver messsage to UCS"));
 		}
 	}
 
@@ -129,11 +129,11 @@ public class PEPRest implements PEPInterface, Runnable {
 				return startAccessMessage.getID();
 			} else {
 				LOGGER.log(Level.WARNING, "isDeliveredToDestination: "+ message.isDeliveredToDestination());
-				return null; //TODO: perhaps an exception
+				throw Throwables.propagate(new IllegalAccessException("Unable to deliver messsage to UCS"));
 			}
 		} catch (Exception e) {
-			// TODO: proper exception handling. Can it ever throw an exception?
-			return null;
+			LOGGER.log(Level.SEVERE, e.getLocalizedMessage());
+			throw Throwables.propagate(e); 
 		}
 	}
 
@@ -151,11 +151,11 @@ public class PEPRest implements PEPInterface, Runnable {
 				return endAccessMessage.getID();
 			} else {
 				LOGGER.log(Level.INFO, "isDeliveredToDestination: "+ message.isDeliveredToDestination());
-				return null; //TODO: perhaps an exception
+				throw Throwables.propagate(new IllegalAccessException("Unable to deliver messsage to UCS"));
 			}
 		} catch (Exception e) {
-			// TODO: proper exception handling. Can it ever throw an exception?
-			return null;
+			LOGGER.log(Level.SEVERE, e.getLocalizedMessage());
+			throw Throwables.propagate(e); 
 		}
 	}
 
@@ -165,11 +165,11 @@ public class PEPRest implements PEPInterface, Runnable {
 		// BEGIN parameter checking
 		if (message == null || !(message instanceof ReevaluationResponse)) {
 			LOGGER.log(Level.SEVERE, "Message not valid");
-			return null; //TODO: exception instead
+			throw Throwables.propagate(new IllegalArgumentException("Invalid message type'")); 
 		}
 		if (!initialized) {
 			LOGGER.log(Level.SEVERE, "Cannot answer the message due to not properly initilization.");
-			return null; //TODO: exception instead
+			throw Throwables.propagate(new IllegalStateException("PEP is not properly initilization")); 
 		}
 		// END parameter checking
 		responses.put(message.getID(), message);
@@ -185,11 +185,12 @@ public class PEPRest implements PEPInterface, Runnable {
 			endAccess.setSessionId(chPepMessage.getPDPEvaluation().getSessionId());
 
 			message = requestManager.sendMessageToCH(endAccess);
-			if (!message.isDeliveredToDestination()) {
+			if (message.isDeliveredToDestination()) {
+				unanswered.put(message.getID(), message);
+			}else {
 				LOGGER.log(Level.INFO, "isDeliveredToDestination: "+ message.isDeliveredToDestination());
 				return message; //TODO: perhaps an exception
 			}
-			unanswered.put(message.getID(), message);
 		} else {
 			// generic to cater for multiple scenarios, e.g. pause/resume/pause/end etc...
 			// TODO: How do you resume or stop?
@@ -201,9 +202,8 @@ public class PEPRest implements PEPInterface, Runnable {
 			}
 			//TODO: something should happen at the end, e.g. audit log, so we can assert for success
 		}
-		// contextHandler.endAccess(endAccess);
-		message.setMotivation("OK");
 
+		message.setMotivation("OK");
 		return message;
 	}
 
