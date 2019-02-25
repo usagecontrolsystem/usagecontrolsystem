@@ -68,9 +68,9 @@ public class GivenContextHandlerRestSimulator extends Stage<GivenContextHandlerR
 		return self();
     }
 
-    public GivenContextHandlerRestSimulator a_mocked_context_handler_for_$( @Quoted String operation ) {
+    public GivenContextHandlerRestSimulator a_mocked_context_handler_for_$( @Quoted String operationUri ) {
     	wireMockContextHandler = new WireMock(getHost(), getPort());
-		post = post(urlPathMatching("/" + operation));
+		post = post(urlPathMatching(operationUri));
     	return self();
     }
 

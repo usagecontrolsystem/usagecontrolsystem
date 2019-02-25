@@ -71,7 +71,7 @@ public class PEPRest implements PEPInterface, Runnable {
 
 	@VisibleForTesting
 	Object mutex = new Object();
-
+	
 	private volatile boolean initialized = false;
 
 	public PEPRest() {
@@ -175,30 +175,19 @@ public class PEPRest implements PEPInterface, Runnable {
 		LOGGER.log(Level.INFO, "[TIME] ON_GOING_EVAL " + System.currentTimeMillis());
 
 		ReevaluationResponse chPepMessage = (ReevaluationResponse) message;
-		if ( pepConf.getRevoke().equals("HARD")) { //TODO: is HARD case still needed?
+		if ( pepConf.getRevoke().equals("HARD")) { 
 			LOGGER.log(Level.INFO, "[TIME] sending endacces " + System.currentTimeMillis());
 			EndAccessMessage endAccess = new EndAccessMessage(configuration.getPepConf().getId(),
 					configuration.getPepConf().getIp());
 			endAccess.setCallback(null, MEAN.REST);
 			endAccess.setSessionId(chPepMessage.getPDPEvaluation().getSessionId());
 
-			//requestManager.sendMessageToCH(endAccess);
-			// TODO: may be as alternative? - begin block
 			message = requestManager.sendMessageToCH(endAccess);
 			if (!message.isDeliveredToDestination()) {
 				LOGGER.log(Level.INFO, "isDeliveredToDestination: "+ message.isDeliveredToDestination());
 				return message; //TODO: perhaps an exception
 			}
 			unanswered.put(message.getID(), message);
-			// TODO: may be as alternative? - end block
-
-			try {
-				message = waitForResponse(endAccess.getID());
-				LOGGER.log(Level.INFO, "[TIME] endacces END" + System.currentTimeMillis());
-			} catch (InterruptedException | ExecutionException e) {
-				LOGGER.log(Level.SEVERE, e.getLocalizedMessage());
-			}
-
 		} else {
 			// generic to cater for multiple scenarios, e.g. pause/resume/pause/end etc...
 			// TODO: How do you resume or stop?

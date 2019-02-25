@@ -35,7 +35,6 @@ import oasis.names.tc.xacml.core.schema.wd_17.ResultType;
 @WebAppConfiguration
 public class PEPRestAbstractTest {
 
-    protected static final String TRY_ACCESS_RESPONSE_URI = "/tryAccessResponse";
     protected static final String SEND_URI = "/send";
     protected static final String FINISH_URI = "/finish";
 

@@ -1,5 +1,6 @@
 package iit.cnr.it.peprest;
 
+import static iit.cnr.it.ucsinterface.node.NodeInterface.TRYACCESSRESPONSE_REST;
 import static org.apache.http.HttpStatus.SC_BAD_REQUEST;
 import static org.apache.http.HttpStatus.SC_OK;
 import static org.junit.Assert.assertEquals;
@@ -38,7 +39,7 @@ public class PEPUCSCommunicationTest extends PEPRestAbstractTest {
 		message.setPurpose(PURPOSE.TRYACCESS);
 		String jsonMessage = new Gson().toJson(message);
 
-	    MockHttpServletResponse mvcResponse = postResponseToPEPRest(jsonMessage, TRY_ACCESS_RESPONSE_URI);
+	    MockHttpServletResponse mvcResponse = postResponseToPEPRest(jsonMessage, TRYACCESSRESPONSE_REST);
 
 	    assertEquals(SC_OK, mvcResponse.getStatus());
 	    assertNotNull(mvcResponse.getContentAsString());
@@ -46,7 +47,7 @@ public class PEPUCSCommunicationTest extends PEPRestAbstractTest {
 
 	@Test
 	public void tryAccessResponseRequestWithEmptyMessageResultsInBadRequestResponse() throws Exception {
-	     assertEquals(SC_BAD_REQUEST, postResponseToPEPRest("", TRY_ACCESS_RESPONSE_URI).getStatus());
+	     assertEquals(SC_BAD_REQUEST, postResponseToPEPRest("", TRYACCESSRESPONSE_REST).getStatus());
 	}
 
 	//@Test
@@ -59,7 +60,7 @@ public class PEPUCSCommunicationTest extends PEPRestAbstractTest {
 		message.setPurpose(PURPOSE.TRYACCESS);
 		String jsonMessage = new Gson().toJson(message);
 
-	    MockHttpServletResponse mvcResponse = postResponseToPEPRest(jsonMessage, TRY_ACCESS_RESPONSE_URI);
+	    MockHttpServletResponse mvcResponse = postResponseToPEPRest(jsonMessage, TRYACCESSRESPONSE_REST);
 
 	    assertEquals(SC_OK, mvcResponse.getStatus());
 	    assertNotNull(mvcResponse.getContentAsString());

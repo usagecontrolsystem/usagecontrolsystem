@@ -65,7 +65,7 @@ public class ThenMessage extends Stage<ThenMessage> {
 	}
 
 	public ThenMessage the_asynch_HTTP_POST_request_for_$_was_received_by_context_handler( @Quoted String operation) {
-		wireMockContextHandler.verifyThat( postRequestedFor( urlEqualTo("/"+operation) )
+		wireMockContextHandler.verifyThat( postRequestedFor( urlEqualTo(operation) )
 		        .withHeader( "Content-Type", equalTo("application/json")) );
 		return self();
 	}
