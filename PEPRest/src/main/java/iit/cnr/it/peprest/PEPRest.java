@@ -15,7 +15,6 @@
  ******************************************************************************/
 package iit.cnr.it.peprest;
 
-import java.util.HashMap;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
@@ -65,7 +64,7 @@ public class PEPRest implements PEPInterface, Runnable {
 	private RequestManagerToExternalInterface requestManager;
 
 	// map of unanswered messages, the key is the id of the message
-	private HashMap<String, Message> unanswered = new HashMap<>();
+	private ConcurrentHashMap<String, Message> unanswered = new ConcurrentHashMap<>();
 
 	@VisibleForTesting
 	ConcurrentHashMap<String, Message> responses = new ConcurrentHashMap<>();
@@ -159,9 +158,8 @@ public class PEPRest implements PEPInterface, Runnable {
 		}
 	}
 
-	@Override
 	@Async
-	public Message onGoingEvaluation(Message message) {
+	public Message onGoingEvaluationOld(Message message) {
 		// BEGIN parameter checking
 		if (message == null || !(message instanceof ReevaluationResponse)) {
 			LOGGER.log(Level.SEVERE, "Message not valid");
@@ -218,14 +216,104 @@ public class PEPRest implements PEPInterface, Runnable {
 		return message;
 	}
 
-	@Override
 	@Async
-	public void receiveResponse(Message message) {
+	public void receiveResponseOld(Message message) {
 		responses.put(message.getID(), message);
 		synchronized (mutex) {
 			mutex.notifyAll();
 		}
 	}
+
+	@Override
+	@Async
+	public String receiveResponse(Message message) {
+		try {
+			responses.put(message.getID(), message);
+			unanswered.remove(message.getID());
+			return handleResponse(message);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return "";
+		}
+	}
+
+	private String handleResponse(Message message) throws Exception {
+		if(message instanceof TryAccessResponse) {
+			return handleTryAccessResponse((TryAccessResponse) message);
+		} else if(message instanceof StartAccessResponse) {
+			return handleStartAccessResponse((StartAccessResponse) message);	
+		} else if(message instanceof ReevaluationResponse) {
+			return handleReevaluationResponse((ReevaluationResponse) message);
+		} else if(message instanceof EndAccessResponse) {
+			return handleEndAccessResponse((EndAccessResponse) message);
+		} else {
+			throw new Exception("INVALID MESSAGE: " + message.toString());
+		}
+	}
+
+	private String handleTryAccessResponse(TryAccessResponse response) {
+		LOGGER.info(response.getID() + " Evaluation " + response.getPDPEvaluation().getResponse());
+		if(response.getPDPEvaluation().getResponse().contains("Permit")) {
+			//TRIGGER STARTACCESS AUTOMATICALLY (?)
+		}
+		return response.getPDPEvaluation().getResponse();
+	}
+
+	private String handleStartAccessResponse(StartAccessResponse response) {
+		LOGGER.info(response.getID() + " Evaluation " + response.getPDPEvaluation().getResponse());
+		return response.getPDPEvaluation().getResponse();
+	}
+
+	private String handleReevaluationResponse(ReevaluationResponse response) {
+		onGoingEvaluation(response);
+		return response.getPDPEvaluation().getResponse();
+	}
+
+	private String handleEndAccessResponse(EndAccessResponse response) {
+		LOGGER.info(response.getID() + " Evaluation " + response.getPDPEvaluation().getResponse());
+		return response.getPDPEvaluation().getResponse();
+	}
+	
+	@Override
+	@Async
+	public Message onGoingEvaluation(Message message) {
+		// BEGIN parameter checking
+		if (message == null || !(message instanceof ReevaluationResponse)) {
+			System.err.println("Message not valid");
+			return null;
+		}
+		if (!initialized) {
+			System.err.println("Cannot answer the message");
+			return null;
+		}
+		// END parameter checking
+
+		System.out.println("[TIME] ON_GOING_EVAL " + System.currentTimeMillis());
+
+		ReevaluationResponse chPepMessage = (ReevaluationResponse) message;
+		if (pepConf.getRevoke().equals("HARD")) {
+			System.out.println("[TIME] sending endacces " + System.currentTimeMillis());
+			EndAccessMessage endAccess = new EndAccessMessage(configuration.getPepConf().getId(),
+					configuration.getPepConf().getIp());
+			endAccess.setCallback(null, MEAN.REST);
+			endAccess.setSessionId(chPepMessage.getPDPEvaluation().getSessionId());
+			requestManager.sendMessageToCH(endAccess);
+
+		} else {
+			if (chPepMessage.getPDPEvaluation().getResponse().contains("Permit")) {
+				LOGGER.log(Level.INFO, "RESUME EXECUTION");
+			}
+			if (chPepMessage.getPDPEvaluation().getResponse().contains("Deny")) {
+				LOGGER.log(Level.INFO, "STOP EXECUTION");
+			}
+		}
+		// contextHandler.endAccess(endAccess);
+		message.setMotivation("OK");
+
+		return message;
+	}
+
 
 	@Override
 	public void run() { //TODO: this method is for local demo tests and needs to be re-coded for PROD
@@ -307,7 +395,7 @@ public class PEPRest implements PEPInterface, Runnable {
 		//TODO: something should happen at the end, e.g. audit log, so we can assert that it succeeded
 	}
 
-	public HashMap<String, Message> getUnanswered() {
+	public ConcurrentHashMap<String, Message> getUnanswered() {
 		return unanswered;
 	}
 }
