@@ -41,7 +41,7 @@ public class PEPRestCommunicationTest extends PEPRestAbstractTest {
 
 		when(pepRest.startAccess(anyString())).thenReturn(SESSION_ID_01);
 
-	    MockHttpServletResponse mvcResponse = postResponseToPEPRest("", SEND_URI);
+	    MockHttpServletResponse mvcResponse = postStringResponseToPEPRest("", SEND_URI);
 
 	    assertEquals(SC_OK, mvcResponse.getStatus());
 	}
@@ -52,7 +52,7 @@ public class PEPRestCommunicationTest extends PEPRestAbstractTest {
 		when(pepRest.endAccess(SESSION_ID_01)).thenReturn(SESSION_ID_01);
 		when(pepRest.waitForResponse(SESSION_ID_01)).thenReturn(new EndAccessResponse(SESSION_ID_01));
 
-	    MockHttpServletResponse mvcResponse = postResponseToPEPRest(SESSION_ID_01, FINISH_URI);
+	    MockHttpServletResponse mvcResponse = postStringResponseToPEPRest(SESSION_ID_01, FINISH_URI);
 
 	    assertEquals(SC_OK, mvcResponse.getStatus());
 	    assertNotNull(mvcResponse.getContentAsString());
@@ -60,6 +60,6 @@ public class PEPRestCommunicationTest extends PEPRestAbstractTest {
 
 	@Test
 	public void finishRequestWithoutSessionIdResultsInBadRequestResponse() throws Exception {
-	     assertEquals(SC_BAD_REQUEST, postResponseToPEPRest("", FINISH_URI).getStatus());
+	     assertEquals(SC_BAD_REQUEST, postStringResponseToPEPRest("", FINISH_URI).getStatus());
 	}
 }

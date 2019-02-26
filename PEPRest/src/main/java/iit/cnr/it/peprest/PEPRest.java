@@ -194,10 +194,10 @@ public class PEPRest implements PEPInterface, Runnable {
 		} else {
 			// generic to cater for multiple scenarios, e.g. pause/resume/pause/end etc...
 			// TODO: How do you resume or stop?
-			if (chPepMessage.getPDPEvaluation().getResponse().contains(PERMIT)) {
+			if (chPepMessage.getPDPEvaluation().getResult().contains(PERMIT)) {
 				LOGGER.log(Level.INFO, "RESUME EXECUTION");
 			}
-			if (chPepMessage.getPDPEvaluation().getResponse().contains(DENY)) {
+			if (chPepMessage.getPDPEvaluation().getResult().contains(DENY)) {
 				LOGGER.log(Level.INFO, "STOP EXECUTION");
 			}
 			//TODO: something should happen at the end, e.g. audit log, so we can assert for success
@@ -244,26 +244,26 @@ public class PEPRest implements PEPInterface, Runnable {
 	}
 
 	private String handleTryAccessResponse(TryAccessResponse response) {
-		LOGGER.info(response.getID() + " Evaluation " + response.getPDPEvaluation().getResponse());
-		if(response.getPDPEvaluation().getResponse().contains("Permit")) {
+		LOGGER.info(" Evaluation " + response.getPDPEvaluation().getResult());
+		if(response.getPDPEvaluation().getResult().contains("Permit")) {
 			//TRIGGER STARTACCESS AUTOMATICALLY (?)
 		}
-		return response.getPDPEvaluation().getResponse();
+		return response.getPDPEvaluation().getResult();
 	}
 
 	private String handleStartAccessResponse(StartAccessResponse response) {
-		LOGGER.info(response.getID() + " Evaluation " + response.getPDPEvaluation().getResponse());
-		return response.getPDPEvaluation().getResponse();
+		LOGGER.info(response.getID() + " Evaluation " + response.getPDPEvaluation().getResult());
+		return response.getPDPEvaluation().getResult();
 	}
 
 	private String handleReevaluationResponse(ReevaluationResponse response) {
 		onGoingEvaluation(response);
-		return response.getPDPEvaluation().getResponse();
+		return response.getPDPEvaluation().getResult();
 	}
 
 	private String handleEndAccessResponse(EndAccessResponse response) {
-		LOGGER.info(response.getID() + " Evaluation " + response.getPDPEvaluation().getResponse());
-		return response.getPDPEvaluation().getResponse();
+		LOGGER.info(response.getID() + " Evaluation " + response.getPDPEvaluation().getResult());
+		return response.getPDPEvaluation().getResult();
 	}
 	
 
@@ -273,11 +273,11 @@ public class PEPRest implements PEPInterface, Runnable {
 			String id = tryAccess();
 			TryAccessResponse tryAccessResponse = (TryAccessResponse) waitForResponse(id);
 			LOGGER.log(Level.INFO, "[TIME] TRYACCESS END " + System.currentTimeMillis());
-			if (tryAccessResponse.getPDPEvaluation().getResponse().contains(PERMIT)) {
+			if (tryAccessResponse.getPDPEvaluation().getResult().contains(PERMIT)) {
 				id = startAccess(tryAccessResponse.getSessionId());
 				StartAccessResponse startAccessResponse = (StartAccessResponse) waitForResponse(id);
 				LOGGER.log(Level.INFO, "[TIME] STARTACCESS END " + System.currentTimeMillis());
-				if (startAccessResponse.getPDPEvaluation().getResponse().contains(PERMIT)) {
+				if (startAccessResponse.getPDPEvaluation().getResult().contains(PERMIT)) {
 				} else {
 					LOGGER.log(Level.SEVERE, "[TIME] STARTACCESS DENIED " + System.currentTimeMillis());
 				}

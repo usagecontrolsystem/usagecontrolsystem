@@ -1,7 +1,6 @@
 package iit.cnr.it.peprest;
 
 import static iit.cnr.it.ucsinterface.node.NodeInterface.TRYACCESSRESPONSE_REST;
-import static org.apache.http.HttpStatus.SC_BAD_REQUEST;
 import static org.apache.http.HttpStatus.SC_OK;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -9,6 +8,7 @@ import static org.mockito.Mockito.doCallRealMethod;
 
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.apache.http.HttpStatus;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -36,12 +36,8 @@ public class PEPUCSCommunicationTest extends PEPRestAbstractTest {
 
 		Message tryAccessResponse = buildTryAccessResponseDeny();
 		doCallRealMethod().when(pepRest).receiveResponse(Mockito.any(Message.class));
-		
-//		Message message = new Message("source", "destination", SESSION_ID_01);
-//		message.setPurpose(PURPOSE.TRYACCESS);
-		String jsonMessage = new Gson().toJson(tryAccessResponse);
 
-	    MockHttpServletResponse mvcResponse = postResponseToPEPRest(jsonMessage, TRYACCESSRESPONSE_REST);
+	    MockHttpServletResponse mvcResponse = postResponseToPEPRest(tryAccessResponse, TRYACCESSRESPONSE_REST);
 
 	    assertEquals(SC_OK, mvcResponse.getStatus());
 	    assertNotNull(mvcResponse.getContentAsString());
@@ -49,7 +45,7 @@ public class PEPUCSCommunicationTest extends PEPRestAbstractTest {
 
 	@Test
 	public void tryAccessResponseRequestWithEmptyMessageResultsInBadRequestResponse() throws Exception {
-	     assertEquals(SC_BAD_REQUEST, postResponseToPEPRest("", TRYACCESSRESPONSE_REST).getStatus());
+	     assertEquals(HttpStatus.SC_UNSUPPORTED_MEDIA_TYPE, postStringResponseToPEPRest("", TRYACCESSRESPONSE_REST).getStatus());
 	}
 
 	//@Test
@@ -60,9 +56,8 @@ public class PEPUCSCommunicationTest extends PEPRestAbstractTest {
 
 		Message message = new Message("source", "destination", SESSION_ID_01);
 		message.setPurpose(PURPOSE.TRYACCESS);
-		String jsonMessage = new Gson().toJson(message);
 
-	    MockHttpServletResponse mvcResponse = postResponseToPEPRest(jsonMessage, TRYACCESSRESPONSE_REST);
+	    MockHttpServletResponse mvcResponse = postResponseToPEPRest(message, TRYACCESSRESPONSE_REST);
 
 	    assertEquals(SC_OK, mvcResponse.getStatus());
 	    assertNotNull(mvcResponse.getContentAsString());

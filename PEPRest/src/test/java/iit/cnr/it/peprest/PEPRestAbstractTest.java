@@ -22,6 +22,7 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import iit.cnr.it.peprest.proxy.ProxyRequestManager;
+import iit.cnr.it.ucsinterface.message.Message;
 import iit.cnr.it.ucsinterface.message.PDPResponse;
 import iit.cnr.it.ucsinterface.message.startaccess.StartAccessResponse;
 import iit.cnr.it.ucsinterface.message.tryaccess.TryAccessResponse;
@@ -57,9 +58,20 @@ public class PEPRestAbstractTest {
 		mvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
 	}
 
-	protected MockHttpServletResponse postResponseToPEPRest(String jsonMessage, String uri) throws Exception{
+	protected MockHttpServletResponse postStringResponseToPEPRest(String jsonMessage, String uri) throws Exception{
 	    MvcResult mvcResult = mvc.perform(MockMvcRequestBuilders.post(uri)
 				   .contentType(MediaType.TEXT_PLAIN_VALUE).content(jsonMessage)).andReturn();
+		return mvcResult.getResponse();
+	}
+	
+	protected MockHttpServletResponse postResponseToPEPRest(Message jsonMessage, String uri) throws Exception{
+	    System.out.println("RESPONSE: " + new ObjectMapper().writeValueAsString(jsonMessage));
+	    if(jsonMessage instanceof TryAccessResponse) {
+	    	TryAccessResponse response = (TryAccessResponse) jsonMessage;
+	    	System.out.println("RESPONSE: " + response.getPDPEvaluation().getResult());
+	    }
+		MvcResult mvcResult = mvc.perform(MockMvcRequestBuilders.post(uri)
+				   .contentType(MediaType.APPLICATION_JSON_VALUE).content(new ObjectMapper().writeValueAsString(jsonMessage))).andReturn();
 		return mvcResult.getResponse();
 	}
 

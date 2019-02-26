@@ -4,16 +4,15 @@ import java.io.IOException;
 import java.util.Optional;
 import java.util.logging.Logger;
 
-import org.apache.http.HttpStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.http.MediaType;
-import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import iit.cnr.it.ucsinterface.message.endaccess.EndAccessResponse;
@@ -43,32 +42,26 @@ public class PEPUCSCommunication {
 	  @ApiResponses(value = {
 	      @ApiResponse(code = 500, message = "Invalid message received"),
 	      @ApiResponse(code = 200, message = "OK") })
-	  @RequestMapping(method = RequestMethod.POST, value = NodeInterface.ONGOINGRESPONSE_REST, consumes = MediaType.TEXT_PLAIN_VALUE)
-	  public void onGoingEvaluation(@RequestBody() String message) {
-	    // BEGIN parameter checking
+	  @RequestMapping(method = RequestMethod.POST, value = NodeInterface.ONGOINGRESPONSE_REST, consumes = MediaType.APPLICATION_JSON_VALUE)
+	  public void onGoingEvaluation(@RequestBody() ReevaluationResponse message) {
+	    /*// BEGIN parameter checking
 		Optional<?> optMessage = messageFromJson(message, ReevaluationResponse.class);
 		if (!optMessage.isPresent()) {
 	    	LOGGER.warning("error deserializing in onGoingEvaluation");
 	    	throw new HttpMessageNotReadableException(HttpStatus.SC_NO_CONTENT+" : Invalid message Content");
 		}
 	    // END parameter checking
-	    pepRest.onGoingEvaluation((ReevaluationResponse) optMessage.get());
-	  }	  
-	  
+	    pepRest.onGoingEvaluation((ReevaluationResponse) optMessage.get());*/
+		  pepRest.onGoingEvaluation(message);  
+	  }
+
 	  @ApiOperation(httpMethod = "POST", value = "Receives request from CH for tryAccess operation")
 	  @ApiResponses(value = {
 	      @ApiResponse(code = 500, message = "Invalid message received"),
 	      @ApiResponse(code = 200, message = "OK") })
 	  @RequestMapping(method = RequestMethod.POST, value = "/tryAccessResponse", consumes = MediaType.APPLICATION_JSON_VALUE)
-	  public void tryAccessResponse(@RequestBody() String message) {
-		// BEGIN parameter checking
-		Optional<?> optMessage = messageFromJson(message, TryAccessResponse.class);
-	    if (!optMessage.isPresent()) {
-	    	LOGGER.warning("error deserializing in tryAccessResponse");
-	    	throw new HttpMessageNotReadableException(HttpStatus.SC_NO_CONTENT+" : Invalid message Content");
-		}
-	    // END parameter checking
-		pepRest.receiveResponse((TryAccessResponse) optMessage.get());
+	  public void tryAccessResponse(@RequestBody() TryAccessResponse message) {
+		  pepRest.receiveResponse(message);
 	  }
 
 	  @ApiOperation(httpMethod = "POST", value = "Receives request from CH for startAccess operation")
@@ -76,16 +69,8 @@ public class PEPUCSCommunication {
 	      @ApiResponse(code = 500, message = "Invalid message received"),
 	      @ApiResponse(code = 200, message = "OK") })
 	  @RequestMapping(method = RequestMethod.POST, value = "/startAccessResponse", consumes = MediaType.TEXT_PLAIN_VALUE)
-	  public void startAccessResponse(@RequestBody() String message) {
-		// BEGIN parameter checking
-	    Optional<?> optMessage = messageFromJson(message, StartAccessResponse.class);
-	    if (!optMessage.isPresent()) {
-	    	LOGGER.warning("error deserializing in startAccessResponse");
-	    	throw new HttpMessageNotReadableException(HttpStatus.SC_NO_CONTENT+" : Invalid message Content");
-	    }
-	    // END parameter checking
-
-		pepRest.receiveResponse((StartAccessResponse) optMessage.get());
+	  public void startAccessResponse(@RequestBody() StartAccessResponse message) {
+		pepRest.receiveResponse(message);
 	  }
 
 	  @ApiOperation(httpMethod = "POST", value = "Receives request from CH for tryAccess operation")
@@ -93,16 +78,8 @@ public class PEPUCSCommunication {
 	      @ApiResponse(code = 500, message = "Invalid message received"),
 	      @ApiResponse(code = 200, message = "OK") })
 	  @RequestMapping(method = RequestMethod.POST, value = "/endAccessResponse", consumes = MediaType.TEXT_PLAIN_VALUE)
-	  public void endAccessResponse(@RequestBody() String message) {
-	    // BEGIN parameter checking
-	    Optional<?> optMessage = messageFromJson(message, EndAccessResponse.class);
-	    if (!optMessage.isPresent()) {
-	    	LOGGER.warning("error deserializing in endAccessResponse");
-	    	throw new HttpMessageNotReadableException(HttpStatus.SC_NO_CONTENT+" : Invalid message Content");
-	    }
-	    // END parameter checking
-	    
-	    pepRest.receiveResponse((EndAccessResponse) optMessage.get());
+	  public void endAccessResponse(@RequestBody() EndAccessResponse message) {
+	  pepRest.receiveResponse(message);
 	  }
 
 	  // TODO to be deleted if rest interface is changed to not use strings
