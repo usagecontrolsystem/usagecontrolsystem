@@ -15,6 +15,8 @@
  ******************************************************************************/
 package iit.cnr.it.ucsinterface.message.tryaccess;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 
 import iit.cnr.it.ucsinterface.message.Message;
@@ -32,14 +34,12 @@ import iit.cnr.it.ucsinterface.pdp.PDPEvaluation;
  * @author antonio
  *
  */
+
 public final class TryAccessResponse extends Message {
-	// the content of the message
-	
-	/**
-	 * 
-	 */
 	private static final long	serialVersionUID					= 1L;
-	TryAccessResponseContent	tryAccessResponseContent	= new TryAccessResponseContent();
+	
+	private TryAccessResponseContent	tryAccessResponseContent	= new TryAccessResponseContent();
+	
 	// states if the message has been correctly created
 	private volatile boolean	responseInitialized				= false;
 	
@@ -131,18 +131,28 @@ public final class TryAccessResponse extends Message {
 	public void setId(String id) {
 		super.setId(id);
 	}
-	
+
+	public TryAccessResponseContent getTryAccessResponseContent() {
+		return tryAccessResponseContent;
+	}
+
 	public static TryAccessResponse buildFromString(String string) {
 		Gson gson = new Gson();
 		// System.out.println("FROM string " + string);
 		return gson.fromJson(string, TryAccessResponse.class);
 	}
-	
+
 	@Override
 	public String toString() {
 		// System.out.println("TO STRING");
 		// System.out.println(new Gson().toJson(this));
-		return new Gson().toJson(this);
+		//return new Gson().toJson(this);
+		try {
+			return new ObjectMapper().writeValueAsString(this);
+		} catch (JsonProcessingException e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
 	
 }

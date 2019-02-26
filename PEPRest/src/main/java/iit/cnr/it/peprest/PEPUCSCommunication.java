@@ -59,16 +59,31 @@ public class PEPUCSCommunication {
 	  @ApiResponses(value = {
 	      @ApiResponse(code = 500, message = "Invalid message received"),
 	      @ApiResponse(code = 200, message = "OK") })
-	  @RequestMapping(method = RequestMethod.POST, value = "/tryAccessResponse", consumes = MediaType.TEXT_PLAIN_VALUE)
-	  public void tryAccessResponse(@RequestBody() String message) {
+	  @RequestMapping(method = RequestMethod.POST, value = "/tryAccessResponse2", consumes = MediaType.APPLICATION_JSON_VALUE)
+	  public void tryAccessResponse2(@RequestBody() TryAccessResponse message) {
 		// BEGIN parameter checking
-		Optional<?> optMessage = messageFromJson(message, TryAccessResponse.class);
-		if (!optMessage.isPresent()) {
+		if (message != null) {
 	    	LOGGER.warning("error deserializing in tryAccessResponse");
 	    	throw new HttpMessageNotReadableException(HttpStatus.SC_NO_CONTENT+" : Invalid message Content");
 		}
 	    // END parameter checking
-
+		pepRest.receiveResponse(message);
+	  }
+	  
+	  
+	  @ApiOperation(httpMethod = "POST", value = "Receives request from CH for tryAccess operation")
+	  @ApiResponses(value = {
+	      @ApiResponse(code = 500, message = "Invalid message received"),
+	      @ApiResponse(code = 200, message = "OK") })
+	  @RequestMapping(method = RequestMethod.POST, value = "/tryAccessResponse", consumes = MediaType.APPLICATION_JSON_VALUE)
+	  public void tryAccessResponse(@RequestBody() String message) {
+		// BEGIN parameter checking
+		Optional<?> optMessage = messageFromJson(message, TryAccessResponse.class);
+	    if (!optMessage.isPresent()) {
+	    	LOGGER.warning("error deserializing in tryAccessResponse");
+	    	throw new HttpMessageNotReadableException(HttpStatus.SC_NO_CONTENT+" : Invalid message Content");
+		}
+	    // END parameter checking
 		pepRest.receiveResponse((TryAccessResponse) optMessage.get());
 	  }
 
@@ -107,10 +122,12 @@ public class PEPUCSCommunication {
 	  }
 
 	  // TODO to be deleted if rest interface is changed to not use strings
-	  public <T> Optional<T> messageFromJson(String json, Class<T> classType) {
+	  public static <T> Optional<T> messageFromJson(String json, Class<T> classType) {
 		ObjectMapper objMapper = new ObjectMapper();
 		try {
-			return Optional.of(objMapper.readValue(json, classType));
+			T obj = objMapper.readValue(json, classType);
+			if (obj != null) 
+				return Optional.of(obj);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

@@ -92,7 +92,6 @@ public final class StartAccessMessage extends Message {
 	
 	@Override
 	public int compareTo(Message o) {
-		// TODO Auto-generated method stub
 		return 0;
 	}
 	

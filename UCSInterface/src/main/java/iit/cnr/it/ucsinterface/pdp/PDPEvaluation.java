@@ -45,8 +45,7 @@ import iit.cnr.it.ucsinterface.message.PDPResponse;
  */
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-@JsonTypeInfo(use = JsonTypeInfo.Id.NAME,
-include = JsonTypeInfo.As.EXISTING_PROPERTY, property = "evaluationType")
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.EXISTING_PROPERTY, property = "evaluationType")
 @JsonSubTypes({
 	@JsonSubTypes.Type(value = PDPResponse.class, name = "PDPResponse")
 })

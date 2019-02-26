@@ -15,7 +15,9 @@
  ******************************************************************************/
 package iit.cnr.it.ucsinterface.message.tryaccess;
 
-import iit.cnr.it.ucsinterface.message.PDPResponse;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import iit.cnr.it.ucsinterface.pdp.PDPEvaluation;
 
 /**
@@ -29,14 +31,18 @@ import iit.cnr.it.ucsinterface.pdp.PDPEvaluation;
  * @author antonio
  *
  */
-final public class TryAccessResponseContent {
+
+@JsonIgnoreProperties(ignoreUnknown = true)
+public class TryAccessResponseContent {
 	// the evaluation provided by the PDP
+	@JsonProperty
 	private PDPEvaluation				pdpEvaluation;
 	// the id of the session
 	private String						newSessionId;
 	// the status of the tryAccess
 	private String						status;
 	// states if the response is a correct object or not
+	@JsonProperty
 	private volatile boolean	contentInitialized	= false;
 	
 	/**

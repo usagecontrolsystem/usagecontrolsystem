@@ -17,7 +17,6 @@ package iit.cnr.it.ucsinterface.message.reevaluation;
 
 import iit.cnr.it.ucsinterface.message.Message;
 import iit.cnr.it.ucsinterface.message.PART;
-import iit.cnr.it.ucsinterface.message.PDPResponse;
 import iit.cnr.it.ucsinterface.message.PURPOSE;
 import iit.cnr.it.ucsinterface.pdp.PDPEvaluation;
 
@@ -114,5 +113,5 @@ public class ReevaluationResponse extends Message {
   public String getPepID() {
     return this.pepID;
   }
-
+  
 }

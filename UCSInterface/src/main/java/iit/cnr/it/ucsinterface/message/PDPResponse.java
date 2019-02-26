@@ -20,6 +20,7 @@ import java.util.List;
 
 import org.wso2.balana.ctx.ResponseCtx;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.annotations.VisibleForTesting;
 
 import iit.cnr.it.ucsinterface.pdp.PDPEvaluation;
@@ -43,6 +44,7 @@ import oasis.names.tc.xacml.core.schema.wd_17.ResponseType;
  */
 public final class PDPResponse implements PDPEvaluation {
 
+	@JsonProperty
 	public final String evaluationType = this.getClass().getSimpleName();
 
 	// the response provided by the PDP object

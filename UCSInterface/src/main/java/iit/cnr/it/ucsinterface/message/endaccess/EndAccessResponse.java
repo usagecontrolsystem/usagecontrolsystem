@@ -17,7 +17,6 @@ package iit.cnr.it.ucsinterface.message.endaccess;
 
 import iit.cnr.it.ucsinterface.message.Message;
 import iit.cnr.it.ucsinterface.message.PART;
-import iit.cnr.it.ucsinterface.message.PDPResponse;
 import iit.cnr.it.ucsinterface.message.PURPOSE;
 import iit.cnr.it.ucsinterface.pdp.PDPEvaluation;
 

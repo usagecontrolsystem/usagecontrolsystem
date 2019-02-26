@@ -19,7 +19,6 @@ import java.util.ArrayList;
 
 import iit.cnr.it.ucsinterface.message.Message;
 import iit.cnr.it.ucsinterface.message.PURPOSE;
-import iit.cnr.it.ucsinterface.sessionmanager.Session;
 import iit.cnr.it.ucsinterface.sessionmanager.SessionInterface;
 
 /**
@@ -44,45 +43,40 @@ import iit.cnr.it.ucsinterface.sessionmanager.SessionInterface;
  *
  */
 public class ReevaluationMessage extends Message {
+	private static final long serialVersionUID = 1L;
+	// the session to be reevaluated
+	private ArrayList<String> sessionId;
+	private SessionInterface session;
 
-  /**
-   * 
-   */
-  private static final long serialVersionUID = 1L;
-  // the session to be reevaluated
-  private ArrayList<String> sessionId;
-  private SessionInterface session;
+	/**
+	 * Constructor for the reevaluation message
+	 * 
+	 * @param source      is the ip of the source of the message
+	 * @param destination is the destination of the message
+	 */
+	public ReevaluationMessage(String source, String destination) {
+		super(source, destination);
+		purpose = PURPOSE.REEVALUATION;
+		sessionId = new ArrayList<>();
+	}
 
-  /**
-   * Constructor for the reevaluation message
-   * 
-   * @param source
-   *          is the ip of the source of the message
-   * @param destination
-   *          is the destination of the message
-   */
-  public ReevaluationMessage(String source, String destination) {
-    super(source, destination);
-    purpose = PURPOSE.REEVALUATION;
-    sessionId = new ArrayList<>();
-  }
+	// ---------------------------------------------------------------------------
+	// GETTERS and SETTERS
+	// ---------------------------------------------------------------------------
+	public ArrayList<String> getSessionId() {
+		return sessionId;
+	}
 
-  // ---------------------------------------------------------------------------
-  // GETTERS and SETTERS
-  // ---------------------------------------------------------------------------
-  public ArrayList<String> getSessionId() {
-    return sessionId;
-  }
+	public void setSessionId(ArrayList<String> sessionId) {
+		this.sessionId = sessionId;
+	}
 
-  public void setSessionId(ArrayList<String> sessionId) {
-    this.sessionId = sessionId;
-  }
+	public void setSession(SessionInterface session) {
+		this.session = session;
+	}
 
-  public void setSession(SessionInterface session) {
-    this.session = session;
-  }
-
-  public SessionInterface getSession() {
-    return session;
-  }
+	public SessionInterface getSession() {
+		return session;
+	}
+	
 }
