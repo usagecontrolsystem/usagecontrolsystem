@@ -18,9 +18,13 @@ package iit.cnr.it.ucsinterface.message;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.xml.bind.JAXBException;
+
 import org.wso2.balana.ctx.ResponseCtx;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.annotations.VisibleForTesting;
 
 import iit.cnr.it.ucsinterface.pdp.PDPEvaluation;
@@ -56,11 +60,11 @@ public final class PDPResponse implements PDPEvaluation {
 	// list of firing rules
 	private ArrayList<Integer>	firingRules	= new ArrayList<>();
 	// private String responseCtx;
-	
+
 	public PDPResponse() {
-		
+
 	}
-	
+
 	/**
 	 * Constructor for the PDP response
 	 * 
@@ -74,7 +78,7 @@ public final class PDPResponse implements PDPEvaluation {
 			initialized = false;
 		}
 	}
-	
+
 	public PDPResponse(ResponseCtx response) {
 		// BEGIN parameter checking
 		if (response == null) {
@@ -89,7 +93,7 @@ public final class PDPResponse implements PDPEvaluation {
 		}
 		initialized = true;
 	}
-	
+
 	/**
 	 * Sets the response provided by the PDP. This function also checks if the
 	 * response provided by the PDP is of a valid Response type.
@@ -101,22 +105,47 @@ public final class PDPResponse implements PDPEvaluation {
 	private boolean setResponse(String string) {
 		try {
 			responseType = JAXBUtility.unmarshalToObject(ResponseType.class, string);
+			initialized = true;
 			return true;
 		} catch (Exception exception) {
 			exception.printStackTrace();
 			return false;
 		}
 	}
-	
+
+	public boolean setResponse(ResponseType responseType) {
+		if(responseType != null) {	
+			this.responseType = responseType;
+			initialized = true;
+			return true;
+		} else { 
+			return false;
+		}
+	}
+
 	public void setFiringRules(ArrayList<Integer> firingRules) {
 		this.firingRules = new ArrayList<>(firingRules);
 	}
-	
+
 	// ---------------------------------------------------------------------------
 	// GETTERS
 	// ---------------------------------------------------------------------------
+	public ResponseType getResponseType() {
+		return responseType;
+	}
+	
 	@Override
 	public String getResponse() {
+		try {
+			return JAXBUtility.marshalToString(ResponseType.class, responseType, "Response", JAXBUtility.SCHEMA);
+		} catch (JAXBException e) {
+			e.printStackTrace();
+			return "";
+		}
+	}
+	
+	@Override
+	public String getResult() {
 		// BEGIN parameter checking
 		if (!initialized) {
 			return null;
@@ -124,19 +153,19 @@ public final class PDPResponse implements PDPEvaluation {
 		// END parameter checking
 		return responseType.getResult().get(0).getDecision().value();
 	}
-	
+
 	@Override
 	public List<PDPObligationInterface> getPIPObligations() {
 		// TODO Auto-generated method stub
 		return null;
 	}
-	
+
 	@Override
 	public List<PDPObligationInterface> getPEPObligations() {
 		// TODO Auto-generated method stub
 		return null;
 	}
-	
+
 	@Override
 	public void setSessionId(String id) {
 		// BEGIN parameter checking
@@ -146,12 +175,12 @@ public final class PDPResponse implements PDPEvaluation {
 		// END parameter checking
 		sessionId = id;
 	}
-	
+
 	@Override
 	public String getSessionId() {
 		return sessionId;
 	}
-	
+
 	@Override
 	public ArrayList<String> getObligations() {
 		ArrayList<String> obligations = new ArrayList<>();
@@ -159,26 +188,26 @@ public final class PDPResponse implements PDPEvaluation {
 			return null;
 		}
 		for (ObligationType obligation : responseType.getResult().get(0)
-		    .getObligations().getObligation()) {
+				.getObligations().getObligation()) {
 			obligations.add(obligation.getObligationId());
 		}
 		return obligations;
 	}
-	
+
 	public void setResponseType(ResponseType responseType) {
 		this.responseType = responseType;
 	}
-	
+
 	@Override
 	public Object getResponseAsObject() {
 		return responseType;
 	}
-	
+
 	@Override
 	public ArrayList<Integer> getFiringRulesIndex() {
 		return firingRules;
 	}
-	
+
 	@VisibleForTesting
 	public void setInitialized(boolean initialized) {
 		this.initialized = initialized;

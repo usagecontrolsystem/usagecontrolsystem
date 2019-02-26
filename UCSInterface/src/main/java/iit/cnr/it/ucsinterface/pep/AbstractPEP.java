@@ -174,11 +174,11 @@ import it.cnr.iit.usagecontrolframework.configuration.xmlclasses.XMLPep;
 			endAccess.setSessionId(chPepMessage.getPDPEvaluation().getSessionId());
 			requestManager.sendMessageToCH(endAccess);
 		} else {
-			if (chPepMessage.getPDPEvaluation().getResponse().contains("Permit")) {
+			if (chPepMessage.getPDPEvaluation().getResult().contains("Permit")) {
 				LOGGER.log(Level.INFO,
 				    "[TIME] RESUME EXECUTION " + System.currentTimeMillis());
 			}
-			if (chPepMessage.getPDPEvaluation().getResponse().contains("Deny")) {
+			if (chPepMessage.getPDPEvaluation().getResult().contains("Deny")) {
 				LOGGER.log(Level.INFO,
 				    "[TIME] STOP EXECUTION " + System.currentTimeMillis());
 			}
@@ -201,13 +201,13 @@ import it.cnr.iit.usagecontrolframework.configuration.xmlclasses.XMLPep;
 		TryAccessResponse tryAccessResponse = (TryAccessResponse) waitForResponse(
 		    id);
 		System.out.println(
-		    "Response: " + tryAccessResponse.getPDPEvaluation().getResponse());
-		if (tryAccessResponse.getPDPEvaluation().getResponse().contains("Permit")) {
+		    "Response: " + tryAccessResponse.getPDPEvaluation().getResult());
+		if (tryAccessResponse.getPDPEvaluation().getResult().contains("Permit")) {
 			LOGGER.log(Level.INFO, "Starting startaccess");
 			id = startAccess(tryAccessResponse.getSessionId());
 			StartAccessResponse startAccessResponse = (StartAccessResponse) waitForResponse(
 			    id);
-			if (startAccessResponse.getPDPEvaluation().getResponse()
+			if (startAccessResponse.getPDPEvaluation().getResult()
 			    .contains("Permit")) {
 				LOGGER.log(Level.INFO, "Permit success");
 				Thread thread = new Thread(
@@ -235,7 +235,7 @@ import it.cnr.iit.usagecontrolframework.configuration.xmlclasses.XMLPep;
 				EndAccessResponse endAccessResponse;
 				endAccessResponse = (EndAccessResponse) waitForResponse(id);
 				LOGGER.log(Level.INFO,
-				    endAccessResponse.getPDPEvaluation().getResponse());
+				    endAccessResponse.getPDPEvaluation().getResult());
 			} catch (InterruptedException | ExecutionException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

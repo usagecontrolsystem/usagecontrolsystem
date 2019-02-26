@@ -110,11 +110,15 @@ public class TryAccessResponseContent {
 		return contentInitialized;
 	}
 	
+	public void setContentInitialized(boolean contentInitialized) {
+		this.contentInitialized = contentInitialized;
+	}
+	
 	public PDPEvaluation getPDPEvaluation() {
 		// BEGIN parameter checking
-		if (!contentInitialized) {
-			return null;
-		}
+		//if (!contentInitialized) {
+			//return null;
+		//}
 		// END parameter checking
 		return pdpEvaluation;
 	}

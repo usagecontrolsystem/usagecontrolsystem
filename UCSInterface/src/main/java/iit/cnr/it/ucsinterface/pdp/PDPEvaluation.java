@@ -56,6 +56,8 @@ public interface PDPEvaluation {
 	 * 
 	 * @return a String representing the response of the PDP
 	 */
+	public String getResult();
+	
 	public String getResponse();
 	
 	/**
