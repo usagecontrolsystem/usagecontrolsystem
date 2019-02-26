@@ -62,7 +62,7 @@ public class PEPUCSCommunication {
 	  @RequestMapping(method = RequestMethod.POST, value = "/tryAccessResponse2", consumes = MediaType.APPLICATION_JSON_VALUE)
 	  public void tryAccessResponse2(@RequestBody() TryAccessResponse message) {
 		// BEGIN parameter checking
-		if (message != null) {
+		if (message == null) {
 	    	LOGGER.warning("error deserializing in tryAccessResponse");
 	    	throw new HttpMessageNotReadableException(HttpStatus.SC_NO_CONTENT+" : Invalid message Content");
 		}
