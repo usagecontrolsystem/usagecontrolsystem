@@ -44,7 +44,10 @@ public class PDPTest {
 	@Value("${policy.notapplicable}")
 	private String policyNotApplicable;
 	
-	
+	@Value("${policy.dup}")
+	private String policyDup;
+
+
 	@Test
 	public void testPDP() {
 		System.out.println("HELLO\n" + requestDeny + "\n" + policy);
@@ -62,26 +65,34 @@ public class PDPTest {
 		assertThat(testEvaluation(requestDeny, policy, STATUS.ENDACCESS)).contains("deny");
 		assertThat(testEvaluation(requestPermit, policy, STATUS.ENDACCESS)).contains("permit");
 		assertThat(testEvaluation(requestIndeterminate, policy, STATUS.ENDACCESS)).contains("indeterminate");
+		assertThat(testEvaluation(requestIndeterminate, null, STATUS.ENDACCESS) == null);
+		assertThat(testEvaluation(null, policy, STATUS.ENDACCESS) == null);
+		assertThat(testEvaluation(requestPermit, policyDup, STATUS.TRYACCESS)).contains("permit");
 	}
 	
 	private String testEvaluation(String request, String policy) {
 		PDPEvaluation response = policyDecisionpoint.evaluate(request, policy);
 		if(response != null) {
-		String result = response.getResponse().toLowerCase();
-		System.out.println(result);
-		return result;
+			String result = response.getResult().toLowerCase();
+			System.out.println(result);
+			return result;
 		}
 		return null;
 	}
 	
 	private String testEvaluation(String request, String policy, STATUS status) {
-		PDPEvaluation response = policyDecisionpoint.evaluate(request, new StringBuilder(policy), status);
-		if(response != null) {
-		String result = response.getResponse().toLowerCase();
-		System.out.println(result);
-		return result;
-		}
-		else {
+		try {
+			PDPEvaluation response = policyDecisionpoint.evaluate(request, new StringBuilder(policy), status);
+			if(response != null) {
+				String result = response.getResult().toLowerCase();
+				System.out.println(result);
+				return result;
+			}
+			else {
+				return null;
+			}
+		} catch(Exception e) {
+			e.printStackTrace();
 			return null;
 		}
 	}
