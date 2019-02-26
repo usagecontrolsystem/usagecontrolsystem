@@ -184,7 +184,7 @@ public abstract class UCFAbstractTest {
 	private PDPEvaluation getMockedPDPEvaluation(String message) {
 		PDPEvaluation pdpEvaluation = Mockito.mock(PDPEvaluation.class);
 		Mockito.when(
-				pdpEvaluation.getResponse()
+				pdpEvaluation.getResult()
 			)
 			.thenReturn(message);
 		assertNotNull(pdpEvaluation);

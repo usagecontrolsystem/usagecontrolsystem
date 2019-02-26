@@ -230,7 +230,7 @@ final public class ContextHandlerLC extends AbstractContextHandler {
 		// status of the incoming request
 		String status = TRY_STATUS;
 
-		String pdpResponse = pdpEvaluation.getResponse();
+		String pdpResponse = pdpEvaluation.getResult();
 		LOGGER.log(Level.INFO, "[TIME] tryaccess evaluated at " + System.currentTimeMillis() + " " + pdpResponse );
 
 		// if access decision is PERMIT - update SM DB entry
@@ -664,11 +664,11 @@ final public class ContextHandlerLC extends AbstractContextHandler {
 
 		System.out.println("[TIME] startaccess evaluation ends at " + System.currentTimeMillis());
 
-		response.setStatus(pdpEvaluation.getResponse());
+		response.setStatus(pdpEvaluation.getResult());
 		response.setResponse(pdpEvaluation);
 
 		// PDP returns PERMIT
-		if (pdpEvaluation.getResponse().equalsIgnoreCase("Permit")) {
+		if (pdpEvaluation.getResult().equalsIgnoreCase("Permit")) {
 
 			// obligation
 			getObligationManager().translateObligations(pdpEvaluation, sessionId, START_STATUS);
@@ -680,7 +680,7 @@ final public class ContextHandlerLC extends AbstractContextHandler {
 				LOGGER.log(Level.INFO, "[Context Handler] Startaccess: session " + sessionId + " status not updated");
 			}
 			System.out.println("[TIME] PERMIT startaccess ends at " + System.currentTimeMillis());
-			response.setStatus(pdpEvaluation.getResponse());
+			response.setStatus(pdpEvaluation.getResult());
 		}
 		else { // PDP returns DENY, INDETERMINATE or NOT APPLICABLE
 
@@ -957,7 +957,7 @@ final public class ContextHandlerLC extends AbstractContextHandler {
 
 			System.out.println("[TIME] EndAccess evaluation ends at " + System.currentTimeMillis());
 
-			if (pdpEvaluation.getResponse().equalsIgnoreCase("Permit")) {
+			if (pdpEvaluation.getResult().equalsIgnoreCase("Permit")) {
 				// PDP returns PERMIT obligation
 				getObligationManager().translateObligations(pdpEvaluation, sessionId, END_STATUS);
 			}
@@ -969,7 +969,7 @@ final public class ContextHandlerLC extends AbstractContextHandler {
 			EndAccessResponse response = new EndAccessResponse(endAccessMessage.getDestination(),
 					endAccessMessage.getSource(), message.getID());
 			response.setResponse(pdpEvaluation);
-			response.setStatus(pdpEvaluation.getResponse());
+			response.setStatus(pdpEvaluation.getResult());
 
 			if (endAccessMessage.getScheduled()) {
 				response.setDestinationType();
@@ -1447,7 +1447,7 @@ final public class ContextHandlerLC extends AbstractContextHandler {
 		// STARTACCESS_POLICY);
 
 		System.out
-				.println("[TIME] decision " + pdpEvaluation.getResponse() + " taken at " + System.currentTimeMillis());
+				.println("[TIME] decision " + pdpEvaluation.getResult() + " taken at " + System.currentTimeMillis());
 		String destination;
 		String[] uriSplitted = session.getPEPUri().split(PEP_ID_SEPARATOR);
 		destination = session.getPEPUri().split(PEP_ID_SEPARATOR)[0];
@@ -1458,13 +1458,13 @@ final public class ContextHandlerLC extends AbstractContextHandler {
 		chPepMessage.setPepID(uriSplitted[uriSplitted.length - 1]);
 		getSessionManagerInterface().stopSession(session);
 		if ((session.getStatus().equals(START_STATUS) || session.getStatus().equals(TRY_STATUS))
-				&& pdpEvaluation.getResponse().contains("Deny")) {
+				&& pdpEvaluation.getResult().contains("Deny")) {
 			LOGGER.log(Level.INFO, "[TIME] Sending revoke " + System.currentTimeMillis());
 			getSessionManagerInterface().updateEntry(session.getId(), REVOKE_STATUS);
 			getRequestManagerToChInterface().sendMessageToOutside(chPepMessage);
 		}
 
-		if (session.getStatus().equals(REVOKE_STATUS) && pdpEvaluation.getResponse().contains("Permit")) {
+		if (session.getStatus().equals(REVOKE_STATUS) && pdpEvaluation.getResult().contains("Permit")) {
 			LOGGER.log(Level.INFO, "[TIME] Sending resume " + System.currentTimeMillis());
 			getSessionManagerInterface().updateEntry(session.getId(), START_STATUS);
 			getRequestManagerToChInterface().sendMessageToOutside(chPepMessage);
