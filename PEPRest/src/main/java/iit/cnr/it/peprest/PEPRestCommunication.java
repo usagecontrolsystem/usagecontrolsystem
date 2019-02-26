@@ -51,7 +51,6 @@ public class PEPRestCommunication {
 	  System.out.println("in isAlive():heath check OK");
   }
 
-
   @ApiOperation(httpMethod = "POST", value = "Starts the PEP")
   // provides a documentation of the different http error messages and their
   // meaning from the application perspective
@@ -60,8 +59,6 @@ public class PEPRestCommunication {
       @ApiResponse(code = 200, message = "OK") })
   @RequestMapping(method = RequestMethod.POST, value = "/send")
   public void sendMessage() throws InterruptedException, ExecutionException {
-    // BEGIN parameter checking
-    // END parameter checking
     pepRest.run();
   }
 

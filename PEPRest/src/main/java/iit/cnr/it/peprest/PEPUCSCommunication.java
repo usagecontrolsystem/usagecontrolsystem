@@ -32,7 +32,7 @@ import io.swagger.annotations.ApiResponses;
 @RequestMapping("/")
 @EnableAutoConfiguration
 public class PEPUCSCommunication {
-	  protected static final Logger LOGGER = Logger.getLogger(PEPRestCommunication.class.getName());
+	  protected static final Logger LOGGER = Logger.getLogger(PEPUCSCommunication.class.getName());
 
 	  boolean initialized = false;
 

@@ -19,6 +19,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 
 import com.datastax.driver.core.utils.UUIDs;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.google.gson.Gson;
 
 /**
@@ -51,11 +52,10 @@ import com.google.gson.Gson;
  * @author antonio
  *
  */
+
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Message implements Comparable<Message>, Serializable {
 
-  /**
-   * 
-   */
   private static final long serialVersionUID = 1L;
   // source of the message
   protected String sourceAddress;
