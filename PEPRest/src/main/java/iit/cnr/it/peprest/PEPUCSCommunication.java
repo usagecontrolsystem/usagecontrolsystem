@@ -44,15 +44,7 @@ public class PEPUCSCommunication {
 	      @ApiResponse(code = 200, message = "OK") })
 	  @RequestMapping(method = RequestMethod.POST, value = NodeInterface.ONGOINGRESPONSE_REST, consumes = MediaType.APPLICATION_JSON_VALUE)
 	  public void onGoingEvaluation(@RequestBody() ReevaluationResponse message) {
-	    /*// BEGIN parameter checking
-		Optional<?> optMessage = messageFromJson(message, ReevaluationResponse.class);
-		if (!optMessage.isPresent()) {
-	    	LOGGER.warning("error deserializing in onGoingEvaluation");
-	    	throw new HttpMessageNotReadableException(HttpStatus.SC_NO_CONTENT+" : Invalid message Content");
-		}
-	    // END parameter checking
-	    pepRest.onGoingEvaluation((ReevaluationResponse) optMessage.get());*/
-		  pepRest.onGoingEvaluation(message);  
+	      pepRest.onGoingEvaluation(message);  
 	  }
 
 	  @ApiOperation(httpMethod = "POST", value = "Receives request from CH for tryAccess operation")
@@ -68,7 +60,7 @@ public class PEPUCSCommunication {
 	  @ApiResponses(value = {
 	      @ApiResponse(code = 500, message = "Invalid message received"),
 	      @ApiResponse(code = 200, message = "OK") })
-	  @RequestMapping(method = RequestMethod.POST, value = "/startAccessResponse", consumes = MediaType.TEXT_PLAIN_VALUE)
+	  @RequestMapping(method = RequestMethod.POST, value = "/startAccessResponse", consumes = MediaType.APPLICATION_JSON_VALUE)
 	  public void startAccessResponse(@RequestBody() StartAccessResponse message) {
 		pepRest.receiveResponse(message);
 	  }
@@ -77,7 +69,7 @@ public class PEPUCSCommunication {
 	  @ApiResponses(value = {
 	      @ApiResponse(code = 500, message = "Invalid message received"),
 	      @ApiResponse(code = 200, message = "OK") })
-	  @RequestMapping(method = RequestMethod.POST, value = "/endAccessResponse", consumes = MediaType.TEXT_PLAIN_VALUE)
+	  @RequestMapping(method = RequestMethod.POST, value = "/endAccessResponse", consumes = MediaType.APPLICATION_JSON_VALUE)
 	  public void endAccessResponse(@RequestBody() EndAccessResponse message) {
 	  pepRest.receiveResponse(message);
 	  }
