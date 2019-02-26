@@ -53,23 +53,7 @@ public class PEPUCSCommunication {
 		}
 	    // END parameter checking
 	    pepRest.onGoingEvaluation((ReevaluationResponse) optMessage.get());
-	  }
-
-	  @ApiOperation(httpMethod = "POST", value = "Receives request from CH for tryAccess operation")
-	  @ApiResponses(value = {
-	      @ApiResponse(code = 500, message = "Invalid message received"),
-	      @ApiResponse(code = 200, message = "OK") })
-	  @RequestMapping(method = RequestMethod.POST, value = "/tryAccessResponse2", consumes = MediaType.APPLICATION_JSON_VALUE)
-	  public void tryAccessResponse2(@RequestBody() TryAccessResponse message) {
-		// BEGIN parameter checking
-		if (message == null) {
-	    	LOGGER.warning("error deserializing in tryAccessResponse");
-	    	throw new HttpMessageNotReadableException(HttpStatus.SC_NO_CONTENT+" : Invalid message Content");
-		}
-	    // END parameter checking
-		pepRest.receiveResponse(message);
-	  }
-	  
+	  }	  
 	  
 	  @ApiOperation(httpMethod = "POST", value = "Receives request from CH for tryAccess operation")
 	  @ApiResponses(value = {
