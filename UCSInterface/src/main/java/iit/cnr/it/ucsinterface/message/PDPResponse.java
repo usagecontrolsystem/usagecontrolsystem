@@ -42,7 +42,9 @@ import oasis.names.tc.xacml.core.schema.wd_17.ResponseType;
  *
  */
 public final class PDPResponse implements PDPEvaluation {
-	
+
+	public final String evaluationType = this.getClass().getCanonicalName();
+
 	// the response provided by the PDP object
 	private ResponseType				responseType;
 	// states if the object has been correctly inistialized

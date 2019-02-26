@@ -18,6 +18,12 @@ package iit.cnr.it.ucsinterface.pdp;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+
+import iit.cnr.it.ucsinterface.message.PDPResponse;
+
 /**
  * This is the interface offered by the object returned by a PDP after
  * evaluation.
@@ -37,6 +43,13 @@ import java.util.List;
  * @author antonio
  *
  */
+
+@JsonIgnoreProperties(ignoreUnknown = true)
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME,
+include = JsonTypeInfo.As.EXISTING_PROPERTY, property = "responseType")
+@JsonSubTypes({
+	@JsonSubTypes.Type(value = PDPResponse.class, name = "PDPResponse")
+})
 public interface PDPEvaluation {
 	
 	/**
