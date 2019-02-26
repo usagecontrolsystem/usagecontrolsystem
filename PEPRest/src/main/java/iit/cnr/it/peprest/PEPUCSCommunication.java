@@ -59,7 +59,7 @@ public class PEPUCSCommunication {
 	  @ApiResponses(value = {
 	      @ApiResponse(code = 500, message = "Invalid message received"),
 	      @ApiResponse(code = 200, message = "OK") })
-	  @RequestMapping(method = RequestMethod.POST, value = "/tryAccessResponse", consumes = MediaType.APPLICATION_JSON_VALUE)
+	  @RequestMapping(method = RequestMethod.POST, value = "/tryAccessResponse", consumes = MediaType.TEXT_PLAIN_VALUE)
 	  public void tryAccessResponse(@RequestBody() String message) {
 		// BEGIN parameter checking
 		Optional<?> optMessage = messageFromJson(message, TryAccessResponse.class);

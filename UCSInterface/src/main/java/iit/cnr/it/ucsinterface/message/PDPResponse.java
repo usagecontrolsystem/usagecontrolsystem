@@ -20,8 +20,10 @@ import java.util.List;
 
 import org.wso2.balana.ctx.ResponseCtx;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.annotations.VisibleForTesting;
+import com.google.gson.Gson;
 
 import iit.cnr.it.ucsinterface.pdp.PDPEvaluation;
 import iit.cnr.it.ucsinterface.pdp.PDPObligationInterface;
@@ -68,7 +70,7 @@ public final class PDPResponse implements PDPEvaluation {
 	 *          the ResponseType in string format
 	 */
 	public PDPResponse(String string) {
-		if (setResponse(string)) {
+		if (setResponseType(string)) {
 			initialized = true;
 		} else {
 			initialized = false;
@@ -83,7 +85,7 @@ public final class PDPResponse implements PDPEvaluation {
 		}
 		// END parameter checking
 		// this.responseCtx = response.encode();
-		if (!setResponse(response.encode())) {
+		if (!setResponseType(response.encode())) {
 			initialized = false;
 			return;
 		}
@@ -98,9 +100,14 @@ public final class PDPResponse implements PDPEvaluation {
 	 *          the response in string format
 	 * @return true if everything goes ok, false otherwise
 	 */
-	private boolean setResponse(String string) {
+	private boolean setResponseType(String string) {
 		try {
-			responseType = JAXBUtility.unmarshalToObject(ResponseType.class, string);
+			System.out.println("response : " + string);
+			if (string.startsWith("{")) {
+				responseType = new Gson().fromJson(string, ResponseType.class);
+			} else {
+				responseType = JAXBUtility.unmarshalToObject(ResponseType.class, string);
+			}
 			return true;
 		} catch (Exception exception) {
 			exception.printStackTrace();
@@ -116,6 +123,7 @@ public final class PDPResponse implements PDPEvaluation {
 	// GETTERS
 	// ---------------------------------------------------------------------------
 	@Override
+	@JsonIgnore
 	public String getResponse() {
 		// BEGIN parameter checking
 		if (!initialized) {
@@ -123,6 +131,10 @@ public final class PDPResponse implements PDPEvaluation {
 		}
 		// END parameter checking
 		return responseType.getResult().get(0).getDecision().value();
+	}
+	
+	public ResponseType getResponseType() {
+		return responseType;
 	}
 	
 	@Override
