@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -23,7 +24,8 @@ import org.w3c.dom.Node;
  * @author Fabio Bindi and Filippo Lauria and Antonio La Marra
  */
 final public class Attribute implements Cloneable {
-	
+	private final Logger LOGGER = Logger.getLogger(Attribute.class.getName());
+
 	private String															attributeId;
 	
 	private String															issuer;
@@ -142,15 +144,15 @@ final public class Attribute implements Cloneable {
 	/**
 	 * Creates the values of an attribute given its type
 	 * 
-	 * @param dataType_
+	 * @param type
 	 *          a string representig the attribute type
 	 * @param value
 	 *          value to set
 	 */
-	public void createAttributeValues(String dataType_, String value) {
-		DataType data = DataType.toDATATYPE(dataType_);
+	public void createAttributeValues(String type, String value) {
+		DataType data = DataType.toDATATYPE(type);
 		if (data == null) {
-			System.err.println("ERROR in creating DATATYPE " + dataType_);
+			LOGGER.severe("DATATYPE is null");
 			return;
 		}
 		List<String> valueList = attributeValueMap.get(data);
