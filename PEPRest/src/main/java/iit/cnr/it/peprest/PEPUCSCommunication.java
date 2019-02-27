@@ -1,7 +1,5 @@
 package iit.cnr.it.peprest;
 
-import java.io.IOException;
-import java.util.Optional;
 import java.util.logging.Logger;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,14 +10,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import iit.cnr.it.ucsinterface.message.endaccess.EndAccessResponse;
 import iit.cnr.it.ucsinterface.message.reevaluation.ReevaluationResponse;
 import iit.cnr.it.ucsinterface.message.startaccess.StartAccessResponse;
 import iit.cnr.it.ucsinterface.message.tryaccess.TryAccessResponse;
 import iit.cnr.it.ucsinterface.node.NodeInterface;
+
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
@@ -74,16 +70,4 @@ public class PEPUCSCommunication {
 	  pepRest.receiveResponse(message);
 	  }
 
-	  // TODO to be deleted if rest interface is changed to not use strings
-	  public static <T> Optional<T> messageFromJson(String json, Class<T> classType) {
-		ObjectMapper objMapper = new ObjectMapper();
-		try {
-			T obj = objMapper.readValue(json, classType);
-			if (obj != null) 
-				return Optional.of(obj);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		return Optional.empty();
-	  }
 }
