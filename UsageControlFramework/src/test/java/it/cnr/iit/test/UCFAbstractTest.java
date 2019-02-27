@@ -9,6 +9,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.xml.bind.JAXBException;
@@ -43,79 +44,77 @@ import it.cnr.iit.usagecontrolframework.proxies.ProxyPDP;
 import it.cnr.iit.usagecontrolframework.proxies.ProxySessionManager;
 import it.cnr.iit.xacmlutilities.Attribute;
 import it.cnr.iit.xacmlutilities.policy.utility.JAXBUtility;
+import oasis.names.tc.xacml.core.schema.wd_17.DecisionType;
 import oasis.names.tc.xacml.core.schema.wd_17.PolicyType;
 import oasis.names.tc.xacml.core.schema.wd_17.RequestType;
 
 public abstract class UCFAbstractTest {
-    protected Logger log = (Logger) LoggerFactory.getLogger(UCFAbstractTest.class);
+	protected Logger log = (Logger) LoggerFactory.getLogger(UCFAbstractTest.class);
 
-    /* mocked PipRetrieval */
+	/* Context Hanlder functions */
 
-	protected PIPRetrieval getMockedPipRetrieval() {
-		PIPRetrieval pipRetrieval = Mockito.mock(PIPRetrieval.class);
-		
-		return pipRetrieval;
+	protected ContextHandlerLC getContextHandler(Configuration ucsConfiguration) {
+		ContextHandlerLC contextHandler = new ContextHandlerLC(ucsConfiguration.getCh());
+		return contextHandler;
 	}
 
-    /* mocked SessionManager */
-	
+	protected void initContextHandler(ContextHandlerLC contextHandler) {
+		contextHandler.setPdpInterface(getMockedPDP(getMockedPDPEvaluation(DecisionType.PERMIT)));
+		contextHandler.setPapInterface(getMockedPAP());
+		contextHandler.setRequestManagerToChInterface(getMockedRequestManagerToChInterface());
+		contextHandler.setSessionManagerInterface(getSessionManagerForStatus("", "", "", ContextHandlerLC.TRY_STATUS));
+		contextHandler.setForwardingQueue(getMockedForwardingQueueToCHInterface());
+		contextHandler.setObligationManager(getMockedObligationManager());
+		contextHandler.setPIPRetrieval(getMockedPipRetrieval());
+	}
+
+	protected ContextHandlerLC getContextHandlerCorrectlyInitialized(Configuration ucsConfiguration, String policy,
+			String request) {
+		ContextHandlerLC contextHandler = getContextHandler(ucsConfiguration);
+		initContextHandler(contextHandler);
+		addMockedPips(ucsConfiguration, contextHandler);
+		contextHandler.setSessionManagerInterface(
+				getSessionManagerForStatus("", policy, request, ContextHandlerLC.TRY_STATUS));
+
+		contextHandler.verify();
+		assertTrue(contextHandler.startThread());
+
+		return contextHandler;
+	}
+
+	/* mocked SessionManager */
+
 	protected SessionManagerInterface getMockedSessionManager(SessionInterface sessionInterface) {
 		SessionManagerInterface sessionManagerInterface = Mockito.mock(SessionManagerInterface.class);
-		Mockito.when(
-				sessionManagerInterface.getSessionForId(
-						Matchers.<String>any())
-				).thenReturn(sessionInterface);
+		Mockito.when(sessionManagerInterface.getSessionForId(Matchers.<String>any())).thenReturn(sessionInterface);
 		// TODO add ongoing attributes
-		Mockito.when(
-				sessionManagerInterface.getOnGoingAttributes(
-						Matchers.<String>any())
-				).thenReturn(null);
-		Mockito.when(
-				sessionManagerInterface.deleteEntry(
-						Matchers.<String>any())
-				).thenReturn(true);
-		Mockito.when(sessionManagerInterface.createEntry(
-				Matchers.<String>any(),
-				Matchers.<String>any(),
-				Matchers.<String>any(),
-				Matchers.<List<String>>any(),
-				Matchers.<List<String>>any(),
-				Matchers.<List<String>>any(),
-				Matchers.<List<String>>any(),
-				Matchers.<String>any(),
-				Matchers.<String>any(),
-				Matchers.<String>any(),
-				Matchers.<String>any(),
-				Matchers.<String>any(),
+		Mockito.when(sessionManagerInterface.getOnGoingAttributes(Matchers.<String>any())).thenReturn(null);
+		Mockito.when(sessionManagerInterface.deleteEntry(Matchers.<String>any())).thenReturn(true);
+		Mockito.when(sessionManagerInterface.createEntry(Matchers.<String>any(), Matchers.<String>any(),
+				Matchers.<String>any(), Matchers.<List<String>>any(), Matchers.<List<String>>any(),
+				Matchers.<List<String>>any(), Matchers.<List<String>>any(), Matchers.<String>any(),
+				Matchers.<String>any(), Matchers.<String>any(), Matchers.<String>any(), Matchers.<String>any(),
 				Matchers.<String>any())).thenReturn(true);
 		return sessionManagerInterface;
 	}
-	
-    protected SessionManagerInterface getSessionManagerForStatus(String sessionId, String policy, String request, String status) {
-		SessionInterface sessionInterface = 
-				getMockedSessionInterface(policy, request, status); 
+
+	protected SessionManagerInterface getSessionManagerForStatus(String sessionId, String policy, String request,
+			String status) {
+		SessionInterface sessionInterface = getMockedSessionInterface(policy, request, status);
 		return getMockedSessionManager(sessionInterface);
-    }
+	}
 
 	protected SessionInterface getMockedSessionInterface(String policy, String request, String status) {
 		SessionInterface sessionInterface = Mockito.mock(SessionInterface.class);
-		Mockito.when(
-				sessionInterface.getPolicySet()
-				).thenReturn(policy);
-		Mockito.when(
-				sessionInterface.getOriginalRequest()
-				).thenReturn(request);
-		Mockito.when(
-				sessionInterface.getStatus()
-				).thenReturn(status);
-		Mockito.when(
-				sessionInterface.getPEPUri()
-				).thenReturn("localhost#1");
-		
+		Mockito.when(sessionInterface.getPolicySet()).thenReturn(policy);
+		Mockito.when(sessionInterface.getOriginalRequest()).thenReturn(request);
+		Mockito.when(sessionInterface.getStatus()).thenReturn(status);
+		Mockito.when(sessionInterface.getPEPUri()).thenReturn("localhost#1");
+
 		return sessionInterface;
 	}
 
-    /* mocked RequestManager */
+	/* mocked RequestManager */
 
 	protected RequestManagerToCHInterface getMockedRequestManagerToChInterface() {
 		RequestManagerToCHInterface requestManagerToChInterface = Mockito.mock(RequestManagerToCHInterface.class);
@@ -128,133 +127,99 @@ public abstract class UCFAbstractTest {
 	}
 
 	/* Mocked ObligationManager */
-	
+
 	protected ObligationManagerInterface getMockedObligationManager() {
-		ObligationManagerInterface obligationManager = (ObligationManagerInterface) Mockito.mock(ObligationManagerInterface.class);
-		Mockito.when(
-				obligationManager.translateObligations(
-						Matchers.<PDPEvaluation>any(),
-						Matchers.<String>any(),
-						Matchers.<String>any())
-			).thenReturn(null);
+		ObligationManagerInterface obligationManager = (ObligationManagerInterface) Mockito
+				.mock(ObligationManagerInterface.class);
+		Mockito.when(obligationManager.translateObligations(Matchers.<PDPEvaluation>any(), Matchers.<String>any(),
+				Matchers.<String>any())).thenReturn(null);
 		return obligationManager;
 	}
 
 	/* Mocked PDP */
-	
-	protected PDPInterface getMockedPDP() {
-		return getMockedPDP(getMockedPDPEvaluationPermit());
-	}
-	
+
 	protected PDPInterface getMockedPDP(PDPEvaluation pdpEval) {
 		PDPInterface pdp = (PDPInterface) Mockito.mock(PDPInterface.class);
-		Mockito.when(
-					pdp.evaluate(
-						Matchers.<String>any(),
-						Matchers.<StringBuilder>any(),
-						Matchers.<STATUS>any())
-				)
+		Mockito.when(pdp.evaluate(Matchers.<String>any(), Matchers.<StringBuilder>any(), Matchers.<STATUS>any()))
 				.thenReturn(pdpEval);
-		Mockito.when(
-				pdp.evaluate(
-					Matchers.<String>any(),
-					Matchers.<String>any())
-			)
-			.thenReturn(pdpEval);
+		Mockito.when(pdp.evaluate(Matchers.<String>any(), Matchers.<String>any())).thenReturn(pdpEval);
 		assertNotNull(pdp);
 		return pdp;
 	}
 
-	protected PDPEvaluation getMockedPDPEvaluationPermit() {
-		return getMockedPDPEvaluation("Permit");
-	}
-	
-	protected PDPEvaluation getMockedPDPEvaluationDeny() {
-		return getMockedPDPEvaluation("Deny");
-	}
-
-	protected PDPEvaluation getMockedPDPEvaluationIndeterminate() {
-		return getMockedPDPEvaluation("Indeterminate");
-	}
-	
-	protected PDPEvaluation getMockedPDPEvaluationNotApplicable() {
-		return getMockedPDPEvaluation("Not Applicable");
-	}
-
-	private PDPEvaluation getMockedPDPEvaluation(String message) {
+	protected PDPEvaluation getMockedPDPEvaluation(DecisionType decisionType) {
 		PDPEvaluation pdpEvaluation = Mockito.mock(PDPEvaluation.class);
-		Mockito.when(
-				pdpEvaluation.getResult()
-			)
-			.thenReturn(message);
-		assertNotNull(pdpEvaluation);
-			return pdpEvaluation;
+		Mockito.when(pdpEvaluation.getResult()).thenReturn(decisionType.value());
+		return pdpEvaluation;
 	}
 
 	/* Mocked PAP */
-	
+
 	protected PAPInterface getMockedPAP() {
 		PAPInterface pap = Mockito.mock(PAPInterface.class);
 		return pap;
 	}
 
+	/* mocked PipRetrieval */
+
+	protected PIPRetrieval getMockedPipRetrieval() {
+		PIPRetrieval pipRetrieval = Mockito.mock(PIPRetrieval.class);
+
+		return pipRetrieval;
+	}
+
 	/* Mocked PIPs */
-	
-	protected PIPCHInterface getMockedPIPCHInterface(String name) {
+
+	protected PIPCHInterface getMockedPIPCHInterface(String attrId, String attrReturn) {
 		PIPCHInterface pip = Mockito.mock(PIPCHInterface.class);
-		Mockito.when(
-				pip.getAttributes()
-				).thenReturn(new ArrayList<Attribute>());
-		Mockito.when(
-				pip.setContextHandlerInterface(
-						Matchers.<ContextHandlerLC>any())
-				).thenReturn(true);
+
+		// TODO create functions for the creation of Attributes
+		Attribute attr = new Attribute();
+		attr.createAttributeId(attrId);
+		attr.createAttributeValues("STRING", attrReturn);
+
+		ArrayList<Attribute> attributeList = new ArrayList<>(Arrays.asList(new Attribute[] { attr }));
+		ArrayList<String> attributeIdList = new ArrayList<>(Arrays.asList(new String[] { attrId }));
+
+		Mockito.when(pip.getAttributes()).thenReturn(attributeList);
+		Mockito.when(pip.getAttributeIds()).thenReturn(attributeIdList);
+		Mockito.when(pip.setContextHandlerInterface(Matchers.<ContextHandlerLC>any())).thenReturn(true);
+
 		return pip;
 	}
-	
-	protected void addPips(ContextHandlerLC contextHandler) {
-		String[] pips = {"virus", "telephone", "position", "role", "telephone", "time"};
-		for (String pipName : pips) {
-			// TODO use the pip var to parametrize the pip somehow
-			// maybe using a template xml to unmarshal a real instance.
-			// for now I'll try to mock one
-			contextHandler.addPip(getMockedPIPCHInterface(pipName));
+
+	protected void addPips(Configuration ucsConfiguration, ContextHandlerLC contextHandler) {
+		for (PIPCHInterface pip : getPIPS(ucsConfiguration)) {
+			contextHandler.addPip(pip);
 		}
 	}
-	
-	/* non mocked components */
-	
-	protected ContextHandlerLC getContextHandler(Configuration ucsConfiguration) {
-		ContextHandlerLC contextHandler = new ContextHandlerLC(ucsConfiguration.getCh());
-		return contextHandler;
-	}
-	
-	protected void initContextHandler(ContextHandlerLC contextHandler) {
-		contextHandler.setPdpInterface(getMockedPDP());
-		contextHandler.setPapInterface(getMockedPAP());
-		contextHandler.setRequestManagerToChInterface(getMockedRequestManagerToChInterface());
-		contextHandler.setSessionManagerInterface(getSessionManagerForStatus("","", "", ContextHandlerLC.TRY_STATUS));
-		contextHandler.setForwardingQueue(getMockedForwardingQueueToCHInterface());
-		contextHandler.setObligationManager(getMockedObligationManager());
-		contextHandler.setPIPRetrieval(getMockedPipRetrieval());
-		addPips(contextHandler);
-	}
-	
-    protected ContextHandlerLC getContextHandlerCorrectlyInitialized(Configuration ucsConfiguration, String policy, String request) {
-		ContextHandlerLC contextHandler = getContextHandler(ucsConfiguration);
-		initContextHandler(contextHandler);
-		contextHandler.setSessionManagerInterface(
-				getSessionManagerForStatus("",policy, request, ContextHandlerLC.TRY_STATUS));
 
-		contextHandler.verify();
-		assertTrue(contextHandler.startThread());
-		
-		return contextHandler;
-    }
-    
+	protected void addMockedPips(Configuration ucsConfiguration, ContextHandlerLC contextHandler) {
+		// TODO load array from configuration
+		String[] pips = { "virus", "telephone", "position", "role", "telephone", "time" };
+
+		for (String pipName : pips) {
+			contextHandler.addPip(getMockedPIPCHInterface(pipName, "test"));
+		}
+	}
+
+	/* Non mocked components created from configuration */
+
+	protected ArrayList<PIPCHInterface> getPIPS(Configuration ucsConfiguration) {
+		ArrayList<PIPCHInterface> pips = new ArrayList<>();
+
+		for (XMLPip xmlPIP : ucsConfiguration.getPipList()) {
+			log.info("Loading pip");
+			PIPCHInterface pip = PIPBuilder.build(xmlPIP);
+			assertNotNull(pip);
+			pips.add(pip);
+		}
+
+		return pips;
+	}
+
 	protected SessionManagerInterface getSessionManager(Configuration ucsConfiguration) {
-		SessionManagerInterface sessionManager = new ProxySessionManager(
-			    ucsConfiguration.getSessionManager());
+		SessionManagerInterface sessionManager = new ProxySessionManager(ucsConfiguration.getSessionManager());
 		assertTrue(sessionManager.isInitialized());
 		return sessionManager;
 	}
@@ -271,32 +236,19 @@ public abstract class UCFAbstractTest {
 		return pap;
 	}
 
-	protected ArrayList<PIPCHInterface> getPIPS(Configuration ucsConfiguration) {
-		ArrayList<PIPCHInterface>  pips = new ArrayList<>();
-
-		for (XMLPip xmlPIP : ucsConfiguration.getPipList()) {
-			log.info("Loading pip");
-			PIPCHInterface pip = PIPBuilder.build(xmlPIP);
-			assertNotNull(pip);
-			pips.add(pip);
-		}
-		
-		return pips;
-	}
-
 	/* Messages functions */
-	
-	protected TryAccessMessage buildTryAccessMessage(String pepId, String ucsUri,
-			String policy, String request) throws URISyntaxException, IOException {
+
+	protected TryAccessMessage buildTryAccessMessage(String pepId, String ucsUri, String policy, String request)
+			throws URISyntaxException, IOException {
 		TryAccessMessageBuilder builder = new TryAccessMessageBuilder(pepId, ucsUri);
 		builder.setPolicy(policy);
 		builder.setRequest(request);
-		
+
 		TryAccessMessage message = builder.build();
-			
+
 		return message;
 	}
-	
+
 	// TODO set source dest
 	protected StartAccessMessage buildStartAccessMessage(String sessionId, String src, String dest) {
 		StartAccessMessage message = new StartAccessMessage(src, dest);
@@ -305,18 +257,20 @@ public abstract class UCFAbstractTest {
 
 	// TODO set source dest
 	protected EndAccessMessage buildEndAccessMessage(String sessionId, String src, String dest) {
-		EndAccessMessage message = new EndAccessMessage("","");
+		EndAccessMessage message = new EndAccessMessage("", "");
+		message.setSessionId(sessionId);
 		return message;
 	}
-	
+
 	// TODO set source dest
 	protected ReevaluationMessage buildReevaluationMessage(String sessionId, String src, String dest) {
-		ReevaluationMessage message = new ReevaluationMessage("","");
+		ReevaluationMessage message = new ReevaluationMessage("", "");
+		// message.setSessionId(sessionId);
 		return message;
 	}
 
 	/* Policy/Request functions */
-	
+
 	protected RequestType getRequestType(String fileName) throws JAXBException, URISyntaxException, IOException {
 		return (RequestType) loadXMLFromFile(fileName, RequestType.class);
 	}
@@ -326,19 +280,21 @@ public abstract class UCFAbstractTest {
 	}
 
 	/* Utility functions */
-	
-	protected Configuration getUCSConfiguration(String ucsConfigFile) throws JAXBException, URISyntaxException, IOException {
+
+	protected Configuration getUCSConfiguration(String ucsConfigFile)
+			throws JAXBException, URISyntaxException, IOException {
 		return (Configuration) loadXMLFromFile(ucsConfigFile, Configuration.class);
 	}
 
-	private Object loadXMLFromFile(String fileName, Class<?> className) throws JAXBException, URISyntaxException, IOException {
+	private Object loadXMLFromFile(String fileName, Class<?> className)
+			throws JAXBException, URISyntaxException, IOException {
 		String data = readResourceFileAsString(fileName);
 		return JAXBUtility.unmarshalToObject(className, data);
 	}
 
 	protected String readResourceFileAsString(String resource) throws URISyntaxException, IOException {
 		ClassLoader classLoader = this.getClass().getClassLoader();
-		
+
 		log.info("Loading resource file : " + resource);
 		Path path = Paths.get(classLoader.getResource(resource).toURI());
 		byte[] data = Files.readAllBytes(path);

@@ -182,6 +182,7 @@ final public class ContextHandlerLC extends AbstractContextHandler {
 		if (!isInitialized() || message == null || !(message instanceof TryAccessMessage)) {
 			LOGGER.log(Level.SEVERE,
 					"INVALID tryAccess " + isInitialized() + "\t" + (message instanceof TryAccessMessage));
+			// TODO should throw exception ?
 			return;
 		}
 
@@ -194,7 +195,7 @@ final public class ContextHandlerLC extends AbstractContextHandler {
 		// eventual scheduling
 		List<Attribute> attributes = policyHelper.getAttributesForCondition(TRYACCESS_POLICY);
 		System.out.println("[TIME] tryaccess begin scheduling " + System.currentTimeMillis());
-		HashMap<String, Integer> attributesIP = retrieveAttributesIp(attributes);
+		//HashMap<String, Integer> attributesIP = retrieveAttributesIp(attributes);
 		/*
 		 * if (!tryAccess.getScheduled()) { String ip =
 		 * scheduler.getIp(attributesIP); if (!ip.equals(getIp()) &&
@@ -206,13 +207,9 @@ final public class ContextHandlerLC extends AbstractContextHandler {
 		 * return; } }
 		 */
 
-		// Assign the session id
 		String sessionId = createSessionId();
-
-		// prepare the request for the pdp
 		String policy = retrievePolicy(tryAccess);
 		String request = tryAccess.getRequest();
-
 		// make the request complete before reevaluation
 		String requestFull = makeRequestFull(request, attributes, STATUS.TRYACCESS, true);
 
@@ -231,7 +228,7 @@ final public class ContextHandlerLC extends AbstractContextHandler {
 		String status = TRY_STATUS;
 
 		String pdpResponse = pdpEvaluation.getResult();
-		LOGGER.log(Level.INFO, "[TIME] tryaccess evaluated at " + System.currentTimeMillis() + " " + pdpResponse );
+		LOGGER.log(Level.INFO, "[TIME] tryaccess evaluated at " + System.currentTimeMillis() + " response : " + pdpResponse );
 
 		// if access decision is PERMIT - update SM DB entry
 		if (pdpResponse.equalsIgnoreCase("Permit")) {
@@ -491,13 +488,11 @@ final public class ContextHandlerLC extends AbstractContextHandler {
 	private String retrievePolicy(TryAccessMessage tryAccess) {
 		String policy = tryAccess.getPolicy();
 		if (policy == null) {
-			String policyString = getPapInterface().retrievePolicy(tryAccess.getPolicyId());
-
-			if (policyString == null) {
-				LOGGER.log(Level.SEVERE, "UNABLE to RETRIEVE the POLICY");
+			policy = getPapInterface().retrievePolicy(tryAccess.getPolicyId());
+			if (policy == null) {
+				LOGGER.warning("UNABLE to RETRIEVE the POLICY");
 				return null;
 			}
-			policy = policyString;
 		}
 		return policy;
 	}
@@ -674,16 +669,13 @@ final public class ContextHandlerLC extends AbstractContextHandler {
 			getObligationManager().translateObligations(pdpEvaluation, sessionId, START_STATUS);
 
 			// update session status
-			Boolean bool = getSessionManagerInterface().updateEntry(sessionId, START_STATUS);
-
-			if (bool == false) {
+			if (!getSessionManagerInterface().updateEntry(sessionId, START_STATUS)) {
 				LOGGER.log(Level.INFO, "[Context Handler] Startaccess: session " + sessionId + " status not updated");
 			}
 			System.out.println("[TIME] PERMIT startaccess ends at " + System.currentTimeMillis());
 			response.setStatus(pdpEvaluation.getResult());
 		}
 		else { // PDP returns DENY, INDETERMINATE or NOT APPLICABLE
-
 			// obligation
 			getObligationManager().translateObligations(pdpEvaluation, sessionId, START_STATUS);
 
@@ -1176,7 +1168,6 @@ final public class ContextHandlerLC extends AbstractContextHandler {
 
 			try {
 				// retrieve the attribute retrieval object from the JSON
-
 				// retrieve the list of interested sessions
 				LOGGER.log(Level.INFO, attribute.getAttributeId());
 				List<SessionInterface> interestedSessions = retrieveSessions(attribute);
@@ -1256,38 +1247,25 @@ final public class ContextHandlerLC extends AbstractContextHandler {
 		 * @return the list of sessions interested
 		 */
 		private List<SessionInterface> retrieveSessions(Attribute attributeRetrieval) {
-			boolean valid = false;
-			// System.out
-			// .println("AttributeRetrieval " +
-			// attributeRetrieval.getAttributeId()
-			// + "\t" + attributeRetrieval.getAdditionalInformations() + "\t"
-			// + attributeRetrieval.getCategory());
-			List<SessionInterface> sessions = null;
-			if (attributeRetrieval.getCategory() == Category.RESOURCE) {
-				valid = true;
-				sessions = getSessionManagerInterface().getSessionsForResourceAttributes(
-						attributeRetrieval.getAdditionalInformations(), attributeRetrieval.getAttributeId());
-			}
-			if (attributeRetrieval.getCategory() == Category.SUBJECT) {
-				valid = true;
-				sessions = getSessionManagerInterface().getSessionsForSubjectAttributes(
-						attributeRetrieval.getAdditionalInformations(), attributeRetrieval.getAttributeId());
-			}
-			if (attributeRetrieval.getCategory() == Category.ACTION) {
-				valid = true;
-				sessions = getSessionManagerInterface().getSessionsForActionAttributes(
-						attributeRetrieval.getAdditionalInformations(), attributeRetrieval.getAttributeId());
-			}
-			if (attributeRetrieval.getCategory() == Category.ENVIRONMENT) {
-				valid = true;
-				sessions = getSessionManagerInterface()
-						.getSessionsForEnvironmentAttributes(attributeRetrieval.getAttributeId());
-			}
-			if (valid) {
-				return sessions;
-			} else {
-				LOGGER.log(Level.SEVERE, "Invalid attribute passed");
-				return null;
+			String attrId =  attributeRetrieval.getAttributeId();
+			String attrAddInfo = attributeRetrieval.getAdditionalInformations();
+			
+			switch (attributeRetrieval.getCategory()) {
+				case RESOURCE:
+					return getSessionManagerInterface()
+								.getSessionsForResourceAttributes(attrAddInfo, attrId);
+				case SUBJECT:
+					return getSessionManagerInterface()
+								.getSessionsForSubjectAttributes(attrAddInfo, attrId);
+				case ACTION:
+					return getSessionManagerInterface()
+								.getSessionsForActionAttributes(attrAddInfo, attrId);
+				case ENVIRONMENT:
+					return getSessionManagerInterface()
+								.getSessionsForEnvironmentAttributes(attrId);
+				default:
+					LOGGER.log(Level.SEVERE, "Invalid attribute passed");
+					return null;
 			}
 		}
 

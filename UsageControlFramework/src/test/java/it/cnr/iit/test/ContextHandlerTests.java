@@ -23,10 +23,10 @@ import iit.cnr.it.ucsinterface.message.endaccess.EndAccessMessage;
 import iit.cnr.it.ucsinterface.message.reevaluation.ReevaluationMessage;
 import iit.cnr.it.ucsinterface.message.startaccess.StartAccessMessage;
 import iit.cnr.it.ucsinterface.message.tryaccess.TryAccessMessage;
-import iit.cnr.it.ucsinterface.sessionmanager.Session;
 import it.cnr.iit.usagecontrolframework.configuration.xmlclasses.Configuration;
 import it.cnr.iit.usagecontrolframework.contexthandler.ContextHandlerLC;
 import it.cnr.iit.usagecontrolframework.contexthandler.exceptions.RevokeException;
+import oasis.names.tc.xacml.core.schema.wd_17.DecisionType;
 
 @EnableConfigurationProperties
 @TestPropertySource(properties = "application-test.properties")
@@ -60,7 +60,7 @@ public class ContextHandlerTests extends UCFAbstractTest {
 		policy = readResourceFileAsString(policyFile);
 		request = readResourceFileAsString(requestFile);
 	}
-	
+
 	private String policy;
 	private String request;
 
@@ -73,7 +73,7 @@ public class ContextHandlerTests extends UCFAbstractTest {
 		contextHandler.verify();
 		assertFalse(contextHandler.startThread());
 	}
-	
+
 	@Test
 	public void contextHandlerTryAccessShouldFail() throws JAXBException, URISyntaxException, IOException {
 		Configuration ucsConfiguration = getUCSConfiguration(ucsConfigFile);
@@ -82,7 +82,7 @@ public class ContextHandlerTests extends UCFAbstractTest {
 		ContextHandlerLC contextHandler = getContextHandler(ucsConfiguration);
 		initContextHandler(contextHandler);
 		// set the pdp response to return deny
-		contextHandler.setPdpInterface(getMockedPDP(getMockedPDPEvaluationDeny()));
+		contextHandler.setPdpInterface(getMockedPDP(getMockedPDPEvaluation(DecisionType.DENY)));
 		contextHandler.verify();
 		assertTrue(contextHandler.startThread());
 
@@ -96,7 +96,7 @@ public class ContextHandlerTests extends UCFAbstractTest {
 
 		/* CH initialisation */
 		ContextHandlerLC contextHandler = getContextHandlerCorrectlyInitialized(ucsConfiguration, policy, request);
-		
+
 		/* tryAccess */
 		TryAccessMessage tryAccessMessage = buildTryAccessMessage(pepId, ucsUri, policy, request);
 		contextHandler.tryAccess(tryAccessMessage);
@@ -105,15 +105,15 @@ public class ContextHandlerTests extends UCFAbstractTest {
 		contextHandler.setSessionManagerInterface(
 				getSessionManagerForStatus(sessionId, policy, request, ContextHandlerLC.TRY_STATUS));
 		// this line makes the start access to take the deny path
-		contextHandler.setPdpInterface(getMockedPDP(getMockedPDPEvaluationDeny()));		
+		contextHandler.setPdpInterface(getMockedPDP(getMockedPDPEvaluation(DecisionType.DENY)));
 		StartAccessMessage startAccessMessage = buildStartAccessMessage(sessionId, "", "");
 		contextHandler.startAccess(startAccessMessage);
 	}
-	
+
 	@Test
 	public void contextHandlerEndAccessShouldFail() throws JAXBException, URISyntaxException, IOException, Exception {
 		Configuration ucsConfiguration = getUCSConfiguration(ucsConfigFile);
-		
+
 		/* CH initialisation */
 		ContextHandlerLC contextHandler = getContextHandlerCorrectlyInitialized(ucsConfiguration, policy, request);
 
@@ -126,19 +126,19 @@ public class ContextHandlerTests extends UCFAbstractTest {
 				getSessionManagerForStatus(sessionId, policy, request, ContextHandlerLC.TRY_STATUS));
 		StartAccessMessage startAccessMessage = buildStartAccessMessage(sessionId, "", "");
 		contextHandler.startAccess(startAccessMessage);
-		
+
 		/* endAccess */
 		contextHandler.setSessionManagerInterface(
 				getSessionManagerForStatus(sessionId, policy, request, ContextHandlerLC.START_STATUS));
-		contextHandler.setPdpInterface(getMockedPDP(getMockedPDPEvaluationDeny()));		
+		contextHandler.setPdpInterface(getMockedPDP(getMockedPDPEvaluation(DecisionType.DENY)));
 		EndAccessMessage endAccessMessage = buildEndAccessMessage(sessionId, "", "");
 		contextHandler.endAccess(endAccessMessage);
 	}
-	
+
 	@Test
 	public void contextHandlerFullFlow() throws JAXBException, URISyntaxException, IOException, Exception {
 		Configuration ucsConfiguration = getUCSConfiguration(ucsConfigFile);
-		
+
 		/* CH initialisation */
 		ContextHandlerLC contextHandler = getContextHandlerCorrectlyInitialized(ucsConfiguration, policy, request);
 
@@ -151,18 +151,17 @@ public class ContextHandlerTests extends UCFAbstractTest {
 				getSessionManagerForStatus(sessionId, policy, request, ContextHandlerLC.TRY_STATUS));
 		StartAccessMessage startAccessMessage = buildStartAccessMessage(sessionId, "", "");
 		contextHandler.startAccess(startAccessMessage);
-		
+
 		/* reevaluate */
 		ReevaluationMessage reevaluationMessage = buildReevaluationMessage(sessionId, "", "");
-		reevaluationMessage.setSession(
-				getMockedSessionInterface(policy, request, ContextHandlerLC.START_STATUS));
+		reevaluationMessage.setSession(getMockedSessionInterface(policy, request, ContextHandlerLC.START_STATUS));
 		contextHandler.reevaluate(reevaluationMessage);
-		
+
 		/* endAccess */
 		contextHandler.setSessionManagerInterface(
 				getSessionManagerForStatus(sessionId, policy, request, ContextHandlerLC.START_STATUS));
 		EndAccessMessage endAccessMessage = buildEndAccessMessage(sessionId, "", "");
 		contextHandler.endAccess(endAccessMessage);
 	}
-	
+
 }
