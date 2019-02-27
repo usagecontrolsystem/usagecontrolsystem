@@ -25,6 +25,7 @@ import iit.cnr.it.ucsinterface.message.endaccess.EndAccessMessage;
 import iit.cnr.it.ucsinterface.message.startaccess.StartAccessMessage;
 import iit.cnr.it.ucsinterface.message.tryaccess.TryAccessMessage;
 import iit.cnr.it.ucsinterface.message.reevaluation.ReevaluationMessage;
+import iit.cnr.it.ucsinterface.message.remoteretrieval.MessagePipCh;
 import iit.cnr.it.ucsinterface.message.tryaccess.TryAccessMessageBuilder;
 import iit.cnr.it.ucsinterface.obligationmanager.ObligationManagerInterface;
 import iit.cnr.it.ucsinterface.pap.PAPInterface;
@@ -43,6 +44,8 @@ import it.cnr.iit.usagecontrolframework.proxies.ProxyPAP;
 import it.cnr.iit.usagecontrolframework.proxies.ProxyPDP;
 import it.cnr.iit.usagecontrolframework.proxies.ProxySessionManager;
 import it.cnr.iit.xacmlutilities.Attribute;
+import it.cnr.iit.xacmlutilities.Category;
+import it.cnr.iit.xacmlutilities.DataType;
 import it.cnr.iit.xacmlutilities.policy.utility.JAXBUtility;
 import oasis.names.tc.xacml.core.schema.wd_17.DecisionType;
 import oasis.names.tc.xacml.core.schema.wd_17.PolicyType;
@@ -77,7 +80,7 @@ public abstract class UCFAbstractTest {
 				getSessionManagerForStatus("", policy, request, ContextHandlerLC.TRY_STATUS));
 
 		contextHandler.verify();
-		assertTrue(contextHandler.startThread());
+		assertTrue(contextHandler.startMonitoringThread());
 
 		return contextHandler;
 	}
@@ -95,6 +98,13 @@ public abstract class UCFAbstractTest {
 				Matchers.<List<String>>any(), Matchers.<List<String>>any(), Matchers.<String>any(),
 				Matchers.<String>any(), Matchers.<String>any(), Matchers.<String>any(), Matchers.<String>any(),
 				Matchers.<String>any())).thenReturn(true);
+		
+		List<SessionInterface> sessionInterfaceList = new ArrayList<>(Arrays.asList(new SessionInterface[] { sessionInterface }));
+		Mockito.when(sessionManagerInterface.getSessionsForSubjectAttributes(
+				Matchers.<String>any(), Matchers.<String>any())).thenReturn(sessionInterfaceList);
+		Mockito.when(sessionManagerInterface.getSessionsForEnvironmentAttributes(
+				Matchers.<String>any())).thenReturn(sessionInterfaceList);
+		
 		return sessionManagerInterface;
 	}
 
@@ -109,7 +119,7 @@ public abstract class UCFAbstractTest {
 		Mockito.when(sessionInterface.getPolicySet()).thenReturn(policy);
 		Mockito.when(sessionInterface.getOriginalRequest()).thenReturn(request);
 		Mockito.when(sessionInterface.getStatus()).thenReturn(status);
-		Mockito.when(sessionInterface.getPEPUri()).thenReturn("localhost#1");
+		Mockito.when(sessionInterface.getPEPUri()).thenReturn("localhost" + ContextHandlerLC.PEP_ID_SEPARATOR + "1");
 
 		return sessionInterface;
 	}
@@ -170,14 +180,10 @@ public abstract class UCFAbstractTest {
 
 	/* Mocked PIPs */
 
-	protected PIPCHInterface getMockedPIPCHInterface(String attrId, String attrReturn) {
+	protected PIPCHInterface getMockedPIPCHInterface(String attrId, Category category, String attrType, String attrReturn) {
 		PIPCHInterface pip = Mockito.mock(PIPCHInterface.class);
 
-		// TODO create functions for the creation of Attributes
-		Attribute attr = new Attribute();
-		attr.createAttributeId(attrId);
-		attr.createAttributeValues("STRING", attrReturn);
-
+		Attribute attr = getNewAttribute(attrId, category, "http://www.w3.org/2001/XMLSchema#string", attrReturn);
 		ArrayList<Attribute> attributeList = new ArrayList<>(Arrays.asList(new Attribute[] { attr }));
 		ArrayList<String> attributeIdList = new ArrayList<>(Arrays.asList(new String[] { attrId }));
 
@@ -195,15 +201,26 @@ public abstract class UCFAbstractTest {
 	}
 
 	protected void addMockedPips(Configuration ucsConfiguration, ContextHandlerLC contextHandler) {
-		// TODO load array from configuration
+		// TODO FIX THIS HACK
 		String[] pips = { "virus", "telephone", "position", "role", "telephone", "time" };
+		String[] pipVal = { "0", "0", "Pisa", "IIT", "0", "12:00" };
+		Category[] pipCat = { Category.ENVIRONMENT, Category.ENVIRONMENT, Category.SUBJECT, Category.SUBJECT, Category.ENVIRONMENT, Category.ENVIRONMENT};
 
-		for (String pipName : pips) {
-			contextHandler.addPip(getMockedPIPCHInterface(pipName, "test"));
+		for (int i=0; i<pips.length; i++) {
+			contextHandler.addPip(getMockedPIPCHInterface(pips[i], pipCat[i], "http://www.w3.org/2001/XMLSchema#string", pipVal[i]));
 		}
 	}
 
 	/* Non mocked components created from configuration */
+	
+	protected Attribute getNewAttribute(String id, Category category, String type, String val) {
+		Attribute attr = new Attribute();
+		attr.createAttributeId(id);
+		attr.createAttributeValues(type, val);
+		attr.setAttributeDataType(DataType.toDATATYPE(type));
+		attr.setCategory(category);
+		return attr;
+	}
 
 	protected ArrayList<PIPCHInterface> getPIPS(Configuration ucsConfiguration) {
 		ArrayList<PIPCHInterface> pips = new ArrayList<>();
@@ -269,6 +286,11 @@ public abstract class UCFAbstractTest {
 		return message;
 	}
 
+	protected MessagePipCh buildPipChMessage(String sessionId, String src, String dest) {
+		MessagePipCh message = new MessagePipCh("", "");
+		return message;
+	}
+	
 	/* Policy/Request functions */
 
 	protected RequestType getRequestType(String fileName) throws JAXBException, URISyntaxException, IOException {

@@ -9,6 +9,7 @@ import java.net.URISyntaxException;
 import javax.annotation.PostConstruct;
 import javax.xml.bind.JAXBException;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Value;
@@ -19,13 +20,16 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import iit.cnr.it.ucsinterface.message.Message;
 import iit.cnr.it.ucsinterface.message.endaccess.EndAccessMessage;
 import iit.cnr.it.ucsinterface.message.reevaluation.ReevaluationMessage;
+import iit.cnr.it.ucsinterface.message.remoteretrieval.MessagePipCh;
 import iit.cnr.it.ucsinterface.message.startaccess.StartAccessMessage;
 import iit.cnr.it.ucsinterface.message.tryaccess.TryAccessMessage;
 import it.cnr.iit.usagecontrolframework.configuration.xmlclasses.Configuration;
 import it.cnr.iit.usagecontrolframework.contexthandler.ContextHandlerLC;
 import it.cnr.iit.usagecontrolframework.contexthandler.exceptions.RevokeException;
+import it.cnr.iit.xacmlutilities.Category;
 import oasis.names.tc.xacml.core.schema.wd_17.DecisionType;
 
 @EnableConfigurationProperties
@@ -54,47 +58,49 @@ public class ContextHandlerTests extends UCFAbstractTest {
 	@Value("${ucs-uri}")
 	private String ucsUri;
 
+	private Configuration ucsConfiguration;
+	private String policy;
+	private String request;
+
 	@PostConstruct
-	private void setUp() throws URISyntaxException, IOException {
+	private void init() throws URISyntaxException, IOException, JAXBException {
 		log.info("Init tests");
+		ucsConfiguration = getUCSConfiguration(ucsConfigFile);
 		policy = readResourceFileAsString(policyFile);
 		request = readResourceFileAsString(requestFile);
 	}
 
-	private String policy;
-	private String request;
-
+	@Before
+	public void setUp() throws JAXBException, URISyntaxException, IOException {
+		log.info("setUp >>>>>>>>>>>>>>>>>>");
+		// nothing to do for now
+	}
+	
 	@Test
 	public void contextHandlerConfigurationShouldFail() throws JAXBException, URISyntaxException, IOException {
-		Configuration ucsConfiguration = getUCSConfiguration(ucsConfigFile);
-
-		/* incorrect CH initialisation */
 		ContextHandlerLC contextHandler = getContextHandler(ucsConfiguration);
 		contextHandler.verify();
-		assertFalse(contextHandler.startThread());
+		assertFalse(contextHandler.startMonitoringThread());
+		contextHandler.stopMonitoringThread();
 	}
 
 	@Test
 	public void contextHandlerTryAccessShouldFail() throws JAXBException, URISyntaxException, IOException {
-		Configuration ucsConfiguration = getUCSConfiguration(ucsConfigFile);
-
-		/* CH initialisation with deny */
 		ContextHandlerLC contextHandler = getContextHandler(ucsConfiguration);
 		initContextHandler(contextHandler);
 		// set the pdp response to return deny
 		contextHandler.setPdpInterface(getMockedPDP(getMockedPDPEvaluation(DecisionType.DENY)));
 		contextHandler.verify();
-		assertTrue(contextHandler.startThread());
+		assertTrue(contextHandler.startMonitoringThread());
 
 		/* tryAccess */
 		contextHandler.tryAccess(null);
+		
+		contextHandler.stopMonitoringThread();
 	}
 
 	@Test(expected = RevokeException.class)
 	public void contextHandlerStartAccessShouldFail() throws JAXBException, URISyntaxException, IOException, Exception {
-		Configuration ucsConfiguration = getUCSConfiguration(ucsConfigFile);
-
-		/* CH initialisation */
 		ContextHandlerLC contextHandler = getContextHandlerCorrectlyInitialized(ucsConfiguration, policy, request);
 
 		/* tryAccess */
@@ -108,13 +114,12 @@ public class ContextHandlerTests extends UCFAbstractTest {
 		contextHandler.setPdpInterface(getMockedPDP(getMockedPDPEvaluation(DecisionType.DENY)));
 		StartAccessMessage startAccessMessage = buildStartAccessMessage(sessionId, "", "");
 		contextHandler.startAccess(startAccessMessage);
+		
+		contextHandler.stopMonitoringThread();
 	}
 
 	@Test
 	public void contextHandlerEndAccessShouldFail() throws JAXBException, URISyntaxException, IOException, Exception {
-		Configuration ucsConfiguration = getUCSConfiguration(ucsConfigFile);
-
-		/* CH initialisation */
 		ContextHandlerLC contextHandler = getContextHandlerCorrectlyInitialized(ucsConfiguration, policy, request);
 
 		/* tryAccess */
@@ -133,13 +138,12 @@ public class ContextHandlerTests extends UCFAbstractTest {
 		contextHandler.setPdpInterface(getMockedPDP(getMockedPDPEvaluation(DecisionType.DENY)));
 		EndAccessMessage endAccessMessage = buildEndAccessMessage(sessionId, "", "");
 		contextHandler.endAccess(endAccessMessage);
+		
+		contextHandler.stopMonitoringThread();
 	}
 
 	@Test
 	public void contextHandlerFullFlow() throws JAXBException, URISyntaxException, IOException, Exception {
-		Configuration ucsConfiguration = getUCSConfiguration(ucsConfigFile);
-
-		/* CH initialisation */
 		ContextHandlerLC contextHandler = getContextHandlerCorrectlyInitialized(ucsConfiguration, policy, request);
 
 		/* tryAccess */
@@ -151,17 +155,23 @@ public class ContextHandlerTests extends UCFAbstractTest {
 				getSessionManagerForStatus(sessionId, policy, request, ContextHandlerLC.TRY_STATUS));
 		StartAccessMessage startAccessMessage = buildStartAccessMessage(sessionId, "", "");
 		contextHandler.startAccess(startAccessMessage);
-
+		
 		/* reevaluate */
 		ReevaluationMessage reevaluationMessage = buildReevaluationMessage(sessionId, "", "");
 		reevaluationMessage.setSession(getMockedSessionInterface(policy, request, ContextHandlerLC.START_STATUS));
 		contextHandler.reevaluate(reevaluationMessage);
 
+		MessagePipCh messagePipCh = buildPipChMessage(sessionId, "", "");
+		messagePipCh.addAttribute(getNewAttribute("virus", Category.SUBJECT, "http://www.w3.org/2001/XMLSchema#string", "1"));
+		contextHandler.attributeChanged(messagePipCh);
+		
 		/* endAccess */
 		contextHandler.setSessionManagerInterface(
 				getSessionManagerForStatus(sessionId, policy, request, ContextHandlerLC.START_STATUS));
 		EndAccessMessage endAccessMessage = buildEndAccessMessage(sessionId, "", "");
 		contextHandler.endAccess(endAccessMessage);
+		
+		contextHandler.stopMonitoringThread();
 	}
 
 }
