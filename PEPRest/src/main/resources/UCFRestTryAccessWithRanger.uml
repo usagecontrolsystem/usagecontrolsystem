@@ -1,0 +1,53 @@
+To view the content as a UML diagram, use PlantUML in eclipse see: http://plantuml.com/eclipse
+@startuml
+actor PEP #red
+participant UCFRestController
+participant ContextHandlerLC
+participant PIPReader
+participant RangerServiceFacade
+participant RangerPAPRestApi
+participant RangerPDPPlugin
+participant SessionManagerDesktop
+participant ObligatonManager
+PEP->UCFRestController : tryAccessRequest
+UCFRestController->ContextHandlerLC : forward message
+activate ContextHandlerLC
+ContextHandlerLC->PIPReader : get additional \npolicy attributes
+activate PIPReader
+PIPReader->PIPReader : read attributes\n from text files
+PIPReader --> ContextHandlerLC : attributes
+alt Request without POLICY
+deactivate PIPReader
+	ContextHandlerLC->RangerServiceFacade :  get policy
+	activate RangerServiceFacade
+	RangerServiceFacade -> RangerPAPRestApi : get policy by criteria
+	activate RangerPAPRestApi
+	RangerPAPRestApi --> RangerServiceFacade : policy
+	deactivate RangerPAPRestApi
+	RangerServiceFacade --> ContextHandlerLC : policy
+	deactivate RangerServiceFacade
+end
+ContextHandlerLC->ContextHandlerLC : enrich policy
+ContextHandlerLC->RangerServiceFacade : full policy
+activate RangerServiceFacade
+RangerServiceFacade -> RangerPDPPlugin : evaluate policy
+activate RangerPDPPlugin
+RangerPDPPlugin --> RangerServiceFacade
+deactivate RangerPDPPlugin
+RangerServiceFacade --> ContextHandlerLC : access decision
+deactivate RangerServiceFacade
+alt PERMIT
+	ContextHandlerLC->SessionManagerDesktop : create session
+	activate SessionManagerDesktop
+	SessionManagerDesktop->SessionManagerDesktop : add sessionID into DB
+end
+deactivate SessionManagerDesktop
+ContextHandlerLC->ObligatonManager : notify
+activate ObligatonManager
+ObligatonManager->ObligatonManager : perform rules
+ContextHandlerLC->PEP : tryAccessResponse
+deactivate ObligatonManager
+deactivate ContextHandlerLC
+@enduml
+
+

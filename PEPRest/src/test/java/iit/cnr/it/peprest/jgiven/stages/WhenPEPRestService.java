@@ -19,6 +19,9 @@ public class WhenPEPRestService extends Stage<WhenPEPRestService> {
     @ProvidedScenarioState
 	String messageId;
 
+    @ProvidedScenarioState
+    Exception expectedException;
+    
     @ExpectedScenarioState
     String sessionId;
 
@@ -31,7 +34,22 @@ public class WhenPEPRestService extends Stage<WhenPEPRestService> {
 
     public WhenPEPRestService PEPRest_service_$_is_executed(PEPRestOperation restOperation) {
         assertNotNull( pepRest );
-        switch (restOperation) {
+		performOperation(restOperation);
+        return self();
+    }
+    
+    public WhenPEPRestService PEPRest_service_$_execution_fails(PEPRestOperation restOperation) {
+        assertNotNull( pepRest );
+        try {
+			performOperation(restOperation);
+		} catch (Exception e) {
+			expectedException = e;
+		}
+        return self();
+    }
+    
+	private void performOperation(PEPRestOperation restOperation) {
+		switch (restOperation) {
 		case TRY_ACCESS:
 			messageId = pepRest.tryAccess();
 			break;
@@ -52,6 +70,5 @@ public class WhenPEPRestService extends Stage<WhenPEPRestService> {
 			fail("Unknown restOperation");
 			break;
 		}
-        return self();
-    }
+	}
 }

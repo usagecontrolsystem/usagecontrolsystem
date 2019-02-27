@@ -4,7 +4,9 @@ import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
 import com.github.tomakehurst.wiremock.client.WireMock;
@@ -37,6 +39,9 @@ public class ThenMessage extends Stage<ThenMessage> {
     @ExpectedScenarioState
     Message message;
 
+    @ExpectedScenarioState
+    Exception expectedException;
+    
 	public ThenMessage the_$_message_is_put_in_the_unanswered_queue(PEPRestOperation restOperation) {
 		assertNotNull( pepRest.getUnanswered() );
 		assertTrue( pepRest.getUnanswered().size() > 0 );
@@ -64,7 +69,7 @@ public class ThenMessage extends Stage<ThenMessage> {
 		return self();
 	}
 
-	public ThenMessage the_asynch_HTTP_POST_request_for_$_was_received_by_context_handler( @Quoted String operation) {
+	public ThenMessage the_asynch_HTTP_POST_request_for_$_was_received_by_context_handler( @Quoted String operation ) {
 		wireMockContextHandler.verifyThat( postRequestedFor( urlEqualTo(operation) )
 		        .withHeader( "Content-Type", equalTo("application/json")) );
 		return self();
@@ -73,6 +78,24 @@ public class ThenMessage extends Stage<ThenMessage> {
 	public ThenMessage the_Message_is_not_placed_into_the_unanswered_queue() {
 		assertNotNull( pepRest.getUnanswered() );
 		assertTrue( pepRest.getUnanswered().size() < 1 );
+		return self();
+	}
+	
+	public ThenMessage an_illegal_access_exception_is_thrown() {
+		assertNotNull( expectedException );
+		assertTrue( expectedException.getMessage().contains("IllegalAccessException"));
+		return self();
+	}
+	
+	public ThenMessage the_Message_motivation_is_NOT_OK() {
+		assertNotNull( message );
+		assertNull(message.getMotivation());
+		return self();
+	}
+	
+	public ThenMessage the_Message_motivation_is_OK() {
+		assertNotNull( message );
+		assertEquals("OK", message.getMotivation());
 		return self();
 	}
 }
