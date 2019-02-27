@@ -123,7 +123,7 @@ public class PEPRest implements PEPInterface, Runnable {
 			}
 		} catch (Exception e) {
 			LOGGER.log(Level.SEVERE, e.getLocalizedMessage());
-			throw Throwables.propagate(e); 
+			throw Throwables.propagate(e);
 		}
 	}
 
@@ -145,7 +145,7 @@ public class PEPRest implements PEPInterface, Runnable {
 			}
 		} catch (Exception e) {
 			LOGGER.log(Level.SEVERE, e.getLocalizedMessage());
-			throw Throwables.propagate(e); 
+			throw Throwables.propagate(e);
 		}
 	}
 
@@ -155,11 +155,11 @@ public class PEPRest implements PEPInterface, Runnable {
 		// BEGIN parameter checking
 		if (message == null || !(message instanceof ReevaluationResponse)) {
 			LOGGER.log(Level.SEVERE, "Message not valid");
-			throw Throwables.propagate(new IllegalArgumentException("Invalid message type'")); 
+			throw Throwables.propagate(new IllegalArgumentException("Invalid message type'"));
 		}
 		if (!initialized) {
 			LOGGER.log(Level.SEVERE, "Cannot answer the message due to not properly initilization.");
-			throw Throwables.propagate(new IllegalStateException("PEP is not properly initilization")); 
+			throw Throwables.propagate(new IllegalStateException("PEP is not properly initilization"));
 		}
 		// END parameter checking
 		responses.put(message.getID(), message);
@@ -167,7 +167,7 @@ public class PEPRest implements PEPInterface, Runnable {
 		LOGGER.log(Level.INFO, "[TIME] ON_GOING_EVAL " + System.currentTimeMillis());
 
 		ReevaluationResponse chPepMessage = (ReevaluationResponse) message;
-		if ( pepConf.getRevoke().equals("HARD")) { 
+		if ( pepConf.getRevoke().equals("HARD")) {
 			LOGGER.log(Level.INFO, "[TIME] sending endacces " + System.currentTimeMillis());
 			EndAccessMessage endAccess = new EndAccessMessage(configuration.getPepConf().getId(),
 					configuration.getPepConf().getIp());
@@ -223,7 +223,7 @@ public class PEPRest implements PEPInterface, Runnable {
 		if(message instanceof TryAccessResponse) {
 			return handleTryAccessResponse((TryAccessResponse) message);
 		} else if(message instanceof StartAccessResponse) {
-			return handleStartAccessResponse((StartAccessResponse) message);	
+			return handleStartAccessResponse((StartAccessResponse) message);
 		} else if(message instanceof ReevaluationResponse) {
 			return handleReevaluationResponse((ReevaluationResponse) message);
 		} else if(message instanceof EndAccessResponse) {
@@ -237,6 +237,7 @@ public class PEPRest implements PEPInterface, Runnable {
 		LOGGER.info(" Evaluation " + response.getPDPEvaluation().getResult());
 		if(response.getPDPEvaluation().getResult().contains("Permit")) {
 			//TRIGGER STARTACCESS AUTOMATICALLY (?)
+			//TODO: yes good idea
 		}
 		return response.getPDPEvaluation().getResult();
 	}
@@ -244,18 +245,21 @@ public class PEPRest implements PEPInterface, Runnable {
 	private String handleStartAccessResponse(StartAccessResponse response) {
 		LOGGER.info(response.getID() + " Evaluation " + response.getPDPEvaluation().getResult());
 		return response.getPDPEvaluation().getResult();
+		//TODO: why do we need to return this? how can we signal back to the caller that the access started?
 	}
 
 	private String handleReevaluationResponse(ReevaluationResponse response) {
 		onGoingEvaluation(response);
 		return response.getPDPEvaluation().getResult();
+		//TODO: why do we need to return this? how can we signal back to the caller that the evaluation is on going
 	}
 
 	private String handleEndAccessResponse(EndAccessResponse response) {
 		LOGGER.info(response.getID() + " Evaluation " + response.getPDPEvaluation().getResult());
 		return response.getPDPEvaluation().getResult();
+		//TODO: why do we need to return this? how can we signal back to the caller that the access ended?
 	}
-	
+
 
 	@Override
 	public void run() { //TODO: this method is for local demo tests and needs to be re-coded for PROD
@@ -330,11 +334,7 @@ public class PEPRest implements PEPInterface, Runnable {
 
 	public void end(String sessionId) throws InterruptedException, ExecutionException {
 		LOGGER.log(Level.INFO, "[TIME] Sending endAccess " + System.currentTimeMillis());
-		String id = endAccess(sessionId);
-		EndAccessResponse endAccessResponse = (EndAccessResponse) waitForResponse(id);
-		endAccessResponse.getID();
-		LOGGER.log(Level.INFO, "[TIME] END ACCESS RESPONSE: " + System.currentTimeMillis());
-		//TODO: something should happen at the end, e.g. audit log, so we can assert that it succeeded
+		endAccess(sessionId);
 	}
 
 	public ConcurrentHashMap<String, Message> getUnanswered() {
