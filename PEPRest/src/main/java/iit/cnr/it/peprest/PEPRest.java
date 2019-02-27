@@ -87,18 +87,8 @@ public class PEPRest implements PEPInterface, Runnable {
 	}
 
 	public String tryAccess() {
-		//TODO: need a more efficient solution - begin block
-		String request;
-		String policy;
-		int random = 0;
-		if (random % 2 == 0) {
-			policy = Utility.readFileAbsPath(pepConf.getPolicyPath());
-			request = Utility.readFileAbsPath(pepConf.getRequestPath());
-		} else {
-			policy = Utility.readFileAbsPath(pepConf.getPolicyPath());
-			request = Utility.readFileAbsPath(pepConf.getRequestPath());
-		}
-		//TODO: need a more efficient solution - end block
+		String request = Utility.readFileAbsPath(pepConf.getRequestPath());
+		String policy = Utility.readFileAbsPath(pepConf.getPolicyPath());
 
 		TryAccessMessageBuilder tryAccessBuilder = new TryAccessMessageBuilder(configuration.getPepConf().getId(),
 				configuration.getPepConf().getIp());

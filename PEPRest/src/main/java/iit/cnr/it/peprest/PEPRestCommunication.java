@@ -52,8 +52,6 @@ public class PEPRestCommunication {
   }
 
   @ApiOperation(httpMethod = "POST", value = "Starts the PEP")
-  // provides a documentation of the different http error messages and their
-  // meaning from the application perspective
   @ApiResponses(value = {
       @ApiResponse(code = 500, message = "Invalid message received"),
       @ApiResponse(code = 200, message = "OK") })
@@ -63,8 +61,6 @@ public class PEPRestCommunication {
   }
 
   @ApiOperation(httpMethod = "POST", value = "Receives request from PEP for endaccess operation")
-  // provides a documentation of the different http error messages and their
-  // meaning from the application perspective
   @ApiResponses(value = {
       @ApiResponse(code = 500, message = "Invalid message received"),
       @ApiResponse(code = 200, message = "OK") })

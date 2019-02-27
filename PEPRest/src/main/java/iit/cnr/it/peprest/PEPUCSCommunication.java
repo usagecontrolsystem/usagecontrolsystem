@@ -21,7 +21,6 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 
-//TODO we should be using a *Message as a Request body parameters in apis instead of strings
 @ApiModel(value = "UCSFramework", description = "Usage Control Framework enforcement engine REST API")
 @RestController
 @RequestMapping("/")
@@ -58,7 +57,7 @@ public class PEPUCSCommunication {
 	      @ApiResponse(code = 200, message = "OK") })
 	  @RequestMapping(method = RequestMethod.POST, value = "/startAccessResponse", consumes = MediaType.APPLICATION_JSON_VALUE)
 	  public void startAccessResponse(@RequestBody() StartAccessResponse message) {
-		pepRest.receiveResponse(message);
+		  pepRest.receiveResponse(message);
 	  }
 
 	  @ApiOperation(httpMethod = "POST", value = "Receives request from CH for tryAccess operation")
@@ -67,7 +66,7 @@ public class PEPUCSCommunication {
 	      @ApiResponse(code = 200, message = "OK") })
 	  @RequestMapping(method = RequestMethod.POST, value = "/endAccessResponse", consumes = MediaType.APPLICATION_JSON_VALUE)
 	  public void endAccessResponse(@RequestBody() EndAccessResponse message) {
-	  pepRest.receiveResponse(message);
+		  pepRest.receiveResponse(message);
 	  }
 
 }
