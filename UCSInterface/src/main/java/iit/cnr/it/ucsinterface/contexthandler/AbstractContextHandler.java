@@ -145,7 +145,7 @@ public abstract class AbstractContextHandler
 		}
 	}
 
-	abstract public boolean startThread() throws Exception;
+	abstract public boolean startMonitoringThread() throws Exception;
 	
 	// ---------------------------------------------------------------------------
 	// Getter and setter already implemented

@@ -35,10 +35,6 @@ import it.cnr.iit.xacmlutilities.Attribute;
  *
  */
 public final class MessagePipCh extends Message {
-	
-	/**
-	 * 
-	 */
 	private static final long	serialVersionUID	= 1L;
 	
 	public static final int		ERROR_CODE				= -10;
