@@ -19,11 +19,7 @@ import java.util.concurrent.ExecutionException;
 
 import org.apache.http.HttpStatus;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.context.annotation.Bean;
-import org.springframework.core.task.SimpleAsyncTaskExecutor;
-import org.springframework.core.task.TaskExecutor;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -43,8 +39,7 @@ import io.swagger.annotations.ApiResponses;
 public class PEPRestCommunication {
   boolean initialized = false;
 
-  @Autowired
-  private PEPRest pepRest; //= new PEPRest();
+  private PEPRest pepRest;
 
   @RequestMapping(method = RequestMethod.GET, value = "/isAlive", consumes = MediaType.ALL_VALUE)
   public void isAlive() {
@@ -76,19 +71,24 @@ public class PEPRestCommunication {
     pepRest.end(sessionId);
   }
 
-  @Bean
-  public TaskExecutor taskExecutor() {
-    return new SimpleAsyncTaskExecutor();
-  }
-
-  @Bean
-  public CommandLineRunner schedulingRunner(TaskExecutor executor) {
-    return new CommandLineRunner() {
-
-      @Override
-      public void run(String... arg0) throws Exception {
-        executor.execute(pepRest);
-      }
-    };
-  }
+//  @Bean
+//  public TaskExecutor taskExecutor() {
+//    return new SimpleAsyncTaskExecutor();
+//  }
+//
+//  @Bean
+//  public CommandLineRunner schedulingRunner(TaskExecutor executor) {
+//    return new CommandLineRunner() {
+//
+//      @Override
+//      public void run(String... arg0) throws Exception {
+//        executor.execute(pepRest);
+//      }
+//    };
+//  }
+  
+	@Autowired
+	public void setPepRest(PEPRest pepRest) {
+		this.pepRest = pepRest;
+	}
 }

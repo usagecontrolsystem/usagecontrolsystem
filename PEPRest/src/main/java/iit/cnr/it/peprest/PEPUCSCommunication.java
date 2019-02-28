@@ -29,8 +29,7 @@ public class PEPUCSCommunication {
 	  protected static final Logger LOGGER = Logger.getLogger(PEPUCSCommunication.class.getName());
 
 	  boolean initialized = false;
-
-	  @Autowired
+	 
 	  private PEPRest pepRest;
 
 	  @ApiOperation(httpMethod = "POST", value = "Receives request from CH for onGoingEvaluation operation")
@@ -68,5 +67,10 @@ public class PEPUCSCommunication {
 	  public void endAccessResponse(@RequestBody() EndAccessResponse message) {
 		  pepRest.receiveResponse(message);
 	  }
+
+	@Autowired
+	public void setPepRest(PEPRest pepRest) {
+		this.pepRest = pepRest;
+	}
 
 }
