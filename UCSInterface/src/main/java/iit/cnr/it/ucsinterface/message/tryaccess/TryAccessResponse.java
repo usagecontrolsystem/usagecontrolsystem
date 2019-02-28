@@ -15,9 +15,9 @@
  ******************************************************************************/
 package iit.cnr.it.ucsinterface.message.tryaccess;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.gson.Gson;
 
 import iit.cnr.it.ucsinterface.message.Message;
 import iit.cnr.it.ucsinterface.message.PART;
@@ -38,7 +38,8 @@ import iit.cnr.it.ucsinterface.pdp.PDPEvaluation;
 public final class TryAccessResponse extends Message {
 	private static final long	serialVersionUID					= 1L;
 	
-	private TryAccessResponseContent	tryAccessResponseContent	= new TryAccessResponseContent();
+	@JsonProperty
+	private TryAccessResponseContent	tryAccessResponseContent;
 	
 	// states if the message has been correctly created
 	private volatile boolean	responseInitialized				= false;
@@ -137,9 +138,13 @@ public final class TryAccessResponse extends Message {
 	}
 
 	public static TryAccessResponse buildFromString(String string) {
-		Gson gson = new Gson();
-		// System.out.println("FROM string " + string);
-		return gson.fromJson(string, TryAccessResponse.class);
+		try {
+			return new ObjectMapper().readValue(string, TryAccessResponse.class);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return null;
+		}
 	}
 
 	@Override
