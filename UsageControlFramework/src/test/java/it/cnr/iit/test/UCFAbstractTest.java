@@ -16,6 +16,7 @@ import javax.xml.bind.JAXBException;
 
 import org.mockito.Matchers;
 import org.mockito.Mockito;
+import org.mockito.stubbing.Answer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -52,7 +53,7 @@ import oasis.names.tc.xacml.core.schema.wd_17.PolicyType;
 import oasis.names.tc.xacml.core.schema.wd_17.RequestType;
 
 public abstract class UCFAbstractTest {
-	protected Logger log = (Logger) LoggerFactory.getLogger(UCFAbstractTest.class);
+	protected Logger LOGGER = (Logger) LoggerFactory.getLogger(UCFAbstractTest.class);
 
 	/* Context Hanlder functions */
 
@@ -174,16 +175,22 @@ public abstract class UCFAbstractTest {
 
 	protected PIPRetrieval getMockedPipRetrieval() {
 		PIPRetrieval pipRetrieval = Mockito.mock(PIPRetrieval.class);
-
+		Mockito.doAnswer(a -> {
+			RequestType requestType = a.getArgumentAt(0, RequestType.class);
+			//List<Attribute> attributeRetrievals = a.getArgumentAt(1, List.class);
+			LOGGER.info("pip retrieve!");
+			requestType.addAttribute(Category.ENVIRONMENT.toString(), DataType.INTEGER.toString(), "virus", "1");
+			return null;
+		}).when(pipRetrieval).retrieve(Matchers.<RequestType>any(), Mockito.any());
 		return pipRetrieval;
 	}
 
 	/* Mocked PIPs */
 
-	protected PIPCHInterface getMockedPIPCHInterface(String attrId, Category category, String attrType, String attrReturn) {
+	protected PIPCHInterface getMockedPIPCHInterface(String attrId, Category category, DataType dataType, String attrReturn) {
 		PIPCHInterface pip = Mockito.mock(PIPCHInterface.class);
 
-		Attribute attr = getNewAttribute(attrId, category, "http://www.w3.org/2001/XMLSchema#string", attrReturn);
+		Attribute attr = getNewAttribute(attrId, category, dataType, attrReturn);
 		ArrayList<Attribute> attributeList = new ArrayList<>(Arrays.asList(new Attribute[] { attr }));
 		ArrayList<String> attributeIdList = new ArrayList<>(Arrays.asList(new String[] { attrId }));
 
@@ -204,20 +211,21 @@ public abstract class UCFAbstractTest {
 		// TODO FIX THIS HACK
 		String[] pips = { "virus", "telephone", "position", "role", "telephone", "time" };
 		String[] pipVal = { "0", "0", "Pisa", "IIT", "0", "12:00" };
-		Category[] pipCat = { Category.ENVIRONMENT, Category.ENVIRONMENT, Category.SUBJECT, Category.SUBJECT, Category.ENVIRONMENT, Category.ENVIRONMENT};
-
+		Category[] pipCat = { Category.ENVIRONMENT, Category.ENVIRONMENT, Category.SUBJECT, Category.SUBJECT, Category.ENVIRONMENT, Category.ENVIRONMENT };
+		DataType[] pipDT = { DataType.INTEGER, DataType.INTEGER, DataType.STRING, DataType.STRING, DataType.INTEGER, DataType.STRING };
+		
 		for (int i=0; i<pips.length; i++) {
-			contextHandler.addPip(getMockedPIPCHInterface(pips[i], pipCat[i], "http://www.w3.org/2001/XMLSchema#string", pipVal[i]));
+			contextHandler.addPip(getMockedPIPCHInterface(pips[i], pipCat[i], pipDT[i], pipVal[i]));
 		}
 	}
 
 	/* Non mocked components created from configuration */
 	
-	protected Attribute getNewAttribute(String id, Category category, String type, String val) {
+	protected Attribute getNewAttribute(String id, Category category, DataType type, String val) {
 		Attribute attr = new Attribute();
 		attr.createAttributeId(id);
 		attr.createAttributeValues(type, val);
-		attr.setAttributeDataType(DataType.toDATATYPE(type));
+		attr.setAttributeDataType(type);
 		attr.setCategory(category);
 		return attr;
 	}
@@ -226,7 +234,7 @@ public abstract class UCFAbstractTest {
 		ArrayList<PIPCHInterface> pips = new ArrayList<>();
 
 		for (XMLPip xmlPIP : ucsConfiguration.getPipList()) {
-			log.info("Loading pip");
+			LOGGER.info("Loading pip");
 			PIPCHInterface pip = PIPBuilder.build(xmlPIP);
 			assertNotNull(pip);
 			pips.add(pip);
@@ -317,7 +325,7 @@ public abstract class UCFAbstractTest {
 	protected String readResourceFileAsString(String resource) throws URISyntaxException, IOException {
 		ClassLoader classLoader = this.getClass().getClassLoader();
 
-		log.info("Loading resource file : " + resource);
+		LOGGER.info("Loading resource file : " + resource);
 		Path path = Paths.get(classLoader.getResource(resource).toURI());
 		byte[] data = Files.readAllBytes(path);
 		return new String(data);

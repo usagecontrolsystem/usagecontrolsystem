@@ -20,7 +20,6 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import iit.cnr.it.ucsinterface.message.Message;
 import iit.cnr.it.ucsinterface.message.endaccess.EndAccessMessage;
 import iit.cnr.it.ucsinterface.message.reevaluation.ReevaluationMessage;
 import iit.cnr.it.ucsinterface.message.remoteretrieval.MessagePipCh;
@@ -30,6 +29,7 @@ import it.cnr.iit.usagecontrolframework.configuration.xmlclasses.Configuration;
 import it.cnr.iit.usagecontrolframework.contexthandler.ContextHandlerLC;
 import it.cnr.iit.usagecontrolframework.contexthandler.exceptions.RevokeException;
 import it.cnr.iit.xacmlutilities.Category;
+import it.cnr.iit.xacmlutilities.DataType;
 import oasis.names.tc.xacml.core.schema.wd_17.DecisionType;
 
 @EnableConfigurationProperties
@@ -64,7 +64,7 @@ public class ContextHandlerTests extends UCFAbstractTest {
 
 	@PostConstruct
 	private void init() throws URISyntaxException, IOException, JAXBException {
-		log.info("Init tests");
+		LOGGER.info("Init tests");
 		ucsConfiguration = getUCSConfiguration(ucsConfigFile);
 		policy = readResourceFileAsString(policyFile);
 		request = readResourceFileAsString(requestFile);
@@ -72,7 +72,7 @@ public class ContextHandlerTests extends UCFAbstractTest {
 
 	@Before
 	public void setUp() throws JAXBException, URISyntaxException, IOException {
-		log.info("setUp >>>>>>>>>>>>>>>>>>");
+		LOGGER.info("setUp >>>>>>>>>>>>>>>>>>");
 		// nothing to do for now
 	}
 	
@@ -162,7 +162,7 @@ public class ContextHandlerTests extends UCFAbstractTest {
 		contextHandler.reevaluate(reevaluationMessage);
 
 		MessagePipCh messagePipCh = buildPipChMessage(sessionId, "", "");
-		messagePipCh.addAttribute(getNewAttribute("virus", Category.SUBJECT, "http://www.w3.org/2001/XMLSchema#string", "1"));
+		messagePipCh.addAttribute(getNewAttribute("virus", Category.ENVIRONMENT, DataType.INTEGER, "1"));
 		contextHandler.attributeChanged(messagePipCh);
 		
 		/* endAccess */
