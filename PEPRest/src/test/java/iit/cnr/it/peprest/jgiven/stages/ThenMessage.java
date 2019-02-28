@@ -98,4 +98,25 @@ public class ThenMessage extends Stage<ThenMessage> {
 		assertEquals("OK", message.getMotivation());
 		return self();
 	}
+
+	public ThenMessage the_message_is_put_in_the_responses_queue() {
+		assertNotNull(pepRest.getResponses());
+		assertTrue(pepRest.getResponses().size() > 0);
+		return self();
+	}
+
+	public ThenMessage the_session_id_is_not_null(PEPRestOperation restOperation, String messageId) {
+		if(restOperation == PEPRestOperation.TRY_ACCESS_RESPONSE) {
+			assertNotNull(pepRest.getSessionIdInTryAccess(message.getID()).get());
+			assertTrue(pepRest.getSessionIdInTryAccess(messageId).get().length() > 0);
+		}
+		return self();
+	}
+
+	public void the_evaluation_result_is_permit(String messageId) {
+		assertNotNull(pepRest.getEvaluationResult(messageId).get());
+		assertTrue(pepRest.getEvaluationResult(messageId).get().length() > 0);
+		assertTrue(pepRest.getEvaluationResult(messageId).get().equals("Permit"));
+	}
+	
 }

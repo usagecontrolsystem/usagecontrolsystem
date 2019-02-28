@@ -2,9 +2,12 @@ package iit.cnr.it.peprest;
 
 import static iit.cnr.it.peprest.PEPRestServiceScenarioTest.PEPRestOperation.END_ACCESS;
 import static iit.cnr.it.peprest.PEPRestServiceScenarioTest.PEPRestOperation.ON_GOING_RESPONSE;
+import static iit.cnr.it.ucsinterface.node.NodeInterface.ENDACCESSRESPONSE_REST;
 import static iit.cnr.it.ucsinterface.node.NodeInterface.ENDACCESS_REST;
 import static iit.cnr.it.ucsinterface.node.NodeInterface.ONGOINGRESPONSE_REST;
+import static iit.cnr.it.ucsinterface.node.NodeInterface.STARTACCESSRESPONSE_REST;
 import static iit.cnr.it.ucsinterface.node.NodeInterface.STARTACCESS_REST;
+import static iit.cnr.it.ucsinterface.node.NodeInterface.TRYACCESSRESPONSE_REST;
 import static iit.cnr.it.ucsinterface.node.NodeInterface.TRYACCESS_REST;
 
 import org.apache.http.HttpStatus;
@@ -34,7 +37,10 @@ public class PEPRestServiceScenarioTest
 		TRY_ACCESS( TRYACCESS_REST ),
 		START_ACCESS( STARTACCESS_REST ),
 		END_ACCESS( ENDACCESS_REST ),
-		ON_GOING_RESPONSE( ONGOINGRESPONSE_REST );
+		ON_GOING_RESPONSE( ONGOINGRESPONSE_REST ),
+		TRY_ACCESS_RESPONSE(TRYACCESSRESPONSE_REST),
+		START_ACCESS_RESPONSE(STARTACCESSRESPONSE_REST),
+		END_ACCESS_RESPONSE(ENDACCESSRESPONSE_REST);
 
 		private String operationUri;
 
@@ -52,6 +58,15 @@ public class PEPRestServiceScenarioTest
                 { PEPRestOperation.TRY_ACCESS },
                 { PEPRestOperation.START_ACCESS },
                 { PEPRestOperation.END_ACCESS },
+        };
+    }
+    
+    @DataProvider
+    public static Object[][] dataPepRestResponseOperations() {
+        return new Object[][] {
+                { PEPRestOperation.TRY_ACCESS_RESPONSE },
+                { PEPRestOperation.START_ACCESS_RESPONSE },
+                { PEPRestOperation.END_ACCESS_RESPONSE },
         };
     }
 
@@ -112,5 +127,18 @@ public class PEPRestServiceScenarioTest
 	    then().the_Message_motivation_is_NOT_OK()
 	    	.and().the_Message_is_not_placed_into_the_unanswered_queue()
 	    	.but().the_asynch_HTTP_POST_request_for_$_was_received_by_context_handler(END_ACCESS.getOperationUri());
+	}
+    
+    @Test
+    @UseDataProvider("dataPepRestResponseOperations")
+	public void a_response_is_delivered_from_UCS(PEPRestOperation restOperation){
+    	
+    	givenMessage.given().create_permit_response_for_$(restOperation);
+    	
+	    when().PEPRest_service_receive_response_is_executed();
+
+	    then().the_message_is_put_in_the_responses_queue()
+	    	.and().the_session_id_is_not_null(restOperation, givenMessage.getMessageId())
+	    	.and().the_evaluation_result_is_permit(givenMessage.getMessageId());
 	}
 }

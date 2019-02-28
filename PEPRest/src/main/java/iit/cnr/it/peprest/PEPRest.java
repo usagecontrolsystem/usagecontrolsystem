@@ -15,6 +15,7 @@
  ******************************************************************************/
 package iit.cnr.it.peprest;
 
+import java.util.Optional;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
@@ -337,7 +338,75 @@ public class PEPRest implements PEPInterface, Runnable {
 		endAccess(sessionId);
 	}
 
-	public ConcurrentHashMap<String, Message> getUnanswered() {
-		return unanswered;
+	public void setConfiguration(Configuration configuration) {
+		this.configuration = configuration;
 	}
+	
+	/**
+	 * Retreives the sessionId assigned in the tryAccessResponse
+	 * @param messageId the emssageId assigned in hte tryAccess request
+	 * @return an optioan lcontaining either the sessionId either nothing
+	 */
+	public Optional<String> getSessionIdInTryAccess(String messageId) {
+		if(messageId == null || messageId.isEmpty()) {
+			throw new NullPointerException("Passed message is null");
+		}
+		Optional<Message> message = getMessageFromId(messageId);
+		if(message.isPresent()) {
+			TryAccessResponse response = (TryAccessResponse) message.get();
+			return Optional.ofNullable(response.getSessionId());
+		}
+		else {
+			return Optional.empty();
+		}
+	}
+	/**
+	 * Retrieves the evaluation from the returned messageId
+	 * @param messageId the messageId assigned to that evaluation 
+	 * @return an optional containing either the required evaluation or an empty one
+	 */
+	public Optional<String> getEvaluationResult(String messageId) {
+		if(messageId == null || messageId.isEmpty()) {
+			throw new NullPointerException("Passed message is null");
+		}
+		Optional<Message> optional = getMessageFromId(messageId);
+		if(optional.isPresent()) {
+			Message message = optional.get();
+			return extractEvaluationFromMessage(message);
+		} else {
+			return Optional.empty();
+		}
+	}
+	
+	/**
+	 * Given the message extracts the result of the evaluation
+	 * @param message the message from which the evaluation has to be extraced
+	 * @return an optional containing either the result as a string or nothing
+	 */
+	private Optional<String> extractEvaluationFromMessage(Message message) {
+		if(message instanceof TryAccessResponse) {
+			return Optional.ofNullable(((TryAccessResponse)message).getPDPEvaluation().getResult());		}
+		if(message instanceof StartAccessResponse) {
+			return Optional.ofNullable(((StartAccessResponse)message).getPDPEvaluation().getResult());
+		}
+		if(message instanceof EndAccessResponse) {
+			return Optional.ofNullable(((EndAccessResponse)message).getPDPEvaluation().getResult());
+		}
+		return Optional.empty();
+	}
+	
+	/**
+	 * Retrieves a message in the responses map
+	 * @param messageId the messageid assigned in the evaluation
+	 * @return an optional containing the message or nothing
+	 */
+	private Optional<Message> getMessageFromId(String messageId) {
+		if(responses.containsKey(messageId)) {
+			return Optional.of(responses.get(messageId));
+		}	else {
+			return Optional.empty();
+		}
+	}
+
+
 }
