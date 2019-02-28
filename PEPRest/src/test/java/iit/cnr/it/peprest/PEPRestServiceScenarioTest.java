@@ -34,7 +34,7 @@ public class PEPRestServiceScenarioTest
 
 	@ScenarioStage
 	GivenMessage givenMessage;
-	
+
 	@ScenarioStage
 	GivenPEPUCSCommunicationSimulator pepucsCommunicationSimulator;
 
@@ -65,7 +65,7 @@ public class PEPRestServiceScenarioTest
                 { PEPRestOperation.END_ACCESS },
         };
     }
-    
+
     @DataProvider
     public static Object[][] dataPepRestResponseOperations() {
         return new Object[][] {
@@ -119,7 +119,7 @@ public class PEPRestServiceScenarioTest
 	    	.and().the_message_id_in_the_unanswered_queue_matches_the_one_sent()
 	    	.and().the_asynch_HTTP_POST_request_for_$_was_received_by_context_handler(END_ACCESS.getOperationUri());
 	}
-    
+
     @Test
 	public void a_response_message_fails_to_be_sent_to_context_handler_is_ignored(){
     	givenMessage.given().a_ReevaluationResponse_request_with_decision_$(DecisionType.PERMIT);
@@ -133,34 +133,37 @@ public class PEPRestServiceScenarioTest
 	    	.and().the_Message_is_not_placed_into_the_unanswered_queue()
 	    	.but().the_asynch_HTTP_POST_request_for_$_was_received_by_context_handler(END_ACCESS.getOperationUri());
 	}
-    
+
     @Test
     @UseDataProvider("dataPepRestResponseOperations")
 	public void a_response_is_delivered_from_UCS(PEPRestOperation restOperation){
-    	
+
     	givenMessage.given().create_permit_response_for_$(restOperation);
-    	
+
 	    when().PEPRest_service_receive_response_is_executed();
 
 	    then().the_message_is_put_in_the_responses_queue()
 	    	.and().the_session_id_is_not_null(restOperation, givenMessage.getMessageId())
 	    	.and().the_evaluation_result_is_permit(givenMessage.getMessageId());
     }
-    
+
+    @Test
 	public void try_access_flow(){
-	    given().a_test_configuration_for_request_with_policy()
-	    	.with().a_test_session_id()
-	    	.and().a_mocked_context_handler_for_$(PEPRestOperation.TRY_ACCESS.getOperationUri())
-	    	.with().a_success_response_status_$(HttpStatus.SC_OK);
+//	    given().a_test_configuration_for_request_with_policy()
+//	    	.with().a_test_session_id()
+//	    	.and().a_mocked_context_handler_for_$(PEPRestOperation.TRY_ACCESS.getOperationUri())
+//	    	.with().a_success_response_status_$(HttpStatus.SC_OK);
+//
+//	    when().PEPRest_service_$_is_executed(PEPRestOperation.TRY_ACCESS);
+//
+//	    then().the_$_message_is_put_in_the_unanswered_queue(PEPRestOperation.TRY_ACCESS)
+//	    	.and().the_message_id_in_the_unanswered_queue_matches_the_one_sent()
+//	    	.and().the_asynch_HTTP_POST_request_for_$_was_received_by_context_handler(PEPRestOperation.TRY_ACCESS.getOperationUri());
 
-	    when().PEPRest_service_$_is_executed(PEPRestOperation.TRY_ACCESS);
-
-	    then().the_$_message_is_put_in_the_unanswered_queue(PEPRestOperation.TRY_ACCESS)
-	    	.and().the_message_id_in_the_unanswered_queue_matches_the_one_sent()
-	    	.and().the_asynch_HTTP_POST_request_for_$_was_received_by_context_handler(PEPRestOperation.TRY_ACCESS.getOperationUri());
-	    
+	    givenMessage.given().create_permit_response_for_$(PEPRestOperation.TRY_ACCESS_RESPONSE);
 	    pepucsCommunicationSimulator
-	    	.given().a_test_configuration_for_request_with_policy()
-	    		.and().a_mocked_PEPUCSCommunication_REST_service_for_$(NodeInterface.TRYACCESSRESPONSE_REST);
+	    	.given().and().a_test_configuration_for_request_with_policy()
+	    		.and().a_mocked_PEPUCSCommunication_REST_service_for_$(NodeInterface.TRYACCESSRESPONSE_REST)
+	    		.with().a_successful_try_access_response();
 	}
 }

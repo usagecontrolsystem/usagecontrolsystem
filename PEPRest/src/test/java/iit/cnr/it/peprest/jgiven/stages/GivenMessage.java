@@ -1,5 +1,7 @@
 package iit.cnr.it.peprest.jgiven.stages;
 
+import static org.junit.Assert.fail;
+
 import java.util.Arrays;
 import java.util.UUID;
 
@@ -66,16 +68,17 @@ public class GivenMessage extends Stage<GivenMessage> {
 
 	public GivenMessage create_permit_response_for_$(PEPRestOperation operation) {
 		switch(operation) {
-		case TRY_ACCESS_RESPONSE: 
+		case TRY_ACCESS_RESPONSE:
 			message = buildTryAccessResponse(DecisionType.PERMIT);
 			break;
-		case START_ACCESS_RESPONSE: 
+		case START_ACCESS_RESPONSE:
 			message = buildStartAccessResponse(DecisionType.PERMIT);
 			break;
 		case END_ACCESS_RESPONSE:
 			message = buildEndAccessResponse(DecisionType.PERMIT);
 			break;
 		default:
+			fail("Unknown operation type in message creation");
 			break;
 		}
 		return self();
