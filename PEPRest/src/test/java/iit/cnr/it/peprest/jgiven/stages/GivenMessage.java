@@ -37,14 +37,10 @@ public class GivenMessage extends Stage<GivenMessage> {
     	return self();
     }
 
-	protected TryAccessResponse buildTryAccessResponseDeny() {
-		PDPResponse pdpEvaluation = buildPDPResponse(DecisionType.DENY);
-		TryAccessResponseContent content = new TryAccessResponseContent();
-		content.setPDPEvaluation(pdpEvaluation);
-		TryAccessResponse tryAccessResponse = new TryAccessResponse(sessionId);
-		tryAccessResponse.setContent(content);
-		return tryAccessResponse;
-	}
+    public GivenMessage a_TryAccessResponse_request_with_decision_$(DecisionType decisionType){
+    	message = buildTryAccessResponse(decisionType);
+    	return self();
+    }
 
 	protected StartAccessResponse buildStartAccessResponsePermit() {
 		return buildStartAccessResponse(DecisionType.PERMIT);

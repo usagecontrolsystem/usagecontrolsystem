@@ -46,6 +46,7 @@ import iit.cnr.it.ucsinterface.message.tryaccess.TryAccessResponse;
 import iit.cnr.it.ucsinterface.pep.PEPInterface;
 import iit.cnr.it.ucsinterface.requestmanager.RequestManagerToExternalInterface;
 import iit.cnr.it.utility.Utility;
+import oasis.names.tc.xacml.core.schema.wd_17.DecisionType;
 
 /**
  * This is the PEP using rest
@@ -57,8 +58,8 @@ import iit.cnr.it.utility.Utility;
 public class PEPRest implements PEPInterface, Runnable {
 
 	protected static final Logger LOGGER = Logger.getLogger(PEPRest.class.getName());
-	private static final String DENY = "Deny";
-	private static final String PERMIT = "Permit";
+	private static final String DENY = DecisionType.DENY.value();
+	private static final String PERMIT = DecisionType.PERMIT.value();;
 
 	private Configuration configuration;
 	private PEPConf pepConf;
@@ -128,7 +129,6 @@ public class PEPRest implements PEPInterface, Runnable {
 		}
 	}
 
-	@VisibleForTesting
 	public String endAccess(String sessionId) {
 		EndAccessMessage endAccessMessage = new EndAccessMessage(configuration.getPepConf().getId(),
 				configuration.getPepConf().getIp());
@@ -236,7 +236,7 @@ public class PEPRest implements PEPInterface, Runnable {
 
 	private String handleTryAccessResponse(TryAccessResponse response) {
 		LOGGER.info(" Evaluation " + response.getPDPEvaluation().getResult());
-		if(response.getPDPEvaluation().getResult().contains("Permit")) {
+		if(response.getPDPEvaluation().getResult().contains(PERMIT)) {
 			//TRIGGER STARTACCESS AUTOMATICALLY (?)
 			//TODO: yes good idea
 		}
