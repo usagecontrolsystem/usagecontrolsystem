@@ -338,8 +338,8 @@ public class PEPRest implements PEPInterface, Runnable {
 		endAccess(sessionId);
 	}
 
-	public void setConfiguration(Configuration configuration) {
-		this.configuration = configuration;
+	public ConcurrentHashMap<String, Message> getUnanswered() {
+		return unanswered;
 	}
 	
 	/**
