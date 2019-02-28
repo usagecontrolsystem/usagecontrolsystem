@@ -7,8 +7,10 @@ import com.tngtech.jgiven.Stage;
 import com.tngtech.jgiven.annotation.BeforeScenario;
 import com.tngtech.jgiven.annotation.ProvidedScenarioState;
 
+import iit.cnr.it.peprest.PEPRestServiceScenarioTest.PEPRestOperation;
 import iit.cnr.it.ucsinterface.message.Message;
 import iit.cnr.it.ucsinterface.message.PDPResponse;
+import iit.cnr.it.ucsinterface.message.endaccess.EndAccessResponse;
 import iit.cnr.it.ucsinterface.message.reevaluation.ReevaluationResponse;
 import iit.cnr.it.ucsinterface.message.startaccess.StartAccessResponse;
 import iit.cnr.it.ucsinterface.message.tryaccess.TryAccessResponse;
@@ -45,10 +47,7 @@ public class GivenMessage extends Stage<GivenMessage> {
 	}
 
 	protected StartAccessResponse buildStartAccessResponsePermit() {
-		PDPResponse pdpEvaluation = buildPDPResponse(DecisionType.PERMIT);
-		StartAccessResponse startAccessResponse = new StartAccessResponse(sessionId);
-		startAccessResponse.setResponse(pdpEvaluation);
-		return startAccessResponse;
+		return buildStartAccessResponse(DecisionType.PERMIT);
 	}
 
 	protected ReevaluationResponse buildReevaluationResponse(DecisionType decisionType) {
@@ -67,5 +66,62 @@ public class GivenMessage extends Stage<GivenMessage> {
 		pdpResponse.setResponseType(responseType);
 		pdpResponse.setInitialized(true);
 		return pdpResponse;
+	}
+
+	public GivenMessage create_permit_response_for_$(PEPRestOperation operation) {
+		switch(operation) {
+		case TRY_ACCESS_RESPONSE: 
+			message = buildTryAccessResponse(DecisionType.PERMIT);
+			break;
+		case START_ACCESS_RESPONSE: 
+			message = buildStartAccessResponse(DecisionType.PERMIT);
+			break;
+		case END_ACCESS_RESPONSE:
+			message = buildEndAccessResponse(DecisionType.PERMIT);
+			break;
+		default:
+			break;
+		}
+		return self();
+	}
+
+	private TryAccessResponse buildTryAccessResponse(DecisionType decisionType) {
+		//CODE added because sessionId seems to be null
+		if(sessionId == null) {
+			init();
+		}
+		PDPResponse pdpEvaluation = buildPDPResponse(decisionType);
+		TryAccessResponseContent content = new TryAccessResponseContent();
+		content.setSessionId(sessionId);
+		content.setPDPEvaluation(pdpEvaluation);
+		TryAccessResponse tryAccessResponse = new TryAccessResponse(sessionId);
+		tryAccessResponse.setContent(content);
+		return tryAccessResponse;
+	}
+
+	protected StartAccessResponse buildStartAccessResponse(DecisionType decisionType) {
+		//CODE added because sessionId seems to be null
+		if(sessionId == null) {
+			init();
+		}
+		PDPResponse pdpEvaluation = buildPDPResponse(decisionType);
+		StartAccessResponse startAccessResponse = new StartAccessResponse(sessionId);
+		startAccessResponse.setResponse(pdpEvaluation);
+		return startAccessResponse;
+	}
+
+	protected EndAccessResponse buildEndAccessResponse(DecisionType decisionType) {
+		//CODE added because sessionId seems to be null
+		if(sessionId == null) {
+			init();
+		}
+		PDPResponse pdpEvaluation = buildPDPResponse(decisionType);
+		EndAccessResponse endAccessResponse = new EndAccessResponse(sessionId);
+		endAccessResponse.setResponse(pdpEvaluation);
+		return endAccessResponse;
+	}
+
+	public String getMessageId() {
+		return message.getID();
 	}
 }

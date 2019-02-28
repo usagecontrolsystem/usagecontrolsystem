@@ -71,4 +71,11 @@ public class WhenPEPRestService extends Stage<WhenPEPRestService> {
 			break;
 		}
 	}
+
+	public WhenPEPRestService PEPRest_service_receive_response_is_executed() {
+		assertNotNull(message);
+		pepRest.receiveResponse(message);
+		return self();
+	}
+	
 }

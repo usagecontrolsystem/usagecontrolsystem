@@ -38,8 +38,10 @@ public class TryAccessResponseContent {
 	@JsonProperty
 	private PDPEvaluation				pdpEvaluation;
 	// the id of the session
-	private String						newSessionId;
+	@JsonProperty
+	private String						sessionId;
 	// the status of the tryAccess
+	@JsonProperty
 	private String						status;
 	// states if the response is a correct object or not
 	@JsonProperty
@@ -73,7 +75,7 @@ public class TryAccessResponseContent {
 			return false;
 		}
 		// END parameter checking
-		this.newSessionId = sessionId;
+		this.sessionId = sessionId;
 		return true;
 	}
 	
@@ -103,7 +105,7 @@ public class TryAccessResponseContent {
 			return null;
 		}
 		// END parameter checking
-		return newSessionId;
+		return sessionId;
 	}
 	
 	public boolean isInitialized() {

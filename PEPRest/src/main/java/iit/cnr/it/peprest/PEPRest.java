@@ -15,6 +15,7 @@
  ******************************************************************************/
 package iit.cnr.it.peprest;
 
+import java.util.Optional;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
@@ -123,7 +124,7 @@ public class PEPRest implements PEPInterface, Runnable {
 			}
 		} catch (Exception e) {
 			LOGGER.log(Level.SEVERE, e.getLocalizedMessage());
-			throw Throwables.propagate(e); 
+			throw Throwables.propagate(e);
 		}
 	}
 
@@ -145,7 +146,7 @@ public class PEPRest implements PEPInterface, Runnable {
 			}
 		} catch (Exception e) {
 			LOGGER.log(Level.SEVERE, e.getLocalizedMessage());
-			throw Throwables.propagate(e); 
+			throw Throwables.propagate(e);
 		}
 	}
 
@@ -155,11 +156,11 @@ public class PEPRest implements PEPInterface, Runnable {
 		// BEGIN parameter checking
 		if (message == null || !(message instanceof ReevaluationResponse)) {
 			LOGGER.log(Level.SEVERE, "Message not valid");
-			throw Throwables.propagate(new IllegalArgumentException("Invalid message type'")); 
+			throw Throwables.propagate(new IllegalArgumentException("Invalid message type'"));
 		}
 		if (!initialized) {
 			LOGGER.log(Level.SEVERE, "Cannot answer the message due to not properly initilization.");
-			throw Throwables.propagate(new IllegalStateException("PEP is not properly initilization")); 
+			throw Throwables.propagate(new IllegalStateException("PEP is not properly initilization"));
 		}
 		// END parameter checking
 		responses.put(message.getID(), message);
@@ -167,7 +168,7 @@ public class PEPRest implements PEPInterface, Runnable {
 		LOGGER.log(Level.INFO, "[TIME] ON_GOING_EVAL " + System.currentTimeMillis());
 
 		ReevaluationResponse chPepMessage = (ReevaluationResponse) message;
-		if ( pepConf.getRevoke().equals("HARD")) { 
+		if ( pepConf.getRevoke().equals("HARD")) {
 			LOGGER.log(Level.INFO, "[TIME] sending endacces " + System.currentTimeMillis());
 			EndAccessMessage endAccess = new EndAccessMessage(configuration.getPepConf().getId(),
 					configuration.getPepConf().getIp());
@@ -223,7 +224,7 @@ public class PEPRest implements PEPInterface, Runnable {
 		if(message instanceof TryAccessResponse) {
 			return handleTryAccessResponse((TryAccessResponse) message);
 		} else if(message instanceof StartAccessResponse) {
-			return handleStartAccessResponse((StartAccessResponse) message);	
+			return handleStartAccessResponse((StartAccessResponse) message);
 		} else if(message instanceof ReevaluationResponse) {
 			return handleReevaluationResponse((ReevaluationResponse) message);
 		} else if(message instanceof EndAccessResponse) {
@@ -237,6 +238,7 @@ public class PEPRest implements PEPInterface, Runnable {
 		LOGGER.info(" Evaluation " + response.getPDPEvaluation().getResult());
 		if(response.getPDPEvaluation().getResult().contains("Permit")) {
 			//TRIGGER STARTACCESS AUTOMATICALLY (?)
+			//TODO: yes good idea
 		}
 		return response.getPDPEvaluation().getResult();
 	}
@@ -244,18 +246,21 @@ public class PEPRest implements PEPInterface, Runnable {
 	private String handleStartAccessResponse(StartAccessResponse response) {
 		LOGGER.info(response.getID() + " Evaluation " + response.getPDPEvaluation().getResult());
 		return response.getPDPEvaluation().getResult();
+		//TODO: why do we need to return this? how can we signal back to the caller that the access started?
 	}
 
 	private String handleReevaluationResponse(ReevaluationResponse response) {
 		onGoingEvaluation(response);
 		return response.getPDPEvaluation().getResult();
+		//TODO: why do we need to return this? how can we signal back to the caller that the evaluation is on going
 	}
 
 	private String handleEndAccessResponse(EndAccessResponse response) {
 		LOGGER.info(response.getID() + " Evaluation " + response.getPDPEvaluation().getResult());
 		return response.getPDPEvaluation().getResult();
+		//TODO: why do we need to return this? how can we signal back to the caller that the access ended?
 	}
-	
+
 
 	@Override
 	public void run() { //TODO: this method is for local demo tests and needs to be re-coded for PROD
@@ -330,14 +335,78 @@ public class PEPRest implements PEPInterface, Runnable {
 
 	public void end(String sessionId) throws InterruptedException, ExecutionException {
 		LOGGER.log(Level.INFO, "[TIME] Sending endAccess " + System.currentTimeMillis());
-		String id = endAccess(sessionId);
-		EndAccessResponse endAccessResponse = (EndAccessResponse) waitForResponse(id);
-		endAccessResponse.getID();
-		LOGGER.log(Level.INFO, "[TIME] END ACCESS RESPONSE: " + System.currentTimeMillis());
-		//TODO: something should happen at the end, e.g. audit log, so we can assert that it succeeded
+		endAccess(sessionId);
 	}
 
 	public ConcurrentHashMap<String, Message> getUnanswered() {
 		return unanswered;
 	}
+	
+	/**
+	 * Retreives the sessionId assigned in the tryAccessResponse
+	 * @param messageId the emssageId assigned in hte tryAccess request
+	 * @return an optioan lcontaining either the sessionId either nothing
+	 */
+	public Optional<String> getSessionIdInTryAccess(String messageId) {
+		if(messageId == null || messageId.isEmpty()) {
+			throw new NullPointerException("Passed message is null");
+		}
+		Optional<Message> message = getMessageFromId(messageId);
+		if(message.isPresent()) {
+			TryAccessResponse response = (TryAccessResponse) message.get();
+			return Optional.ofNullable(response.getSessionId());
+		}
+		else {
+			return Optional.empty();
+		}
+	}
+	/**
+	 * Retrieves the evaluation from the returned messageId
+	 * @param messageId the messageId assigned to that evaluation 
+	 * @return an optional containing either the required evaluation or an empty one
+	 */
+	public Optional<String> getEvaluationResult(String messageId) {
+		if(messageId == null || messageId.isEmpty()) {
+			throw new NullPointerException("Passed message is null");
+		}
+		Optional<Message> optional = getMessageFromId(messageId);
+		if(optional.isPresent()) {
+			Message message = optional.get();
+			return extractEvaluationFromMessage(message);
+		} else {
+			return Optional.empty();
+		}
+	}
+	
+	/**
+	 * Given the message extracts the result of the evaluation
+	 * @param message the message from which the evaluation has to be extraced
+	 * @return an optional containing either the result as a string or nothing
+	 */
+	private Optional<String> extractEvaluationFromMessage(Message message) {
+		if(message instanceof TryAccessResponse) {
+			return Optional.ofNullable(((TryAccessResponse)message).getPDPEvaluation().getResult());		}
+		if(message instanceof StartAccessResponse) {
+			return Optional.ofNullable(((StartAccessResponse)message).getPDPEvaluation().getResult());
+		}
+		if(message instanceof EndAccessResponse) {
+			return Optional.ofNullable(((EndAccessResponse)message).getPDPEvaluation().getResult());
+		}
+		return Optional.empty();
+	}
+	
+	/**
+	 * Retrieves a message in the responses map
+	 * @param messageId the messageid assigned in the evaluation
+	 * @return an optional containing the message or nothing
+	 */
+	private Optional<Message> getMessageFromId(String messageId) {
+		if(responses.containsKey(messageId)) {
+			return Optional.of(responses.get(messageId));
+		}	else {
+			return Optional.empty();
+		}
+	}
+
+
 }
