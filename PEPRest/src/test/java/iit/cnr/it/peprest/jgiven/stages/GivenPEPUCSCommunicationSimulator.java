@@ -4,22 +4,29 @@ import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathMatching;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.util.UUID;
 
 import org.apache.http.HttpStatus;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.tomakehurst.wiremock.client.MappingBuilder;
 import com.github.tomakehurst.wiremock.client.ResponseDefinitionBuilder;
 import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.http.Fault;
 import com.tngtech.jgiven.Stage;
 import com.tngtech.jgiven.annotation.BeforeScenario;
+import com.tngtech.jgiven.annotation.ExpectedScenarioState;
 import com.tngtech.jgiven.annotation.ProvidedScenarioState;
 import com.tngtech.jgiven.annotation.Quoted;
 import com.tngtech.jgiven.annotation.ScenarioRule;
 
 import iit.cnr.it.peprest.jgiven.rules.MockedHttpServiceTestRule;
+import iit.cnr.it.ucsinterface.message.Message;
+import iit.cnr.it.ucsinterface.message.tryaccess.TryAccessResponse;
 import iit.cnr.it.peprest.configuration.Configuration;
 import iit.cnr.it.utility.Utility;
 
@@ -36,6 +43,9 @@ public class GivenPEPUCSCommunicationSimulator extends Stage<GivenPEPUCSCommunic
 
     @ProvidedScenarioState
     String sessionId;
+
+    @ExpectedScenarioState
+    Message message;
 
 	private ResponseDefinitionBuilder aResponse;
 	private MappingBuilder post;
@@ -78,10 +88,16 @@ public class GivenPEPUCSCommunicationSimulator extends Stage<GivenPEPUCSCommunic
 
     public GivenPEPUCSCommunicationSimulator a_successful_try_access_response( ) {
     	assertNotNull("context handler is not initialised", post);
-    	aResponse = aResponse()
-    			.withStatus(HttpStatus.SC_OK)
-    			.withHeader("Content-Type", "application/json")
-    			.withBody("TODO: body"); //TODO
+    	assertTrue(message instanceof TryAccessResponse);
+    	try {
+			aResponse = aResponse()
+					.withStatus(HttpStatus.SC_OK)
+					.withHeader("Content-Type", "application/json")
+					.withBody(
+							 new ObjectMapper().writeValueAsString(message) ); //TODO
+		} catch (JsonProcessingException e) {
+			fail("unable to create a response due to "+e.getLocalizedMessage());
+		}
     	wireMockContextHandler.register( post.willReturn(aResponse));
     	return self();
     }

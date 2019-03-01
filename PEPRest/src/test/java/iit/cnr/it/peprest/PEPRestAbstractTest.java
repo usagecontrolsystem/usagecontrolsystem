@@ -63,15 +63,17 @@ public class PEPRestAbstractTest {
 				   .contentType(MediaType.TEXT_PLAIN_VALUE).content(jsonMessage)).andReturn();
 		return mvcResult.getResponse();
 	}
-	
+
 	protected MockHttpServletResponse postResponseToPEPRest(Message jsonMessage, String uri) throws Exception{
-	    System.out.println("RESPONSE: " + new ObjectMapper().writeValueAsString(jsonMessage));
+		// FIXME: system outs and test
+		System.out.println("RESPONSE: " + new ObjectMapper().writeValueAsString(jsonMessage));
 	    if(jsonMessage instanceof TryAccessResponse) {
 	    	TryAccessResponse response = (TryAccessResponse) jsonMessage;
 	    	System.out.println("RESPONSE: " + response.getPDPEvaluation().getResult());
 	    }
 		MvcResult mvcResult = mvc.perform(MockMvcRequestBuilders.post(uri)
-				   .contentType(MediaType.APPLICATION_JSON_VALUE).content(new ObjectMapper().writeValueAsString(jsonMessage))).andReturn();
+				   .contentType(MediaType.APPLICATION_JSON_VALUE).content(
+						   new ObjectMapper().writeValueAsString(jsonMessage))).andReturn();
 		return mvcResult.getResponse();
 	}
 
