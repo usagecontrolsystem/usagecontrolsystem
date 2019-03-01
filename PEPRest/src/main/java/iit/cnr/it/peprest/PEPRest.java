@@ -32,6 +32,9 @@ import com.google.common.base.Throwables;
 
 import iit.cnr.it.peprest.configuration.Configuration;
 import iit.cnr.it.peprest.configuration.PEPConf;
+import iit.cnr.it.peprest.messagetrack.MessageStorage;
+import iit.cnr.it.peprest.messagetrack.MessageStorageInterface;
+import iit.cnr.it.peprest.messagetrack.MessagesPerSession;
 import iit.cnr.it.peprest.proxy.ProxyRequestManager;
 import iit.cnr.it.ucsinterface.message.MEAN;
 import iit.cnr.it.ucsinterface.message.Message;
@@ -59,7 +62,7 @@ public class PEPRest implements PEPInterface, Runnable {
 
 	protected static final Logger LOGGER = Logger.getLogger(PEPRest.class.getName());
 	private static final String DENY = DecisionType.DENY.value();
-	private static final String PERMIT = DecisionType.PERMIT.value();;
+	private static final String PERMIT = DecisionType.PERMIT.value();
 
 	private Configuration configuration;
 	private PEPConf pepConf;
@@ -72,6 +75,9 @@ public class PEPRest implements PEPInterface, Runnable {
 
 	@VisibleForTesting
 	ConcurrentHashMap<String, Message> responses = new ConcurrentHashMap<>();
+
+	@VisibleForTesting
+	MessageStorage messageHistory = new MessageStorage();
 
 	private Object mutex = new Object();
 
@@ -101,6 +107,7 @@ public class PEPRest implements PEPInterface, Runnable {
 		Message message = requestManager.sendMessageToCH(tryAccessMessage);
 		if (message.isDeliveredToDestination()) {
 			unanswered.put(tryAccessMessage.getID(), tryAccessMessage);
+			messageHistory.addMessage(tryAccessMessage);
 			return tryAccessMessage.getID();
 		} else {
 			LOGGER.log(Level.WARNING,"isDeliveredToDestination: "+ message.isDeliveredToDestination());
@@ -118,6 +125,7 @@ public class PEPRest implements PEPInterface, Runnable {
 			Message message = requestManager.sendMessageToCH(startAccessMessage);
 			if (message.isDeliveredToDestination()) {
 				unanswered.put(startAccessMessage.getID(), startAccessMessage);
+				messageHistory.addMessage(startAccessMessage);
 				return startAccessMessage.getID();
 			} else {
 				LOGGER.log(Level.WARNING, "isDeliveredToDestination: "+ message.isDeliveredToDestination());
@@ -139,6 +147,7 @@ public class PEPRest implements PEPInterface, Runnable {
 			Message message = requestManager.sendMessageToCH(endAccessMessage);
 			if (message.isDeliveredToDestination()) {
 				unanswered.put(endAccessMessage.getID(), endAccessMessage);
+				messageHistory.addMessage(endAccessMessage);
 				return endAccessMessage.getID();
 			} else {
 				LOGGER.log(Level.INFO, "isDeliveredToDestination: "+ message.isDeliveredToDestination());
@@ -212,6 +221,7 @@ public class PEPRest implements PEPInterface, Runnable {
 		try {
 			responses.put(message.getID(), message);
 			unanswered.remove(message.getID());
+			messageHistory.addMessage(message);
 			return handleResponse(message);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
@@ -234,11 +244,16 @@ public class PEPRest implements PEPInterface, Runnable {
 		}
 	}
 
+	/**
+	 * Function that handles a tryAccessResponse
+	 * 
+	 * @param response the response received by the UCS
+	 * @return a String stating the result of the evaluation or the ID of the startaccess message
+	 */
 	private String handleTryAccessResponse(TryAccessResponse response) {
 		LOGGER.info(" Evaluation " + response.getPDPEvaluation().getResult());
-		if(response.getPDPEvaluation().getResult().contains(PERMIT)) {
-			//TRIGGER STARTACCESS AUTOMATICALLY (?)
-			//TODO: yes good idea
+		if (response.getPDPEvaluation().getResult().contains(PERMIT)) {
+			return startAccess(response.getSessionId());
 		}
 		return response.getPDPEvaluation().getResult();
 	}
@@ -260,7 +275,6 @@ public class PEPRest implements PEPInterface, Runnable {
 		return response.getPDPEvaluation().getResult();
 		//TODO: why do we need to return this? how can we signal back to the caller that the access ended?
 	}
-
 
 	@Override
 	public void run() { //TODO: this method is for local demo tests and needs to be re-coded for PROD
@@ -341,7 +355,7 @@ public class PEPRest implements PEPInterface, Runnable {
 	public ConcurrentHashMap<String, Message> getUnanswered() {
 		return unanswered;
 	}
-	
+
 	/**
 	 * Retreives the sessionId assigned in the tryAccessResponse
 	 * @param messageId the emssageId assigned in hte tryAccess request
@@ -360,9 +374,10 @@ public class PEPRest implements PEPInterface, Runnable {
 			return Optional.empty();
 		}
 	}
+
 	/**
 	 * Retrieves the evaluation from the returned messageId
-	 * @param messageId the messageId assigned to that evaluation 
+	 * @param messageId the messageId assigned to that evaluation
 	 * @return an optional containing either the required evaluation or an empty one
 	 */
 	public Optional<String> getEvaluationResult(String messageId) {
@@ -377,7 +392,7 @@ public class PEPRest implements PEPInterface, Runnable {
 			return Optional.empty();
 		}
 	}
-	
+
 	/**
 	 * Given the message extracts the result of the evaluation
 	 * @param message the message from which the evaluation has to be extraced
@@ -394,19 +409,26 @@ public class PEPRest implements PEPInterface, Runnable {
 		}
 		return Optional.empty();
 	}
-	
+
 	/**
 	 * Retrieves a message in the responses map
 	 * @param messageId the messageid assigned in the evaluation
 	 * @return an optional containing the message or nothing
 	 */
 	private Optional<Message> getMessageFromId(String messageId) {
-		if(responses.containsKey(messageId)) {
+		if (responses.containsKey(messageId)) {
 			return Optional.of(responses.get(messageId));
-		}	else {
+		} else {
 			return Optional.empty();
 		}
 	}
 
+	public MessageStorageInterface getMessageHistory() {
+		return messageHistory;
+	}
+
+	public MessagesPerSession getMessagesPerSession() {
+		return messageHistory;
+	}
 
 }
