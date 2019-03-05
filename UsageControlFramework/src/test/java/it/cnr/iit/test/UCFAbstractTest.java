@@ -11,14 +11,13 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.logging.Logger;
 
 import javax.xml.bind.JAXBException;
 
 import org.mockito.Matchers;
 import org.mockito.Mockito;
-import org.mockito.stubbing.Answer;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import iit.cnr.it.ucsinterface.contexthandler.STATUS;
 import iit.cnr.it.ucsinterface.forwardingqueue.ForwardingQueueToCHInterface;
@@ -44,6 +43,7 @@ import it.cnr.iit.usagecontrolframework.proxies.PIPBuilder;
 import it.cnr.iit.usagecontrolframework.proxies.ProxyPAP;
 import it.cnr.iit.usagecontrolframework.proxies.ProxyPDP;
 import it.cnr.iit.usagecontrolframework.proxies.ProxySessionManager;
+import it.cnr.iit.usagecontrolframework.requestmanager.RequestManagerLC;
 import it.cnr.iit.xacmlutilities.Attribute;
 import it.cnr.iit.xacmlutilities.Category;
 import it.cnr.iit.xacmlutilities.DataType;
@@ -53,7 +53,17 @@ import oasis.names.tc.xacml.core.schema.wd_17.PolicyType;
 import oasis.names.tc.xacml.core.schema.wd_17.RequestType;
 
 public abstract class UCFAbstractTest {
-	protected Logger LOGGER = (Logger) LoggerFactory.getLogger(UCFAbstractTest.class);
+	protected Logger LOGGER = (Logger) Logger.getLogger(UCFAbstractTest.class.getSimpleName());
+
+	@Autowired
+	TestConfiguration conf;
+	
+	/* Request manager functions */
+	
+	protected RequestManagerLC getRequestManager(Configuration ucsConfiguration) {
+		RequestManagerLC requestManager = new RequestManagerLC(ucsConfiguration.getRm());
+		return requestManager;
+	}
 
 	/* Context Hanlder functions */
 
@@ -64,7 +74,7 @@ public abstract class UCFAbstractTest {
 
 	protected void initContextHandler(ContextHandlerLC contextHandler) {
 		contextHandler.setPdpInterface(getMockedPDP(getMockedPDPEvaluation(DecisionType.PERMIT)));
-		contextHandler.setPapInterface(getMockedPAP());
+		contextHandler.setPapInterface(getMockedPAP(null));
 		contextHandler.setRequestManagerToChInterface(getMockedRequestManagerToChInterface());
 		contextHandler.setSessionManagerInterface(getSessionManagerForStatus("", "", "", ContextHandlerLC.TRY_STATUS));
 		contextHandler.setForwardingQueue(getMockedForwardingQueueToCHInterface());
@@ -76,11 +86,12 @@ public abstract class UCFAbstractTest {
 			String request) {
 		ContextHandlerLC contextHandler = getContextHandler(ucsConfiguration);
 		initContextHandler(contextHandler);
-		addMockedPips(ucsConfiguration, contextHandler);
 		contextHandler.setSessionManagerInterface(
 				getSessionManagerForStatus("", policy, request, ContextHandlerLC.TRY_STATUS));
 
 		contextHandler.verify();
+		/* must be called after initialisation */
+		addMockedPips(ucsConfiguration, contextHandler);
 		assertTrue(contextHandler.startMonitoringThread());
 
 		return contextHandler;
@@ -90,21 +101,21 @@ public abstract class UCFAbstractTest {
 
 	protected SessionManagerInterface getMockedSessionManager(SessionInterface sessionInterface) {
 		SessionManagerInterface sessionManagerInterface = Mockito.mock(SessionManagerInterface.class);
-		Mockito.when(sessionManagerInterface.getSessionForId(Matchers.<String>any())).thenReturn(sessionInterface);
+		Mockito.when(sessionManagerInterface.getSessionForId(Mockito.anyString())).thenReturn(sessionInterface);
 		// TODO add ongoing attributes
-		Mockito.when(sessionManagerInterface.getOnGoingAttributes(Matchers.<String>any())).thenReturn(null);
-		Mockito.when(sessionManagerInterface.deleteEntry(Matchers.<String>any())).thenReturn(true);
-		Mockito.when(sessionManagerInterface.createEntry(Matchers.<String>any(), Matchers.<String>any(),
-				Matchers.<String>any(), Matchers.<List<String>>any(), Matchers.<List<String>>any(),
-				Matchers.<List<String>>any(), Matchers.<List<String>>any(), Matchers.<String>any(),
-				Matchers.<String>any(), Matchers.<String>any(), Matchers.<String>any(), Matchers.<String>any(),
-				Matchers.<String>any())).thenReturn(true);
+		Mockito.when(sessionManagerInterface.getOnGoingAttributes(Mockito.anyString())).thenReturn(null);
+		Mockito.when(sessionManagerInterface.deleteEntry(Mockito.anyString())).thenReturn(true);
+		Mockito.when(sessionManagerInterface.createEntry(Mockito.anyString(), Mockito.anyString(),
+				Mockito.anyString(), Matchers.<List<String>>any(), Matchers.<List<String>>any(),
+				Matchers.<List<String>>any(), Matchers.<List<String>>any(), Mockito.anyString(),
+				Mockito.anyString(), Mockito.anyString(), Mockito.anyString(), Mockito.anyString(),
+				Mockito.anyString())).thenReturn(true);
 		
 		List<SessionInterface> sessionInterfaceList = new ArrayList<>(Arrays.asList(new SessionInterface[] { sessionInterface }));
 		Mockito.when(sessionManagerInterface.getSessionsForSubjectAttributes(
-				Matchers.<String>any(), Matchers.<String>any())).thenReturn(sessionInterfaceList);
+				Mockito.anyString(), Mockito.anyString())).thenReturn(sessionInterfaceList);
 		Mockito.when(sessionManagerInterface.getSessionsForEnvironmentAttributes(
-				Matchers.<String>any())).thenReturn(sessionInterfaceList);
+				Mockito.anyString())).thenReturn(sessionInterfaceList);
 		
 		return sessionManagerInterface;
 	}
@@ -142,8 +153,8 @@ public abstract class UCFAbstractTest {
 	protected ObligationManagerInterface getMockedObligationManager() {
 		ObligationManagerInterface obligationManager = (ObligationManagerInterface) Mockito
 				.mock(ObligationManagerInterface.class);
-		Mockito.when(obligationManager.translateObligations(Matchers.<PDPEvaluation>any(), Matchers.<String>any(),
-				Matchers.<String>any())).thenReturn(null);
+		Mockito.when(obligationManager.translateObligations(Matchers.<PDPEvaluation>any(), Mockito.anyString(),
+				Mockito.anyString())).thenReturn(null);
 		return obligationManager;
 	}
 
@@ -151,9 +162,9 @@ public abstract class UCFAbstractTest {
 
 	protected PDPInterface getMockedPDP(PDPEvaluation pdpEval) {
 		PDPInterface pdp = (PDPInterface) Mockito.mock(PDPInterface.class);
-		Mockito.when(pdp.evaluate(Matchers.<String>any(), Matchers.<StringBuilder>any(), Matchers.<STATUS>any()))
+		Mockito.when(pdp.evaluate(Mockito.anyString(), Matchers.<StringBuilder>any(), Matchers.<STATUS>any()))
 				.thenReturn(pdpEval);
-		Mockito.when(pdp.evaluate(Matchers.<String>any(), Matchers.<String>any())).thenReturn(pdpEval);
+		Mockito.when(pdp.evaluate(Mockito.anyString(), Mockito.anyString())).thenReturn(pdpEval);
 		assertNotNull(pdp);
 		return pdp;
 	}
@@ -166,8 +177,9 @@ public abstract class UCFAbstractTest {
 
 	/* Mocked PAP */
 
-	protected PAPInterface getMockedPAP() {
+	protected PAPInterface getMockedPAP(String policy) {
 		PAPInterface pap = Mockito.mock(PAPInterface.class);
+		Mockito.when(pap.retrievePolicy(Mockito.anyString())).thenReturn(policy);
 		return pap;
 	}
 
@@ -180,6 +192,9 @@ public abstract class UCFAbstractTest {
 			//List<Attribute> attributeRetrievals = a.getArgumentAt(1, List.class);
 			LOGGER.info("pip retrieve!");
 			requestType.addAttribute(Category.ENVIRONMENT.toString(), DataType.INTEGER.toString(), "virus", "1");
+			requestType.addAttribute(Category.ENVIRONMENT.toString(), DataType.INTEGER.toString(), "telephone", "1");
+			requestType.addAttribute(Category.ENVIRONMENT.toString(), DataType.STRING.toString(), "position", "Pisa");
+
 			return null;
 		}).when(pipRetrieval).retrieve(Matchers.<RequestType>any(), Mockito.any());
 		return pipRetrieval;
