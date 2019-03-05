@@ -21,15 +21,12 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.LinkedTransferQueue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.xml.bind.JAXBException;
-
-import com.datastax.driver.core.utils.UUIDs;
-import com.google.common.annotations.VisibleForTesting;
-import com.google.gson.Gson;
 
 import iit.cnr.it.ucs.configuration.BasicConfiguration;
 import iit.cnr.it.ucsinterface.contexthandler.AbstractContextHandler;
@@ -37,7 +34,6 @@ import iit.cnr.it.ucsinterface.contexthandler.STATUS;
 import iit.cnr.it.ucsinterface.contexthandler.scheduler.SchedulerInterface;
 import iit.cnr.it.ucsinterface.message.Message;
 import iit.cnr.it.ucsinterface.message.PART;
-import iit.cnr.it.ucsinterface.message.PDPResponse;
 import iit.cnr.it.ucsinterface.message.PURPOSE;
 import iit.cnr.it.ucsinterface.message.endaccess.EndAccessMessage;
 import iit.cnr.it.ucsinterface.message.endaccess.EndAccessResponse;
@@ -472,7 +468,7 @@ final public class ContextHandlerLC extends AbstractContextHandler {
 	 *         tryaccess
 	 */
 	private synchronized String createSessionId() {
-		return UUIDs.timeBased().toString();
+		return UUID.randomUUID().toString();
 	}
 
 	/**
