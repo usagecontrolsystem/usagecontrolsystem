@@ -9,10 +9,10 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import com.datastax.driver.core.utils.UUIDs;
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.dao.DaoManager;
 import com.j256.ormlite.dao.ForeignCollection;
@@ -459,7 +459,7 @@ final public class SessionManagerDesktop implements SessionManagerInterface {
 				for (String attr : onGoingAttributesForSubject) {
 					OnGoingAttribute a = new OnGoingAttribute(attr, subjectName, null,
 					    null);
-					a.setId(UUIDs.timeBased().toString());
+					a.setId(UUID.randomUUID().toString());
 					attributes.add(a);
 				}
 			}
@@ -467,7 +467,7 @@ final public class SessionManagerDesktop implements SessionManagerInterface {
 				for (String attr : onGoingAttributesForResource) {
 					OnGoingAttribute a = new OnGoingAttribute(attr, null, resourceName,
 					    null);
-					a.setId(UUIDs.timeBased().toString());
+					a.setId(UUID.randomUUID().toString());
 					attributes.add(a);
 				}
 			}
@@ -475,14 +475,14 @@ final public class SessionManagerDesktop implements SessionManagerInterface {
 				for (String attr : onGoingAttributesForAction) {
 					OnGoingAttribute a = new OnGoingAttribute(attr, null, null,
 					    actionName);
-					a.setId(UUIDs.timeBased().toString());
+					a.setId(UUID.randomUUID().toString());
 					attributes.add(a);
 				}
 			}
 			if (onGoingAttributesForEnvironment != null) {
 				for (String attr : onGoingAttributesForEnvironment) {
 					OnGoingAttribute a = new OnGoingAttribute(attr, null, null, null);
-					a.setId(UUIDs.timeBased().toString());
+					a.setId(UUID.randomUUID().toString());
 					attributes.add(a);
 				}
 			}
