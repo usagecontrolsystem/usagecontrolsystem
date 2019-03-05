@@ -23,7 +23,6 @@ import javax.xml.bind.JAXBException;
 import org.wso2.balana.ctx.ResponseCtx;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.google.common.annotations.VisibleForTesting;
 
 import iit.cnr.it.ucsinterface.pdp.PDPEvaluation;
 import iit.cnr.it.ucsinterface.pdp.PDPObligationInterface;
@@ -206,7 +205,6 @@ public final class PDPResponse implements PDPEvaluation {
 		return firingRules;
 	}
 
-	@VisibleForTesting
 	public void setInitialized(boolean initialized) {
 		this.initialized = initialized;
 	}

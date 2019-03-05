@@ -27,42 +27,38 @@ import iit.cnr.it.ucsinterface.pdp.PDPEvaluation;
  *
  */
 public class EndAccessResponse extends Message {
-	
+
 	/**
 	 * 
 	 */
-	private static final long	serialVersionUID	= 1L;
+	private static final long serialVersionUID = 1L;
 	// status of the startaccess
-	private String						status;
+	private String status;
 	// the evaluation provided by the PDP
-	private PDPEvaluation			pdpEvaluation;
-	
+	private PDPEvaluation pdpEvaluation;
+
 	/**
 	 * Constructor for an EndAccessResponse
 	 * 
-	 * @param source
-	 *          source of the message
-	 * @param destination
-	 *          destination of the message
-	 * @param id
-	 *          id of the message
+	 * @param source      source of the message
+	 * @param destination destination of the message
+	 * @param id          id of the message
 	 */
 	public EndAccessResponse(String source, String destination, String id) {
 		super(source, destination, id);
 		purpose = PURPOSE.ENDACCESS_RESPONSE;
 	}
-	
+
 	/**
 	 * Constructor for an EndAccessResponse
 	 * 
-	 * @param id
-	 *          the id of the message
+	 * @param id the id of the message
 	 */
 	public EndAccessResponse(String id) {
 		super(PART.CH.toString(), PART.PEP.toString(), id);
 		purpose = PURPOSE.ENDACCESS_RESPONSE;
 	}
-	
+
 	// ---------------------------------------------------------------------------
 	// GETTERS and SETTERS
 	// ---------------------------------------------------------------------------
@@ -75,21 +71,21 @@ public class EndAccessResponse extends Message {
 		this.status = status;
 		return true;
 	}
-	
+
 	public String getStatus() {
 		return status;
 	}
-	
+
 	public PDPEvaluation getPDPEvaluation() {
 		return pdpEvaluation;
 	}
-	
+
 	@Override
 	public int compareTo(Message o) {
 		// TODO Auto-generated method stub
 		return 0;
 	}
-	
+
 	public boolean setResponse(PDPEvaluation pdpEvaluation) {
 		// BEGIN parameter checking
 		if (pdpEvaluation == null) {
@@ -99,5 +95,5 @@ public class EndAccessResponse extends Message {
 		this.pdpEvaluation = pdpEvaluation;
 		return false;
 	}
-	
+
 }

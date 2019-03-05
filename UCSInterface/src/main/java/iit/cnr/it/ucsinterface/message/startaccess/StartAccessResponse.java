@@ -30,38 +30,34 @@ public final class StartAccessResponse extends Message {
 	/**
 	 * 
 	 */
-	private static final long	serialVersionUID	= 1L;
+	private static final long serialVersionUID = 1L;
 	// status of the startaccess
-	private String						status;
+	private String status;
 	// the evaluation provided by the PDP
-	private PDPEvaluation				pdpEvaluation;
-	
+	private PDPEvaluation pdpEvaluation;
+
 	/**
 	 * Constructor of the StartAccessResponse
 	 * 
-	 * @param source
-	 *          the source
-	 * @param destination
-	 *          the destination
-	 * @param id
-	 *          the id of the message
+	 * @param source      the source
+	 * @param destination the destination
+	 * @param id          the id of the message
 	 */
 	public StartAccessResponse(String source, String destination, String id) {
 		super(source, destination, id);
 		purpose = PURPOSE.STARTACCESS_RESPONSE;
 	}
-	
+
 	/**
 	 * Constructor of the StartAccessResponse
 	 * 
-	 * @param id
-	 *          the id of the response
+	 * @param id the id of the response
 	 */
 	public StartAccessResponse(String id) {
 		super(PART.CH.toString(), PART.PEP.toString(), id);
 		purpose = PURPOSE.STARTACCESS_RESPONSE;
 	}
-	
+
 	// ---------------------------------------------------------------------------
 	// GETTERS and SETTERS
 	// ---------------------------------------------------------------------------
@@ -74,21 +70,21 @@ public final class StartAccessResponse extends Message {
 		this.status = status;
 		return true;
 	}
-	
+
 	public String getStatus() {
 		return status;
 	}
-	
+
 	public PDPEvaluation getPDPEvaluation() {
 		return pdpEvaluation;
 	}
-	
+
 	@Override
 	public int compareTo(Message o) {
 		// TODO Auto-generated method stub
 		return 0;
 	}
-	
+
 	public boolean setResponse(PDPEvaluation pdpEvaluation) {
 		// BEGIN parameter checking
 		if (pdpEvaluation == null) {
@@ -98,5 +94,5 @@ public final class StartAccessResponse extends Message {
 		this.pdpEvaluation = pdpEvaluation;
 		return false;
 	}
-	
+
 }
