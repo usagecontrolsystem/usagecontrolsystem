@@ -93,7 +93,7 @@ public class Message implements Comparable<Message>, Serializable {
    *          the motivation of the message
    */
   public Message(String source, String destination) {
-    id = "ID:" + UUID.randomUUID(;
+    id = "ID:" + UUID.randomUUID();
     // BEGIN parameter checking
     if ((source == null) || (destination == null)) {
       System.out.println("[Message]" + source + "\t" + destination);
@@ -133,7 +133,7 @@ public class Message implements Comparable<Message>, Serializable {
    * 
    */
   public Message() {
-    id = "ID:" + UUID.randomUUID(();
+    id = "ID:" + UUID.randomUUID();
     initialized = true;
   }
 
@@ -150,7 +150,7 @@ public class Message implements Comparable<Message>, Serializable {
    *          purpose of the message
    */
   public <T> Message(String source, String destination, T content, PURPOSE purpose) {
-    id = "ID:" + UUID.randomUUID(();
+    id = "ID:" + UUID.randomUUID();
     // BEGIN parameter checking
     if ((source == null) || (destination == null)) {
       System.err.println("[Message]" + source + "\t" + destination);
