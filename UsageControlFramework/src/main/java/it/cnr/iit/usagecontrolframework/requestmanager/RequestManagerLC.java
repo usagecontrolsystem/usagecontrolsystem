@@ -77,15 +77,7 @@ public class RequestManagerLC extends AsynchronousRequestManager {
 	 */
 	public RequestManagerLC(XMLRequestManager xml) {
 		super(xml);
-		if (isInitialized()) {
-			initialize = true;
-		} else {
-			return;
-		}
-		if (!initialize()) {
-			initialize = false;
-		}
-		return;
+		initialize = isInitialized();
 	}
 	
 	/**
