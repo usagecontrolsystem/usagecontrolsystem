@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2018 IIT-CNR
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
@@ -15,9 +15,13 @@
  ******************************************************************************/
 package it.cnr.iit.usagecontrolframework.property;
 
-import java.io.BufferedReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.net.URL;
+import java.util.PropertyResourceBundle;
+
+import com.google.common.base.Charsets;
+import com.google.common.io.Resources;
 
 import iit.cnr.it.ucsinterface.ucs.AbstractProperties;
 import it.cnr.iit.usagecontrolframework.configuration.xmlclasses.Configuration;
@@ -26,7 +30,7 @@ import it.cnr.iit.xacmlutilities.policy.utility.JAXBUtility;
 /**
  * This class is in charge of reading the xml provided for the description of
  * the UCS.
- * 
+ *
  * <p>
  * To be consistent in the whole project, the property file will be written
  * using xml markups, since we do not have na xsd schema, we will do the
@@ -45,7 +49,7 @@ import it.cnr.iit.xacmlutilities.policy.utility.JAXBUtility;
  * tag in the xml file and add the corresponding element or attribute inside the
  * correct class.
  * </p>
- * 
+ *
  * <p>
  * <b>READER NOTE: </b> instead of providing comments for each class, it would
  * make the code more unreadable and the names that have bben used are very
@@ -53,80 +57,75 @@ import it.cnr.iit.xacmlutilities.policy.utility.JAXBUtility;
  * all the xml part. In this way it is also easier to update the documentation
  * as we add attributes and elements.
  * </p>
- * 
+ *
  * @author antonio
  *
  */
 public final class Properties extends AbstractProperties {
-	private static final String	CONFIGURATION	= "conf_local.xml";
-	
-	Configuration								configuration;
-	
-	private volatile boolean		initialized		= false;
-	
-	/**
-	 * Constructor for the properties class
-	 */
-	public Properties() {
-		if (!buildProperties()) {
-			return;
-		}
-		initialized = true;
-	}
-	
-	/**
-	 * Build the properties returning a value that says if the building was
-	 * successful or not
-	 * 
-	 * @return true if everything goes ok, false otherwise
-	 */
-	private boolean buildProperties() {
-		String xml = "";
-		try {
-			InputStream stream = Properties.class.getClassLoader()
-			    .getResourceAsStream(getXMLConfigurationFileName());
-			BufferedReader buffer = new BufferedReader(new InputStreamReader(stream));
-			String line = "";
-			
-			while ((line = buffer.readLine()) != null) {
-				xml += line;
-			}
-			buffer.close();
-			stream.close();
-			configuration = JAXBUtility.unmarshalToObject(Configuration.class, xml);
-			return true;
-		} catch (Exception exception) {
-			exception.printStackTrace();
-			return false;
-		}
-		
-	}
-	
-	public Configuration getConfiguration() {
-		if (initialized == false) {
-			return null;
-		}
-		return configuration;
-	}
-	
-	@Override
-	public int getThread(String string) {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-	
-	private String getXMLConfigurationFileName() {
-		java.util.Properties prop = new java.util.Properties();
-		String propFileName = "application.properties";
-		InputStream is = getClass().getClassLoader()
-		    .getResourceAsStream(propFileName);
-		
-		try {
-			prop.load(is);
-			return prop.getProperty("ucs-config-file");
-		} catch (Exception e) {
-		}
-		return CONFIGURATION;
-	}
-	
+    private static final String APP_PROPERTIES = "classpath:application.properties";
+    private static final String UCS_CONFIG = "ucs-config-file";
+    private static final String DEFAULT_UCS_CONFIG = "conf_local.xml";
+
+    Configuration configuration;
+
+    private volatile boolean initialized = false;
+
+    /**
+     * Constructor for the properties class
+     */
+    public Properties() {
+        if( !buildProperties() ) {
+            return;
+        }
+        initialized = true;
+    }
+
+    /**
+     * Build the properties returning a value that says if the building was
+     * successful or not
+     *
+     * @return true if everything goes ok, false otherwise
+     */
+    private boolean buildProperties() {
+        try {
+            URL url = Resources.getResource( getXMLConfigurationFileName() );
+            String xml = Resources.toString( url, Charsets.UTF_8 );
+
+            configuration = JAXBUtility.unmarshalToObject( Configuration.class, xml );
+            return true;
+        } catch( Exception exception ) {
+            exception.printStackTrace();
+        }
+
+        return false;
+    }
+
+    public Configuration getConfiguration() {
+        if( initialized == false ) {
+            return null;
+        }
+        return configuration;
+    }
+
+    @Override
+    public int getThread( String string ) {
+        return 0;
+    }
+
+    private String getXMLConfigurationFileName() {
+        String fname = DEFAULT_UCS_CONFIG;
+
+        FileInputStream fis;
+        try {
+            fis = new FileInputStream( APP_PROPERTIES );
+            PropertyResourceBundle rb = new PropertyResourceBundle( fis );
+            if( rb.containsKey( UCS_CONFIG ) ) {
+                fname = rb.getString( UCS_CONFIG );
+            }
+            fis.close();
+        } catch( IOException e ) {}
+
+        return fname;
+    }
+
 }
