@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Optional;
 import java.util.logging.Logger;
 
 import javax.xml.bind.JAXBException;
@@ -114,7 +115,8 @@ public class UCFBaseTests {
 
     protected SessionManagerInterface getMockedSessionManager( SessionInterface sessionInterface ) {
         SessionManagerInterface sessionManagerInterface = Mockito.mock( SessionManagerInterface.class );
-        Mockito.when( sessionManagerInterface.getSessionForId( Matchers.anyString() ) ).thenReturn( sessionInterface );
+        Mockito.when( sessionManagerInterface.getSessionForId( Matchers.anyString() ) )
+            .thenReturn( Optional.ofNullable( sessionInterface ) );
         // TODO add ongoing attributes
         Mockito.when( sessionManagerInterface.getOnGoingAttributes( Matchers.anyString() ) ).thenReturn( null );
         Mockito.when( sessionManagerInterface.deleteEntry( Matchers.anyString() ) ).thenReturn( true );

@@ -29,8 +29,7 @@ import it.cnr.iit.xacmlutilities.Category;
 import it.cnr.iit.xacmlutilities.DataType;
 import oasis.names.tc.xacml.core.schema.wd_17.DecisionType;
 
-
-@ActiveProfiles("test")
+@ActiveProfiles( "test" )
 @SpringBootTest
 @RunWith(SpringRunner.class)
 public class ContextHandlerCoverageTests extends UCFBaseTests {
