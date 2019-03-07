@@ -24,7 +24,6 @@
       <id>balana-repository</id>
       <name>Balana Repository</name>
       <url>http://maven.wso2.org/nexus/content/repositories/releases</url>
-
     </repository>
   </repositories>
   
@@ -162,6 +161,5 @@
       <scope>compile</scope>
     </dependency>
   </dependencies>
-  
-  
+
 </project>

@@ -12,15 +12,11 @@ import javax.xml.bind.JAXBException;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.SpringBootConfiguration;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import iit.cnr.it.ucsinterface.contexthandler.ContextHandlerInterface;
 import iit.cnr.it.ucsinterface.message.endaccess.EndAccessMessage;
 import iit.cnr.it.ucsinterface.message.reevaluation.ReevaluationMessage;
 import iit.cnr.it.ucsinterface.message.remoteretrieval.MessagePipCh;
@@ -37,14 +33,14 @@ import oasis.names.tc.xacml.core.schema.wd_17.DecisionType;
 @ActiveProfiles("test")
 @SpringBootTest
 @RunWith(SpringRunner.class)
-public class ContextHandlerCoverageTests extends UCFAbstractTest {	
+public class ContextHandlerCoverageTests extends UCFBaseTests {
 	private Configuration ucsConfiguration;
 	private String policy;
 	private String request;
 
 	@PostConstruct
 	private void init() throws URISyntaxException, IOException, JAXBException {
-		LOGGER.info("Init tests");
+		LOGGER.info("Init tests ");
 		ucsConfiguration = getUCSConfiguration(conf.getUcsConfigFile());
 		policy = readResourceFileAsString(conf.getPolicyFile());
 		request = readResourceFileAsString(conf.getPolicyFile());
@@ -55,7 +51,7 @@ public class ContextHandlerCoverageTests extends UCFAbstractTest {
 		LOGGER.info("setUp >>>>>>>>>>>>>>>>>>");
 		// nothing to do for now
 	}
-	
+
 	@Test
 	public void contextHandlerConfigurationShouldFail() throws JAXBException, URISyntaxException, IOException {
 		ContextHandlerLC contextHandler = getContextHandler(ucsConfiguration);
@@ -75,7 +71,7 @@ public class ContextHandlerCoverageTests extends UCFAbstractTest {
 
 		/* tryAccess */
 		contextHandler.tryAccess(null);
-		
+
 		contextHandler.stopMonitoringThread();
 	}
 
@@ -89,12 +85,12 @@ public class ContextHandlerCoverageTests extends UCFAbstractTest {
 
 		/* startAccess */
 		contextHandler.setSessionManagerInterface(
-				getSessionManagerForStatus(conf.getSessionId(), policy, request, ContextHandlerLC.TRY_STATUS));
+				getSessionManagerForStatus(conf.getSessionId(), policy, request, ContextHandlerInterface.TRY_STATUS));
 		// this line makes the start access to take the deny path
 		contextHandler.setPdpInterface(getMockedPDP(getMockedPDPEvaluation(DecisionType.DENY)));
 		StartAccessMessage startAccessMessage = buildStartAccessMessage(conf.getSessionId(), "", "");
 		contextHandler.startAccess(startAccessMessage);
-		
+
 		contextHandler.stopMonitoringThread();
 	}
 
@@ -108,17 +104,17 @@ public class ContextHandlerCoverageTests extends UCFAbstractTest {
 
 		/* startAccess */
 		contextHandler.setSessionManagerInterface(
-				getSessionManagerForStatus(conf.getSessionId(), policy, request, ContextHandlerLC.TRY_STATUS));
+				getSessionManagerForStatus(conf.getSessionId(), policy, request, ContextHandlerInterface.TRY_STATUS));
 		StartAccessMessage startAccessMessage = buildStartAccessMessage(conf.getSessionId(), "", "");
 		contextHandler.startAccess(startAccessMessage);
 
 		/* endAccess */
 		contextHandler.setSessionManagerInterface(
-				getSessionManagerForStatus(conf.getSessionId(), policy, request, ContextHandlerLC.START_STATUS));
+				getSessionManagerForStatus(conf.getSessionId(), policy, request, ContextHandlerInterface.START_STATUS));
 		contextHandler.setPdpInterface(getMockedPDP(getMockedPDPEvaluation(DecisionType.DENY)));
 		EndAccessMessage endAccessMessage = buildEndAccessMessage(conf.getSessionId(), "", "");
 		contextHandler.endAccess(endAccessMessage);
-		
+
 		contextHandler.stopMonitoringThread();
 	}
 
@@ -132,25 +128,25 @@ public class ContextHandlerCoverageTests extends UCFAbstractTest {
 
 		/* startAccess */
 		contextHandler.setSessionManagerInterface(
-				getSessionManagerForStatus(conf.getSessionId(), policy, request, ContextHandlerLC.TRY_STATUS));
+				getSessionManagerForStatus(conf.getSessionId(), policy, request, ContextHandlerInterface.TRY_STATUS));
 		StartAccessMessage startAccessMessage = buildStartAccessMessage(conf.getSessionId(), "", "");
 		contextHandler.startAccess(startAccessMessage);
-		
+
 		/* reevaluate */
 		ReevaluationMessage reevaluationMessage = buildReevaluationMessage(conf.getSessionId(), "", "");
-		reevaluationMessage.setSession(getMockedSessionInterface(policy, request, ContextHandlerLC.START_STATUS));
+		reevaluationMessage.setSession(getMockedSessionInterface(policy, request, ContextHandlerInterface.START_STATUS));
 		contextHandler.reevaluate(reevaluationMessage);
 
 		MessagePipCh messagePipCh = buildPipChMessage(conf.getSessionId(), "", "");
 		messagePipCh.addAttribute(getNewAttribute("virus", Category.ENVIRONMENT, DataType.INTEGER, "1"));
 		contextHandler.attributeChanged(messagePipCh);
-		
+
 		/* endAccess */
 		contextHandler.setSessionManagerInterface(
-				getSessionManagerForStatus(conf.getSessionId(), policy, request, ContextHandlerLC.START_STATUS));
+				getSessionManagerForStatus(conf.getSessionId(), policy, request, ContextHandlerInterface.START_STATUS));
 		EndAccessMessage endAccessMessage = buildEndAccessMessage(conf.getSessionId(), "", "");
 		contextHandler.endAccess(endAccessMessage);
-		
+
 		contextHandler.stopMonitoringThread();
 	}
 

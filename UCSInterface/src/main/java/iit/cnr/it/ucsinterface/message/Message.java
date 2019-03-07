@@ -1,15 +1,15 @@
 /*******************************************************************************
  * Copyright 2018 IIT-CNR
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
- * use this file except in compliance with the License.  You may obtain a copy
+ * use this file except in compliance with the License. You may obtain a copy
  * of the License at
- * 
- *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
  ******************************************************************************/
@@ -24,7 +24,7 @@ import com.google.gson.Gson;
 
 /**
  * This is the class message.
- * 
+ *
  * <p>
  * A message has to contain various informations independently on which are the
  * actors that are communicating. All the other functionalities will be
@@ -38,254 +38,254 @@ import com.google.gson.Gson;
  * </ol>
  * Obviously depending on the situation the message may have other fields.
  * </p>
- * 
+ *
  * <p>
  * In the framework we want that all parties can communicate by passing JSONs,
  * because it is very simple to convert an object to a JSON and viceversa in
  * JAVA. Moreover JSONs are lighter than XML.
  * </p>
- * 
+ *
  * <p>
  * TODO ASAP switch to this schema to builders for message!!
  * </p>
- * 
+ *
  * @author antonio
  *
  */
 
-@JsonIgnoreProperties(ignoreUnknown = true)
+@JsonIgnoreProperties( ignoreUnknown = true )
 public class Message implements Comparable<Message>, Serializable {
 
-  private static final long serialVersionUID = 1L;
-  // source of the message
-  protected String sourceAddress;
-  // port on which the source expects the reply
-  protected String sourcePort;
-  // destination of the message
-  protected String destination;
-  // motivation of the message
-  protected String motivation = null;
-  // purpose (tryaccess)
-  protected PURPOSE purpose;
-  // callback object if needed
-  protected Object callback;
-  // mean on which we expect to receive the response to the message
-  private MEAN mean;
-  // id of the message
-  private String id;
-  private boolean ucsDestination = false;
+    private static final long serialVersionUID = 1L;
+    // source of the message
+    protected String sourceAddress;
+    // port on which the source expects the reply
+    protected String sourcePort;
+    // destination of the message
+    protected String destination;
+    // motivation of the message
+    protected String motivation = null;
+    // purpose (tryaccess)
+    protected PURPOSE purpose;
+    // callback object if needed
+    protected Object callback;
+    // mean on which we expect to receive the response to the message
+    private MEAN mean;
+    // id of the message
+    private String id;
+    private boolean ucsDestination = false;
 
-  // this field states if the message has already passed a scheduler or not
-  private boolean scheduled = false;
+    // this field states if the message has already passed a scheduler or not
+    private boolean scheduled = false;
 
-  private volatile boolean initialized = false;
+    private volatile boolean initialized = false;
 
-  private boolean deliveredToDestination = false;
-  
-  /**
-   * Constructor for the message class.
-   * 
-   * @param source
-   *          the source of the message
-   * @param destination
-   *          the destination of the message
-   * @param motivation
-   *          the motivation of the message
-   */
-  public Message(String source, String destination) {
-    id = "ID:" + UUID.randomUUID();
-    // BEGIN parameter checking
-    if ((source == null) || (destination == null)) {
-      System.out.println("[Message]" + source + "\t" + destination);
-      return;
+    private boolean deliveredToDestination = false;
+
+    /**
+     * Constructor for the message class.
+     *
+     * @param source
+     *          the source of the message
+     * @param destination
+     *          the destination of the message
+     * @param motivation
+     *          the motivation of the message
+     */
+    public Message( String source, String destination ) {
+        id = "ID:" + UUID.randomUUID();
+        // BEGIN parameter checking
+        if( ( source == null ) || ( destination == null ) ) {
+            System.out.println( "[Message]" + source + "\t" + destination );
+            return;
+        }
+        // END parameter checking
+        this.sourceAddress = source;
+        this.destination = destination;
+        initialized = true;
     }
-    // END parameter checking
-    this.sourceAddress = source;
-    this.destination = destination;
-    initialized = true;
-  }
 
-  /**
-   * Constructor for the message class.
-   * 
-   * @param source
-   *          the source of the message
-   * @param destination
-   *          the destination of the message
-   * @param motivation
-   *          the motivation of the message
-   */
-  public Message(String source, String destination, String id) {
-    this.id = id;
-    // BEGIN parameter checking
-    if ((source == null) || (destination == null)) {
-      System.err.println("[Message]" + source + "\t" + destination);
+    /**
+     * Constructor for the message class.
+     *
+     * @param source
+     *          the source of the message
+     * @param destination
+     *          the destination of the message
+     * @param motivation
+     *          the motivation of the message
+     */
+    public Message( String source, String destination, String id ) {
+        this.id = id;
+        // BEGIN parameter checking
+        if( ( source == null ) || ( destination == null ) ) {
+            System.err.println( "[Message]" + source + "\t" + destination );
 
-      return;
+            return;
+        }
+        // END parameter checking
+        this.sourceAddress = source;
+        this.destination = destination;
+        initialized = true;
     }
-    // END parameter checking
-    this.sourceAddress = source;
-    this.destination = destination;
-    initialized = true;
-  }
 
-  /**
-   * 
-   */
-  public Message() {
-    id = "ID:" + UUID.randomUUID();
-    initialized = true;
-  }
-
-  /**
-   * Constructor for a message class
-   * 
-   * @param source
-   *          source of the message
-   * @param destination
-   *          destination of the message
-   * @param content
-   *          content of the message
-   * @param purpose
-   *          purpose of the message
-   */
-  public <T> Message(String source, String destination, T content, PURPOSE purpose) {
-    id = "ID:" + UUID.randomUUID();
-    // BEGIN parameter checking
-    if ((source == null) || (destination == null)) {
-      System.err.println("[Message]" + source + "\t" + destination);
-      return;
+    /**
+     *
+     */
+    public Message() {
+        id = "ID:" + UUID.randomUUID();
+        initialized = true;
     }
-    // END parameter checking
-    this.sourceAddress = source;
-    this.destination = destination;
-    this.motivation = new Gson().toJson(content);
-    initialized = true;
-  }
 
-  // ---------------------------------------------------------------------------
-  // Getters
-  // ---------------------------------------------------------------------------
-  final public String getSource() {
-    if (!initialized) {
-      return null;
+    /**
+     * Constructor for a message class
+     *
+     * @param source
+     *          source of the message
+     * @param destination
+     *          destination of the message
+     * @param content
+     *          content of the message
+     * @param purpose
+     *          purpose of the message
+     */
+    public <T> Message( String source, String destination, T content, PURPOSE purpose ) {
+        id = "ID:" + UUID.randomUUID();
+        // BEGIN parameter checking
+        if( ( source == null ) || ( destination == null ) ) {
+            System.err.println( "[Message]" + source + "\t" + destination );
+            return;
+        }
+        // END parameter checking
+        this.sourceAddress = source;
+        this.destination = destination;
+        this.motivation = new Gson().toJson( content );
+        initialized = true;
     }
-    return sourceAddress;
-  }
 
-  final public String getDestination() {
-    if (!initialized) {
-      return null;
+    // ---------------------------------------------------------------------------
+    // Getters
+    // ---------------------------------------------------------------------------
+    final public String getSource() {
+        if( !initialized ) {
+            return null;
+        }
+        return sourceAddress;
     }
-    return destination;
-  }
 
-  public <T> boolean setMotivation(T motivation) {
-    // BEGIN parameter checking
-    if (!initialized || motivation == null) {
-      return false;
+    final public String getDestination() {
+        if( !initialized ) {
+            return null;
+        }
+        return destination;
     }
-    // END parameter checking
-    this.motivation = new Gson().toJson(motivation);
-    return true;
-  }
 
-  public String getMotivation() {
-    if (!initialized) {
-      return null;
+    public <T> boolean setMotivation( T motivation ) {
+        // BEGIN parameter checking
+        if( !initialized || motivation == null ) {
+            return false;
+        }
+        // END parameter checking
+        this.motivation = new Gson().toJson( motivation );
+        return true;
     }
-    return motivation;
-  }
 
-  final protected boolean isInitialized() {
-    return initialized;
-  }
-
-  @Override
-  public int compareTo(Message o) {
-    return 0;
-  }
-
-  public PURPOSE getPurpose() {
-    return purpose;
-  }
-
-  /*
-   * public boolean setMotivation(String string) { // BEGIN parameter checking if
-   * (!initialized) { return false; } // END parameter checking motivation =
-   * string; return true; }
-   */
-  public String getID() {
-    if (!initialized) {
-      return null;
+    public String getMotivation() {
+        if( !initialized ) {
+            return null;
+        }
+        return motivation;
     }
-    return id;
-  }
 
-  public void setCallback(Object callback, MEAN mean) {
-    this.callback = callback;
-    this.mean = mean;
-  }
+    final protected boolean isInitialized() {
+        return initialized;
+    }
 
-  public MEAN getMean() {
-    return mean;
-  }
+    @Override
+    public int compareTo( Message o ) {
+        return 0;
+    }
 
-  public Object getCallback() {
-    return callback;
-  }
+    public PURPOSE getPurpose() {
+        return purpose;
+    }
 
-  protected void setId(String id) {
-    this.id = id;
-  }
+    /*
+     * public boolean setMotivation(String string) { // BEGIN parameter checking if
+     * (!initialized) { return false; } // END parameter checking motivation =
+     * string; return true; }
+     */
+    public String getID() {
+        if( !initialized ) {
+            return null;
+        }
+        return id;
+    }
 
-  public void setPurpose(PURPOSE purpose2) {
-    this.purpose = purpose2;
-  }
+    public void setCallback( Object callback, MEAN mean ) {
+        this.callback = callback;
+        this.mean = mean;
+    }
 
-  public void setHops(ArrayList<String> buildRoute) {
-    // TODO Auto-generated method stub
+    public MEAN getMean() {
+        return mean;
+    }
 
-  }
+    public Object getCallback() {
+        return callback;
+    }
 
-  public void setScheduled() {
-    scheduled = true;
-  }
+    protected void setId( String id ) {
+        this.id = id;
+    }
 
-  public boolean getScheduled() {
-    return scheduled;
-  }
+    public void setPurpose( PURPOSE purpose2 ) {
+        this.purpose = purpose2;
+    }
 
-  public void setSource(String source) {
-    this.sourceAddress = source;
-  }
+    public void setHops( ArrayList<String> buildRoute ) {
+        // TODO Auto-generated method stub
 
-  public void setDestination(String destination) {
-    this.destination = destination;
-  }
+    }
 
-  public String getSourcePort() {
-    return sourcePort;
-  }
+    public void setScheduled() {
+        scheduled = true;
+    }
 
-  public void setSourcePort(String sourcePort) {
-    this.sourcePort = sourcePort;
-  }
+    public boolean getScheduled() {
+        return scheduled;
+    }
 
-  public void setDestinationType() {
-    ucsDestination = true;
-  }
+    public void setSource( String source ) {
+        this.sourceAddress = source;
+    }
 
-  public boolean getDestinationType() {
-    return ucsDestination;
-  }
+    public void setDestination( String destination ) {
+        this.destination = destination;
+    }
 
-public boolean isDeliveredToDestination() {
-	return deliveredToDestination;
-}
+    public String getSourcePort() {
+        return sourcePort;
+    }
 
-public void setDeliveredToDestination(boolean deliveredToDestination) {
-	this.deliveredToDestination = deliveredToDestination;
-}
+    public void setSourcePort( String sourcePort ) {
+        this.sourcePort = sourcePort;
+    }
+
+    public void setDestinationType() {
+        ucsDestination = true;
+    }
+
+    public boolean getDestinationType() {
+        return ucsDestination;
+    }
+
+    public boolean isDeliveredToDestination() {
+        return deliveredToDestination;
+    }
+
+    public void setDeliveredToDestination( boolean deliveredToDestination ) {
+        this.deliveredToDestination = deliveredToDestination;
+    }
 
 }

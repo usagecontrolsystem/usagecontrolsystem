@@ -37,6 +37,7 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
+import it.cnr.iit.profile.LogProfiler;
 import it.cnr.iit.usagecontrolframework.entry.UsageControlFramework;
 
 /**
@@ -71,13 +72,15 @@ public class UCFRestController {
   @RequestMapping(method = RequestMethod.POST, value = NodeInterface.TRYACCESS_REST, consumes = MediaType.APPLICATION_JSON_VALUE)
   public void sendMessage(@RequestBody() TryAccessMessage message) {
     // BEGIN parameter checking
+	  
     if (message == null) {
       throw new NotFoundException();
     }
     // END parameter checking
     // System.out.println("message not null");
-    System.out
-        .println("[TIME] Tryaccess received " + System.currentTimeMillis());
+    LogProfiler.getInstance().log("REST CALLED");
+    //System.out
+      //  .println("[TIME] Tryaccess received " + System.currentTimeMillis());
     usageControlFramework.tryAccess(message);
 
   }
