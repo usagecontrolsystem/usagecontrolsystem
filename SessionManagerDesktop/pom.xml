@@ -153,11 +153,11 @@
 			<artifactId>postgresql</artifactId>
 			<version>9.1-901.jdbc4</version>
 		</dependency>
-		<dependency>
+<!-- 		<dependency>
 			<groupId>iit.cnr.it.ucsinterface</groupId>
 			<artifactId>UCSInterface</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
-		</dependency>
+		</dependency> -->
 		<dependency>
 			<groupId>org.apache.derby</groupId>
 			<artifactId>derby</artifactId>
