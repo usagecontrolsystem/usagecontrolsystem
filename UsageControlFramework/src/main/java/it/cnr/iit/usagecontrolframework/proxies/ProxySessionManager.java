@@ -22,13 +22,12 @@ import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import it.cnr.iit.usagecontrolframework.configuration.xmlclasses.XMLSessionManager;
-import it.cnr.iit.xacmlutilities.Attribute;
-
 import iit.cnr.it.ucsinterface.constants.CONNECTION;
 import iit.cnr.it.ucsinterface.sessionmanager.OnGoingAttribute;
 import iit.cnr.it.ucsinterface.sessionmanager.SessionInterface;
 import iit.cnr.it.ucsinterface.sessionmanager.SessionManagerInterface;
+import it.cnr.iit.usagecontrolframework.configuration.xmlclasses.XMLSessionManager;
+import it.cnr.iit.xacmlutilities.Attribute;
 
 /**
  * This is the proxy to be used to communicate with the session manager.
@@ -55,18 +54,17 @@ import iit.cnr.it.ucsinterface.sessionmanager.SessionManagerInterface;
  */
 public class ProxySessionManager extends Proxy
         implements SessionManagerInterface {
+    private Logger LOGGER = Logger
+        .getLogger( ProxySessionManager.class.getName() );
+
+    private volatile boolean started = false;
+    private volatile boolean initialized = false;
 
     // the interface to deal with the session manager
     private SessionManagerInterface sessionManagerInterface;
-    // variable that states if the session manager has been correctly initialized
-    private volatile boolean initialized = false;
-    // states if the session manager has started
-    private volatile boolean start = false;
+
     // session manager configuration
     private XMLSessionManager xmlSessionManager;
-    // logger object
-    private Logger LOGGER = Logger
-        .getLogger( ProxySessionManager.class.getName() );
 
     /**
      *
@@ -113,8 +111,8 @@ public class ProxySessionManager extends Proxy
      * @return
      */
     private boolean localSM( XMLSessionManager xmlSM ) {
-        String className = xmlSM.getClassName();
         // BEGIN parameter checking
+        String className = xmlSM.getClassName();
         if( className == null || className.equals( "" ) ) {
             return false;
         }
@@ -151,7 +149,6 @@ public class ProxySessionManager extends Proxy
      * @return
      */
     private boolean connectRest( XMLSessionManager xmlSM ) {
-        // TODO Auto-generated method stub
         return false;
     }
 
@@ -166,8 +163,8 @@ public class ProxySessionManager extends Proxy
             .getCONNECTION( xmlSessionManager.getCommunication() );
         switch( connection ) {
             case API:
-                start = sessionManagerInterface.start();
-                return start;
+                started = sessionManagerInterface.start();
+                return started;
             case SOCKET:
                 // TODO
                 return false;
@@ -192,8 +189,8 @@ public class ProxySessionManager extends Proxy
             .getCONNECTION( xmlSessionManager.getCommunication() );
         switch( connection ) {
             case API:
-                start = !sessionManagerInterface.stop();
-                return !start;
+                started = !sessionManagerInterface.stop();
+                return !started;
             case SOCKET:
                 // TODO
                 return false;
@@ -212,7 +209,7 @@ public class ProxySessionManager extends Proxy
             String originalRequest, List<String> onGoingAttributesForSubject,
             String status, String pepURI, String myIP, String subjectName ) {
         // BEGIN parameter checking
-        if( initialized == false || start == false ) {
+        if( initialized == false || started == false ) {
             return false;
         }
         // END parameter checking
@@ -241,7 +238,7 @@ public class ProxySessionManager extends Proxy
             String originalRequest, List<String> onGoingAttributesForObject,
             String status, String pepURI, String myIP, String objectName ) {
         // BEGIN parameter checking
-        if( initialized == false || start == false ) {
+        if( initialized == false || started == false ) {
             return null;
         }
         // END parameter checking
@@ -274,7 +271,7 @@ public class ProxySessionManager extends Proxy
             String pepURI, String myIP, String subjectName, String objectName,
             String actionName ) {
         // BEGIN parameter checking
-        if( initialized == false || start == false ) {
+        if( initialized == false || started == false ) {
             return null;
         }
         // END parameter checking
@@ -307,7 +304,7 @@ public class ProxySessionManager extends Proxy
             String originalRequest, List<String> onGoingAttributesForAction,
             String status, String pepURI, String myIP, String actionName ) {
         // BEGIN parameter checking
-        if( initialized == false || start == false ) {
+        if( initialized == false || started == false ) {
             return null;
         }
         // END parameter checking
@@ -336,7 +333,7 @@ public class ProxySessionManager extends Proxy
             String originalRequest, List<String> onGoingAttributesForEnvironment,
             String status, String pepURI, String myIP ) {
         // BEGIN parameter checking
-        if( initialized == false || start == false ) {
+        if( initialized == false || started == false ) {
             return null;
         }
         // END parameter checking
@@ -363,7 +360,7 @@ public class ProxySessionManager extends Proxy
     @Override
     public Boolean updateEntry( String sessionId, String status ) {
         // BEGIN parameter checking
-        if( initialized == false || start == false ) {
+        if( initialized == false || started == false ) {
             return null;
         }
         // END parameter checking
@@ -386,7 +383,7 @@ public class ProxySessionManager extends Proxy
     @Override
     public Boolean deleteEntry( String sessionId ) {
         // BEGIN parameter checking
-        if( initialized == false || start == false ) {
+        if( initialized == false || started == false ) {
             return null;
         }
         // END parameter checking
@@ -409,7 +406,7 @@ public class ProxySessionManager extends Proxy
     @Override
     public List<SessionInterface> getSessionsForAttribute( String attributeId ) {
         // BEGIN parameter checking
-        if( initialized == false || start == false ) {
+        if( initialized == false || started == false ) {
             return null;
         }
         // END parameter checking
@@ -433,7 +430,7 @@ public class ProxySessionManager extends Proxy
     public List<SessionInterface> getSessionsForSubjectAttributes(
             String subjectName, String attributeId ) {
         // BEGIN parameter checking
-        if( initialized == false || start == false ) {
+        if( initialized == false || started == false ) {
             return null;
         }
         // END parameter checking
@@ -459,7 +456,7 @@ public class ProxySessionManager extends Proxy
     public List<SessionInterface> getSessionsForResourceAttributes(
             String objectName, String attributeId ) {
         // BEGIN parameter checking
-        if( initialized == false || start == false ) {
+        if( initialized == false || started == false ) {
             return null;
         }
         // END parameter checking
@@ -485,7 +482,7 @@ public class ProxySessionManager extends Proxy
     public List<SessionInterface> getSessionsForActionAttributes(
             String actionName, String attributeId ) {
         // BEGIN parameter checking
-        if( initialized == false || start == false ) {
+        if( initialized == false || started == false ) {
             return null;
         }
         // END parameter checking
@@ -510,7 +507,7 @@ public class ProxySessionManager extends Proxy
     @Override
     public Optional<SessionInterface> getSessionForId( String sessionId ) {
         // BEGIN parameter checking
-        if( initialized == false || start == false ) {
+        if( initialized == false || started == false ) {
             return null;
         }
         // END parameter checking
@@ -533,7 +530,7 @@ public class ProxySessionManager extends Proxy
     @Override
     public List<SessionInterface> getSessionsForStatus( String status ) {
         // BEGIN parameter checking
-        if( initialized == false || start == false ) {
+        if( initialized == false || started == false ) {
             return null;
         }
         // END parameter checking
@@ -571,7 +568,7 @@ public class ProxySessionManager extends Proxy
     public List<SessionInterface> getSessionsForEnvironmentAttributes(
             String attributeId ) {
         // BEGIN parameter checking
-        if( initialized == false || start == false ) {
+        if( initialized == false || started == false ) {
             return null;
         }
         // END parameter checking
@@ -596,7 +593,7 @@ public class ProxySessionManager extends Proxy
     @Override
     public List<OnGoingAttribute> getOnGoingAttributes( String sessionId ) {
         // BEGIN parameter checking
-        if( initialized == false || start == false ) {
+        if( initialized == false || started == false ) {
             return null;
         }
         // END parameter checking
@@ -619,7 +616,7 @@ public class ProxySessionManager extends Proxy
     @Override
     public STATUS checkSession( String sessionId, Attribute attribute ) {
         // BEGIN parameter checking
-        if( initialized == false || start == false ) {
+        if( initialized == false || started == false ) {
             return null;
         }
         // END parameter checking
@@ -642,7 +639,7 @@ public class ProxySessionManager extends Proxy
     @Override
     public boolean insertSession( SessionInterface session, Attribute attribute ) {
         // BEGIN parameter checking
-        if( initialized == false || start == false ) {
+        if( initialized == false || started == false ) {
             return false;
         }
         // END parameter checking
@@ -665,7 +662,7 @@ public class ProxySessionManager extends Proxy
     @Override
     public boolean stopSession( SessionInterface session ) {
         // BEGIN parameter checking
-        if( initialized == false || start == false ) {
+        if( initialized == false || started == false ) {
             return false;
         }
         // END parameter checking
