@@ -72,7 +72,6 @@ public class UCFRestController {
   @RequestMapping(method = RequestMethod.POST, value = NodeInterface.TRYACCESS_REST, consumes = MediaType.APPLICATION_JSON_VALUE)
   public void sendMessage(@RequestBody() TryAccessMessage message) {
     // BEGIN parameter checking
-	  
     if (message == null) {
       throw new NotFoundException();
     }

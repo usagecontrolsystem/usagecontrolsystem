@@ -15,7 +15,9 @@
  ******************************************************************************/
 package it.cnr.iit.usagecontrolframework.requestmanager;
 
-import org.jboss.logging.Logger;
+import java.util.logging.Logger;
+
+import it.cnr.iit.usagecontrolframework.configuration.xmlclasses.XMLRequestManager;
 
 import iit.cnr.it.ucs.configuration.BasicConfiguration;
 import iit.cnr.it.ucsinterface.message.Message;
@@ -29,7 +31,6 @@ import iit.cnr.it.ucsinterface.message.startaccess.StartAccessResponse;
 import iit.cnr.it.ucsinterface.message.tryaccess.TryAccessMessage;
 import iit.cnr.it.ucsinterface.message.tryaccess.TryAccessResponse;
 import iit.cnr.it.ucsinterface.requestmanager.AsynchronousRequestManager;
-import it.cnr.iit.usagecontrolframework.configuration.xmlclasses.XMLRequestManager;
 
 /**
  * The request manager is an asynchronous component.
@@ -102,12 +103,12 @@ public class RequestManagerLC extends AsynchronousRequestManager {
         // BEGIN parameter checking
         if( !isInitialized() ) {
             // TODO throw exception
-            LOGGER.warn( "Invalid state of the request manager" );
+            LOGGER.warning( "Invalid state of the request manager" );
             return;
         }
         if( message == null ) {
             // TODO throw exception
-            LOGGER.warn( "Invalid message" );
+            LOGGER.warning( "Invalid message" );
             return;
         }
         // END parameter checking

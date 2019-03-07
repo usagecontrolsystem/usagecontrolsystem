@@ -21,6 +21,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.LinkedTransferQueue;
 import java.util.logging.Level;
@@ -607,11 +608,13 @@ final public class ContextHandlerLC extends AbstractContextHandler {
         StartAccessMessage startAccessMessage = (StartAccessMessage) message;
         String sessionId = startAccessMessage.getSessionId();
 
-        SessionInterface sessionToReevaluate = getSessionManagerInterface().getSessionForId( sessionId );
+        Optional<SessionInterface> optional = getSessionManagerInterface().getSessionForId( sessionId );
 
-        if( sessionToReevaluate == null ) {
+        if( !optional.isPresent() ) {
+            // throw exception here
             return;
         }
+        SessionInterface sessionToReevaluate = optional.get();
 
         PolicyHelper policyHelper = PolicyHelper.buildPolicyHelper( sessionToReevaluate.getPolicySet() );
 
@@ -905,9 +908,15 @@ final public class ContextHandlerLC extends AbstractContextHandler {
             // sId);
 
             // check if an entry actually exists in db
-            SessionInterface sessionToReevaluate = getSessionManagerInterface()
-                .getSessionForId( endAccessMessage.getSessionId() );
-            if( sessionToReevaluate == null || ( !sessionToReevaluate.getStatus().equals( START_STATUS )
+            Optional<SessionInterface> optional = getSessionManagerInterface().getSessionForId( endAccessMessage.getSessionId() );
+
+            if( !optional.isPresent() ) {
+                // throw exception here
+                return;
+            }
+            SessionInterface sessionToReevaluate = optional.get();
+
+            if( ( !sessionToReevaluate.getStatus().equals( START_STATUS )
                     && !sessionToReevaluate.getStatus().equals( REVOKE_STATUS ) ) ) {
                 // no entry exists for the actual session
                 LOGGER.log( Level.INFO,

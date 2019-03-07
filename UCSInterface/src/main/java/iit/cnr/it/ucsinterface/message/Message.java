@@ -235,7 +235,7 @@ public class Message implements Comparable<Message>, Serializable {
         return callback;
     }
 
-    protected void setId( String id ) {
+    public void setId( String id ) {
         this.id = id;
     }
 

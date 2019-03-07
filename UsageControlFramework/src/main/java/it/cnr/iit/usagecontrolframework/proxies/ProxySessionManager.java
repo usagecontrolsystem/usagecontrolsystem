@@ -18,15 +18,17 @@ package it.cnr.iit.usagecontrolframework.proxies;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
+import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import it.cnr.iit.usagecontrolframework.configuration.xmlclasses.XMLSessionManager;
+import it.cnr.iit.xacmlutilities.Attribute;
 
 import iit.cnr.it.ucsinterface.constants.CONNECTION;
 import iit.cnr.it.ucsinterface.sessionmanager.OnGoingAttribute;
 import iit.cnr.it.ucsinterface.sessionmanager.SessionInterface;
 import iit.cnr.it.ucsinterface.sessionmanager.SessionManagerInterface;
-import it.cnr.iit.usagecontrolframework.configuration.xmlclasses.XMLSessionManager;
-import it.cnr.iit.xacmlutilities.Attribute;
 
 /**
  * This is the proxy to be used to communicate with the session manager.
@@ -53,16 +55,18 @@ import it.cnr.iit.xacmlutilities.Attribute;
  */
 public class ProxySessionManager extends Proxy
         implements SessionManagerInterface {
-    private Logger LOGGER = Logger
-        .getLogger( ProxySessionManager.class.getName() );
-
-    private volatile boolean initialized = false;
-    private volatile boolean started = false;
 
     // the interface to deal with the session manager
     private SessionManagerInterface sessionManagerInterface;
+    // variable that states if the session manager has been correctly initialized
+    private volatile boolean initialized = false;
+    // states if the session manager has started
+    private volatile boolean start = false;
     // session manager configuration
     private XMLSessionManager xmlSessionManager;
+    // logger object
+    private Logger LOGGER = Logger
+        .getLogger( ProxySessionManager.class.getName() );
 
     /**
      *
@@ -74,7 +78,6 @@ public class ProxySessionManager extends Proxy
             return;
         }
         // END parameter checking
-
         xmlSessionManager = xmlSM;
         CONNECTION connection = CONNECTION.getCONNECTION( xmlSM.getCommunication() );
         switch( connection ) {
@@ -110,13 +113,12 @@ public class ProxySessionManager extends Proxy
      * @return
      */
     private boolean localSM( XMLSessionManager xmlSM ) {
-        // BEGIN parameter checking
         String className = xmlSM.getClassName();
+        // BEGIN parameter checking
         if( className == null || className.equals( "" ) ) {
             return false;
         }
         // END parameter checking
-
         try {
             Constructor<?> constructor = Class.forName( className )
                 .getConstructor( XMLSessionManager.class );
@@ -138,6 +140,7 @@ public class ProxySessionManager extends Proxy
      * @return
      */
     private boolean connectSocket( XMLSessionManager xmlSM ) {
+        // TODO Auto-generated method stub
         return false;
     }
 
@@ -148,6 +151,7 @@ public class ProxySessionManager extends Proxy
      * @return
      */
     private boolean connectRest( XMLSessionManager xmlSM ) {
+        // TODO Auto-generated method stub
         return false;
     }
 
@@ -158,13 +162,12 @@ public class ProxySessionManager extends Proxy
             return false;
         }
         // END parameter checking
-
         CONNECTION connection = CONNECTION
             .getCONNECTION( xmlSessionManager.getCommunication() );
         switch( connection ) {
             case API:
-                started = sessionManagerInterface.start();
-                return started;
+                start = sessionManagerInterface.start();
+                return start;
             case SOCKET:
                 // TODO
                 return false;
@@ -185,13 +188,12 @@ public class ProxySessionManager extends Proxy
             return false;
         }
         // END parameter checking
-
         CONNECTION connection = CONNECTION
             .getCONNECTION( xmlSessionManager.getCommunication() );
         switch( connection ) {
             case API:
-                started = !sessionManagerInterface.stop();
-                return !started;
+                start = !sessionManagerInterface.stop();
+                return !start;
             case SOCKET:
                 // TODO
                 return false;
@@ -210,11 +212,10 @@ public class ProxySessionManager extends Proxy
             String originalRequest, List<String> onGoingAttributesForSubject,
             String status, String pepURI, String myIP, String subjectName ) {
         // BEGIN parameter checking
-        if( initialized == false || started == false ) {
+        if( initialized == false || start == false ) {
             return false;
         }
         // END parameter checking
-
         CONNECTION connection = CONNECTION
             .getCONNECTION( xmlSessionManager.getCommunication() );
         switch( connection ) {
@@ -240,11 +241,10 @@ public class ProxySessionManager extends Proxy
             String originalRequest, List<String> onGoingAttributesForObject,
             String status, String pepURI, String myIP, String objectName ) {
         // BEGIN parameter checking
-        if( initialized == false || started == false ) {
+        if( initialized == false || start == false ) {
             return null;
         }
         // END parameter checking
-
         CONNECTION connection = CONNECTION
             .getCONNECTION( xmlSessionManager.getCommunication() );
         switch( connection ) {
@@ -274,11 +274,10 @@ public class ProxySessionManager extends Proxy
             String pepURI, String myIP, String subjectName, String objectName,
             String actionName ) {
         // BEGIN parameter checking
-        if( initialized == false || started == false ) {
+        if( initialized == false || start == false ) {
             return null;
         }
         // END parameter checking
-
         CONNECTION connection = CONNECTION
             .getCONNECTION( xmlSessionManager.getCommunication() );
         switch( connection ) {
@@ -308,11 +307,10 @@ public class ProxySessionManager extends Proxy
             String originalRequest, List<String> onGoingAttributesForAction,
             String status, String pepURI, String myIP, String actionName ) {
         // BEGIN parameter checking
-        if( initialized == false || started == false ) {
+        if( initialized == false || start == false ) {
             return null;
         }
         // END parameter checking
-
         CONNECTION connection = CONNECTION
             .getCONNECTION( xmlSessionManager.getCommunication() );
         switch( connection ) {
@@ -338,11 +336,10 @@ public class ProxySessionManager extends Proxy
             String originalRequest, List<String> onGoingAttributesForEnvironment,
             String status, String pepURI, String myIP ) {
         // BEGIN parameter checking
-        if( initialized == false || started == false ) {
+        if( initialized == false || start == false ) {
             return null;
         }
         // END parameter checking
-
         CONNECTION connection = CONNECTION
             .getCONNECTION( xmlSessionManager.getCommunication() );
         switch( connection ) {
@@ -366,11 +363,10 @@ public class ProxySessionManager extends Proxy
     @Override
     public Boolean updateEntry( String sessionId, String status ) {
         // BEGIN parameter checking
-        if( initialized == false || started == false ) {
+        if( initialized == false || start == false ) {
             return null;
         }
         // END parameter checking
-
         CONNECTION connection = CONNECTION
             .getCONNECTION( xmlSessionManager.getCommunication() );
         switch( connection ) {
@@ -390,11 +386,10 @@ public class ProxySessionManager extends Proxy
     @Override
     public Boolean deleteEntry( String sessionId ) {
         // BEGIN parameter checking
-        if( initialized == false || started == false ) {
+        if( initialized == false || start == false ) {
             return null;
         }
         // END parameter checking
-
         CONNECTION connection = CONNECTION
             .getCONNECTION( xmlSessionManager.getCommunication() );
         switch( connection ) {
@@ -414,11 +409,10 @@ public class ProxySessionManager extends Proxy
     @Override
     public List<SessionInterface> getSessionsForAttribute( String attributeId ) {
         // BEGIN parameter checking
-        if( initialized == false || started == false ) {
+        if( initialized == false || start == false ) {
             return null;
         }
         // END parameter checking
-
         CONNECTION connection = CONNECTION
             .getCONNECTION( xmlSessionManager.getCommunication() );
         switch( connection ) {
@@ -439,11 +433,10 @@ public class ProxySessionManager extends Proxy
     public List<SessionInterface> getSessionsForSubjectAttributes(
             String subjectName, String attributeId ) {
         // BEGIN parameter checking
-        if( initialized == false || started == false ) {
+        if( initialized == false || start == false ) {
             return null;
         }
         // END parameter checking
-
         CONNECTION connection = CONNECTION
             .getCONNECTION( xmlSessionManager.getCommunication() );
         switch( connection ) {
@@ -466,11 +459,10 @@ public class ProxySessionManager extends Proxy
     public List<SessionInterface> getSessionsForResourceAttributes(
             String objectName, String attributeId ) {
         // BEGIN parameter checking
-        if( initialized == false || started == false ) {
+        if( initialized == false || start == false ) {
             return null;
         }
         // END parameter checking
-
         CONNECTION connection = CONNECTION
             .getCONNECTION( xmlSessionManager.getCommunication() );
         switch( connection ) {
@@ -493,11 +485,10 @@ public class ProxySessionManager extends Proxy
     public List<SessionInterface> getSessionsForActionAttributes(
             String actionName, String attributeId ) {
         // BEGIN parameter checking
-        if( initialized == false || started == false ) {
+        if( initialized == false || start == false ) {
             return null;
         }
         // END parameter checking
-
         CONNECTION connection = CONNECTION
             .getCONNECTION( xmlSessionManager.getCommunication() );
         switch( connection ) {
@@ -517,13 +508,12 @@ public class ProxySessionManager extends Proxy
     }
 
     @Override
-    public SessionInterface getSessionForId( String sessionId ) {
+    public Optional<SessionInterface> getSessionForId( String sessionId ) {
         // BEGIN parameter checking
-        if( initialized == false || started == false ) {
+        if( initialized == false || start == false ) {
             return null;
         }
         // END parameter checking
-
         CONNECTION connection = CONNECTION
             .getCONNECTION( xmlSessionManager.getCommunication() );
         switch( connection ) {
@@ -543,11 +533,10 @@ public class ProxySessionManager extends Proxy
     @Override
     public List<SessionInterface> getSessionsForStatus( String status ) {
         // BEGIN parameter checking
-        if( initialized == false || started == false ) {
+        if( initialized == false || start == false ) {
             return null;
         }
         // END parameter checking
-
         CONNECTION connection = CONNECTION
             .getCONNECTION( xmlSessionManager.getCommunication() );
         switch( connection ) {
@@ -582,11 +571,10 @@ public class ProxySessionManager extends Proxy
     public List<SessionInterface> getSessionsForEnvironmentAttributes(
             String attributeId ) {
         // BEGIN parameter checking
-        if( initialized == false || started == false ) {
+        if( initialized == false || start == false ) {
             return null;
         }
         // END parameter checking
-
         CONNECTION connection = CONNECTION
             .getCONNECTION( xmlSessionManager.getCommunication() );
         switch( connection ) {
@@ -608,11 +596,10 @@ public class ProxySessionManager extends Proxy
     @Override
     public List<OnGoingAttribute> getOnGoingAttributes( String sessionId ) {
         // BEGIN parameter checking
-        if( initialized == false || started == false ) {
+        if( initialized == false || start == false ) {
             return null;
         }
         // END parameter checking
-
         CONNECTION connection = CONNECTION
             .getCONNECTION( xmlSessionManager.getCommunication() );
         switch( connection ) {
@@ -632,11 +619,10 @@ public class ProxySessionManager extends Proxy
     @Override
     public STATUS checkSession( String sessionId, Attribute attribute ) {
         // BEGIN parameter checking
-        if( initialized == false || started == false ) {
+        if( initialized == false || start == false ) {
             return null;
         }
         // END parameter checking
-
         CONNECTION connection = CONNECTION
             .getCONNECTION( xmlSessionManager.getCommunication() );
         switch( connection ) {
@@ -656,11 +642,10 @@ public class ProxySessionManager extends Proxy
     @Override
     public boolean insertSession( SessionInterface session, Attribute attribute ) {
         // BEGIN parameter checking
-        if( initialized == false || started == false ) {
+        if( initialized == false || start == false ) {
             return false;
         }
         // END parameter checking
-
         CONNECTION connection = CONNECTION
             .getCONNECTION( xmlSessionManager.getCommunication() );
         switch( connection ) {
@@ -680,11 +665,10 @@ public class ProxySessionManager extends Proxy
     @Override
     public boolean stopSession( SessionInterface session ) {
         // BEGIN parameter checking
-        if( initialized == false || started == false ) {
+        if( initialized == false || start == false ) {
             return false;
         }
         // END parameter checking
-
         CONNECTION connection = CONNECTION
             .getCONNECTION( xmlSessionManager.getCommunication() );
         switch( connection ) {
