@@ -86,8 +86,7 @@ public class RequestManagerCoverageTests extends UCFBaseTests {
             buildTryAccessMessage( "", "", "", "" ),
             buildStartAccessMessage( "", "", "" ),
             buildEndAccessMessage( "", "", "" ),
-            buildReevaluationMessage( "", "", "" ),
-            null
+            buildReevaluationMessage( "", "", "" )
         };
 
         for( Message message : messages ) {
