@@ -6,6 +6,7 @@ import java.sql.Connection;
 import java.sql.Statement;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.logging.Logger;
 
 import javax.xml.bind.JAXBException;
@@ -133,7 +134,8 @@ public class SessionManagerTest {
             tryStatus, pepuri, myip, subject, action, resource );
         Assert.assertEquals( status, true );
         // Mockito.verify(mockConnection.createStatement(), Mockito.times(1));
-        SessionInterface sessionInterface = sessionManagerDesktop.getSessionForId( sessionId );
+        SessionInterface sessionInterface = sessionManagerDesktop.getSessionForId( sessionId ).get();
+        Assert.assertNotNull( sessionInterface );
         LOGGER.info( sessionInterface.toString() );
     }
 
@@ -160,7 +162,8 @@ public class SessionManagerTest {
         Assert.assertEquals( status, true );
         status = sessionManagerDesktop.updateEntry( sessionId, startStatus );
         Assert.assertEquals( status, true );
-        SessionInterface sessionInterface = sessionManagerDesktop.getSessionForId( sessionId );
+        SessionInterface sessionInterface = sessionManagerDesktop.getSessionForId( sessionId ).get();
+        Assert.assertNotNull( sessionInterface );
         Assert.assertEquals( sessionInterface.getStatus(), startStatus );
         sessionInterface = sessionManagerDesktop.getSessionsForSubjectAttributes( subject, "role" ).get( 0 );
         assertTrue( sessionInterface.getId().equals( sessionId ) );
@@ -178,7 +181,8 @@ public class SessionManagerTest {
         Assert.assertEquals( status, true );
         status = sessionManagerDesktop.updateEntry( sessionId, startStatus );
         Assert.assertEquals( status, true );
-        SessionInterface sessionInterface = sessionManagerDesktop.getSessionForId( sessionId );
+        SessionInterface sessionInterface = sessionManagerDesktop.getSessionForId( sessionId ).get();
+        Assert.assertNotNull( sessionInterface );
         Assert.assertEquals( sessionInterface.getStatus(), startStatus );
         sessionInterface = sessionManagerDesktop.getSessionsForActionAttributes( action, "action" ).get( 0 );
         assertTrue( sessionInterface.getId().equals( sessionId ) );
@@ -194,7 +198,8 @@ public class SessionManagerTest {
         Assert.assertEquals( status, true );
         status = sessionManagerDesktop.updateEntry( sessionId, startStatus );
         Assert.assertEquals( status, true );
-        SessionInterface sessionInterface = sessionManagerDesktop.getSessionForId( sessionId );
+        SessionInterface sessionInterface = sessionManagerDesktop.getSessionForId( sessionId ).get();
+        Assert.assertNotNull( sessionInterface );
         Assert.assertEquals( sessionInterface.getStatus(), startStatus );
         sessionInterface = sessionManagerDesktop.getSessionsForResourceAttributes( resource, "resource" ).get( 0 );
         assertTrue( sessionInterface.getId().equals( sessionId ) );
@@ -210,7 +215,8 @@ public class SessionManagerTest {
         Assert.assertEquals( status, true );
         status = sessionManagerDesktop.updateEntry( sessionId, startStatus );
         Assert.assertEquals( status, true );
-        SessionInterface sessionInterface = sessionManagerDesktop.getSessionForId( sessionId );
+        SessionInterface sessionInterface = sessionManagerDesktop.getSessionForId( sessionId ).orElse( null );
+        Assert.assertNotNull( sessionInterface );
         Assert.assertEquals( sessionInterface.getStatus(), startStatus );
         sessionInterface = sessionManagerDesktop.getSessionsForEnvironmentAttributes( "temperature" ).get( 0 );
         assertTrue( sessionInterface.getId().equals( sessionId ) );
@@ -256,6 +262,27 @@ public class SessionManagerTest {
         attributes = sessionManagerDesktop.getOnGoingAttributes( startStatus );
         Assert.assertTrue( attributes == null || attributes.size() == 0 );
         LOGGER.info( "*******END TESTING GET On going Attributes****" );
+    }
+
+    @Test
+    public void failureTestOnGoingAttributesPerSubject() throws Exception {
+        LOGGER.info( "*******TESTING OGA PER SUBJECT: " + subject + "****" );
+        String[] attributesPerSubject = new String[] { "role" };
+        boolean status = sessionManagerDesktop.createEntryForSubject( sessionId, policy, request,
+            Arrays.asList( attributesPerSubject ), tryStatus, pepuri, myip, subject );
+        Assert.assertEquals( status, true );
+        List<SessionInterface> list = null;
+        try {
+            status = sessionManagerDesktop.updateEntry( null, startStatus );
+        } catch( IllegalArgumentException e ) {
+            status = false;
+        }
+        status = sessionManagerDesktop.updateEntry( sessionId, startStatus );
+        list = sessionManagerDesktop.getSessionsForSubjectAttributes( subject, "dasda" );
+        Assert.assertEquals( list.size(), 0 );
+        Optional<SessionInterface> sessionInterface = sessionManagerDesktop.getSessionForId( "dasdsa" );
+        Assert.assertFalse( sessionInterface.isPresent() );
+        LOGGER.info( "*******END TESTING OGA PER SUBJECT****" );
     }
 
 }
