@@ -1,14 +1,12 @@
 package iit.cnr.it.peprest;
 
-import static iit.cnr.it.peprest.PEPRestServiceScenarioTest.PEPRestOperation.END_ACCESS;
-import static iit.cnr.it.peprest.PEPRestServiceScenarioTest.PEPRestOperation.ON_GOING_RESPONSE;
-import static iit.cnr.it.ucsinterface.node.NodeInterface.ENDACCESSRESPONSE_REST;
-import static iit.cnr.it.ucsinterface.node.NodeInterface.ENDACCESS_REST;
-import static iit.cnr.it.ucsinterface.node.NodeInterface.ONGOINGRESPONSE_REST;
-import static iit.cnr.it.ucsinterface.node.NodeInterface.STARTACCESSRESPONSE_REST;
-import static iit.cnr.it.ucsinterface.node.NodeInterface.STARTACCESS_REST;
-import static iit.cnr.it.ucsinterface.node.NodeInterface.TRYACCESSRESPONSE_REST;
-import static iit.cnr.it.ucsinterface.node.NodeInterface.TRYACCESS_REST;
+import static iit.cnr.it.peprest.PEPRestOperation.END_ACCESS;
+import static iit.cnr.it.peprest.PEPRestOperation.END_ACCESS_RESPONSE;
+import static iit.cnr.it.peprest.PEPRestOperation.ON_GOING_RESPONSE;
+import static iit.cnr.it.peprest.PEPRestOperation.START_ACCESS;
+import static iit.cnr.it.peprest.PEPRestOperation.START_ACCESS_RESPONSE;
+import static iit.cnr.it.peprest.PEPRestOperation.TRY_ACCESS;
+import static iit.cnr.it.peprest.PEPRestOperation.TRY_ACCESS_RESPONSE;
 
 import org.apache.http.HttpStatus;
 import org.junit.Test;
@@ -38,40 +36,21 @@ public class PEPRestServiceScenarioTest
 	@ScenarioStage
 	GivenPEPUCSCommunicationSimulator pepucsCommunicationSimulator;
 
-	public enum PEPRestOperation{
-		TRY_ACCESS( TRYACCESS_REST ),
-		START_ACCESS( STARTACCESS_REST ),
-		END_ACCESS( ENDACCESS_REST ),
-		ON_GOING_RESPONSE( ONGOINGRESPONSE_REST ),
-		TRY_ACCESS_RESPONSE(TRYACCESSRESPONSE_REST),
-		START_ACCESS_RESPONSE(STARTACCESSRESPONSE_REST),
-		END_ACCESS_RESPONSE(ENDACCESSRESPONSE_REST);
-
-		private String operationUri;
-
-		PEPRestOperation(String operationUri){
-			this.operationUri = operationUri;
-		}
-		public String getOperationUri() {
-			return this.operationUri;
-		}
-	}
-
     @DataProvider
     public static Object[][] dataPepRestOperations() {
         return new Object[][] {
-                { PEPRestOperation.TRY_ACCESS },
-                { PEPRestOperation.START_ACCESS },
-                { PEPRestOperation.END_ACCESS },
+                { TRY_ACCESS },
+                { START_ACCESS },
+                { END_ACCESS },
         };
     }
 
     @DataProvider
     public static Object[][] dataPepRestResponseOperations() {
         return new Object[][] {
-                { PEPRestOperation.TRY_ACCESS_RESPONSE },
-                { PEPRestOperation.START_ACCESS_RESPONSE },
-                { PEPRestOperation.END_ACCESS_RESPONSE },
+                { TRY_ACCESS_RESPONSE },
+                { START_ACCESS_RESPONSE },
+                { END_ACCESS_RESPONSE },
         };
     }
 

@@ -8,7 +8,7 @@ import com.tngtech.jgiven.annotation.ExpectedScenarioState;
 import com.tngtech.jgiven.annotation.ProvidedScenarioState;
 
 import iit.cnr.it.peprest.PEPRest;
-import iit.cnr.it.peprest.PEPRestServiceScenarioTest.PEPRestOperation;
+import iit.cnr.it.peprest.PEPRestOperation;
 import iit.cnr.it.ucsinterface.message.Message;
 
 public class WhenPEPRestService extends Stage<WhenPEPRestService> {
@@ -21,7 +21,7 @@ public class WhenPEPRestService extends Stage<WhenPEPRestService> {
 
     @ProvidedScenarioState
     Exception expectedException;
-    
+
     @ExpectedScenarioState
     String sessionId;
 
@@ -37,7 +37,7 @@ public class WhenPEPRestService extends Stage<WhenPEPRestService> {
 		performOperation(restOperation);
         return self();
     }
-    
+
     public WhenPEPRestService PEPRest_service_$_execution_fails(PEPRestOperation restOperation) {
         assertNotNull( pepRest );
         try {
@@ -47,7 +47,7 @@ public class WhenPEPRestService extends Stage<WhenPEPRestService> {
 		}
         return self();
     }
-    
+
 	private void performOperation(PEPRestOperation restOperation) {
 		switch (restOperation) {
 		case TRY_ACCESS:
@@ -77,5 +77,5 @@ public class WhenPEPRestService extends Stage<WhenPEPRestService> {
 		pepRest.receiveResponse(message);
 		return self();
 	}
-	
+
 }

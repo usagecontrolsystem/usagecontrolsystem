@@ -23,6 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.web.bind.annotation.RequestAttribute;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -69,7 +70,7 @@ public class PEPRestCommunication {
 
 	/**
 	 * Retrieves the status of a message. Possible status of a message are highlighted in
-	 * 
+	 *
 	 * @return
 	 * @throws InterruptedException
 	 * @throws ExecutionException
@@ -79,14 +80,14 @@ public class PEPRestCommunication {
 	                @ApiResponse(code = 500, message = "Invalid message received"),
 	                @ApiResponse(code = 200, message = "OK") })
 	@RequestMapping(method = RequestMethod.GET, value = "/messageStatus")
-	public CallerResponse getMessageStatus(@RequestParam String messageId)
+	public CallerResponse getMessageStatus(@RequestAttribute (value = "messageId") String messageId)
 	                throws InterruptedException, ExecutionException {
 		return pepRest.getMessageHistory().getMessageStatus(messageId).get();
 	}
 
 	/**
 	 * Retrieves the list of messages exchanged in a certain session
-	 * 
+	 *
 	 * @return
 	 * @throws InterruptedException
 	 * @throws ExecutionException

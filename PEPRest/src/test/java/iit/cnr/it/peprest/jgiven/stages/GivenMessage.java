@@ -9,7 +9,7 @@ import com.tngtech.jgiven.Stage;
 import com.tngtech.jgiven.annotation.BeforeScenario;
 import com.tngtech.jgiven.annotation.ProvidedScenarioState;
 
-import iit.cnr.it.peprest.PEPRestServiceScenarioTest.PEPRestOperation;
+import iit.cnr.it.peprest.PEPRestOperation;
 import iit.cnr.it.ucsinterface.message.Message;
 import iit.cnr.it.ucsinterface.message.PDPResponse;
 import iit.cnr.it.ucsinterface.message.endaccess.EndAccessResponse;
