@@ -9,10 +9,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringBootConfiguration;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -27,9 +24,9 @@ import iit.cnr.it.peprest.jgiven.stages.GivenMessage;
 import iit.cnr.it.peprest.jgiven.stages.ThenMessage;
 import iit.cnr.it.peprest.jgiven.stages.WhenPEPRestCommunication;
 
-@EnableConfigurationProperties
-@TestPropertySource(properties = "application-test.properties")
-@ActiveProfiles("test")
+//@EnableConfigurationProperties
+//@TestPropertySource(properties = "application-test.properties")
+//@ActiveProfiles("test")
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = Starter.class)
 @SpringBootConfiguration
@@ -58,10 +55,11 @@ public class PEPRestServiceScenarioIntegrationTest
 	    	.with().a_success_response_status_$(HttpStatus.SC_OK);
 
 	    when().start_evaluation_is_executed(mvc);
+//	    when().start_evaluation_is_posted();
 
-//	    then().the_$_message_is_put_in_the_unanswered_queue(TRY_ACCESS)
+	    then().a_message_id_is_received()
 //	    	.and().the_message_id_in_the_unanswered_queue_matches_the_one_sent()
-//	    	.and().the_asynch_HTTP_POST_request_for_$_was_received_by_context_handler(TRY_ACCESS.getOperationUri());
+	    	.and().the_asynch_HTTP_POST_request_for_$_was_received_by_context_handler(TRY_ACCESS.getOperationUri());
 
 	}
 }

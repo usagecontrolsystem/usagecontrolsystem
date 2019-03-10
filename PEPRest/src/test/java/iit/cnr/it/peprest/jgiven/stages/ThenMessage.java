@@ -119,4 +119,8 @@ public class ThenMessage extends Stage<ThenMessage> {
 		assertTrue(pepRest.getEvaluationResult(messageId).get().equals("Permit"));
 	}
 
+   public ThenMessage a_message_id_is_received() {
+        assertNotNull( messageId );
+        return self();
+    }
 }

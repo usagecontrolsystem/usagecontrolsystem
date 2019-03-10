@@ -4,11 +4,13 @@ import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathMatching;
 import static iit.cnr.it.peprest.PEPRestOperation.TRY_ACCESS;
+import static iit.cnr.it.peprest.PEPRestOperation.START_ACCESS;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
 import java.io.IOException;
+import java.util.Arrays;
 
 import org.apache.http.HttpStatus;
 import org.junit.Before;
@@ -19,6 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
@@ -41,7 +44,14 @@ import com.tngtech.jgiven.annotation.Quoted;
 import iit.cnr.it.peprest.configuration.Configuration;
 import iit.cnr.it.peprest.jgiven.rules.MockedHttpServiceTestRule;
 import iit.cnr.it.peprest.messagetrack.CallerResponse;
+import iit.cnr.it.ucsinterface.message.Message;
+import iit.cnr.it.ucsinterface.message.PDPResponse;
+import iit.cnr.it.ucsinterface.message.tryaccess.TryAccessResponse;
+import iit.cnr.it.ucsinterface.message.tryaccess.TryAccessResponseContent;
 import iit.cnr.it.utility.Utility;
+import oasis.names.tc.xacml.core.schema.wd_17.DecisionType;
+import oasis.names.tc.xacml.core.schema.wd_17.ResponseType;
+import oasis.names.tc.xacml.core.schema.wd_17.ResultType;
 
 @EnableConfigurationProperties
 @TestPropertySource(properties = "application-test.properties")
@@ -50,6 +60,8 @@ import iit.cnr.it.utility.Utility;
 @SpringBootTest(classes = Starter.class)
 @SpringBootConfiguration
 public class PEPRestServiceIntegrationTest {
+
+    protected static final String SESSION_ID_01 = "SessionId_01";
 
     @Rule
     public MockedHttpServiceTestRule restSimulatorTestRule = new MockedHttpServiceTestRule( getPort() );
@@ -108,6 +120,12 @@ public class PEPRestServiceIntegrationTest {
 		} catch (Exception e) {
 			fail(e.getMessage());
 		}
+    	
+        a_mocked_context_handler_for_$(START_ACCESS.getOperationUri());
+        a_success_response_status_$(HttpStatus.SC_OK);
+        
+        Message tryAccessResponse = buildTryAccessResponse(DecisionType.DENY, messageId);
+        try_access_response_is_executed(tryAccessResponse);
 	}
 
     public String start_evaluation_is_executed() {
@@ -144,7 +162,46 @@ public class PEPRestServiceIntegrationTest {
 		return mvcResult.getResponse();
 	}
 
+   public String try_access_response_is_executed(Message jsonMessage) {
+        try {
+            assertNotNull(mvc);
+            MockHttpServletResponse mvcResponse = postToPEPUCScommunication(jsonMessage, "/tryAccessResponse");
+            return mvcResponse.getContentAsString();
+        } catch (Exception e) {
+            fail(e.getLocalizedMessage());
+        }
+        return null;
+    }
 
+    private MockHttpServletResponse postToPEPUCScommunication(Message jsonMessage, String uri) throws Exception {
+        assertNotNull(uri);
+        MvcResult mvcResult = mvc.perform(MockMvcRequestBuilders.post(uri)
+            .contentType(MediaType.APPLICATION_JSON_VALUE).content(
+                    new ObjectMapper().writeValueAsString(jsonMessage))).andReturn();
+        return mvcResult.getResponse();
+    }
+
+    protected TryAccessResponse buildTryAccessResponse(DecisionType decisionType, String messageId) {
+        PDPResponse pdpEvaluation = buildPDPResponse(decisionType);
+        TryAccessResponseContent content = new TryAccessResponseContent();
+        content.setPDPEvaluation(pdpEvaluation);
+        TryAccessResponse tryAccessResponse = new TryAccessResponse(SESSION_ID_01);
+        tryAccessResponse.setContent(content);
+        tryAccessResponse.setId( messageId );
+        return tryAccessResponse;
+    }
+
+    protected PDPResponse buildPDPResponse(DecisionType decision) {
+        ResultType resultType = new ResultType();
+        resultType.setDecision(decision);
+        ResponseType responseType = new ResponseType();
+        responseType.setResult(Arrays.asList(resultType));
+        PDPResponse pdpResponse = new PDPResponse();
+        pdpResponse.setResponseType(responseType);
+        pdpResponse.setInitialized(true);
+        return pdpResponse;
+    }
+    
     public void a_mocked_context_handler_for_$( @Quoted String operationUri ) {
     	wireMockContextHandler = new WireMock(getHost(), getPort());
 		post = post(urlPathMatching(operationUri));
