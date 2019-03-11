@@ -20,10 +20,8 @@ import com.tngtech.jgiven.junit.ScenarioTest;
 
 import iit.cnr.it.peprest.jgiven.stages.GivenContextHandlerRestSimulator;
 import iit.cnr.it.peprest.jgiven.stages.GivenMessage;
-import iit.cnr.it.peprest.jgiven.stages.GivenPEPUCSCommunicationSimulator;
 import iit.cnr.it.peprest.jgiven.stages.ThenMessage;
 import iit.cnr.it.peprest.jgiven.stages.WhenPEPRestService;
-import iit.cnr.it.ucsinterface.node.NodeInterface;
 import oasis.names.tc.xacml.core.schema.wd_17.DecisionType;
 
 @RunWith(DataProviderRunner.class)
@@ -32,9 +30,6 @@ public class PEPRestServiceScenarioTest
 
 	@ScenarioStage
 	GivenMessage givenMessage;
-
-	@ScenarioStage
-	GivenPEPUCSCommunicationSimulator pepucsCommunicationSimulator;
 
     @DataProvider
     public static Object[][] dataPepRestOperations() {
@@ -126,23 +121,4 @@ public class PEPRestServiceScenarioTest
 	    	.and().the_evaluation_result_is_permit(givenMessage.getMessageId());
     }
 
-    @Test
-	public void try_access_flow(){
-//	    given().a_test_configuration_for_request_with_policy()
-//	    	.with().a_test_session_id()
-//	    	.and().a_mocked_context_handler_for_$(PEPRestOperation.TRY_ACCESS.getOperationUri())
-//	    	.with().a_success_response_status_$(HttpStatus.SC_OK);
-//
-//	    when().PEPRest_service_$_is_executed(PEPRestOperation.TRY_ACCESS);
-//
-//	    then().the_$_message_is_put_in_the_unanswered_queue(PEPRestOperation.TRY_ACCESS)
-//	    	.and().the_message_id_in_the_unanswered_queue_matches_the_one_sent()
-//	    	.and().the_asynch_HTTP_POST_request_for_$_was_received_by_context_handler(PEPRestOperation.TRY_ACCESS.getOperationUri());
-
-	    givenMessage.given().create_permit_response_for_$(PEPRestOperation.TRY_ACCESS_RESPONSE);
-	    pepucsCommunicationSimulator
-	    	.given().and().a_test_configuration_for_request_with_policy()
-	    		.and().a_mocked_PEPUCSCommunication_REST_service_for_$(NodeInterface.TRYACCESSRESPONSE_REST)
-	    		.with().a_successful_try_access_response();
-	}
 }
