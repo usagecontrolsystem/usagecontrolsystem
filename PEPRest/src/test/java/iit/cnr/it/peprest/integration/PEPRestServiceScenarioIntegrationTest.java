@@ -4,6 +4,7 @@ import static iit.cnr.it.peprest.PEPRestOperation.START_ACCESS;
 import static iit.cnr.it.peprest.PEPRestOperation.START_ACCESS_RESPONSE;
 import static iit.cnr.it.peprest.PEPRestOperation.TRY_ACCESS;
 import static iit.cnr.it.peprest.PEPRestOperation.TRY_ACCESS_RESPONSE;
+import static iit.cnr.it.peprest.messagetrack.STATUS.TRYACCESS_SENT;
 
 import org.apache.http.HttpStatus;
 import org.junit.Test;
@@ -20,6 +21,7 @@ import iit.cnr.it.peprest.jgiven.stages.GivenContextHandlerRestSimulator;
 import iit.cnr.it.peprest.jgiven.stages.GivenMessage;
 import iit.cnr.it.peprest.jgiven.stages.ThenMessage;
 import iit.cnr.it.peprest.jgiven.stages.WhenPEPRestCommunication;
+import iit.cnr.it.peprest.messagetrack.STATUS;
 
 import oasis.names.tc.xacml.core.schema.wd_17.DecisionType;
 
@@ -34,7 +36,7 @@ public class PEPRestServiceScenarioIntegrationTest
 
     @Test
     public void a_startEvaluation_flow_with_try_and_start_access_messages_in_status_permit_succeeds() {
-        // step 1
+        // step 1 - post to PEP a startEvaluation request
         given().a_test_configuration_for_request_with_policy()
             .with().a_test_session_id()
             .and().a_mocked_context_handler_for_$( TRY_ACCESS.getOperationUri() )
@@ -46,12 +48,12 @@ public class PEPRestServiceScenarioIntegrationTest
             .and().a_message_id_is_returned()
             .and().the_asynch_HTTP_POST_request_for_$_was_received_by_context_handler( TRY_ACCESS.getOperationUri() );
 
-        // step 1.1
-        when().the_PEP_messageStatus_for_the_returned_messageId_is_executed();
-        then().a_message_body_is_returned();
-        // TODO .and().the_message_body_contains_the_message_id_of_the_sent_tryAccess_message();
+        // step 1.1 - check tryAccess message status
+        when().the_PEP_messageStatus_for_tryAccess_is_executed();
+        then().a_message_body_is_returned()
+            .and().the_message_body_has_$_status( TRYACCESS_SENT );
 
-        // step 2
+        // step 2 - post to PEP a TryAccessResponse with permit
         givenMessage.given().a_TryAccessResponse_request_with_$_decision( DecisionType.PERMIT );
         given().and().a_mocked_context_handler_for_$( START_ACCESS.getOperationUri() )
             .with().a_success_response_status_$( HttpStatus.SC_OK );
@@ -61,13 +63,19 @@ public class PEPRestServiceScenarioIntegrationTest
         then().a_$_message_is_sent_to_context_handler( START_ACCESS )
             .and().the_asynch_HTTP_POST_request_for_$_was_received_by_context_handler( START_ACCESS.getOperationUri() );
 
-        // step 2.1
+        // step 2.1 - check tryAccess message status is updated
+        when().the_PEP_messageStatus_for_tryAccess_is_executed();
+        then().a_message_body_is_returned()
+            .and().the_message_body_has_$_status( STATUS.TRYACCESS_PERMIT );
+
+        // step 2.1 - check #of messages in the session (at this stage 2 = 1 for tryAccess, 1 for startAccess)
         when().the_PEP_messagesPerSession_is_executed();
         then().a_message_body_is_returned()
-            .and().the_message_body_contains_the_message_id_of_the_sent_startAccess_message();
+            .and().the_message_body_has_the_$_sent_message_Ids( 2 );
 
-        // step 3
-        givenMessage.given().a_StartAccessResponse_request_with_$_decision( DecisionType.PERMIT );
+        // step 3 - post to PEP StartAccessResponse with permit
+        givenMessage.given().a_StartAccessResponse_request_with_$_decision( DecisionType.PERMIT )
+            .with().an_associated_StartAccess_messageId( 1 );
 
         when().the_PEP_receiveResponse_is_executed_for_$( START_ACCESS_RESPONSE.getOperationUri() );
 

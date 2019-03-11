@@ -27,6 +27,7 @@ import iit.cnr.it.peprest.PEPRest;
 import iit.cnr.it.peprest.PEPRestOperation;
 import iit.cnr.it.peprest.configuration.Configuration;
 import iit.cnr.it.peprest.messagetrack.CallerResponse;
+import iit.cnr.it.peprest.messagetrack.STATUS;
 import iit.cnr.it.ucsinterface.message.Message;
 import iit.cnr.it.ucsinterface.message.endaccess.EndAccessMessage;
 import iit.cnr.it.ucsinterface.message.startaccess.StartAccessMessage;
@@ -61,6 +62,9 @@ public class ThenMessage extends Stage<ThenMessage> {
 
     @ExpectedScenarioState
     Exception expectedException;
+
+    @ExpectedScenarioState
+    List<String> messageIds;
 
     public ThenMessage the_$_message_is_put_in_the_unanswered_queue( PEPRestOperation restOperation ) {
         assertNotNull( pepRest.getUnanswered() );
@@ -155,23 +159,25 @@ public class ThenMessage extends Stage<ThenMessage> {
         return self();
     }
 
-    public ThenMessage the_message_body_contains_the_message_id_of_the_sent_tryAccess_message() {
+    public ThenMessage the_message_body_has_$_status( STATUS messageSendStatus ) {
         try {
+            assertNotNull( messageBody );
             CallerResponse callerResponse = mapFromJson( messageBody, CallerResponse.class );
-            assertNotNull( callerResponse.getDerivedMessageId() );
-            assertEquals( messageId, callerResponse.getDerivedMessageId() );
+            assertNotNull( callerResponse.getStatus() );
+            assertEquals( messageSendStatus, callerResponse.getStatus() );
         } catch( Exception e ) {
             fail( e.getMessage() );
         }
         return self();
     }
 
-    public ThenMessage the_message_body_contains_the_message_id_of_the_sent_startAccess_message() {
+    @SuppressWarnings( "unchecked" )
+    public ThenMessage the_message_body_has_the_$_sent_message_Ids( int numberOfMessages ) {
         try {
-            @SuppressWarnings( "unchecked" )
-            List<String> messageIds = mapFromJson( messageBody, List.class );
+            assertNotNull( messageBody );
+            messageIds = mapFromJson( messageBody, List.class );
             assertNotNull( messageIds );
-            assertNotNull( messageIds.get( 1 ) ); //TODO fixme
+            assertTrue( messageIds.size() == numberOfMessages );
         } catch( Exception e ) {
             fail( e.getMessage() );
         }
@@ -187,16 +193,16 @@ public class ThenMessage extends Stage<ThenMessage> {
     public ThenMessage a_$_message_is_sent_to_context_handler( PEPRestOperation restOperation ) {
         assertNotNull( pepRest.getMessageHistory() );
         assertTrue( pepRest.getUnanswered().size() > 0 );
-        Message messageType = pepRest.getUnanswered().get( messageId );
         switch( restOperation ) {
             case TRY_ACCESS:
+                Message messageType = pepRest.getUnanswered().get( messageId );
                 assertTrue( messageType instanceof TryAccessMessage );
                 break;
             case START_ACCESS:
                 // TODO: check using msgHistory maybe assertTrue( messageType instanceof StartAccessMessage );
                 break;
             case END_ACCESS:
-                assertTrue( messageType instanceof EndAccessMessage );
+                // TODO: assertTrue( messageType instanceof EndAccessMessage );
                 break;
             default:
                 fail( "Unknown message type in unanswered map" );

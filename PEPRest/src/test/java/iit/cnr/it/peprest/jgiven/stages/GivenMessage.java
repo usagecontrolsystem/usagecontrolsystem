@@ -1,13 +1,16 @@
 package iit.cnr.it.peprest.jgiven.stages;
 
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.UUID;
 
 import com.tngtech.jgiven.Stage;
 import com.tngtech.jgiven.annotation.BeforeScenario;
 import com.tngtech.jgiven.annotation.ExpectedScenarioState;
+import com.tngtech.jgiven.annotation.Hidden;
 import com.tngtech.jgiven.annotation.ProvidedScenarioState;
 
 import iit.cnr.it.peprest.PEPRestOperation;
@@ -34,6 +37,9 @@ public class GivenMessage extends Stage<GivenMessage> {
     @ExpectedScenarioState
     String messageId;
 
+    @ProvidedScenarioState
+    List<String> messageIds;
+
     @BeforeScenario
     public void init() {
         sessionId = UUID.randomUUID().toString();
@@ -51,6 +57,12 @@ public class GivenMessage extends Stage<GivenMessage> {
 
     public GivenMessage a_StartAccessResponse_request_with_$_decision( DecisionType decisionType ) {
         message = buildStartAccessResponse( decisionType );
+        return self();
+    }
+
+    public GivenMessage an_associated_StartAccess_messageId( @Hidden int index ) {
+        assertNotNull( messageIds );
+        message.setId( messageIds.get( index ) );
         return self();
     }
 
@@ -95,9 +107,6 @@ public class GivenMessage extends Stage<GivenMessage> {
     }
 
     private TryAccessResponse buildTryAccessResponse( DecisionType decisionType ) {
-        if( sessionId == null ) {
-            init();
-        }
         PDPResponse pdpEvaluation = buildPDPResponse( decisionType );
         TryAccessResponseContent content = new TryAccessResponseContent();
         content.setSessionId( sessionId );
@@ -109,9 +118,6 @@ public class GivenMessage extends Stage<GivenMessage> {
     }
 
     protected StartAccessResponse buildStartAccessResponse( DecisionType decisionType ) {
-        if( sessionId == null ) {
-            init();
-        }
         PDPResponse pdpEvaluation = buildPDPResponse( decisionType );
         StartAccessResponse startAccessResponse = new StartAccessResponse( sessionId );
         startAccessResponse.setResponse( pdpEvaluation );
@@ -120,10 +126,6 @@ public class GivenMessage extends Stage<GivenMessage> {
     }
 
     protected EndAccessResponse buildEndAccessResponse( DecisionType decisionType ) {
-        // CODE added because sessionId seems to be null
-        if( sessionId == null ) {
-            init();
-        }
         PDPResponse pdpEvaluation = buildPDPResponse( decisionType );
         EndAccessResponse endAccessResponse = new EndAccessResponse( sessionId );
         endAccessResponse.setResponse( pdpEvaluation );

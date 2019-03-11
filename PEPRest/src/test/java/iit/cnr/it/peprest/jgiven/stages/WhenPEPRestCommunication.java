@@ -68,7 +68,7 @@ public class WhenPEPRestCommunication extends Stage<WhenPEPRestCommunication> {
         return self();
     }
 
-    public WhenPEPRestCommunication the_PEP_messageStatus_for_the_returned_messageId_is_executed() {
+    public WhenPEPRestCommunication the_PEP_messageStatus_for_tryAccess_is_executed() {
         try {
             assertNotNull( mvc );
             MockHttpServletResponse mvcResponse = getFromPEPRestcommunication( "/messageStatus", "messageId", messageId );
