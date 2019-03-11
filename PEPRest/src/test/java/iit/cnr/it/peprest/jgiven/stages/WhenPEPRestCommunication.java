@@ -17,6 +17,7 @@ import com.tngtech.jgiven.Stage;
 import com.tngtech.jgiven.annotation.BeforeStage;
 import com.tngtech.jgiven.annotation.ExpectedScenarioState;
 import com.tngtech.jgiven.annotation.ProvidedScenarioState;
+import com.tngtech.jgiven.annotation.Quoted;
 import com.tngtech.jgiven.integration.spring.JGivenStage;
 
 import iit.cnr.it.peprest.configuration.Configuration;
@@ -56,7 +57,7 @@ public class WhenPEPRestCommunication extends Stage<WhenPEPRestCommunication> {
         mvc = MockMvcBuilders.webAppContextSetup( webApplicationContext ).build();
     }
 
-    public WhenPEPRestCommunication startEvaluation_is_executed() {
+    public WhenPEPRestCommunication the_PEP_startEvaluation_is_executed() {
         try {
             assertNotNull( mvc );
             mvcResponse = postToPEPRestcommunicationViaMockMvc( "/startEvaluation" );
@@ -67,10 +68,10 @@ public class WhenPEPRestCommunication extends Stage<WhenPEPRestCommunication> {
         return self();
     }
 
-    public WhenPEPRestCommunication messageStatus_for_the_returned_messageId_is_executed() {
+    public WhenPEPRestCommunication the_PEP_messageStatus_for_the_returned_messageId_is_executed() {
         try {
             assertNotNull( mvc );
-            MockHttpServletResponse mvcResponse = getFromPEPRestcommunication( "/messageStatus", messageId );
+            MockHttpServletResponse mvcResponse = getFromPEPRestcommunication( "/messageStatus", "messageId", messageId );
             messageBody = mvcResponse.getContentAsString();
         } catch( Exception e ) {
             fail( e.getLocalizedMessage() );
@@ -78,7 +79,18 @@ public class WhenPEPRestCommunication extends Stage<WhenPEPRestCommunication> {
         return self();
     }
 
-    public WhenPEPRestCommunication receiveResponse_is_executed_for_$( String operationUri ) {
+    public WhenPEPRestCommunication the_PEP_messagesPerSession_is_executed() {
+        try {
+            assertNotNull( mvc );
+            MockHttpServletResponse mvcResponse = getFromPEPRestcommunication( "/messagesPerSession", "sessionId", sessionId );
+            messageBody = mvcResponse.getContentAsString();
+        } catch( Exception e ) {
+            fail( e.getLocalizedMessage() );
+        }
+        return self();
+    }
+
+    public WhenPEPRestCommunication the_PEP_receiveResponse_is_executed_for_$( @Quoted String operationUri ) {
         try {
             assertNotNull( mvc );
             MockHttpServletResponse mvcResponse = postToPEPUCScommunication( operationUri, message );
@@ -89,9 +101,9 @@ public class WhenPEPRestCommunication extends Stage<WhenPEPRestCommunication> {
         return self();
     }
 
-    private MockHttpServletResponse getFromPEPRestcommunication( String uri, String messageId ) throws Exception {
+    private MockHttpServletResponse getFromPEPRestcommunication( String uri, String reqAttrName, String attrValue ) throws Exception {
         assertNotNull( uri );
-        MvcResult mvcResult = mvc.perform( MockMvcRequestBuilders.get( uri ).requestAttr( "messageId", messageId ) ).andReturn();
+        MvcResult mvcResult = mvc.perform( MockMvcRequestBuilders.get( uri ).requestAttr( reqAttrName, attrValue ) ).andReturn();
         return mvcResult.getResponse();
     }
 

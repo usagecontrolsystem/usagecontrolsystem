@@ -49,6 +49,11 @@ public class GivenMessage extends Stage<GivenMessage> {
         return self();
     }
 
+    public GivenMessage a_StartAccessResponse_request_with_$_decision( DecisionType decisionType ) {
+        message = buildStartAccessResponse( decisionType );
+        return self();
+    }
+
     protected StartAccessResponse buildStartAccessResponsePermit() {
         return buildStartAccessResponse( DecisionType.PERMIT );
     }
@@ -90,7 +95,6 @@ public class GivenMessage extends Stage<GivenMessage> {
     }
 
     private TryAccessResponse buildTryAccessResponse( DecisionType decisionType ) {
-        // CODE added because sessionId seems to be null
         if( sessionId == null ) {
             init();
         }
@@ -105,13 +109,13 @@ public class GivenMessage extends Stage<GivenMessage> {
     }
 
     protected StartAccessResponse buildStartAccessResponse( DecisionType decisionType ) {
-        // CODE added because sessionId seems to be null
         if( sessionId == null ) {
             init();
         }
         PDPResponse pdpEvaluation = buildPDPResponse( decisionType );
         StartAccessResponse startAccessResponse = new StartAccessResponse( sessionId );
         startAccessResponse.setResponse( pdpEvaluation );
+        startAccessResponse.setId( messageId );
         return startAccessResponse;
     }
 

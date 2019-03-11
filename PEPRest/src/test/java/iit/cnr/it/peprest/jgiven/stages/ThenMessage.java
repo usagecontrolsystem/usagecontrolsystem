@@ -10,6 +10,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.io.IOException;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -30,6 +31,8 @@ import iit.cnr.it.ucsinterface.message.Message;
 import iit.cnr.it.ucsinterface.message.endaccess.EndAccessMessage;
 import iit.cnr.it.ucsinterface.message.startaccess.StartAccessMessage;
 import iit.cnr.it.ucsinterface.message.tryaccess.TryAccessMessage;
+
+import oasis.names.tc.xacml.core.schema.wd_17.DecisionType;
 
 @JGivenStage
 public class ThenMessage extends Stage<ThenMessage> {
@@ -52,6 +55,9 @@ public class ThenMessage extends Stage<ThenMessage> {
 
     @ExpectedScenarioState
     Message message;
+
+    @ExpectedScenarioState
+    String sessionId;
 
     @ExpectedScenarioState
     Exception expectedException;
@@ -143,11 +149,29 @@ public class ThenMessage extends Stage<ThenMessage> {
         return self();
     }
 
+    public ThenMessage the_message_body_contains_$_decision( @Quoted DecisionType decisionType ) {
+        assertNotNull( messageBody );
+        assertEquals( messageBody, decisionType.value() );
+        return self();
+    }
+
     public ThenMessage the_message_body_contains_the_message_id_of_the_sent_tryAccess_message() {
         try {
             CallerResponse callerResponse = mapFromJson( messageBody, CallerResponse.class );
             assertNotNull( callerResponse.getDerivedMessageId() );
             assertEquals( messageId, callerResponse.getDerivedMessageId() );
+        } catch( Exception e ) {
+            fail( e.getMessage() );
+        }
+        return self();
+    }
+
+    public ThenMessage the_message_body_contains_the_message_id_of_the_sent_startAccess_message() {
+        try {
+            @SuppressWarnings( "unchecked" )
+            List<String> messageIds = mapFromJson( messageBody, List.class );
+            assertNotNull( messageIds );
+            assertNotNull( messageIds.get( 1 ) ); //TODO fixme
         } catch( Exception e ) {
             fail( e.getMessage() );
         }
@@ -180,5 +204,4 @@ public class ThenMessage extends Stage<ThenMessage> {
         }
         return self();
     }
-
 }
