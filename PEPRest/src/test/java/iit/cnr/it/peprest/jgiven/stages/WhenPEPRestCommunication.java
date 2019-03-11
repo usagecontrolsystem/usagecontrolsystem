@@ -4,6 +4,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
@@ -11,6 +12,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tngtech.jgiven.Stage;
 import com.tngtech.jgiven.annotation.BeforeStage;
 import com.tngtech.jgiven.annotation.ExpectedScenarioState;
@@ -24,7 +26,10 @@ import iit.cnr.it.ucsinterface.message.Message;
 public class WhenPEPRestCommunication extends Stage<WhenPEPRestCommunication> {
 
     @ProvidedScenarioState
-	String messageId;
+    String messageId;
+
+    @ProvidedScenarioState
+    String messageBody;
 
     @ProvidedScenarioState
     Exception expectedException;
@@ -37,34 +42,71 @@ public class WhenPEPRestCommunication extends Stage<WhenPEPRestCommunication> {
 
     @ExpectedScenarioState
     Configuration configuration;
-    
+
     @ProvidedScenarioState
     MockHttpServletResponse mvcResponse;
-	
+
     @Autowired
     WebApplicationContext webApplicationContext;
-            
+
     MockMvc mvc;
 
     @BeforeStage
     public void setUp() {
-        mvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
+        mvc = MockMvcBuilders.webAppContextSetup( webApplicationContext ).build();
     }
 
-    public WhenPEPRestCommunication start_evaluation_is_executed() {
-    	try {
-    		assertNotNull(mvc);
-    		mvcResponse = postToPEPRestcommunicationViaMockMvc("/startEvaluation");
-    		messageId = mvcResponse.getContentAsString();
-		} catch (Exception e) {
-			fail(e.getLocalizedMessage());
-		}
-		return self();
-	}
+    public WhenPEPRestCommunication startEvaluation_is_executed() {
+        try {
+            assertNotNull( mvc );
+            mvcResponse = postToPEPRestcommunicationViaMockMvc( "/startEvaluation" );
+            messageId = mvcResponse.getContentAsString();
+        } catch( Exception e ) {
+            fail( e.getLocalizedMessage() );
+        }
+        return self();
+    }
 
-	private MockHttpServletResponse postToPEPRestcommunicationViaMockMvc(String uri) throws Exception {
-		assertNotNull(uri);
-	    MvcResult mvcResult = mvc.perform(MockMvcRequestBuilders.post(uri)).andReturn();
-		return mvcResult.getResponse();
-	}
+    public WhenPEPRestCommunication messageStatus_for_the_returned_messageId_is_executed() {
+        try {
+            assertNotNull( mvc );
+            MockHttpServletResponse mvcResponse = getFromPEPRestcommunication( "/messageStatus", messageId );
+            messageBody = mvcResponse.getContentAsString();
+        } catch( Exception e ) {
+            fail( e.getLocalizedMessage() );
+        }
+        return self();
+    }
+
+    public WhenPEPRestCommunication receiveResponse_is_executed_for_$( String operationUri ) {
+        try {
+            assertNotNull( mvc );
+            MockHttpServletResponse mvcResponse = postToPEPUCScommunication( operationUri, message );
+            messageBody = mvcResponse.getContentAsString();
+        } catch( Exception e ) {
+            fail( e.getLocalizedMessage() );
+        }
+        return self();
+    }
+
+    private MockHttpServletResponse getFromPEPRestcommunication( String uri, String messageId ) throws Exception {
+        assertNotNull( uri );
+        MvcResult mvcResult = mvc.perform( MockMvcRequestBuilders.get( uri ).requestAttr( "messageId", messageId ) ).andReturn();
+        return mvcResult.getResponse();
+    }
+
+    private MockHttpServletResponse postToPEPRestcommunicationViaMockMvc( String uri ) throws Exception {
+        assertNotNull( uri );
+        MvcResult mvcResult = mvc.perform( MockMvcRequestBuilders.post( uri ) ).andReturn();
+        return mvcResult.getResponse();
+    }
+
+    private MockHttpServletResponse postToPEPUCScommunication( String uri, Message jsonMessage ) throws Exception {
+        assertNotNull( uri );
+        MvcResult mvcResult = mvc.perform( MockMvcRequestBuilders.post( uri )
+            .contentType( MediaType.APPLICATION_JSON_VALUE ).content(
+                new ObjectMapper().writeValueAsString( jsonMessage ) ) )
+            .andReturn();
+        return mvcResult.getResponse();
+    }
 }
