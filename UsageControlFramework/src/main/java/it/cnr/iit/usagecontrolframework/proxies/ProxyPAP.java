@@ -21,9 +21,10 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import it.cnr.iit.usagecontrolframework.configuration.xmlclasses.XMLPap;
+
 import iit.cnr.it.ucsinterface.constants.CONNECTION;
 import iit.cnr.it.ucsinterface.pap.PAPInterface;
-import it.cnr.iit.usagecontrolframework.configuration.xmlclasses.XMLPap;
 
 /**
  * This is the proxy to deal with the PAP.

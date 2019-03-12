@@ -23,9 +23,10 @@ import java.util.PropertyResourceBundle;
 import com.google.common.base.Charsets;
 import com.google.common.io.Resources;
 
-import iit.cnr.it.ucsinterface.ucs.AbstractProperties;
 import it.cnr.iit.usagecontrolframework.configuration.xmlclasses.Configuration;
 import it.cnr.iit.xacmlutilities.policy.utility.JAXBUtility;
+
+import iit.cnr.it.ucsinterface.ucs.AbstractProperties;
 
 /**
  * This class is in charge of reading the xml provided for the description of
@@ -64,7 +65,7 @@ import it.cnr.iit.xacmlutilities.policy.utility.JAXBUtility;
 public final class Properties extends AbstractProperties {
     private static final String APP_PROPERTIES = "classpath:application.properties";
     private static final String UCS_CONFIG = "ucs-config-file";
-    private static final String DEFAULT_UCS_CONFIG = "conf_local.xml";
+    private static final String DEFAULT_UCS_CONFIG = "conf.xml";
 
     Configuration configuration;
 
@@ -115,15 +116,20 @@ public final class Properties extends AbstractProperties {
     private String getXMLConfigurationFileName() {
         String fname = DEFAULT_UCS_CONFIG;
 
-        FileInputStream fis;
+        FileInputStream fis = null;
         try {
             fis = new FileInputStream( APP_PROPERTIES );
             PropertyResourceBundle rb = new PropertyResourceBundle( fis );
             if( rb.containsKey( UCS_CONFIG ) ) {
                 fname = rb.getString( UCS_CONFIG );
             }
-            fis.close();
         } catch( IOException e ) {}
+
+        if( fis != null ) {
+            try {
+                fis.close();
+            } catch( Exception e ) {}
+        }
 
         return fname;
     }

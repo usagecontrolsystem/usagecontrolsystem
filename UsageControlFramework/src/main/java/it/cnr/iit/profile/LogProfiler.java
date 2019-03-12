@@ -14,74 +14,73 @@ import java.util.TimeZone;
 import org.slf4j.Logger;
 
 public class LogProfiler {
-	protected Logger LOG = (Logger) java.util.logging.Logger.getLogger(this.getClass().getSimpleName());
+    protected Logger LOG = (Logger) java.util.logging.Logger.getLogger( this.getClass().getName() );
 
-	private static LogProfiler instance;
-	
-	private ArrayList<String> logList;
+    private static LogProfiler instance;
 
-	private long timestamp;
+    private ArrayList<String> logList;
 
-	private LogProfiler() {
-		logList = new ArrayList<>();
-	}
+    private long timestamp;
 
-	public void log(String message) {
-		long curTimestamp = getCurrentTimestamp();
-		double elapsed = ((double) (curTimestamp - getTimestamp())) / 1000f;
-		String elapsedStr = String.format("%.2fs", elapsed);
-		
-		logList.add(message + " [ " + elapsedStr + " ]");
+    private LogProfiler() {
+        logList = new ArrayList<>();
+    }
 
-		setTimestamp(curTimestamp);
-	}
-	
-	
-	public void dumpToFile(String path) {
-		Path out = Paths.get(path);
+    public void log( String message ) {
+        long curTimestamp = getCurrentTimestamp();
+        double elapsed = ( (double) ( curTimestamp - getTimestamp() ) ) / 1000f;
+        String elapsedStr = String.format( "%.2fs", elapsed );
 
-		try {
-			Files.write(out, logList, Charset.defaultCharset());
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-	
-	public void clearLogs() {
-		logList.clear();
-	}
+        logList.add( message + " [ " + elapsedStr + " ]" );
 
-	private long getCurrentTimestamp() {
-		return System.currentTimeMillis();
-	}
+        setTimestamp( curTimestamp );
+    }
 
-	public long getTimestamp() {
-		return timestamp;
-	}
+    public void dumpToFile( String path ) {
+        Path out = Paths.get( path );
 
-	private void setTimestamp(long timestamp) {
-		this.timestamp = timestamp;
-	}
+        try {
+            Files.write( out, logList, Charset.defaultCharset() );
+        } catch( IOException e ) {
+            e.printStackTrace();
+        }
+    }
 
-	private String ConvertSecondsToHumanReadableString(double secondtTime) {
-		TimeZone tz = TimeZone.getTimeZone("UTC");
-		SimpleDateFormat df = new SimpleDateFormat("HH:mm:ss");
-		df.setTimeZone(tz);
-		String time = df.format(new Date((long) (secondtTime * 1000L)));
+    public void clearLogs() {
+        logList.clear();
+    }
 
-		return time;
+    private long getCurrentTimestamp() {
+        return System.currentTimeMillis();
+    }
 
-	}
+    public long getTimestamp() {
+        return timestamp;
+    }
 
-	public static LogProfiler getInstance() {
-		if (instance == null) {
-			synchronized (LogProfiler.class) {
-				if (instance == null) {
-					instance = new LogProfiler();
-				}
-			}
-		}
-		return instance;
-	}
+    private void setTimestamp( long timestamp ) {
+        this.timestamp = timestamp;
+    }
+
+    private String ConvertSecondsToHumanReadableString( double secondtTime ) {
+        TimeZone tz = TimeZone.getTimeZone( "UTC" );
+        SimpleDateFormat df = new SimpleDateFormat( "HH:mm:ss" );
+        df.setTimeZone( tz );
+        String time = df.format( new Date( (long) ( secondtTime * 1000L ) ) );
+
+        return time;
+
+    }
+
+    public static LogProfiler getInstance() {
+        if( instance == null ) {
+            synchronized( LogProfiler.class ) {
+                if( instance == null ) {
+                    instance = new LogProfiler();
+                }
+            }
+        }
+        return instance;
+    }
 
 }

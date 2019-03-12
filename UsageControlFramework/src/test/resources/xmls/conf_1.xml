@@ -9,75 +9,75 @@
 		<pip id="PIPReaderEnv" class="iit.cnr.it.pipreader.PIPReader"
 			retrieval="false">
 			<attributes>
-			<arg name="CATEGORY"
-				argument="urn:oasis:names:tc:xacml:3.0:attribute-category:environment" />
-			<arg name="DATA_TYPE"
-				argument="http://www.w3.org/2001/XMLSchema#double" />
-			<arg name="ATTRIBUTE_ID"
-				argument="urn:oasis:names:tc:xacml:3.0:environment:temperature" />
-			<arg name="FILE_PATH" argument="pips/temperature.txt"></arg>
+				<arg name="CATEGORY"
+					argument="urn:oasis:names:tc:xacml:3.0:attribute-category:environment" />
+				<arg name="DATA_TYPE"
+					argument="http://www.w3.org/2001/XMLSchema#double" />
+				<arg name="ATTRIBUTE_ID"
+					argument="urn:oasis:names:tc:xacml:3.0:environment:temperature" />
+				<arg name="FILE_PATH" argument="pips/temperature.txt"></arg>
 			</attributes>
 		</pip>
 		<pip id="PIPReaderEnv" class="iit.cnr.it.pipreader.PIPReader"
 			retrieval="false">
 			<attributes>
-			<arg name="CATEGORY"
-				argument="urn:oasis:names:tc:xacml:3.0:attribute-category:environment" />
-			<arg name="DATA_TYPE"
-				argument="http://www.w3.org/2001/XMLSchema#integer" />
-			<arg name="ATTRIBUTE_ID"
-				argument="urn:oasis:names:tc:xacml:3.0:environment:virus" />
-			<arg name="FILE_PATH" argument="pips/virus.txt"></arg>
+				<arg name="CATEGORY"
+					argument="urn:oasis:names:tc:xacml:3.0:attribute-category:environment" />
+				<arg name="DATA_TYPE"
+					argument="http://www.w3.org/2001/XMLSchema#integer" />
+				<arg name="ATTRIBUTE_ID"
+					argument="urn:oasis:names:tc:xacml:3.0:environment:virus" />
+				<arg name="FILE_PATH" argument="pips/virus.txt"></arg>
 			</attributes>
 		</pip>
 		<pip id="PIPReaderEnv" class="iit.cnr.it.pipreader.PIPReader"
 			retrieval="false">
 			<attributes>
-			<arg name="CATEGORY"
-				argument="urn:oasis:names:tc:xacml:3.0:attribute-category:environment" />
-			<arg name="DATA_TYPE"
-				argument="http://www.w3.org/2001/XMLSchema#integer" />
-			<arg name="ATTRIBUTE_ID"
-				argument="urn:oasis:names:tc:xacml:3.0:environment:telephone" />
-			<arg name="FILE_PATH" argument="pips/telephone.txt"></arg>
+				<arg name="CATEGORY"
+					argument="urn:oasis:names:tc:xacml:3.0:attribute-category:environment" />
+				<arg name="DATA_TYPE"
+					argument="http://www.w3.org/2001/XMLSchema#integer" />
+				<arg name="ATTRIBUTE_ID"
+					argument="urn:oasis:names:tc:xacml:3.0:environment:telephone" />
+				<arg name="FILE_PATH" argument="pips/telephone.txt"></arg>
 			</attributes>
 		</pip>
 		<pip id="PIPReaderEnv" class="iit.cnr.it.pipreader.PIPReader"
 			retrieval="false">
 			<attributes>
-			<arg name="CATEGORY"
-				argument="urn:oasis:names:tc:xacml:3.0:attribute-category:environment" />
-			<arg name="DATA_TYPE"
-				argument="http://www.w3.org/2001/XMLSchema#string" />
-			<arg name="ATTRIBUTE_ID"
-				argument="urn:oasis:names:tc:xacml:3.0:environment:time" />
-			<arg name="FILE_PATH" argument="pips/time.txt"></arg>
+				<arg name="CATEGORY"
+					argument="urn:oasis:names:tc:xacml:3.0:attribute-category:environment" />
+				<arg name="DATA_TYPE"
+					argument="http://www.w3.org/2001/XMLSchema#string" />
+				<arg name="ATTRIBUTE_ID"
+					argument="urn:oasis:names:tc:xacml:3.0:environment:time" />
+				<arg name="FILE_PATH" argument="pips/time.txt"></arg>
 			</attributes>
 		</pip>
 		<pip id="PIPReaderEnv" class="iit.cnr.it.pipreader.PIPReader"
 			retrieval="false">
 			<attributes>
-			<arg name="CATEGORY"
-				argument="urn:oasis:names:tc:xacml:1.0:subject-category:access-subject" />
+				<arg name="CATEGORY"
+					argument="urn:oasis:names:tc:xacml:1.0:subject-category:access-subject" />
 				<arg name="EXPECTED_CATEGORY"
-				argument="urn:oasis:names:tc:xacml:1.0:subject-category:access-subject" />
-			<arg name="DATA_TYPE"
-				argument="http://www.w3.org/2001/XMLSchema#string" />
-			<arg name="ATTRIBUTE_ID"
-				argument="urn:oasis:names:tc:xacml:1.0:subject:role" />
-			<arg name="FILE_PATH" argument="pips/role.txt"></arg>
+					argument="urn:oasis:names:tc:xacml:1.0:subject-category:access-subject" />
+				<arg name="DATA_TYPE"
+					argument="http://www.w3.org/2001/XMLSchema#string" />
+				<arg name="ATTRIBUTE_ID"
+					argument="urn:oasis:names:tc:xacml:1.0:subject:role" />
+				<arg name="FILE_PATH" argument="pips/role.txt"></arg>
 			</attributes>
 		</pip>
 		<pip id="PIPReaderEnv" class="iit.cnr.it.pipreader.PIPReader"
 			retrieval="false">
 			<attributes>
-			<arg name="CATEGORY"
-				argument="urn:oasis:names:tc:xacml:1.0:subject-category:access-subject" />
-			<arg name="DATA_TYPE"
-				argument="http://www.w3.org/2001/XMLSchema#string" />
-			<arg name="ATTRIBUTE_ID"
-				argument="urn:oasis:names:tc:xacml:1.0:subject:position" />
-			<arg name="FILE_PATH" argument="pips/position.txt"></arg>
+				<arg name="CATEGORY"
+					argument="urn:oasis:names:tc:xacml:1.0:subject-category:access-subject" />
+				<arg name="DATA_TYPE"
+					argument="http://www.w3.org/2001/XMLSchema#string" />
+				<arg name="ATTRIBUTE_ID"
+					argument="urn:oasis:names:tc:xacml:1.0:subject:position" />
+				<arg name="FILE_PATH" argument="pips/position.txt"></arg>
 			</attributes>
 		</pip>
 	</pips>
