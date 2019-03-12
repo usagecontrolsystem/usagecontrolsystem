@@ -1,15 +1,15 @@
 /*******************************************************************************
  * Copyright 2018 IIT-CNR
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
- * use this file except in compliance with the License.  You may obtain a copy
+ * use this file except in compliance with the License. You may obtain a copy
  * of the License at
- * 
- *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
  ******************************************************************************/
@@ -35,43 +35,43 @@ import iit.cnr.it.ucsinterface.message.Message;
  * {@link ForwardingQueueToRMInterface} in order to let the RequestManager to
  * communicate with it.
  * </p>
- * 
+ *
  * @author testucs
  *
  */
 public class ForwardingQueue
-    implements ForwardingQueueToCHInterface, ForwardingQueueToRMInterface {
+        implements ForwardingQueueToCHInterface, ForwardingQueueToRMInterface {
+    private static final Logger LOGGER = Logger
+        .getLogger( ForwardingQueue.class.getName() );
 
-  private static final Logger LOGGER = Logger
-      .getLogger(ForwardingQueue.class.getName());
-  private HashMap<String, Message> forwardingMap = new HashMap<>();
+    private HashMap<String, Message> forwardingMap = new HashMap<>();
 
-  @Override
-  public Message getOriginalSource(String messageID) {
-    // BEGIN parameter checking
-    if (messageID == null || messageID.isEmpty()) {
-      LOGGER.log(Level.SEVERE, "MessageID" + messageID + " is not valid");
-      return null;
+    @Override
+    public Message getOriginalSource( String messageID ) {
+        // BEGIN parameter checking
+        if( messageID == null || messageID.isEmpty() ) {
+            LOGGER.log( Level.SEVERE, "MessageID" + messageID + " is not valid" );
+            return null;
+        }
+        // END parameter checking
+        synchronized( forwardingMap ) {
+            return forwardingMap.remove( messageID );
+        }
     }
-    // END parameter checking
-    synchronized (forwardingMap) {
-      return forwardingMap.remove(messageID);
-    }
-  }
 
-  @Override
-  public void addSwappedMessage(String messageID, Message originalMessage) {
-    // BEGIN parameter checking
-    if (messageID == null || messageID.isEmpty()) {
-      LOGGER.log(Level.SEVERE, "MessageID" + messageID + " is not valid");
+    @Override
+    public void addSwappedMessage( String messageID, Message originalMessage ) {
+        // BEGIN parameter checking
+        if( messageID == null || messageID.isEmpty() ) {
+            LOGGER.log( Level.SEVERE, "MessageID" + messageID + " is not valid" );
+        }
+        if( originalMessage == null ) {
+            LOGGER.log( Level.SEVERE, "Source" + originalMessage + " is not valid" );
+        }
+        // END parameter checking
+        synchronized( forwardingMap ) {
+            forwardingMap.put( messageID, originalMessage );
+        }
     }
-    if (originalMessage == null) {
-      LOGGER.log(Level.SEVERE, "Source" + originalMessage + " is not valid");
-    }
-    // END parameter checking
-    synchronized (forwardingMap) {
-      forwardingMap.put(messageID, originalMessage);
-    }
-  }
 
 }

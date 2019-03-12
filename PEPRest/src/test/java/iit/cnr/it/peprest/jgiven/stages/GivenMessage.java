@@ -15,12 +15,12 @@ import com.tngtech.jgiven.annotation.ProvidedScenarioState;
 
 import iit.cnr.it.peprest.PEPRestOperation;
 import iit.cnr.it.ucsinterface.message.Message;
-import iit.cnr.it.ucsinterface.message.PDPResponse;
 import iit.cnr.it.ucsinterface.message.endaccess.EndAccessResponse;
 import iit.cnr.it.ucsinterface.message.reevaluation.ReevaluationResponse;
 import iit.cnr.it.ucsinterface.message.startaccess.StartAccessResponse;
 import iit.cnr.it.ucsinterface.message.tryaccess.TryAccessResponse;
 import iit.cnr.it.ucsinterface.message.tryaccess.TryAccessResponseContent;
+import iit.cnr.it.ucsinterface.pdp.PDPResponse;
 
 import oasis.names.tc.xacml.core.schema.wd_17.DecisionType;
 import oasis.names.tc.xacml.core.schema.wd_17.ResponseType;
@@ -82,9 +82,7 @@ public class GivenMessage extends Stage<GivenMessage> {
         resultType.setDecision( decision );
         ResponseType responseType = new ResponseType();
         responseType.setResult( Arrays.asList( resultType ) );
-        PDPResponse pdpResponse = new PDPResponse();
-        pdpResponse.setResponseType( responseType );
-        pdpResponse.setInitialized( true );
+        PDPResponse pdpResponse = new PDPResponse( responseType );
         return pdpResponse;
     }
 

@@ -2,14 +2,14 @@
  * Copyright 2018 IIT-CNR
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
- * use this file except in compliance with the License.  You may obtain a copy
+ * use this file except in compliance with the License. You may obtain a copy
  * of the License at
  * 
- *   http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
  ******************************************************************************/
@@ -51,74 +51,74 @@ import iit.cnr.it.ucsinterface.message.Message;
  *
  */
 public interface ContextHandlerInterface extends ContextHandlerPIPInterface {
-	
-	/**
-	 * This is the tryAccess function. In this case the RequestManager passes to
-	 * the ContextHandler a message in which it has been specified the request
-	 * received, the policy to be used and the uri of the PEP. It will also send
-	 * eventual Obligations provided by the ObligationManager
-	 * 
-	 * @param message
-	 *          message received by the RequestManager
-	 * @return a message stating the response of the PDP to the request.
-	 */
-	public void tryAccess(Message message);
-	
-	/**
-	 * This is the startAccess function. In this case a tryAccess has already been
-	 * performed with a PERMIT status. Hence with this function the ContextHandler
-	 * performs a re-evaluation of the context in order to be sure that the access
-	 * can go on, moreover this triggers the contiunous monitoring of the
-	 * attributes of the policy.
-	 * 
-	 * @param message
-	 *          message received by the RequestManager
-	 * @return a message stating the response of the PDP to the request
-	 * @throws Exception
-	 */
-	public void startAccess(Message message) throws Exception;
-	
-	/**
-	 * This is the endAcces function. In this case the PEP doesn't require the
-	 * resource anymore or the access to the resource has been denied, hence the
-	 * PEP notifies the CH to stop monitoring that session. The CH answers by
-	 * sending to the PEP the response to the ENDAccess. It will be the
-	 * ObligationManager in charge of
-	 * 
-	 * @param message
-	 *          the message received by the RequestManager
-	 * @return a message stating the response of the PDP to the request
-	 */
-	public void endAccess(Message message);
-	
-	/**
-	 * This is the reevaluation function. This function is triggered by a remote
-	 * node querying the actual ContextHandler to perform the reevaluation of a
-	 * certain session. This is an API offered by a ContextHandler to another.
-	 * 
-	 * @param message
-	 *          the reevaluation message
-	 */
-	public void reevaluate(Message message);
-	
-	/**
-	 * This is the messageForPIP function.
-	 * <p>
-	 * In this function fall all the function related to requests performed by
-	 * remote UCS to local PIP {remote and local with respect to the CH taken into
-	 * consideration}. In this case the request will be sent to the various PIP
-	 * and the response will be sent back as soon as available.
-	 * </p>
-	 * 
-	 * @param message
-	 *          the message received by the RequestManager
-	 * @return a message stating the response of the CH to the request
-	 */
-	public Message messageForPIP(Message message);
-	
-	public static final String	TRY_STATUS		= "t";
-	public static final String	START_STATUS	= "s";
-	public static final String	REVOKE_STATUS	= "r";
-	public static final String	END_STATUS		= "e";
-	
+
+    /**
+     * This is the tryAccess function. In this case the RequestManager passes to
+     * the ContextHandler a message in which it has been specified the request
+     * received, the policy to be used and the uri of the PEP. It will also send
+     * eventual Obligations provided by the ObligationManager
+     * 
+     * @param message
+     *          message received by the RequestManager
+     * @return a message stating the response of the PDP to the request.
+     */
+    public void tryAccess( Message message );
+
+    /**
+     * This is the startAccess function. In this case a tryAccess has already been
+     * performed with a PERMIT status. Hence with this function the ContextHandler
+     * performs a re-evaluation of the context in order to be sure that the access
+     * can go on, moreover this triggers the contiunous monitoring of the
+     * attributes of the policy.
+     * 
+     * @param message
+     *          message received by the RequestManager
+     * @return a message stating the response of the PDP to the request
+     * @throws Exception
+     */
+    public void startAccess( Message message ) throws Exception;
+
+    /**
+     * This is the endAcces function. In this case the PEP doesn't require the
+     * resource anymore or the access to the resource has been denied, hence the
+     * PEP notifies the CH to stop monitoring that session. The CH answers by
+     * sending to the PEP the response to the ENDAccess. It will be the
+     * ObligationManager in charge of
+     * 
+     * @param message
+     *          the message received by the RequestManager
+     * @return a message stating the response of the PDP to the request
+     */
+    public void endAccess( Message message );
+
+    /**
+     * This is the reevaluation function. This function is triggered by a remote
+     * node querying the actual ContextHandler to perform the reevaluation of a
+     * certain session. This is an API offered by a ContextHandler to another.
+     * 
+     * @param message
+     *          the reevaluation message
+     */
+    public void reevaluate( Message message );
+
+    /**
+     * This is the messageForPIP function.
+     * <p>
+     * In this function fall all the function related to requests performed by
+     * remote UCS to local PIP {remote and local with respect to the CH taken into
+     * consideration}. In this case the request will be sent to the various PIP
+     * and the response will be sent back as soon as available.
+     * </p>
+     * 
+     * @param message
+     *          the message received by the RequestManager
+     * @return a message stating the response of the CH to the request
+     */
+    public Message messageForPIP( Message message );
+
+    public static final String TRY_STATUS = "t";
+    public static final String START_STATUS = "s";
+    public static final String REVOKE_STATUS = "r";
+    public static final String END_STATUS = "e";
+
 }

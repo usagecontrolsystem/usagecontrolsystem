@@ -15,6 +15,9 @@
  ******************************************************************************/
 package iit.cnr.it.ucsinterface.message.startaccess;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import iit.cnr.it.ucsinterface.message.Message;
 import iit.cnr.it.ucsinterface.message.PART;
 import iit.cnr.it.ucsinterface.message.PURPOSE;
@@ -26,14 +29,16 @@ import iit.cnr.it.ucsinterface.pdp.PDPEvaluation;
  * @author antonio
  *
  */
+
+@JsonIgnoreProperties( ignoreUnknown = true )
 public final class StartAccessResponse extends Message {
-    /**
-     *
-     */
+
     private static final long serialVersionUID = 1L;
     // status of the startaccess
     private String status;
+
     // the evaluation provided by the PDP
+    @JsonProperty
     private PDPEvaluation pdpEvaluation;
 
     public StartAccessResponse() {
@@ -63,9 +68,6 @@ public final class StartAccessResponse extends Message {
         purpose = PURPOSE.STARTACCESS_RESPONSE;
     }
 
-    // ---------------------------------------------------------------------------
-    // GETTERS and SETTERS
-    // ---------------------------------------------------------------------------
     public boolean setStatus( String status ) {
         // BEGIN parameter checking
         if( status == null || status.isEmpty() ) {
@@ -86,7 +88,6 @@ public final class StartAccessResponse extends Message {
 
     @Override
     public int compareTo( Message o ) {
-        // TODO Auto-generated method stub
         return 0;
     }
 

@@ -18,6 +18,7 @@ package iit.cnr.it.ucsinterface.message;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.UUID;
+import java.util.logging.Logger;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.google.gson.Gson;
@@ -55,8 +56,11 @@ import com.google.gson.Gson;
 
 @JsonIgnoreProperties( ignoreUnknown = true )
 public class Message implements Comparable<Message>, Serializable {
+    private static final Logger LOGGER = Logger
+        .getLogger( Message.class.getName() );
 
     private static final long serialVersionUID = 1L;
+
     // source of the message
     protected String sourceAddress;
     // port on which the source expects the reply
@@ -96,7 +100,7 @@ public class Message implements Comparable<Message>, Serializable {
         id = "ID:" + UUID.randomUUID();
         // BEGIN parameter checking
         if( ( source == null ) || ( destination == null ) ) {
-            System.out.println( "[Message]" + source + "\t" + destination );
+            LOGGER.info( "[Message]" + source + "\t" + destination );
             return;
         }
         // END parameter checking
@@ -119,8 +123,8 @@ public class Message implements Comparable<Message>, Serializable {
         this.id = id;
         // BEGIN parameter checking
         if( ( source == null ) || ( destination == null ) ) {
-            System.err.println( "[Message]" + source + "\t" + destination );
-
+            LOGGER.severe( "[Message]" + source + "\t" + destination );
+            // TODO handle error
             return;
         }
         // END parameter checking
@@ -129,9 +133,6 @@ public class Message implements Comparable<Message>, Serializable {
         initialized = true;
     }
 
-    /**
-     *
-     */
     public Message() {
         id = "ID:" + UUID.randomUUID();
         initialized = true;
@@ -153,7 +154,7 @@ public class Message implements Comparable<Message>, Serializable {
         id = "ID:" + UUID.randomUUID();
         // BEGIN parameter checking
         if( ( source == null ) || ( destination == null ) ) {
-            System.err.println( "[Message]" + source + "\t" + destination );
+            LOGGER.severe( "[Message]" + source + "\t" + destination );
             return;
         }
         // END parameter checking
@@ -163,9 +164,8 @@ public class Message implements Comparable<Message>, Serializable {
         initialized = true;
     }
 
-    // ---------------------------------------------------------------------------
-    // Getters
-    // ---------------------------------------------------------------------------
+    /* Getters */
+
     final public String getSource() {
         if( !initialized ) {
             return null;
@@ -215,6 +215,7 @@ public class Message implements Comparable<Message>, Serializable {
      * (!initialized) { return false; } // END parameter checking motivation =
      * string; return true; }
      */
+
     public String getID() {
         if( !initialized ) {
             return null;
