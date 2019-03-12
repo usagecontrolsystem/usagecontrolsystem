@@ -14,8 +14,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import it.cnr.iit.usagecontrolframework.entry.UsageControlFramework;
-
 @ActiveProfiles( "test" )
 @SpringBootTest
 @RunWith( SpringRunner.class )
@@ -35,7 +33,7 @@ public class UsageControlFrameworkCoverageTest extends UCFBaseTests {
     public void usageControlFrameworkCoverageTest()
             throws JAXBException, URISyntaxException, IOException, NoSuchMethodException, SecurityException,
             InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
-        UsageControlFramework usageControlFramework = new UsageControlFramework();
+        // UsageControlFramework usageControlFramework = new UsageControlFramework();
     }
 
 }

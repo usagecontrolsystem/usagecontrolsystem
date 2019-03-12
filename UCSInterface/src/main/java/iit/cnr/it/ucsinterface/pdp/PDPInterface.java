@@ -2,14 +2,14 @@
  * Copyright 2018 IIT-CNR
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
- * use this file except in compliance with the License.  You may obtain a copy
+ * use this file except in compliance with the License. You may obtain a copy
  * of the License at
  * 
- *   http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
  ******************************************************************************/
@@ -35,43 +35,43 @@ import iit.cnr.it.ucsinterface.contexthandler.STATUS;
  *
  */
 public interface PDPInterface {
-	
-	/**
-	 * Ask the evaluation to the PDP providing to it the request in string format
-	 * and the policy in string format. This choice has been performed because,
-	 * even if now we're using balana, nothing would prevent us to use a different
-	 * PDP in the future
-	 * 
-	 * @param request
-	 *          the request in string format
-	 * @param policy
-	 *          the policy in string format
-	 * @param status
-	 * @return the PDPEvaluation provided as response
-	 */
-	public PDPEvaluation evaluate(String request, StringBuilder policy,
-	    STATUS status);
-	
-	/**
-	 * Ask the evaluation to the PDP providing to it the request in string format
-	 * and the policy in string format. This choice has been performed because,
-	 * even if now we're using balana, nothing would prevent us to use a different
-	 * PDP in the future
-	 * 
-	 * @param request
-	 *          the request in string format
-	 * @param policy
-	 *          the policy in string format
-	 * @return the PDPEvaluation provided as response
-	 */
-	public PDPEvaluation evaluate(String request, String policy);
-	
-	/**
-	 * Evaluate the request
-	 * 
-	 * @param request
-	 * @return
-	 */
-	public PDPEvaluation evaluate(String request);
-	
+
+    /**
+     * Ask the evaluation to the PDP providing to it the request in string format
+     * and the policy in string format. This choice has been performed because,
+     * even if now we're using balana, nothing would prevent us to use a different
+     * PDP in the future
+     * 
+     * @param request
+     *          the request in string format
+     * @param policy
+     *          the policy in string format
+     * @param status
+     * @return the PDPEvaluation provided as response
+     */
+    public PDPEvaluation evaluate( String request, StringBuilder policy,
+            STATUS status );
+
+    /**
+     * Ask the evaluation to the PDP providing to it the request in string format
+     * and the policy in string format. This choice has been performed because,
+     * even if now we're using balana, nothing would prevent us to use a different
+     * PDP in the future
+     * 
+     * @param request
+     *          the request in string format
+     * @param policy
+     *          the policy in string format
+     * @return the PDPEvaluation provided as response
+     */
+    public PDPEvaluation evaluate( String request, String policy );
+
+    /**
+     * Evaluate the request
+     * 
+     * @param request
+     * @return
+     */
+    public PDPEvaluation evaluate( String request );
+
 }

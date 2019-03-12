@@ -16,7 +16,6 @@
 package iit.cnr.it.ucs.configuration;
 
 import java.security.InvalidParameterException;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import it.cnr.iit.usagecontrolframework.configuration.xmlclasses.Configuration;
@@ -40,24 +39,28 @@ import it.cnr.iit.usagecontrolframework.configuration.xmlclasses.Configuration;
  *
  */
 public final class BasicConfiguration {
+    private static final Logger LOGGER = Logger
+        .getLogger( BasicConfiguration.class.getName() );
+
+    private static BasicConfiguration instance = null;
+
     private String ip;
     private String port;
     private boolean scheduler;
-
-    private static final Logger LOGGER = Logger
-        .getLogger( BasicConfiguration.class.getCanonicalName() );
-
-    private static BasicConfiguration basicConfiguration = null;
 
     private BasicConfiguration() {
 
     }
 
-    public static synchronized BasicConfiguration getBasicConfiguration() {
-        if( basicConfiguration == null ) {
-            basicConfiguration = new BasicConfiguration();
+    public static BasicConfiguration getBasicConfiguration() {
+        if( instance == null ) {
+            synchronized( BasicConfiguration.class ) {
+                if( instance == null ) {
+                    instance = new BasicConfiguration();
+                }
+            }
         }
-        return basicConfiguration;
+        return instance;
     }
 
     /**
@@ -68,7 +71,7 @@ public final class BasicConfiguration {
      * considered as basic configuration are the ip of the node and the port of
      * the node.
      * </p>
-     * 
+     *
      * @param configuration
      *          the configuration object created after the conf.xml file
      */
@@ -78,8 +81,7 @@ public final class BasicConfiguration {
                 || configuration.getXmlGeneral().getIp().isEmpty()
                 || configuration.getXmlGeneral().getPort() == null
                 || configuration.getXmlGeneral().getPort().isEmpty() ) {
-            LOGGER.log( Level.SEVERE,
-                "Invalid configuration file passed as parameter" );
+            LOGGER.severe( "Invalid configuration file passed as parameter" );
             throw new InvalidParameterException();
         }
         // END parameter checking

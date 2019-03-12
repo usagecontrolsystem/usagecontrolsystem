@@ -22,12 +22,13 @@ import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import it.cnr.iit.usagecontrolframework.configuration.xmlclasses.XMLSessionManager;
+import it.cnr.iit.xacmlutilities.Attribute;
+
 import iit.cnr.it.ucsinterface.constants.CONNECTION;
 import iit.cnr.it.ucsinterface.sessionmanager.OnGoingAttribute;
 import iit.cnr.it.ucsinterface.sessionmanager.SessionInterface;
 import iit.cnr.it.ucsinterface.sessionmanager.SessionManagerInterface;
-import it.cnr.iit.usagecontrolframework.configuration.xmlclasses.XMLSessionManager;
-import it.cnr.iit.xacmlutilities.Attribute;
 
 /**
  * This is the proxy to be used to communicate with the session manager.
@@ -138,7 +139,6 @@ public class ProxySessionManager extends Proxy
      * @return
      */
     private boolean connectSocket( XMLSessionManager xmlSM ) {
-        // TODO Auto-generated method stub
         return false;
     }
 

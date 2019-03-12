@@ -2,14 +2,14 @@
  * Copyright 2018 IIT-CNR
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
- * use this file except in compliance with the License.  You may obtain a copy
+ * use this file except in compliance with the License. You may obtain a copy
  * of the License at
  * 
- *   http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
  ******************************************************************************/
@@ -33,41 +33,41 @@ import iit.cnr.it.ucsinterface.pip.PIPOMInterface;
  *
  */
 public interface ObligationManagerInterface {
-	
-	/**
-	 * This is the function offered by the ObligationManager. This function is
-	 * called by the PDP whenever an obligation has to be translated into a format
-	 * that can be readable for both PEP and PIPs
-	 * 
-	 * @param pdpEvaluation
-	 *          the evaluation provided by the PDP
-	 * @param sessionId
-	 *          the sessionId
-	 * @param status
-	 *          the status in which the obligation has to be performed
-	 * 
-	 * @return a message that represents the
-	 */
-	public PDPEvaluation translateObligations(PDPEvaluation pdpEvaluation,
-	    String sessionId, String status);
-	
-	/**
-	 * Set the pips to be used by this obligation manager, the obligation manager
-	 * can also employ a PIPRetrieval
-	 * 
-	 * @param pips
-	 *          the list of pips
-	 * @param pipRetrieval
-	 *          the eventual pip retrieval to be used
-	 * @return true if everything goes alright, false otherwise
-	 */
-	public boolean setPIPs(List<PIPOMInterface> pips,
-	    PIPOMInterface pipRetrieval);
-	
-	/**
-	 * Chacks if the obligation manager has been correctly initialized
-	 * 
-	 * @return true if the obligation manager is ok, false otherwise
-	 */
-	public boolean isInitialized();
+
+    /**
+     * This is the function offered by the ObligationManager. This function is
+     * called by the PDP whenever an obligation has to be translated into a format
+     * that can be readable for both PEP and PIPs
+     * 
+     * @param pdpEvaluation
+     *          the evaluation provided by the PDP
+     * @param sessionId
+     *          the sessionId
+     * @param status
+     *          the status in which the obligation has to be performed
+     * 
+     * @return a message that represents the
+     */
+    public PDPEvaluation translateObligations( PDPEvaluation pdpEvaluation,
+            String sessionId, String status );
+
+    /**
+     * Set the pips to be used by this obligation manager, the obligation manager
+     * can also employ a PIPRetrieval
+     * 
+     * @param pips
+     *          the list of pips
+     * @param pipRetrieval
+     *          the eventual pip retrieval to be used
+     * @return true if everything goes alright, false otherwise
+     */
+    public boolean setPIPs( List<PIPOMInterface> pips,
+            PIPOMInterface pipRetrieval );
+
+    /**
+     * Chacks if the obligation manager has been correctly initialized
+     * 
+     * @return true if the obligation manager is ok, false otherwise
+     */
+    public boolean isInitialized();
 }

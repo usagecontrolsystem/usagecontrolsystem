@@ -48,7 +48,7 @@ import iit.cnr.it.ucsinterface.requestmanager.AsynchronousRequestManager;
  *
  */
 public class RequestManagerLC extends AsynchronousRequestManager {
-    private static Logger LOGGER = Logger.getLogger( RequestManagerLC.class.getSimpleName() );
+    private static Logger LOGGER = Logger.getLogger( RequestManagerLC.class.getName() );
 
     /*
      * This is the pool of thread in charge of polling the queue to retrieve
@@ -81,7 +81,7 @@ public class RequestManagerLC extends AsynchronousRequestManager {
      * Initializes the request manager with a------ pool of threads
      *
      * @return true if everything goes fine, false in case of exceptions
-
+    
     private boolean initialize() {
     	try {
     		inquirers = Executors
@@ -94,7 +94,7 @@ public class RequestManagerLC extends AsynchronousRequestManager {
     		return false;
     	}
     	return true;
-
+    
     }
      */
 
@@ -203,12 +203,12 @@ public class RequestManagerLC extends AsynchronousRequestManager {
      *
      * @author antonio
      *
-
+    
     private class ContextHandlerInquirer implements Callable<Message> {
-
+    
     	@Override
     	public Message call() {
-
+    
     		while (true) {
     			// BEGIN parameter checking
     			if (!initialize) {
@@ -259,9 +259,9 @@ public class RequestManagerLC extends AsynchronousRequestManager {
      *
      * @author antonio
      *
-
+    
     private class AttributeSupplier implements Callable<Void> {
-
+    
     	@Override
     	public Void call() throws Exception {
     		while (true) {
@@ -308,7 +308,7 @@ public class RequestManagerLC extends AsynchronousRequestManager {
      * @param message
      *          the message returned by the context handler
      * @return the message to be used as response
-
+    
     private MessagePipCh createResponse(Message message) {
     	MessagePipCh chResponse = (MessagePipCh) message;
     	switch (chResponse.getAction()) {

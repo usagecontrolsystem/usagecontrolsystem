@@ -52,14 +52,8 @@ import iit.cnr.it.ucsinterface.sessionmanager.SessionManagerInterface;
  *
  */
 public abstract class AbstractContextHandler implements ContextHandlerInterface {
-
-    // object used to log the actions of the context handler
     private static final Logger LOGGER = Logger
         .getLogger( AbstractContextHandler.class.getName() );
-
-    // ---------------------------------------------------------------------------
-    // Protected interfaces that form a context handler
-    // ---------------------------------------------------------------------------
 
     // interface to the session manager
     private SessionManagerInterface sessionManagerInterface;
@@ -87,17 +81,14 @@ public abstract class AbstractContextHandler implements ContextHandlerInterface 
     // states if the context handler has been correctly initialized
     private volatile boolean initialized = false;
 
-    // ---------------------------------------------------------------------------
-    // Constructor
-    // ---------------------------------------------------------------------------
     /**
      * Superclass constructor. The constructor requires the various interfaces the
      * ContextHandler will have to deal with to work properly.
-     * 
+     *
      * @param the
      *          only parameter is the configuration of the actual context handler
      *          passed as a JAVA Object.
-     * 
+     *
      */
     protected AbstractContextHandler( XMLContextHandler configuration ) {
         this.configuration = configuration;
@@ -106,9 +97,6 @@ public abstract class AbstractContextHandler implements ContextHandlerInterface 
         // verify();
     }
 
-    // ---------------------------------------------------------------------------
-    // methods to verify the status of the object
-    // ---------------------------------------------------------------------------
     final protected boolean isInitialized() {
         return initialized;
     }
@@ -146,9 +134,6 @@ public abstract class AbstractContextHandler implements ContextHandlerInterface 
 
     abstract public boolean startMonitoringThread() throws Exception;
 
-    // ---------------------------------------------------------------------------
-    // Getter and setter already implemented
-    // ---------------------------------------------------------------------------
     final protected SessionManagerInterface getSessionManagerInterface() {
         if( !initialized ) {
             return null;
@@ -251,7 +236,7 @@ public abstract class AbstractContextHandler implements ContextHandlerInterface 
     /**
      * Sets the various interfaces with which the ContextHandler has to
      * communicate.
-     * 
+     *
      * @param proxySessionManager
      *          the proxy to deal with the session manager
      * @param proxyRequestManager
@@ -294,7 +279,7 @@ public abstract class AbstractContextHandler implements ContextHandlerInterface 
 
     /**
      * Sets the obligation manager
-     * 
+     *
      * @param obligationManager
      *          the obligation manager to be used
      */
@@ -323,7 +308,7 @@ public abstract class AbstractContextHandler implements ContextHandlerInterface 
 
     /**
      * Retrieves the forwarding queue interface
-     * 
+     *
      * @return the ForwardingQueueToCHInterface
      */
     final protected ForwardingQueueToCHInterface getForwardingQueue() {

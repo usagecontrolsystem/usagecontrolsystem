@@ -21,6 +21,8 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import it.cnr.iit.usagecontrolframework.configuration.xmlclasses.XMLRequestManager;
+
 import iit.cnr.it.ucsinterface.contexthandler.ContextHandlerInterface;
 import iit.cnr.it.ucsinterface.forwardingqueue.ForwardingQueueToRMInterface;
 import iit.cnr.it.ucsinterface.message.Message;
@@ -28,7 +30,6 @@ import iit.cnr.it.ucsinterface.message.remoteretrieval.MessagePipCh;
 import iit.cnr.it.ucsinterface.node.NodeInterface;
 import iit.cnr.it.ucsinterface.node.NodeProxy;
 import iit.cnr.it.ucsinterface.pep.PEPInterface;
-import it.cnr.iit.usagecontrolframework.configuration.xmlclasses.XMLRequestManager;
 
 /**
  * This is the abstract class representing the request manager.

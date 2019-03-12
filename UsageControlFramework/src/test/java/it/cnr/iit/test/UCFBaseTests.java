@@ -23,6 +23,20 @@ import org.mockito.Matchers;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import it.cnr.iit.usagecontrolframework.configuration.xmlclasses.Configuration;
+import it.cnr.iit.usagecontrolframework.configuration.xmlclasses.XMLPip;
+import it.cnr.iit.usagecontrolframework.configuration.xmlclasses.XMLRequestManager;
+import it.cnr.iit.usagecontrolframework.contexthandler.ContextHandlerLC;
+import it.cnr.iit.usagecontrolframework.proxies.PIPBuilder;
+import it.cnr.iit.usagecontrolframework.proxies.ProxyPAP;
+import it.cnr.iit.usagecontrolframework.proxies.ProxyPDP;
+import it.cnr.iit.usagecontrolframework.proxies.ProxySessionManager;
+import it.cnr.iit.usagecontrolframework.requestmanager.RequestManagerLC;
+import it.cnr.iit.xacmlutilities.Attribute;
+import it.cnr.iit.xacmlutilities.Category;
+import it.cnr.iit.xacmlutilities.DataType;
+import it.cnr.iit.xacmlutilities.policy.utility.JAXBUtility;
+
 import iit.cnr.it.ucsinterface.contexthandler.ContextHandlerInterface;
 import iit.cnr.it.ucsinterface.contexthandler.STATUS;
 import iit.cnr.it.ucsinterface.forwardingqueue.ForwardingQueueToCHInterface;
@@ -49,25 +63,13 @@ import iit.cnr.it.ucsinterface.pip.PIPRetrieval;
 import iit.cnr.it.ucsinterface.requestmanager.RequestManagerToCHInterface;
 import iit.cnr.it.ucsinterface.sessionmanager.SessionInterface;
 import iit.cnr.it.ucsinterface.sessionmanager.SessionManagerInterface;
-import it.cnr.iit.usagecontrolframework.configuration.xmlclasses.Configuration;
-import it.cnr.iit.usagecontrolframework.configuration.xmlclasses.XMLPip;
-import it.cnr.iit.usagecontrolframework.configuration.xmlclasses.XMLRequestManager;
-import it.cnr.iit.usagecontrolframework.contexthandler.ContextHandlerLC;
-import it.cnr.iit.usagecontrolframework.proxies.PIPBuilder;
-import it.cnr.iit.usagecontrolframework.proxies.ProxyPAP;
-import it.cnr.iit.usagecontrolframework.proxies.ProxyPDP;
-import it.cnr.iit.usagecontrolframework.proxies.ProxySessionManager;
-import it.cnr.iit.usagecontrolframework.requestmanager.RequestManagerLC;
-import it.cnr.iit.xacmlutilities.Attribute;
-import it.cnr.iit.xacmlutilities.Category;
-import it.cnr.iit.xacmlutilities.DataType;
-import it.cnr.iit.xacmlutilities.policy.utility.JAXBUtility;
+
 import oasis.names.tc.xacml.core.schema.wd_17.DecisionType;
 import oasis.names.tc.xacml.core.schema.wd_17.PolicyType;
 import oasis.names.tc.xacml.core.schema.wd_17.RequestType;
 
 public class UCFBaseTests {
-    protected Logger LOGGER = Logger.getLogger( UCFBaseTests.class.getSimpleName() );
+    protected Logger LOGGER = Logger.getLogger( UCFBaseTests.class.getName() );
 
     @Autowired
     TestConfiguration conf;

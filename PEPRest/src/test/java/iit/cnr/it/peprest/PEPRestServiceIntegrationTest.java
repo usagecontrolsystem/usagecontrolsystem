@@ -14,6 +14,7 @@ import java.util.Arrays;
 
 import org.apache.http.HttpStatus;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -44,11 +45,10 @@ import iit.cnr.it.peprest.configuration.Configuration;
 import iit.cnr.it.peprest.jgiven.rules.MockedHttpServiceTestRule;
 import iit.cnr.it.peprest.messagetrack.CallerResponse;
 import iit.cnr.it.ucsinterface.message.Message;
-import iit.cnr.it.ucsinterface.message.PDPResponse;
 import iit.cnr.it.ucsinterface.message.tryaccess.TryAccessResponse;
 import iit.cnr.it.ucsinterface.message.tryaccess.TryAccessResponseContent;
+import iit.cnr.it.ucsinterface.pdp.PDPResponse;
 import iit.cnr.it.utility.Utility;
-
 import oasis.names.tc.xacml.core.schema.wd_17.DecisionType;
 import oasis.names.tc.xacml.core.schema.wd_17.ResponseType;
 import oasis.names.tc.xacml.core.schema.wd_17.ResultType;
@@ -59,6 +59,11 @@ import oasis.names.tc.xacml.core.schema.wd_17.ResultType;
 @RunWith( SpringRunner.class )
 @SpringBootTest( classes = Starter.class )
 //@SpringBootConfiguration
+
+/**
+ * @deprecated replaced by {@link #PEPRestServiceScenarioIntegrationTest}
+ */
+@Deprecated
 public class PEPRestServiceIntegrationTest {
 
     protected static final String SESSION_ID_01 = "SessionId_01";
@@ -103,6 +108,7 @@ public class PEPRestServiceIntegrationTest {
     }
 
     @Test
+    @Ignore
     public void test() {
         a_mocked_context_handler_for_$( TRY_ACCESS.getOperationUri() );
         a_success_response_status_$( HttpStatus.SC_OK );
@@ -197,9 +203,7 @@ public class PEPRestServiceIntegrationTest {
         resultType.setDecision( decision );
         ResponseType responseType = new ResponseType();
         responseType.setResult( Arrays.asList( resultType ) );
-        PDPResponse pdpResponse = new PDPResponse();
-        pdpResponse.setResponseType( responseType );
-        pdpResponse.setInitialized( true );
+        PDPResponse pdpResponse = new PDPResponse( responseType );
         return pdpResponse;
     }
 

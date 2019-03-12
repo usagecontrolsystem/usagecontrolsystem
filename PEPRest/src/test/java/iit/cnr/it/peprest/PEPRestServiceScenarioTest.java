@@ -82,7 +82,7 @@ public class PEPRestServiceScenarioTest
 
     @Test
     public void a_response_message_for_an_on_going_evalutaion_can_be_delivered_to_UCS() {
-        givenMessage.given().a_ReevaluationResponse_request_with_decision_$( DecisionType.PERMIT );
+        givenMessage.given().a_ReevaluationResponse_request_with_$_decision( DecisionType.PERMIT );
         given().and().a_test_configuration_for_request_with_policy()
             .and().a_mocked_context_handler_for_$( END_ACCESS.getOperationUri() )
             .with().a_success_response_status_$( HttpStatus.SC_OK );
@@ -97,7 +97,7 @@ public class PEPRestServiceScenarioTest
 
     @Test
     public void a_response_message_fails_to_be_sent_to_context_handler_is_ignored() {
-        givenMessage.given().a_ReevaluationResponse_request_with_decision_$( DecisionType.PERMIT );
+        givenMessage.given().a_ReevaluationResponse_request_with_$_decision( DecisionType.PERMIT );
         given().and().a_test_configuration_for_request_with_policy()
             .and().a_mocked_context_handler_for_$( END_ACCESS.getOperationUri() )
             .with().a_fault_response();
@@ -112,6 +112,7 @@ public class PEPRestServiceScenarioTest
     @Test
     @UseDataProvider( "dataPepRestResponseOperations" )
     public void a_response_is_delivered_from_UCS( PEPRestOperation restOperation ) {
+
         givenMessage.given().create_permit_response_for_$( restOperation );
 
         given().a_mocked_context_handler_for_$( START_ACCESS.getOperationUri() ).with().a_success_response_status_$( HttpStatus.SC_OK );
