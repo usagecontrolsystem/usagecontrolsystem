@@ -46,9 +46,9 @@ import iit.cnr.it.peprest.configuration.Configuration;
 import iit.cnr.it.peprest.jgiven.rules.MockedHttpServiceTestRule;
 import iit.cnr.it.peprest.messagetrack.CallerResponse;
 import iit.cnr.it.ucsinterface.message.Message;
-import iit.cnr.it.ucsinterface.message.PDPResponse;
 import iit.cnr.it.ucsinterface.message.tryaccess.TryAccessResponse;
 import iit.cnr.it.ucsinterface.message.tryaccess.TryAccessResponseContent;
+import iit.cnr.it.ucsinterface.pdp.PDPResponse;
 import iit.cnr.it.utility.Utility;
 
 import oasis.names.tc.xacml.core.schema.wd_17.DecisionType;
