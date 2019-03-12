@@ -79,7 +79,7 @@ public class PEPRestCommunication {
     @ApiResponses( value = {
         @ApiResponse( code = 500, message = "Invalid message received" ),
         @ApiResponse( code = 200, message = "OK" ) } )
-    @RequestMapping( method = RequestMethod.GET, value = "/messageStatus" )
+    @RequestMapping( method = RequestMethod.GET, value = "/flowStatus" )
     public CallerResponse getMessageStatus( @RequestAttribute( value = "messageId" ) String messageId )
             throws InterruptedException, ExecutionException {
         return pepRest.getMessageHistory().getMessageStatus( messageId ).get();
@@ -87,7 +87,7 @@ public class PEPRestCommunication {
 
     /**
      * Retrieves the list of messages exchanged in a certain session
-     *
+     * TODO remove this after testings
      * @return
      * @throws InterruptedException
      * @throws ExecutionException

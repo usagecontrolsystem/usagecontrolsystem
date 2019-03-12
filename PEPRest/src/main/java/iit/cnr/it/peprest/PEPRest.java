@@ -268,6 +268,7 @@ public class PEPRest implements PEPInterface, Runnable {
     }
 
     private String handleReevaluationResponse( ReevaluationResponse response ) {
+        // TODO add the message in the queue and update the status
         onGoingEvaluation( response );
         return response.getPDPEvaluation().getResult();
         // TODO: why do we need to return this? how can we signal back to the caller that the evaluation is on going
@@ -431,6 +432,10 @@ public class PEPRest implements PEPInterface, Runnable {
 
     public MessagesPerSession getMessagesPerSession() {
         return messageHistory;
+    }
+
+    public void setMessageStorage( MessageStorage messageStorage ) {
+        this.messageHistory = messageStorage;
     }
 
 }

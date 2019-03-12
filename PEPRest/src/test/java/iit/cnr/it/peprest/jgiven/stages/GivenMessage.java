@@ -107,6 +107,9 @@ public class GivenMessage extends Stage<GivenMessage> {
     }
 
     private TryAccessResponse buildTryAccessResponse( DecisionType decisionType ) {
+        if( messageId == null ) {
+            messageId = UUID.randomUUID().toString();
+        }
         PDPResponse pdpEvaluation = buildPDPResponse( decisionType );
         TryAccessResponseContent content = new TryAccessResponseContent();
         content.setSessionId( sessionId );
@@ -118,6 +121,9 @@ public class GivenMessage extends Stage<GivenMessage> {
     }
 
     protected StartAccessResponse buildStartAccessResponse( DecisionType decisionType ) {
+        if( messageId == null ) {
+            messageId = UUID.randomUUID().toString();
+        }
         PDPResponse pdpEvaluation = buildPDPResponse( decisionType );
         StartAccessResponse startAccessResponse = new StartAccessResponse( sessionId );
         startAccessResponse.setResponse( pdpEvaluation );
@@ -126,6 +132,9 @@ public class GivenMessage extends Stage<GivenMessage> {
     }
 
     protected EndAccessResponse buildEndAccessResponse( DecisionType decisionType ) {
+        if( messageId == null ) {
+            messageId = UUID.randomUUID().toString();
+        }
         PDPResponse pdpEvaluation = buildPDPResponse( decisionType );
         EndAccessResponse endAccessResponse = new EndAccessResponse( sessionId );
         endAccessResponse.setResponse( pdpEvaluation );
