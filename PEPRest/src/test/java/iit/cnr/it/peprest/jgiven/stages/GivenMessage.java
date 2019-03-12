@@ -45,11 +45,6 @@ public class GivenMessage extends Stage<GivenMessage> {
         sessionId = UUID.randomUUID().toString();
     }
 
-    public GivenMessage a_ReevaluationResponse_request_with_decision_$( DecisionType decisionType ) {
-        message = buildReevaluationResponse( decisionType );
-        return self();
-    }
-
     public GivenMessage a_TryAccessResponse_request_with_$_decision( DecisionType decisionType ) {
         message = buildTryAccessResponse( decisionType );
         return self();
@@ -60,7 +55,12 @@ public class GivenMessage extends Stage<GivenMessage> {
         return self();
     }
 
-    public GivenMessage an_associated_StartAccess_messageId( @Hidden int index ) {
+    public GivenMessage a_ReevaluationResponse_request_with_$_decision( DecisionType decisionType ) {
+        message = buildReevaluationResponse( decisionType );
+        return self();
+    }
+
+    public GivenMessage an_associated_messageId( @Hidden int index ) {
         assertNotNull( messageIds );
         message.setId( messageIds.get( index ) );
         return self();
@@ -74,6 +74,7 @@ public class GivenMessage extends Stage<GivenMessage> {
         PDPResponse pdpEvaluation = buildPDPResponse( decisionType );
         ReevaluationResponse reevaluationResponse = new ReevaluationResponse();
         reevaluationResponse.setPDPEvaluation( pdpEvaluation );
+        reevaluationResponse.setId( messageId );
         return reevaluationResponse;
     }
 
@@ -129,6 +130,7 @@ public class GivenMessage extends Stage<GivenMessage> {
         PDPResponse pdpEvaluation = buildPDPResponse( decisionType );
         EndAccessResponse endAccessResponse = new EndAccessResponse( sessionId );
         endAccessResponse.setResponse( pdpEvaluation );
+        endAccessResponse.setId( messageId );
         return endAccessResponse;
     }
 
