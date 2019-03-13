@@ -78,4 +78,12 @@ public class Utility {
         return endAccessMessage;
     }
 
+    public static ReevaluationResponse buildReevaluationResponse( String sessionId, DecisionType decisionType ) {
+        PDPResponse pdpResponse = buildPDPResponse( decisionType );
+        pdpResponse.setSessionId( sessionId );
+        ReevaluationResponse reevaluationResponse = new ReevaluationResponse();
+        reevaluationResponse.setPDPEvaluation( pdpResponse );
+        return reevaluationResponse;
+    }
+
 }
