@@ -22,12 +22,12 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import it.cnr.iit.pipreader.PIPReader;
 import it.cnr.iit.xacmlutilities.Attribute;
 import it.cnr.iit.xacmlutilities.Category;
 import it.cnr.iit.xacmlutilities.DataType;
 import it.cnr.iit.xacmlutilities.policy.utility.JAXBUtility;
 
-import iit.cnr.it.pipreader.PIPReader;
 import iit.cnr.it.ucsinterface.contexthandler.AbstractContextHandler;
 
 import oasis.names.tc.xacml.core.schema.wd_17.AttributeType;
