@@ -33,12 +33,8 @@ import oasis.names.tc.xacml.core.schema.wd_17.ResponseType;
 import oasis.names.tc.xacml.core.schema.wd_17.ResultType;
 
 @RunWith( SpringJUnit4ClassRunner.class )
-//@SpringBootTest(classes = PEPRestCommunication.class)
 @WebAppConfiguration
 public class PEPRestAbstractTest {
-
-    protected static final String SEND_URI = "/send";
-    protected static final String FINISH_URI = "/finish";
 
     protected static final String SESSION_ID_01 = "SessionId_01";
     protected static final String HOST = "localhost:";
@@ -94,6 +90,7 @@ public class PEPRestAbstractTest {
     protected TryAccessResponse buildTryAccessResponseDeny() {
         PDPResponse pdpEvaluation = buildPDPResponse( DecisionType.DENY );
         TryAccessResponseContent content = new TryAccessResponseContent();
+        content.setSessionId( SESSION_ID_01 );
         content.setPDPEvaluation( pdpEvaluation );
         TryAccessResponse tryAccessResponse = new TryAccessResponse( SESSION_ID_01 );
         tryAccessResponse.setContent( content );

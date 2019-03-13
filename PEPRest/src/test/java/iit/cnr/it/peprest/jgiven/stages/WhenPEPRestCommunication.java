@@ -1,5 +1,8 @@
 package iit.cnr.it.peprest.jgiven.stages;
 
+import static iit.cnr.it.peprest.PEPRestOperation.FLOW_STATUS;
+import static iit.cnr.it.peprest.PEPRestOperation.MESSAGES_PER_SESSION;
+import static iit.cnr.it.peprest.PEPRestOperation.START_EVALUATION;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
 
@@ -60,7 +63,7 @@ public class WhenPEPRestCommunication extends Stage<WhenPEPRestCommunication> {
     public WhenPEPRestCommunication the_PEP_startEvaluation_is_executed() {
         try {
             assertNotNull( mvc );
-            mvcResponse = postToPEPRestcommunicationViaMockMvc( "/startEvaluation" );
+            mvcResponse = postToPEPRestcommunicationViaMockMvc( START_EVALUATION.getOperationUri() );
             messageId = mvcResponse.getContentAsString();
         } catch( Exception e ) {
             fail( e.getLocalizedMessage() );
@@ -71,7 +74,8 @@ public class WhenPEPRestCommunication extends Stage<WhenPEPRestCommunication> {
     public WhenPEPRestCommunication the_PEP_messageStatus_for_tryAccess_is_executed() {
         try {
             assertNotNull( mvc );
-            MockHttpServletResponse mvcResponse = getFromPEPRestcommunication( "/messageStatus", "messageId", messageId );
+            MockHttpServletResponse mvcResponse = getFromPEPRestcommunication( FLOW_STATUS.getOperationUri(), "messageId",
+                messageId );
             messageBody = mvcResponse.getContentAsString();
         } catch( Exception e ) {
             fail( e.getLocalizedMessage() );
@@ -82,7 +86,8 @@ public class WhenPEPRestCommunication extends Stage<WhenPEPRestCommunication> {
     public WhenPEPRestCommunication the_PEP_messagesPerSession_is_executed() {
         try {
             assertNotNull( mvc );
-            MockHttpServletResponse mvcResponse = getFromPEPRestcommunication( "/messagesPerSession", "sessionId", sessionId );
+            MockHttpServletResponse mvcResponse = getFromPEPRestcommunication( MESSAGES_PER_SESSION.getOperationUri(),
+                "sessionId", sessionId );
             messageBody = mvcResponse.getContentAsString();
         } catch( Exception e ) {
             fail( e.getLocalizedMessage() );
