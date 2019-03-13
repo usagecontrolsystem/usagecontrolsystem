@@ -174,7 +174,7 @@ public class PEPRest implements PEPInterface, Runnable {
         }
         // END parameter checking
         responses.put( message.getID(), message );
-
+        messageHistory.addMessage( message );
         LOGGER.log( Level.INFO, "[TIME] ON_GOING_EVAL " + System.currentTimeMillis() );
 
         ReevaluationResponse chPepMessage = (ReevaluationResponse) message;

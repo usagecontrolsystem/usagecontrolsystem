@@ -9,6 +9,7 @@ import java.util.logging.Logger;
 import iit.cnr.it.ucsinterface.message.Message;
 import iit.cnr.it.ucsinterface.message.endaccess.EndAccessMessage;
 import iit.cnr.it.ucsinterface.message.endaccess.EndAccessResponse;
+import iit.cnr.it.ucsinterface.message.reevaluation.ReevaluationResponse;
 import iit.cnr.it.ucsinterface.message.startaccess.StartAccessMessage;
 import iit.cnr.it.ucsinterface.message.startaccess.StartAccessResponse;
 import iit.cnr.it.ucsinterface.message.tryaccess.TryAccessMessage;
@@ -71,6 +72,9 @@ public class MessageStorage implements MessageStorageInterface, MessagesPerSessi
         } else if( message instanceof EndAccessMessage ) {
             addMessageId( ( (EndAccessMessage) message ).getSessionId(), message.getID() );
             return addNewMessage( message );
+        } else if( message instanceof ReevaluationResponse ) {
+            addMessageId( ( (ReevaluationResponse) message ).getPDPEvaluation().getSessionId(), message.getID() );
+            return addNewMessage( message );
         } else {
             throw new IllegalArgumentException( "Invalid message" );
         }
@@ -97,6 +101,8 @@ public class MessageStorage implements MessageStorageInterface, MessagesPerSessi
             messageInformations = MessageInformations.fromStartAccessMessage( (StartAccessMessage) message );
         } else if( message instanceof EndAccessMessage ) {
             messageInformations = MessageInformations.fromEndAccessMessage( (EndAccessMessage) message );
+        } else if( message instanceof ReevaluationResponse ) {
+            messageInformations = MessageInformations.fromReevaluationResponse( (ReevaluationResponse) message );
         }
         return insert( messageInformations );
     }
