@@ -41,6 +41,9 @@ import iit.cnr.it.ucsinterface.sessionmanager.SessionManagerInterface;
  * @author Fabio Bindi and Filippo Lauria and Antonio La Marra
  */
 final public class SessionManagerDesktop implements SessionManagerInterface {
+    private static Logger LOGGER = Logger
+        .getLogger( SessionManagerDesktop.class.getName() );
+
     // url to connect to the database
     private String databaseURL;
     private ConnectionSource connection;
@@ -48,9 +51,6 @@ final public class SessionManagerDesktop implements SessionManagerInterface {
     private Dao<Session, String> sessionDao;
     // dao to perform operations on the attributes table
     private Dao<OnGoingAttribute, String> attributesDao;
-
-    private Logger LOGGER = Logger
-        .getLogger( SessionManagerDesktop.class.getName() );
 
     private volatile boolean initialized = false;
 
