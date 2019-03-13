@@ -1,23 +1,25 @@
 package iit.cnr.it.peprest;
 
 import static iit.cnr.it.ucsinterface.node.NodeInterface.TRYACCESSRESPONSE_REST;
+import static oasis.names.tc.xacml.core.schema.wd_17.DecisionType.PERMIT;
 import static org.apache.http.HttpStatus.SC_OK;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.mockito.Mockito.doCallRealMethod;
-
-import java.util.concurrent.ConcurrentHashMap;
+import static org.mockito.Mockito.when;
 
 import org.apache.http.HttpStatus;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Matchers;
+import org.junit.runner.RunWith;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.mock.web.MockHttpServletResponse;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.web.WebAppConfiguration;
 
 import iit.cnr.it.ucsinterface.message.Message;
-import iit.cnr.it.ucsinterface.message.PURPOSE;
 
+@RunWith( SpringJUnit4ClassRunner.class )
+@WebAppConfiguration
 @WebMvcTest( value = PEPUCSCommunication.class, secure = false )
 public class PEPUCSCommunicationTest extends PEPRestAbstractTest {
 
@@ -29,11 +31,9 @@ public class PEPUCSCommunicationTest extends PEPRestAbstractTest {
 
     @Test
     public void tryAccessResponseRequestTriggersReceiveResponse() throws Exception {
-        pepRest.responses = new ConcurrentHashMap<>();
-        pepRest.unanswered = new ConcurrentHashMap<>();
-
         Message tryAccessResponse = buildTryAccessResponseDeny();
-        // doCallRealMethod().when(pepRest).receiveResponse(Mockito.any(Message.class));
+
+        when( pepRest.receiveResponse( tryAccessResponse ) ).thenReturn( PERMIT.value() );
 
         MockHttpServletResponse mvcResponse = postResponseToPEPRest( tryAccessResponse, TRYACCESSRESPONSE_REST );
 
@@ -46,18 +46,4 @@ public class PEPUCSCommunicationTest extends PEPRestAbstractTest {
         assertEquals( HttpStatus.SC_UNSUPPORTED_MEDIA_TYPE, postStringResponseToPEPRest( "", TRYACCESSRESPONSE_REST ).getStatus() );
     }
 
-    // @Test
-    public void onGoingEvaluationRequestWithPermit() throws Exception {
-        pepRest.responses = new ConcurrentHashMap<>();
-        pepRest.unanswered = new ConcurrentHashMap<>();
-        doCallRealMethod().when( pepRest ).receiveResponse( Matchers.any( Message.class ) );
-
-        Message message = new Message( "source", "destination", SESSION_ID_01 );
-        message.setPurpose( PURPOSE.TRYACCESS );
-
-        MockHttpServletResponse mvcResponse = postResponseToPEPRest( message, TRYACCESSRESPONSE_REST );
-
-        assertEquals( SC_OK, mvcResponse.getStatus() );
-        assertNotNull( mvcResponse.getContentAsString() );
-    }
 }
