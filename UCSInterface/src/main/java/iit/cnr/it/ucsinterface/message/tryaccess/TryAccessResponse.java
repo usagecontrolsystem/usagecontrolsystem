@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2018 IIT-CNR
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy
  * of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
@@ -15,6 +15,7 @@
  ******************************************************************************/
 package iit.cnr.it.ucsinterface.message.tryaccess;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -30,7 +31,7 @@ import iit.cnr.it.ucsinterface.pdp.PDPEvaluation;
  * This message will be sent from the ContextHandler to the PEP to tell to it
  * which is the exit of the tryaccess it has performed
  * </p>
- * 
+ *
  * @author antonio
  *
  */
@@ -52,7 +53,7 @@ public final class TryAccessResponse extends Message {
 
     /**
      * Constructor for a TryAccessResponse
-     * 
+     *
      * @param id
      *          the id of the request
      */
@@ -66,7 +67,7 @@ public final class TryAccessResponse extends Message {
 
     /**
      * other faschion of the TryAccessResponse message
-     * 
+     *
      * @param source
      *          the source of the message
      * @param dest
@@ -87,7 +88,7 @@ public final class TryAccessResponse extends Message {
 
     /**
      * Sets the content of the tryAccessResponse message
-     * 
+     *
      * @param content
      *          the content of the response
      * @return true if everything goes ok, false otherwise
@@ -116,6 +117,7 @@ public final class TryAccessResponse extends Message {
      * tryAccessResponseContent; }
      */
 
+    @JsonIgnore
     public PDPEvaluation getPDPEvaluation() {
         return tryAccessResponseContent.getPDPEvaluation();
     }
@@ -124,6 +126,7 @@ public final class TryAccessResponse extends Message {
         return tryAccessResponseContent.getStatus();
     }
 
+    @JsonIgnore
     public String getSessionId() {
         return tryAccessResponseContent.getSessionId();
     }

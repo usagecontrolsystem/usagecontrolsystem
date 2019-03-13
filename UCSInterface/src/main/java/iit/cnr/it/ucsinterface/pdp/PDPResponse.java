@@ -22,7 +22,6 @@ import javax.xml.bind.JAXBException;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonProperty;
 
 import it.cnr.iit.xacmlutilities.policy.utility.JAXBUtility;
 
@@ -43,8 +42,8 @@ import oasis.names.tc.xacml.core.schema.wd_17.ResponseType;
 
 @JsonIgnoreProperties( ignoreUnknown = true )
 public final class PDPResponse implements PDPEvaluation {
-    @JsonProperty
-    public final String evaluationType = this.getClass().getName();
+    // @JsonProperty
+    // public final String evaluationType = this.getClass().getName();
 
     // states if the object has been correctly initialized
     private volatile boolean initialized = false;
@@ -53,6 +52,7 @@ public final class PDPResponse implements PDPEvaluation {
     private ResponseType responseType = null;
 
     // the id of the session the which the evaluation was referred
+    @JsonIgnore
     private String sessionId = "";
 
     // list of firing rules
