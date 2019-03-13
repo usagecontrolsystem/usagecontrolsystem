@@ -42,14 +42,11 @@ import oasis.names.tc.xacml.core.schema.wd_17.ResponseType;
 
 @JsonIgnoreProperties( ignoreUnknown = true )
 public final class PDPResponse implements PDPEvaluation {
-    // @JsonProperty
-    // public final String evaluationType = this.getClass().getName();
-
     // states if the object has been correctly initialized
     private volatile boolean initialized = false;
 
     // the response provided by the PDP object
-    private ResponseType responseType = null;
+    private ResponseType responseType;
 
     // the id of the session the which the evaluation was referred
     @JsonIgnore
@@ -72,7 +69,7 @@ public final class PDPResponse implements PDPEvaluation {
      * @param string the ResponseType in string format
      */
     public PDPResponse( String string ) {
-        setResponseType( string );
+        convertXACMLStringToResponse( string );
         check();
     }
 
@@ -99,7 +96,7 @@ public final class PDPResponse implements PDPEvaluation {
      * @param string the response in string format
      * @return true if everything goes ok, false otherwise
      */
-    private void setResponseType( String string ) {
+    private void convertXACMLStringToResponse( String string ) {
         try {
             responseType = JAXBUtility.unmarshalToObject( ResponseType.class, string );
         } catch( Exception e ) {

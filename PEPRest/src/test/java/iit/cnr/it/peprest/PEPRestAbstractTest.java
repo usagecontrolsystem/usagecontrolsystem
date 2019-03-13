@@ -68,8 +68,10 @@ public class PEPRestAbstractTest {
             TryAccessResponse response = (TryAccessResponse) jsonMessage;
             System.out.println( "RESPONSE: " + response.getPDPEvaluation().getResult() );
         }
-        MvcResult mvcResult = mvc.perform( MockMvcRequestBuilders.post( uri )
-            .content( new ObjectMapper().writeValueAsString( jsonMessage ) ) )
+        MvcResult mvcResult = mvc
+            .perform( MockMvcRequestBuilders.post( uri ).contentType( MediaType.APPLICATION_JSON_VALUE )
+                .accept( MediaType.APPLICATION_JSON_VALUE )
+                .content( new ObjectMapper().writeValueAsString( jsonMessage ) ) )
             .andReturn();
         return mvcResult.getResponse();
     }
