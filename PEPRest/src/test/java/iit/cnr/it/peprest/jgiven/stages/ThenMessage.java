@@ -119,7 +119,11 @@ public class ThenMessage extends Stage<ThenMessage> {
 
     public ThenMessage the_Message_motivation_is_OK() {
         assertNotNull( message );
-        assertEquals( "OK", message.getMotivation() );
+        try {
+            assertEquals( "OK", new ObjectMapper().readValue( message.getMotivation(), String.class ) );
+        } catch( Exception e ) {
+            e.printStackTrace();
+        }
         return self();
     }
 
