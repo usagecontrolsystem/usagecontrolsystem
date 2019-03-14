@@ -22,6 +22,7 @@ import javax.xml.bind.JAXBException;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import it.cnr.iit.xacmlutilities.policy.utility.JAXBUtility;
 
@@ -43,6 +44,7 @@ import oasis.names.tc.xacml.core.schema.wd_17.ResponseType;
 @JsonIgnoreProperties( ignoreUnknown = true )
 public final class PDPResponse implements PDPEvaluation {
     // states if the object has been correctly initialized
+    @JsonProperty
     private volatile boolean initialized = false;
 
     // the response provided by the PDP object

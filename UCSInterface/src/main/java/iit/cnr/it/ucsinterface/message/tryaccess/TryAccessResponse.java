@@ -43,6 +43,7 @@ public final class TryAccessResponse extends Message {
     private TryAccessResponseContent tryAccessResponseContent;
 
     // states if the message has been correctly created
+    @JsonProperty
     private volatile boolean responseInitialized = false;
 
     public TryAccessResponse() {

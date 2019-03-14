@@ -16,6 +16,7 @@
 package iit.cnr.it.ucsinterface.message.tryaccess;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import iit.cnr.it.ucsinterface.pdp.PDPEvaluation;
 
@@ -41,6 +42,7 @@ public class TryAccessResponseContent {
     // the status of the tryAccess
     private String status;
     // states if the response is a correct object or not
+    @JsonProperty
     private volatile boolean contentInitialized = false;
 
     /**
