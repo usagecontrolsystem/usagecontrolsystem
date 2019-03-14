@@ -41,7 +41,7 @@ public class Utility {
         content.setSessionId( sessionId );
         content.setPDPEvaluation( pdpEvaluation );
         TryAccessResponse tryAccessResponse = new TryAccessResponse( message.getID() );
-        tryAccessResponse.setContent( content );
+        tryAccessResponse.setTryAccessResponseContent( content );
         return tryAccessResponse;
     }
 

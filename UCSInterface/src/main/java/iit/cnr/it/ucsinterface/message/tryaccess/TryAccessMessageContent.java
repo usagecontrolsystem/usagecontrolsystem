@@ -39,20 +39,19 @@ import oasis.names.tc.xacml.core.schema.wd_17.RequestType;
  *
  */
 final public class TryAccessMessageContent {
-
     private static final Logger LOGGER = Logger.getLogger( TryAccessMessageContent.class.getName() );
 
     // the uri of the pep
     private String pepUri;
 
-    // the policy the pep wants to use
-    private String policy;
-
     // the id of the policy
     private String policyId;
 
+    // the policy the pep wants to use
+    private String policy;
+
     // the request of the policy
-    private String uxacmlRequest;
+    private String request;
 
     public TryAccessMessageContent() {
 
@@ -134,7 +133,7 @@ final public class TryAccessMessageContent {
         // END parameter checking
         try {
             JAXBUtility.unmarshalToObject( RequestType.class, request );
-            this.uxacmlRequest = request;
+            this.request = request;
             return true;
         } catch( Exception exception ) {
             exception.printStackTrace();
@@ -168,7 +167,7 @@ final public class TryAccessMessageContent {
      * @return the RequestType object corresponding to the Policy passed as string
      */
     public String getRequest() {
-        return uxacmlRequest;
+        return request;
     }
 
     /**
@@ -190,7 +189,7 @@ final public class TryAccessMessageContent {
             if( policy != null && !policy.equals( "" ) ) {
                 JAXBUtility.unmarshalToObject( PolicyType.class, policy );
             }
-            JAXBUtility.unmarshalToObject( RequestType.class, uxacmlRequest );
+            JAXBUtility.unmarshalToObject( RequestType.class, request );
             return true;
         } catch( Exception e ) {
             return false;

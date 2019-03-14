@@ -117,7 +117,7 @@ public class GivenMessage extends Stage<GivenMessage> {
         content.setSessionId( sessionId );
         content.setPDPEvaluation( pdpEvaluation );
         TryAccessResponse tryAccessResponse = new TryAccessResponse( sessionId );
-        tryAccessResponse.setContent( content );
+        tryAccessResponse.setTryAccessResponseContent( content );
         tryAccessResponse.setId( messageId );
         return tryAccessResponse;
     }

@@ -83,7 +83,7 @@ public abstract class PEPRestAbstractTest {
         content.setSessionId( SESSION_ID_01 );
         content.setPDPEvaluation( pdpEvaluation );
         TryAccessResponse tryAccessResponse = new TryAccessResponse( SESSION_ID_01 );
-        tryAccessResponse.setContent( content );
+        tryAccessResponse.setTryAccessResponseContent( content );
         return tryAccessResponse;
     }
 

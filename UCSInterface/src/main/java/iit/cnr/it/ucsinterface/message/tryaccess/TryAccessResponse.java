@@ -16,9 +16,6 @@
 package iit.cnr.it.ucsinterface.message.tryaccess;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import iit.cnr.it.ucsinterface.message.Message;
 import iit.cnr.it.ucsinterface.message.PART;
@@ -39,10 +36,10 @@ import iit.cnr.it.ucsinterface.pdp.PDPEvaluation;
 public final class TryAccessResponse extends Message {
     private static final long serialVersionUID = 1L;
 
-    @JsonProperty
     private TryAccessResponseContent tryAccessResponseContent;
 
     // states if the message has been correctly created
+    @JsonIgnore
     private volatile boolean responseInitialized = false;
 
     public TryAccessResponse() {
@@ -82,17 +79,13 @@ public final class TryAccessResponse extends Message {
         }
     }
 
-    // ---------------------------------------------------------------------------
-    // GETTERS and SETTERS
-    // ---------------------------------------------------------------------------
-
     /**
      * Sets the content of the tryAccessResponse message
      *
      * @param content
      *          the content of the response
      * @return true if everything goes ok, false otherwise
-     */
+    
     public boolean setContent( TryAccessResponseContent content ) {
         // BEGIN parameter checking
         if( content == null || !content.isInitialized() || !isInitialized()
@@ -103,7 +96,7 @@ public final class TryAccessResponse extends Message {
         // END parameter checking
         tryAccessResponseContent = content;
         return true;
-    }
+    }     */
 
     @Override
     public int compareTo( Message o ) {
@@ -111,24 +104,28 @@ public final class TryAccessResponse extends Message {
         return 0;
     }
 
-    /*
-     * public TryAccessResponseContent getContent() { // BEGIN parameter checking
-     * if (!initialized) { return null; } // END parameter checking return
-     * tryAccessResponseContent; }
-     */
-
     @JsonIgnore
     public PDPEvaluation getPDPEvaluation() {
-        return tryAccessResponseContent.getPDPEvaluation();
+        if( tryAccessResponseContent != null ) {
+            return tryAccessResponseContent.getPDPEvaluation();
+        }
+        return null;
     }
 
+    @JsonIgnore
     public String getStatus() {
-        return tryAccessResponseContent.getStatus();
+        if( tryAccessResponseContent != null ) {
+            return tryAccessResponseContent.getStatus();
+        }
+        return null;
     }
 
     @JsonIgnore
     public String getSessionId() {
-        return tryAccessResponseContent.getSessionId();
+        if( tryAccessResponseContent != null ) {
+            return tryAccessResponseContent.getSessionId();
+        }
+        return null;
     }
 
     @Override
@@ -136,31 +133,12 @@ public final class TryAccessResponse extends Message {
         super.setId( id );
     }
 
+    public void setTryAccessResponseContent( TryAccessResponseContent tryAccessResponseContent ) {
+        this.tryAccessResponseContent = tryAccessResponseContent;
+    }
+
     public TryAccessResponseContent getTryAccessResponseContent() {
         return tryAccessResponseContent;
-    }
-
-    public static TryAccessResponse buildFromString( String string ) {
-        try {
-            return new ObjectMapper().readValue( string, TryAccessResponse.class );
-        } catch( Exception e ) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-            return null;
-        }
-    }
-
-    @Override
-    public String toString() {
-        // System.out.println("TO STRING");
-        // System.out.println(new Gson().toJson(this));
-        // return new Gson().toJson(this);
-        try {
-            return new ObjectMapper().writeValueAsString( this );
-        } catch( JsonProcessingException e ) {
-            e.printStackTrace();
-        }
-        return null;
     }
 
 }

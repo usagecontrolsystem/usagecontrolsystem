@@ -15,6 +15,7 @@
  ******************************************************************************/
 package iit.cnr.it.ucsinterface.message.tryaccess;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import iit.cnr.it.ucsinterface.pdp.PDPEvaluation;
@@ -41,30 +42,26 @@ public class TryAccessResponseContent {
     // the status of the tryAccess
     private String status;
     // states if the response is a correct object or not
-    private volatile boolean contentInitialized = false;
+
+    @JsonIgnore
+    private boolean initialized = false;
 
     /**
      * Basic constructor for a TryAccessResponseContent object
      */
     public TryAccessResponseContent() {
-        contentInitialized = true;
+        initialized = true;
     }
 
     public boolean setPDPEvaluation( PDPEvaluation pdpEvaluation ) {
-        // BEGIN parameter checking
-        if( pdpEvaluation == null ) {
-            contentInitialized = false;
-            return false;
-        }
-        // END parameter checking
         this.pdpEvaluation = pdpEvaluation;
-        return true;
+        return initialized = ( pdpEvaluation == null );
     }
 
     public boolean setSessionId( String sessionId ) {
         // BEGIN parameter checking
         if( sessionId == null || sessionId.isEmpty() ) {
-            contentInitialized = false;
+            initialized = false;
             return false;
         }
         // END parameter checking
@@ -75,7 +72,7 @@ public class TryAccessResponseContent {
     public boolean setStatus( String status ) {
         // BEGIN parameter checking
         if( status == null || status.isEmpty() ) {
-            contentInitialized = false;
+            initialized = false;
             return false;
         }
         // END parameter checking
@@ -85,7 +82,7 @@ public class TryAccessResponseContent {
 
     public String getStatus() {
         // BEGIN parameter checking
-        if( !contentInitialized ) {
+        if( !initialized ) {
             return null;
         }
         // END parameter checking
@@ -94,7 +91,7 @@ public class TryAccessResponseContent {
 
     public String getSessionId() {
         // BEGIN parameter checking
-        if( !contentInitialized ) {
+        if( !initialized ) {
             return null;
         }
         // END parameter checking
@@ -102,11 +99,11 @@ public class TryAccessResponseContent {
     }
 
     public boolean isInitialized() {
-        return contentInitialized;
+        return initialized;
     }
 
     public void setContentInitialized( boolean contentInitialized ) {
-        this.contentInitialized = contentInitialized;
+        this.initialized = contentInitialized;
     }
 
     public PDPEvaluation getPDPEvaluation() {

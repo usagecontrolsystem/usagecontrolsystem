@@ -43,13 +43,13 @@ import oasis.names.tc.xacml.core.schema.wd_17.ResponseType;
 @JsonIgnoreProperties( ignoreUnknown = true )
 public final class PDPResponse implements PDPEvaluation {
     // states if the object has been correctly initialized
-    private volatile boolean initialized = false;
+    @JsonIgnore
+    private boolean initialized = false;
 
     // the response provided by the PDP object
-    private ResponseType responseType;
+    private ResponseType responseType = null;
 
     // the id of the session the which the evaluation was referred
-    @JsonIgnore
     private String sessionId = "";
 
     // list of firing rules
@@ -106,6 +106,7 @@ public final class PDPResponse implements PDPEvaluation {
 
     private void setResponseType( ResponseType responseType ) {
         this.responseType = responseType;
+        check();
     }
 
     public ResponseType getResponseType() {
@@ -192,5 +193,10 @@ public final class PDPResponse implements PDPEvaluation {
     @Override
     public String getSessionId() {
         return sessionId;
+    }
+
+    @JsonIgnore
+    public boolean isValid() {
+        return initialized;
     }
 }
