@@ -32,7 +32,7 @@ import it.cnr.iit.sessionmanagerdesktop.SessionManagerDesktop;
 import it.cnr.iit.ucsinterface.sessionmanager.OnGoingAttributesInterface;
 import it.cnr.iit.ucsinterface.sessionmanager.SessionInterface;
 import it.cnr.iit.usagecontrolframework.configuration.xmlclasses.XMLSessionManager;
-import it.cnr.iit.xacmlutilities.policy.utility.JAXBUtility;
+import it.cnr.iit.utility.JAXBUtility;
 
 @EnableConfigurationProperties
 @TestPropertySource( properties = "application-test.properties" )
