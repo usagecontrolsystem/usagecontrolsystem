@@ -16,12 +16,14 @@ PEPRest->PEPRest : add msg to messageStore
 PEPRest-->PEPRestCommunication : messageId
 PEPRestCommunication-->Device : messageId
 
+== Asynchronous flow - Begins ==
+
 ContextHandler->ContextHandler : enrich policy\n via PAP and PIP
 ContextHandler->ContextHandler : evaluate policy via PDP
 ContextHandler->PEPUCSCommunication : tryAccessResponse msg
 PEPUCSCommunication->PEPRest : receiveResponse()
 PEPRest->PEPRest : handleResponse() 
-note left:update tryAccess\n status in store
+note left:update tryAccess\n status in msg store
 
 alt PERMIT
 
@@ -37,7 +39,7 @@ end
     ContextHandler->PEPUCSCommunication : startAccessResponse msg
     PEPUCSCommunication->PEPRest : receiveResponse
     PEPRest->PEPRest : handleResponse()
-    note right:update startAccess\n status in store also \n with sessionId    
+    note right:update startAccess\n status in msg store \n also with sessionId    
 end
 
 Attribute->PIPReader : value changed
@@ -50,28 +52,29 @@ alt HARD configuration STOP
     PEPRest->PEPRest : prepare endAccess msg
     PEPRest->ContextHandler : endAccess()
     PEPRest->PEPRest : add msg to messageStore
-    
+
     ContextHandler->ContextHandler : revoke the session
     ContextHandler->PEPUCSCommunication : endAccessResponse msg
     PEPUCSCommunication->PEPRest : receiveResponse
     PEPRest->PEPRest : handleResponse()
-    note right:update endtAccess\n status in store also \n with sessionId  
+    note right:update endAccess\n status in msg store \n also with sessionId  
 else SOFT configuration PAUSE (example)
     alt PERMIT
         PEPRest->Device : pause
         else DENY
         PEPRest->Device : terminate
     end
-    note right:for this to work the device\n needs to registered at the\n start evaluation stage   
+    note right:NOTE: For this to work the device\n needs to be registered at the\n start evaluation stage above   
 end
-    
+
+== Asynchronous flow - Ends ==
+
 Device->PEPRestCommunication : mesageStatus(messageId)
 PEPRestCommunication->PEPRest : getStatusFromHistory
 PEPRest->PEPRest : find sessionId \n of the messageId
-note right : get last msg status \n from messageStore \n using sessionId
+note right : get last msg status \n from mmsg store \n using sessionId
 PEPRest-->PEPRestCommunication : status
 PEPRestCommunication--> Device : status 
 
 @enduml
-
 
