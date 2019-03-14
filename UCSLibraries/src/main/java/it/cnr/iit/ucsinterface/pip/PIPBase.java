@@ -9,9 +9,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.logging.Logger;
 
-import it.cnr.iit.xacmlutilities.Attribute;
-
 import it.cnr.iit.ucsinterface.contexthandler.ContextHandlerPIPInterface;
+import it.cnr.iit.xacmlutilities.Attribute;
 
 /**
  * General PIP abstract class
@@ -22,7 +21,7 @@ import it.cnr.iit.ucsinterface.contexthandler.ContextHandlerPIPInterface;
  * @author Fabio Bindi and Filippo Lauria and Antonio La Marra
  */
 public abstract class PIPBase implements PIPCHInterface, PIPOMInterface {
-    private Logger LOGGER = Logger.getLogger( PIPBase.class.getName() );
+    private static final Logger LOGGER = Logger.getLogger( PIPBase.class.getName() );
 
     /**
      * Whenever a PIP has to retrieve some informations related to an attribute
@@ -94,9 +93,6 @@ public abstract class PIPBase implements PIPCHInterface, PIPOMInterface {
         initialized = true;
     }
 
-    // ---------------------------------------------------------------------------
-    // GETTERS
-    // ---------------------------------------------------------------------------
     @Override
     final public ArrayList<String> getAttributeIds() {
         if( initialized ) {
@@ -135,10 +131,6 @@ public abstract class PIPBase implements PIPCHInterface, PIPOMInterface {
     final protected boolean isInitialized() {
         return initialized;
     }
-
-    // ---------------------------------------------------------------------------
-    // SETTERS
-    // ---------------------------------------------------------------------------
 
     @Override
     public boolean setContextHandlerInterface(

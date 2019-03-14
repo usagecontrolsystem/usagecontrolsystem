@@ -16,10 +16,11 @@ import it.cnr.iit.pip.piprole.table.UserTable;
 import it.cnr.iit.sqlmiddleware.SQLMiddleware;
 import it.cnr.iit.sqlmiddlewareinterface.SQLMiddlewarePIPInterface;
 import it.cnr.iit.usagecontrolframework.configuration.xmlclasses.XMLPip;
+import it.cnr.iit.utility.JAXBUtility;
 import it.cnr.iit.xacmlutilities.Attribute;
 import it.cnr.iit.xacmlutilities.Category;
 import it.cnr.iit.xacmlutilities.DataType;
-import it.cnr.iit.xacmlutilities.policy.utility.JAXBUtility;
+
 import oasis.names.tc.xacml.core.schema.wd_17.RequestType;
 
 /**

@@ -167,7 +167,7 @@ final public class ObligationManager implements ObligationManagerInterface {
      * the name of the class and, from there, it will create the related object
      *
      * @param obligation
-     *          the obligtion in string format
+     *          the obligation in string format
      * @return an object representing the obligation the PIP has to perform
      */
     private Object createObjectFromString( String obligation,

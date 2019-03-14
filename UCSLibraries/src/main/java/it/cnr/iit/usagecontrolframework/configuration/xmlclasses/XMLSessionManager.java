@@ -23,7 +23,7 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 
-import it.cnr.iit.xacmlutilities.policy.utility.JAXBUtility;
+import it.cnr.iit.utility.JAXBUtility;
 
 /**
  * Session manager xml

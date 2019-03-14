@@ -17,7 +17,7 @@ package it.cnr.iit.ucsinterface.message.tryaccess;
 
 import java.util.logging.Logger;
 
-import it.cnr.iit.xacmlutilities.policy.utility.JAXBUtility;
+import it.cnr.iit.utility.JAXBUtility;
 
 import oasis.names.tc.xacml.core.schema.wd_17.PolicyType;
 import oasis.names.tc.xacml.core.schema.wd_17.RequestType;

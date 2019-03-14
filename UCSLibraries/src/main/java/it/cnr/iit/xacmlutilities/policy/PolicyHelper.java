@@ -23,10 +23,10 @@ import java.util.logging.Logger;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 
+import it.cnr.iit.utility.JAXBUtility;
 import it.cnr.iit.xacmlutilities.Attribute;
 import it.cnr.iit.xacmlutilities.Category;
 import it.cnr.iit.xacmlutilities.DataType;
-import it.cnr.iit.xacmlutilities.policy.utility.JAXBUtility;
 
 import oasis.names.tc.xacml.core.schema.wd_17.ApplyType;
 import oasis.names.tc.xacml.core.schema.wd_17.AttributeDesignatorType;

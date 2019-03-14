@@ -33,8 +33,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 
-import it.cnr.iit.xacmlutilities.policy.utility.JAXBUtility;
-
 /**
  * This class contains all the utility function we need throughout this project.
  *

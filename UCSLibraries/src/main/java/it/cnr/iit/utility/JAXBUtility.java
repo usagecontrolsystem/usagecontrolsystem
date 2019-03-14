@@ -13,7 +13,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  ******************************************************************************/
-package it.cnr.iit.xacmlutilities.policy.utility;
+package it.cnr.iit.utility;
 
 import java.io.ByteArrayInputStream;
 import java.io.StringWriter;

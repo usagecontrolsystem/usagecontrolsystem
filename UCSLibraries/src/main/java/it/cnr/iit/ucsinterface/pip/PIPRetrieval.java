@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2018 IIT-CNR
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy
  * of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
@@ -28,7 +28,7 @@ package it.cnr.iit.ucsinterface.pip;
  * different ways and, since this is an abstract class, we only fix a remainder
  * for the developer to remind him to implement a way of accessing remote CHs.
  * </p>
- * 
+ *
  * /** This is the implementation of the PIPRetrievalCassandra.
  * <p>
  * This PIPRetrieval uses a Cassandra table to know where the various
@@ -81,21 +81,19 @@ package it.cnr.iit.ucsinterface.pip;
  * This class also expects that the table passed as argument has at least the
  * following fields: <b>attributeuri</b> and <b>attributecategory</b>.
  * </p>
- * 
+ *
  * @author antonio
  *
  */
 public abstract class PIPRetrieval extends PIPBase implements PIPRMInterface {
 
-    // ---------------------------------------------------------------------------
     // These are the additional attributes required from this particular PIP
-    // ---------------------------------------------------------------------------
     // the table to which this pip has to connect to
     protected Object address;
 
     /**
      * Basic constructor for the PIPRetrieval
-     * 
+     *
      * @param xmlPip
      *          the additional parameters required by the PIPRetrieval, preferably
      *          in XML format

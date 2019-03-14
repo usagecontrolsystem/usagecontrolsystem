@@ -23,7 +23,7 @@ import javax.xml.bind.JAXBException;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
-import it.cnr.iit.xacmlutilities.policy.utility.JAXBUtility;
+import it.cnr.iit.utility.JAXBUtility;
 
 import oasis.names.tc.xacml.core.schema.wd_17.ObligationType;
 import oasis.names.tc.xacml.core.schema.wd_17.ResponseType;

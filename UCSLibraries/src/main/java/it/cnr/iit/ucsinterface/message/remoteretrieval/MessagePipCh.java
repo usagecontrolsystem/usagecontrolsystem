@@ -17,6 +17,7 @@ package it.cnr.iit.ucsinterface.message.remoteretrieval;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.logging.Logger;
 
 import it.cnr.iit.ucsinterface.message.Message;
 import it.cnr.iit.ucsinterface.message.PART;
@@ -35,6 +36,8 @@ import it.cnr.iit.xacmlutilities.Attribute;
  *
  */
 public final class MessagePipCh extends Message {
+    private static final Logger LOGGER = Logger.getLogger( MessagePipCh.class.getName() );
+
     private static final long serialVersionUID = 1L;
 
     public static final int ERROR_CODE = -10;
@@ -90,27 +93,12 @@ public final class MessagePipCh extends Message {
         return 0;
     }
 
-    /**
-     * Sets the motivation for the message. The motivation is a JSON in string
-     * format. Any other format would not be accepted
-     *
-     * @param motivation
-     *          the motivation of the message
-     * @return true if everything goes ok, false otherwise
-     */
-    /*
-     * private void setMotivation(String motivation) { if (!isInitialized) ; try {
-     * Gson gson = new Gson(); content = gson.fromJson(motivation,
-     * PipChContent.class); } catch (Exception e) { e.printStackTrace();
-     * isInitialized = false; } }
-     */
-
     public void setMotivation( PipChContent content ) {
         if( content != null ) {
             this.content = content;
             isInitialized = true;
         } else {
-            System.err.println( "NULL content" );
+            LOGGER.severe( "NULL content" );
             return;
         }
     }
@@ -131,7 +119,7 @@ public final class MessagePipCh extends Message {
 
     public List<Attribute> getAttributes() {
         if( !isInitialized ) {
-            System.err.println( "Message not initialized" );
+            LOGGER.severe( "Message not initialized" );
             return null;
         }
         return content.getAttributes();

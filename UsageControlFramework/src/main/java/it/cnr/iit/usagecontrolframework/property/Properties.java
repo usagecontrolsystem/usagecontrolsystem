@@ -23,10 +23,9 @@ import java.util.PropertyResourceBundle;
 import com.google.common.base.Charsets;
 import com.google.common.io.Resources;
 
-import it.cnr.iit.usagecontrolframework.configuration.xmlclasses.Configuration;
-import it.cnr.iit.xacmlutilities.policy.utility.JAXBUtility;
-
 import it.cnr.iit.ucsinterface.ucs.AbstractProperties;
+import it.cnr.iit.usagecontrolframework.configuration.xmlclasses.Configuration;
+import it.cnr.iit.utility.JAXBUtility;
 
 /**
  * This class is in charge of reading the xml provided for the description of

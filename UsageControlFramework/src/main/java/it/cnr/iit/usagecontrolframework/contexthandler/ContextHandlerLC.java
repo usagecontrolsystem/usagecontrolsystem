@@ -56,10 +56,10 @@ import it.cnr.iit.usagecontrolframework.configuration.xmlclasses.XMLContextHandl
 import it.cnr.iit.usagecontrolframework.contexthandler.exceptions.RevokeException;
 import it.cnr.iit.usagecontrolframework.contexthandler.exceptions.SessionManagerException;
 import it.cnr.iit.usagecontrolframework.contexthandler.exceptions.WrongOrderException;
+import it.cnr.iit.utility.JAXBUtility;
 import it.cnr.iit.xacmlutilities.Attribute;
 import it.cnr.iit.xacmlutilities.Category;
 import it.cnr.iit.xacmlutilities.policy.PolicyHelper;
-import it.cnr.iit.xacmlutilities.policy.utility.JAXBUtility;
 
 import oasis.names.tc.xacml.core.schema.wd_17.AttributeType;
 import oasis.names.tc.xacml.core.schema.wd_17.AttributesType;

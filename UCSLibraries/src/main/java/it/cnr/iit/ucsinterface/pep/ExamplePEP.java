@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2018 IIT-CNR
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy
  * of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
@@ -25,9 +25,6 @@ import java.util.concurrent.ThreadLocalRandom;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import it.cnr.iit.usagecontrolframework.configuration.xmlclasses.XMLPep;
-import it.cnr.iit.utility.Utility;
-
 import it.cnr.iit.ucsinterface.message.MEAN;
 import it.cnr.iit.ucsinterface.message.Message;
 import it.cnr.iit.ucsinterface.message.PART;
@@ -40,19 +37,19 @@ import it.cnr.iit.ucsinterface.message.tryaccess.TryAccessMessage;
 import it.cnr.iit.ucsinterface.message.tryaccess.TryAccessMessageBuilder;
 import it.cnr.iit.ucsinterface.message.tryaccess.TryAccessResponse;
 import it.cnr.iit.ucsinterface.requestmanager.RequestManagerToExternalInterface;
+import it.cnr.iit.usagecontrolframework.configuration.xmlclasses.XMLPep;
+import it.cnr.iit.utility.Utility;
 
 /**
  * USED for local experiments
- * 
+ *
  * @author antonio
  *
  */
-/* abstract */ public class AbstractPEP implements PEPInterface {
+public class ExamplePEP implements PEPInterface {
+    protected static final Logger LOGGER = Logger.getLogger( ExamplePEP.class.getName() );
 
-    private static final String START_PATH = "/home/antonio/projects/Policies";
-
-    protected static final Logger LOGGER = Logger
-        .getLogger( AbstractPEP.class.getName() );
+    private static final String START_PATH = "data";
 
     private XMLPep xmlPep;
     private RequestManagerToExternalInterface requestManager;
@@ -66,7 +63,7 @@ import it.cnr.iit.ucsinterface.requestmanager.RequestManagerToExternalInterface;
 
     private Object mutex = new Object();
 
-    public AbstractPEP( XMLPep xmlPep ) {
+    public ExamplePEP( XMLPep xmlPep ) {
         // BEGIN parameter checking
         if( xmlPep == null ) {
             return;
@@ -246,7 +243,7 @@ import it.cnr.iit.ucsinterface.requestmanager.RequestManagerToExternalInterface;
 
     /**
      * Waits for a certain message containing a certain id to come
-     * 
+     *
      * @param id
      *          the id of the message we're waiting for
      * @return the message arrived
@@ -262,7 +259,7 @@ import it.cnr.iit.ucsinterface.requestmanager.RequestManagerToExternalInterface;
 
     /**
      * Class that waits for a message to become available
-     * 
+     *
      * @author antonio
      *
      */

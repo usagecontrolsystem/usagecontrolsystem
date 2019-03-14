@@ -58,8 +58,7 @@ import it.cnr.iit.utility.Utility;
 
 @JsonIgnoreProperties( ignoreUnknown = true )
 public class Message implements Comparable<Message>, Serializable {
-    private static final Logger LOGGER = Logger
-        .getLogger( Message.class.getName() );
+    private static final Logger LOGGER = Logger.getLogger( Message.class.getName() );
 
     private static final long serialVersionUID = 1L;
 
