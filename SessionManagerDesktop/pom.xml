@@ -83,6 +83,7 @@
 		<jclouds.version>1.9.1</jclouds.version>
 		<springfox.version>2.2.2</springfox.version>
 		<swagger.version>1.5.3</swagger.version>
+		<ormlite.version>4.48</ormlite.version>
 	</properties>
 
 	<dependencies>
@@ -203,6 +204,22 @@
 			<artifactId>sqlite-jdbc</artifactId>
 			<version>3.25.2</version>
 		</dependency>
+
+        <dependency>
+            <groupId>com.j256.ormlite</groupId>
+            <artifactId>ormlite-core</artifactId>
+            <version>${ormlite.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.j256.ormlite</groupId>
+            <artifactId>ormlite-jdbc</artifactId>
+            <version>${ormlite.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.j256.ormlite</groupId>
+            <artifactId>ormlite-android</artifactId>
+            <version>${ormlite.version}</version>
+        </dependency>
 
 		<dependency>
 			<groupId>org.apache.derby</groupId>

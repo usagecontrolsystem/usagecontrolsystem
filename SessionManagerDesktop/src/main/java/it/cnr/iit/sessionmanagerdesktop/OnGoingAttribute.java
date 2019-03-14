@@ -1,9 +1,9 @@
 /*
  * CNR - IIT (2015-2016)
- * 
+ *
  * @authors Fabio Bindi and Filippo Lauria
  */
-package it.cnr.iit.ucsinterface.sessionmanager;
+package it.cnr.iit.sessionmanagerdesktop;
 
 /**
  *
@@ -14,11 +14,13 @@ package it.cnr.iit.ucsinterface.sessionmanager;
  * Names of the fields have been changed a little. <br>
  * TODO: comment more
  * </p>
- * 
+ *
  * @author Fabio Bindi and Filippo Lauria and Antonio La Marra
  */
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
+
+import it.cnr.iit.ucsinterface.sessionmanager.OnGoingAttributesInterface;
 
 @DatabaseTable( tableName = "on_going_attributes" )
 public class OnGoingAttribute implements OnGoingAttributesInterface {
@@ -82,7 +84,7 @@ public class OnGoingAttribute implements OnGoingAttributesInterface {
 
     /**
      * Constructor
-     * 
+     *
      * @param name_
      *          subject or object attribute name
      * @param subjectId_
@@ -100,7 +102,7 @@ public class OnGoingAttribute implements OnGoingAttributesInterface {
 
     /**
      * Gets the ID of the OnGoingAttribute raw in the database
-     * 
+     *
      * @return ID
      */
     @Override
@@ -110,7 +112,7 @@ public class OnGoingAttribute implements OnGoingAttributesInterface {
 
     /**
      * Sets the ID of the OnGoingAttribute raw in the database
-     * 
+     *
      * @param id_
      *          ID to be set
      */
@@ -120,7 +122,7 @@ public class OnGoingAttribute implements OnGoingAttributesInterface {
 
     /**
      * Gets the attribute name
-     * 
+     *
      * @return attribute name
      */
     @Override
@@ -130,7 +132,7 @@ public class OnGoingAttribute implements OnGoingAttributesInterface {
 
     /**
      * Sets the attribute name
-     * 
+     *
      * @param name_
      *          attribute name to be set
      */
@@ -140,7 +142,7 @@ public class OnGoingAttribute implements OnGoingAttributesInterface {
 
     /**
      * Gets the subject ID
-     * 
+     *
      * @return subject ID
      */
     @Override
@@ -150,7 +152,7 @@ public class OnGoingAttribute implements OnGoingAttributesInterface {
 
     /**
      * Sets the subject ID
-     * 
+     *
      * @param subjectId_
      *          subject ID to be set
      */
@@ -160,7 +162,7 @@ public class OnGoingAttribute implements OnGoingAttributesInterface {
 
     /**
      * Gets the resource ID
-     * 
+     *
      * @return resource ID
      */
     @Override
@@ -170,7 +172,7 @@ public class OnGoingAttribute implements OnGoingAttributesInterface {
 
     /**
      * Sets the resource ID
-     * 
+     *
      * @param resourceId_
      *          object ID to be set
      */
@@ -180,7 +182,7 @@ public class OnGoingAttribute implements OnGoingAttributesInterface {
 
     /**
      * Retrieves the Session of this attribute
-     * 
+     *
      * @return a Session object
      */
     public Session getSession() {
@@ -189,7 +191,7 @@ public class OnGoingAttribute implements OnGoingAttributesInterface {
 
     /**
      * Sets the session for this attribute
-     * 
+     *
      * @param session_
      *          attribute session to be set
      */

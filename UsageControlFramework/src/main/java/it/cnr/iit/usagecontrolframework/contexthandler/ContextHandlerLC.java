@@ -50,7 +50,7 @@ import it.cnr.iit.ucsinterface.message.tryaccess.TryAccessResponseContent;
 import it.cnr.iit.ucsinterface.pdp.PDPEvaluation;
 import it.cnr.iit.ucsinterface.pip.PIPCHInterface;
 import it.cnr.iit.ucsinterface.pip.exception.PIPException;
-import it.cnr.iit.ucsinterface.sessionmanager.OnGoingAttribute;
+import it.cnr.iit.ucsinterface.sessionmanager.OnGoingAttributesInterface;
 import it.cnr.iit.ucsinterface.sessionmanager.SessionInterface;
 import it.cnr.iit.usagecontrolframework.configuration.xmlclasses.XMLContextHandler;
 import it.cnr.iit.usagecontrolframework.contexthandler.exceptions.RevokeException;
@@ -788,16 +788,16 @@ final public class ContextHandlerLC extends AbstractContextHandler {
         String actionName = "";
         boolean otherSessions = true;
         // retrieve on going attributes for both subject and object
-        Collection<OnGoingAttribute> onGoingAttributes = getSessionManagerInterface().getOnGoingAttributes( sessionId );
-        List<OnGoingAttribute> onGoingAttributesForSubject = new LinkedList<>();
-        List<OnGoingAttribute> onGoingAttributesForResource = new LinkedList<>();
-        List<OnGoingAttribute> onGoingAttributesForAction = new LinkedList<>();
-        List<OnGoingAttribute> onGoingAttributesForEnvironment = new LinkedList<>();
+        Collection<OnGoingAttributesInterface> onGoingAttributes = getSessionManagerInterface().getOnGoingAttributes( sessionId );
+        List<OnGoingAttributesInterface> onGoingAttributesForSubject = new LinkedList<>();
+        List<OnGoingAttributesInterface> onGoingAttributesForResource = new LinkedList<>();
+        List<OnGoingAttributesInterface> onGoingAttributesForAction = new LinkedList<>();
+        List<OnGoingAttributesInterface> onGoingAttributesForEnvironment = new LinkedList<>();
 
         // build attribute lists for subject, resource, action and environment
         if( onGoingAttributes != null && onGoingAttributes.size() > 0 ) {
             // fill the correspondent list of ongoingattributes
-            for( OnGoingAttribute attribute : onGoingAttributes ) {
+            for( OnGoingAttributesInterface attribute : onGoingAttributes ) {
                 if( attribute.getSubjectName() != null && !attribute.getSubjectName().equals( "null" ) ) {
                     onGoingAttributesForSubject.add( attribute );
                     subjectName = attribute.getSubjectName();
@@ -816,7 +816,7 @@ final public class ContextHandlerLC extends AbstractContextHandler {
         // builds up the JSON object that is needed to perform unsubscribe
         if( onGoingAttributes != null && onGoingAttributes.size() > 0 ) {
             // ongoingattributes for object
-            for( OnGoingAttribute attribute : onGoingAttributesForResource ) {
+            for( OnGoingAttributesInterface attribute : onGoingAttributesForResource ) {
 
                 // retrieve all the active sessions which deal with the
                 // considered on
@@ -836,7 +836,7 @@ final public class ContextHandlerLC extends AbstractContextHandler {
             }
 
             // verify what subject attributes must be unsubscribed
-            for( OnGoingAttribute attribute : onGoingAttributesForSubject ) {
+            for( OnGoingAttributesInterface attribute : onGoingAttributesForSubject ) {
 
                 // retrieve all the active sessions which deal with the
                 // considered on
@@ -856,7 +856,7 @@ final public class ContextHandlerLC extends AbstractContextHandler {
             }
 
             // on going attributes for action
-            for( OnGoingAttribute attribute : onGoingAttributesForAction ) {
+            for( OnGoingAttributesInterface attribute : onGoingAttributesForAction ) {
                 List<SessionInterface> tempList = getSessionManagerInterface()
                     .getSessionsForActionAttributes( actionName, attribute.getAttributeId() );
                 if( tempList == null || tempList.isEmpty() || tempList.size() == 1 ) {
@@ -869,7 +869,7 @@ final public class ContextHandlerLC extends AbstractContextHandler {
             }
 
             // on going attributes for environment
-            for( OnGoingAttribute attribute : onGoingAttributesForEnvironment ) {
+            for( OnGoingAttributesInterface attribute : onGoingAttributesForEnvironment ) {
                 List<SessionInterface> tempList = getSessionManagerInterface()
                     .getSessionsForEnvironmentAttributes( attribute.getAttributeId() );
                 if( tempList == null || tempList.isEmpty() || tempList.size() == 1 ) {

@@ -1,9 +1,9 @@
 /*
  * CNR - IIT (2015-2016)
- * 
+ *
  * @authors Fabio Bindi and Filippo Lauria
  */
-package it.cnr.iit.ucsinterface.sessionmanager;
+package it.cnr.iit.sessionmanagerdesktop;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,10 +14,13 @@ import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.field.ForeignCollectionField;
 import com.j256.ormlite.table.DatabaseTable;
 
+import it.cnr.iit.ucsinterface.sessionmanager.OnGoingAttributesInterface;
+import it.cnr.iit.ucsinterface.sessionmanager.SessionInterface;
+
 /**
  * Creates Session objects. It configures OrmLite annotations to persist these
  * objects in the sessions table of the database.
- * 
+ *
  * @author Fabio Bindi, Filippo Lauria and Antonio La Marra
  */
 @DatabaseTable( tableName = "sessions" )
@@ -57,7 +60,7 @@ final public class Session implements SessionInterface {
 
     /**
      * Constructor
-     * 
+     *
      * @param id_              session ID
      * @param policyOnGoing_   policy containing mutable attributes needed during
      *                         the life-cycle of the session
@@ -76,7 +79,7 @@ final public class Session implements SessionInterface {
      */
 
     /**
-     * 
+     *
      * @param id_              session ID
      * @param policySet_       policy containing all the mutable attributes needed
      *                         during the session
@@ -97,7 +100,7 @@ final public class Session implements SessionInterface {
 
     /**
      * Retrieves session ID
-     * 
+     *
      * @return session ID
      */
     @Override
@@ -107,7 +110,7 @@ final public class Session implements SessionInterface {
 
     /**
      * Sets the session ID
-     * 
+     *
      * @param id_ session ID to be set
      */
     public void setId( String id_ ) {
@@ -116,7 +119,7 @@ final public class Session implements SessionInterface {
 
     /**
      * Retrieves the PolicySet
-     * 
+     *
      * @return policySet
      */
     @Override
@@ -126,7 +129,7 @@ final public class Session implements SessionInterface {
 
     /**
      * Sets the policySet
-     * 
+     *
      * @param policySet_ policySet to set
      */
     public void setPolicySet( String policySet_ ) {
@@ -135,7 +138,7 @@ final public class Session implements SessionInterface {
 
     /**
      * Retrieves the originalRequest
-     * 
+     *
      * @return originalRequest
      */
     @Override
@@ -145,7 +148,7 @@ final public class Session implements SessionInterface {
 
     /**
      * Sets the originalRequest
-     * 
+     *
      * @param originalRequest_ originalRequest to be set
      */
     public void setOriginalRequest( String originalRequest_ ) {
@@ -154,7 +157,7 @@ final public class Session implements SessionInterface {
 
     /**
      * Retrieves the status of the session
-     * 
+     *
      * @return status
      */
     @Override
@@ -164,7 +167,7 @@ final public class Session implements SessionInterface {
 
     /**
      * Sets the status of the session
-     * 
+     *
      * @param status_ status to be set
      */
     public void setStatus( String status_ ) {
@@ -173,7 +176,7 @@ final public class Session implements SessionInterface {
 
     /**
      * Sets the URI of the PEP
-     * 
+     *
      * @param pepURI_ URI of the PEP to be set
      */
     public void setPepURI( String pepURI_ ) {
@@ -186,7 +189,7 @@ final public class Session implements SessionInterface {
 
     /**
      * Retrieves the list of mutable attributes of the session
-     * 
+     *
      * @return list of mutable attributes
      */
     @Override
@@ -200,12 +203,12 @@ final public class Session implements SessionInterface {
 
     /**
      * Retrieves the list of mutable attributes of the session
-     * 
+     *
      * @return list of mutable attributes
      */
-    public List<OnGoingAttribute> getOnGoingAttribute() {
-        List<OnGoingAttribute> list = new ArrayList<>();
-        for( OnGoingAttribute onGoingAttribute : onGoingAttributes ) {
+    public List<OnGoingAttributesInterface> getOnGoingAttribute() {
+        List<OnGoingAttributesInterface> list = new ArrayList<>();
+        for( OnGoingAttributesInterface onGoingAttribute : onGoingAttributes ) {
             list.add( onGoingAttribute );
         }
         return list;
@@ -213,10 +216,10 @@ final public class Session implements SessionInterface {
 
     /**
      * Retrieves the list of mutable attributes of the session
-     * 
+     *
      * @return list of mutable attributes
      */
-    @Override
+    // @Override
     public ForeignCollection<OnGoingAttribute> getOnGoingAttributesAsForeign() {
         return onGoingAttributes;
     }

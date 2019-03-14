@@ -18,9 +18,9 @@ package iit.cnr.it.peprest;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
-import org.apache.http.HttpStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.annotation.RequestAttribute;
@@ -112,7 +112,7 @@ public class PEPRestCommunication {
         // BEGIN parameter checking
         if( sessionId == null ) {
             System.out.println( "SESSION is null" );
-            throw new HttpMessageNotReadableException( HttpStatus.SC_NO_CONTENT + " : No session id" );
+            throw new HttpMessageNotReadableException( HttpStatus.NO_CONTENT + " : No session id" );
         }
         // END parameter checking
         pepRest.end( sessionId );

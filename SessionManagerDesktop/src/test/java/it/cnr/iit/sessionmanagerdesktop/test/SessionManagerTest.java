@@ -29,11 +29,10 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import it.cnr.iit.sessionmanagerdesktop.SessionManagerDesktop;
+import it.cnr.iit.ucsinterface.sessionmanager.OnGoingAttributesInterface;
+import it.cnr.iit.ucsinterface.sessionmanager.SessionInterface;
 import it.cnr.iit.usagecontrolframework.configuration.xmlclasses.XMLSessionManager;
 import it.cnr.iit.xacmlutilities.policy.utility.JAXBUtility;
-
-import it.cnr.iit.ucsinterface.sessionmanager.OnGoingAttribute;
-import it.cnr.iit.ucsinterface.sessionmanager.SessionInterface;
 
 @EnableConfigurationProperties
 @TestPropertySource( properties = "application-test.properties" )
@@ -257,7 +256,7 @@ public class SessionManagerTest {
         boolean status = sessionManagerDesktop.createEntryForEnvironment( sessionId, policy, request,
             Arrays.asList( attributesPerEnvironment ), tryStatus, pepuri, myip );
         Assert.assertEquals( status, true );
-        List<OnGoingAttribute> attributes = sessionManagerDesktop.getOnGoingAttributes( sessionId );
+        List<OnGoingAttributesInterface> attributes = sessionManagerDesktop.getOnGoingAttributes( sessionId );
         Assert.assertTrue( attributes.size() > 0 );
         attributes = sessionManagerDesktop.getOnGoingAttributes( startStatus );
         Assert.assertTrue( attributes == null || attributes.size() == 0 );
