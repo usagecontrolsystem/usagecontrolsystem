@@ -15,6 +15,7 @@
  ******************************************************************************/
 package it.cnr.iit.utility;
 
+import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -26,8 +27,6 @@ import org.springframework.util.concurrent.ListenableFuture;
 import org.springframework.web.client.AsyncRestTemplate;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
-
-import com.google.gson.Gson;
 
 /**
  * This class provides some static methods to perform a rest request
@@ -101,7 +100,10 @@ final public class RESTUtils {
     public static <T, E> T postAsString( String url, E obj,
             Class<T> responseType ) {
         RestTemplate restTemplate = new RestTemplate();
-        String string = new Gson().toJson( obj );
+
+        Optional<String> strObj = Utility.getJsonStringFromObject( obj, false );
+        String string = strObj.isPresent() ? strObj.get() : "";
+
         ResponseEntity<T> response = restTemplate.postForEntity( url, string,
             responseType );
         if( response == null || !response.getStatusCode().is2xxSuccessful() ) {
@@ -193,14 +195,17 @@ final public class RESTUtils {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType( MediaType.TEXT_PLAIN );
         AsyncRestTemplate restTemplate = new AsyncRestTemplate();
-        String string = new Gson().toJson( obj );
+
+        Optional<String> strObj = Utility.getJsonStringFromObject( obj, false );
+        String string = strObj.isPresent() ? strObj.get() : "";
+
         HttpEntity<String> entity = new HttpEntity<>( string, headers );
         try {
             ListenableFuture<ResponseEntity<T>> response = restTemplate
                 .postForEntity( url, entity, responseType );
             if( response == null
                     || !response.get().getStatusCode().is2xxSuccessful() ) {
-                LOGGER.log( Level.INFO, "FAIL: " + url + "\t" + string );
+                LOGGER.info( "FAIL: " + url + "\t" + string );
                 return null;
             }
             return response.get().getBody();
@@ -227,7 +232,10 @@ final public class RESTUtils {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType( MediaType.TEXT_PLAIN );
         AsyncRestTemplate restTemplate = new AsyncRestTemplate();
-        String string = new Gson().toJson( obj );
+
+        Optional<String> strObj = Utility.getJsonStringFromObject( obj, false );
+        String string = strObj.isPresent() ? strObj.get() : "";
+
         HttpEntity<String> entity = new HttpEntity<>( string, headers );
         restTemplate.postForEntity( url, entity, Void.class );
     }

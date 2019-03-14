@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2018 IIT-CNR
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy
  * of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
@@ -14,8 +14,6 @@
  * the License.
  ******************************************************************************/
 package it.cnr.iit.ucsinterface.node;
-
-import it.cnr.iit.utility.RESTUtils;
 
 import it.cnr.iit.ucs.configuration.BasicConfiguration;
 import it.cnr.iit.ucsinterface.constants.CONNECTION;
@@ -28,18 +26,19 @@ import it.cnr.iit.ucsinterface.message.startaccess.StartAccessMessage;
 import it.cnr.iit.ucsinterface.message.startaccess.StartAccessResponse;
 import it.cnr.iit.ucsinterface.message.tryaccess.TryAccessMessage;
 import it.cnr.iit.ucsinterface.message.tryaccess.TryAccessResponse;
+import it.cnr.iit.utility.RESTUtils;
 
 /**
  * This is the class effectively implementing the proxy to communicate with
  * every other node.
- * 
+ *
  * <p>
  * For the moment the only communicating way provided is the one by means of
  * REST API, hence, whenever a message hass to be sent outside, we will use REST
  * to perform this operation. <br>
  * Due to the simplicity of this operation, nothing would prevent us from using
  * </p>
- * 
+ *
  * @author antonio
  *
  */
@@ -104,23 +103,22 @@ public class NodeProxy implements NodeInterface {
 
     private void sendMessageViaSocket( Message message ) {
         // TODO Auto-generated method stub
-
     }
 
     private void useApi( Message message ) {
         // TODO Auto-generated method stub
-
     }
 
     /**
      * Provided the name of the rest API to call, it builds up the complete url to
      * be used to call that interface
-     * 
+     *
      * @param function
      *          the name of the function
      * @return the complete url to be used in the rest call
      */
     private String buildUrl( String function, Message message ) {
+        // TODO fix this
         StringBuilder url = new StringBuilder();
         url.append( "http://" + message.getDestination() + ":" );
         url.append( BasicConfiguration.getBasicConfiguration().getPort() );

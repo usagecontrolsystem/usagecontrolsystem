@@ -28,7 +28,7 @@ import it.cnr.iit.ucsinterface.message.reevaluation.ReevaluationResponse;
 import it.cnr.iit.ucsinterface.message.startaccess.StartAccessResponse;
 import it.cnr.iit.ucsinterface.message.tryaccess.TryAccessResponse;
 import it.cnr.iit.ucsinterface.node.NodeInterface;
-import it.cnr.iit.ucsinterface.pep.AbstractPEP;
+import it.cnr.iit.ucsinterface.pep.ExamplePEP;
 import it.cnr.iit.ucsinterface.pep.PEPInterface;
 import it.cnr.iit.ucsinterface.requestmanager.RequestManagerToExternalInterface;
 import it.cnr.iit.utility.RESTUtils;
@@ -57,7 +57,7 @@ public class ProxyPEP extends Proxy implements PEPInterface {
 
     // --------------------
     // case of a local PEP
-    private AbstractPEP abstractPEP;
+    private ExamplePEP abstractPEP;
     // case of remote PEP
     // --------------------
 
@@ -133,7 +133,7 @@ public class ProxyPEP extends Proxy implements PEPInterface {
         try {
             Constructor<?> constructor = Class.forName( className )
                 .getConstructor( XMLPep.class );
-            abstractPEP = (AbstractPEP) constructor.newInstance( xmlPep );
+            abstractPEP = (ExamplePEP) constructor.newInstance( xmlPep );
             return true;
         } catch( InstantiationException | IllegalAccessException
                 | ClassNotFoundException | NoSuchMethodException | SecurityException

@@ -15,8 +15,7 @@
  ******************************************************************************/
 package it.cnr.iit.ucsinterface.forwardingqueue;
 
-import java.util.HashMap;
-import java.util.logging.Level;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Logger;
 
 import it.cnr.iit.ucsinterface.message.Message;
@@ -41,37 +40,32 @@ import it.cnr.iit.ucsinterface.message.Message;
  */
 public class ForwardingQueue
         implements ForwardingQueueToCHInterface, ForwardingQueueToRMInterface {
-    private static final Logger LOGGER = Logger
-        .getLogger( ForwardingQueue.class.getName() );
+    private static final Logger LOGGER = Logger.getLogger( ForwardingQueue.class.getName() );
 
-    private HashMap<String, Message> forwardingMap = new HashMap<>();
+    private ConcurrentHashMap<String, Message> forwardingMap = new ConcurrentHashMap<>();
 
     @Override
     public Message getOriginalSource( String messageID ) {
         // BEGIN parameter checking
         if( messageID == null || messageID.isEmpty() ) {
-            LOGGER.log( Level.SEVERE, "MessageID" + messageID + " is not valid" );
+            LOGGER.severe( "MessageID" + messageID + " is not valid" );
             return null;
         }
         // END parameter checking
-        synchronized( forwardingMap ) {
-            return forwardingMap.remove( messageID );
-        }
+        return forwardingMap.remove( messageID );
     }
 
     @Override
     public void addSwappedMessage( String messageID, Message originalMessage ) {
         // BEGIN parameter checking
         if( messageID == null || messageID.isEmpty() ) {
-            LOGGER.log( Level.SEVERE, "MessageID" + messageID + " is not valid" );
+            LOGGER.severe( "MessageID" + messageID + " is not valid" );
         }
         if( originalMessage == null ) {
-            LOGGER.log( Level.SEVERE, "Source" + originalMessage + " is not valid" );
+            LOGGER.severe( "Source" + originalMessage + " is not valid" );
         }
         // END parameter checking
-        synchronized( forwardingMap ) {
-            forwardingMap.put( messageID, originalMessage );
-        }
+        forwardingMap.put( messageID, originalMessage );
     }
 
 }

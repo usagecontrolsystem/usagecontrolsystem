@@ -18,10 +18,7 @@ package it.cnr.iit.ucsinterface.requestmanager;
 import java.util.HashMap;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
-import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import it.cnr.iit.usagecontrolframework.configuration.xmlclasses.XMLRequestManager;
 
 import it.cnr.iit.ucsinterface.contexthandler.ContextHandlerInterface;
 import it.cnr.iit.ucsinterface.forwardingqueue.ForwardingQueueToRMInterface;
@@ -30,6 +27,7 @@ import it.cnr.iit.ucsinterface.message.remoteretrieval.MessagePipCh;
 import it.cnr.iit.ucsinterface.node.NodeInterface;
 import it.cnr.iit.ucsinterface.node.NodeProxy;
 import it.cnr.iit.ucsinterface.pep.PEPInterface;
+import it.cnr.iit.usagecontrolframework.configuration.xmlclasses.XMLRequestManager;
 
 /**
  * This is the abstract class representing the request manager.
@@ -46,8 +44,7 @@ import it.cnr.iit.ucsinterface.pep.PEPInterface;
 public abstract class AsynchronousRequestManager
         implements RequestManagerToCHInterface, RequestManagerToExternalInterface,
         InterfaceToPerformanceMonitor {
-    protected static final Logger LOGGER = Logger
-        .getLogger( AsynchronousRequestManager.class.getName() );
+    protected static final Logger LOGGER = Logger.getLogger( AsynchronousRequestManager.class.getName() );
 
     // queue of messages received from the context handler
     private final BlockingQueue<Message> queueFromCH = new LinkedBlockingQueue<>();
@@ -70,7 +67,7 @@ public abstract class AsynchronousRequestManager
 
     /**
      * Constructor for the request manager
-     * 
+     *
      * @param xml
      *          the xml representing the configuration of the request manager
      */
@@ -87,7 +84,7 @@ public abstract class AsynchronousRequestManager
 
     /**
      * Set the interfaces the RequestManager has to communicate with
-     * 
+     *
      * @param contextHandler
      *          the interface privided by the context handler
      * @param proxyPEPMap
@@ -100,13 +97,12 @@ public abstract class AsynchronousRequestManager
             ForwardingQueueToRMInterface forwardingQueue ) {
         // BEGIN parameter checking
         if( !initialized ) {
-            LOGGER.log( Level.WARNING, "RequestManager not initialized correctly" );
+            LOGGER.warning( "RequestManager not initialized correctly" );
             return;
         }
         if( contextHandler == null || proxyPEPMap == null || forwardingQueue == null
                 || nodeInterface == null ) {
-            LOGGER.log( Level.WARNING,
-                "RequestManager passed interfaces are not valid" );
+            LOGGER.warning( "RequestManager passed interfaces are not valid" );
             return;
         }
         // END parameter checking
@@ -118,16 +114,13 @@ public abstract class AsynchronousRequestManager
 
     /**
      * Checks if the abstract class has been correctly initialized
-     * 
+     *
      * @return the initialized flag
      */
     protected boolean isInitialized() {
         return initialized;
     }
 
-    // ---------------------------------------------------------------------------
-    // Protected getter
-    // ---------------------------------------------------------------------------
     protected ContextHandlerInterface getContextHandler() {
         // BEGIN parameter checking
         if( initialized == false ) {

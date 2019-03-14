@@ -22,13 +22,12 @@ import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import it.cnr.iit.usagecontrolframework.configuration.xmlclasses.XMLSessionManager;
-import it.cnr.iit.xacmlutilities.Attribute;
-
 import it.cnr.iit.ucsinterface.constants.CONNECTION;
-import it.cnr.iit.ucsinterface.sessionmanager.OnGoingAttribute;
+import it.cnr.iit.ucsinterface.sessionmanager.OnGoingAttributesInterface;
 import it.cnr.iit.ucsinterface.sessionmanager.SessionInterface;
 import it.cnr.iit.ucsinterface.sessionmanager.SessionManagerInterface;
+import it.cnr.iit.usagecontrolframework.configuration.xmlclasses.XMLSessionManager;
+import it.cnr.iit.xacmlutilities.Attribute;
 
 /**
  * This is the proxy to be used to communicate with the session manager.
@@ -591,7 +590,7 @@ public class ProxySessionManager extends Proxy
     }
 
     @Override
-    public List<OnGoingAttribute> getOnGoingAttributes( String sessionId ) {
+    public List<OnGoingAttributesInterface> getOnGoingAttributes( String sessionId ) {
         // BEGIN parameter checking
         if( initialized == false || started == false ) {
             return null;

@@ -19,23 +19,9 @@ import java.util.logging.Logger;
 
 import javax.xml.bind.JAXBException;
 
-import org.mockito.Matchers;
+import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import it.cnr.iit.usagecontrolframework.configuration.xmlclasses.Configuration;
-import it.cnr.iit.usagecontrolframework.configuration.xmlclasses.XMLPip;
-import it.cnr.iit.usagecontrolframework.configuration.xmlclasses.XMLRequestManager;
-import it.cnr.iit.usagecontrolframework.contexthandler.ContextHandlerLC;
-import it.cnr.iit.usagecontrolframework.proxies.PIPBuilder;
-import it.cnr.iit.usagecontrolframework.proxies.ProxyPAP;
-import it.cnr.iit.usagecontrolframework.proxies.ProxyPDP;
-import it.cnr.iit.usagecontrolframework.proxies.ProxySessionManager;
-import it.cnr.iit.usagecontrolframework.requestmanager.RequestManagerLC;
-import it.cnr.iit.xacmlutilities.Attribute;
-import it.cnr.iit.xacmlutilities.Category;
-import it.cnr.iit.xacmlutilities.DataType;
-import it.cnr.iit.xacmlutilities.policy.utility.JAXBUtility;
 
 import it.cnr.iit.ucsinterface.contexthandler.ContextHandlerInterface;
 import it.cnr.iit.ucsinterface.contexthandler.STATUS;
@@ -63,6 +49,19 @@ import it.cnr.iit.ucsinterface.pip.PIPRetrieval;
 import it.cnr.iit.ucsinterface.requestmanager.RequestManagerToCHInterface;
 import it.cnr.iit.ucsinterface.sessionmanager.SessionInterface;
 import it.cnr.iit.ucsinterface.sessionmanager.SessionManagerInterface;
+import it.cnr.iit.usagecontrolframework.configuration.xmlclasses.Configuration;
+import it.cnr.iit.usagecontrolframework.configuration.xmlclasses.XMLPip;
+import it.cnr.iit.usagecontrolframework.configuration.xmlclasses.XMLRequestManager;
+import it.cnr.iit.usagecontrolframework.contexthandler.ContextHandlerLC;
+import it.cnr.iit.usagecontrolframework.proxies.PIPBuilder;
+import it.cnr.iit.usagecontrolframework.proxies.ProxyPAP;
+import it.cnr.iit.usagecontrolframework.proxies.ProxyPDP;
+import it.cnr.iit.usagecontrolframework.proxies.ProxySessionManager;
+import it.cnr.iit.usagecontrolframework.requestmanager.RequestManagerLC;
+import it.cnr.iit.utility.JAXBUtility;
+import it.cnr.iit.xacmlutilities.Attribute;
+import it.cnr.iit.xacmlutilities.Category;
+import it.cnr.iit.xacmlutilities.DataType;
 
 import oasis.names.tc.xacml.core.schema.wd_17.DecisionType;
 import oasis.names.tc.xacml.core.schema.wd_17.PolicyType;
@@ -117,22 +116,22 @@ public class UCFBaseTests {
 
     protected SessionManagerInterface getMockedSessionManager( SessionInterface sessionInterface ) {
         SessionManagerInterface sessionManagerInterface = Mockito.mock( SessionManagerInterface.class );
-        Mockito.when( sessionManagerInterface.getSessionForId( Matchers.anyString() ) )
+        Mockito.when( sessionManagerInterface.getSessionForId( ArgumentMatchers.anyString() ) )
             .thenReturn( Optional.ofNullable( sessionInterface ) );
         // TODO add ongoing attributes
-        Mockito.when( sessionManagerInterface.getOnGoingAttributes( Matchers.anyString() ) ).thenReturn( null );
-        Mockito.when( sessionManagerInterface.deleteEntry( Matchers.anyString() ) ).thenReturn( true );
-        Mockito.when( sessionManagerInterface.createEntry( Matchers.anyString(), Matchers.anyString(),
-            Matchers.anyString(), Matchers.<List<String>>any(), Matchers.<List<String>>any(),
-            Matchers.<List<String>>any(), Matchers.<List<String>>any(), Matchers.anyString(),
-            Matchers.anyString(), Matchers.anyString(), Matchers.anyString(), Matchers.anyString(),
-            Matchers.anyString() ) ).thenReturn( true );
+        Mockito.when( sessionManagerInterface.getOnGoingAttributes( ArgumentMatchers.anyString() ) ).thenReturn( null );
+        Mockito.when( sessionManagerInterface.deleteEntry( ArgumentMatchers.anyString() ) ).thenReturn( true );
+        Mockito.when( sessionManagerInterface.createEntry( ArgumentMatchers.anyString(), ArgumentMatchers.anyString(),
+            ArgumentMatchers.anyString(), ArgumentMatchers.<List<String>>any(), ArgumentMatchers.<List<String>>any(),
+            ArgumentMatchers.<List<String>>any(), ArgumentMatchers.<List<String>>any(), ArgumentMatchers.anyString(),
+            ArgumentMatchers.anyString(), ArgumentMatchers.anyString(), ArgumentMatchers.anyString(), ArgumentMatchers.anyString(),
+            ArgumentMatchers.anyString() ) ).thenReturn( true );
 
         List<SessionInterface> sessionInterfaceList = new ArrayList<>( Arrays.asList( new SessionInterface[] { sessionInterface } ) );
         Mockito.when( sessionManagerInterface.getSessionsForSubjectAttributes(
-            Matchers.anyString(), Matchers.anyString() ) ).thenReturn( sessionInterfaceList );
+            ArgumentMatchers.anyString(), ArgumentMatchers.anyString() ) ).thenReturn( sessionInterfaceList );
         Mockito.when( sessionManagerInterface.getSessionsForEnvironmentAttributes(
-            Matchers.anyString() ) ).thenReturn( sessionInterfaceList );
+            ArgumentMatchers.anyString() ) ).thenReturn( sessionInterfaceList );
 
         return sessionManagerInterface;
     }
@@ -183,7 +182,7 @@ public class UCFBaseTests {
     protected ForwardingQueueToRMInterface getMockedForwardingQueueToRMInterface( Message message ) {
         ForwardingQueueToRMInterface forwardingQueue = Mockito
             .mock( ForwardingQueueToRMInterface.class );
-        Mockito.when( forwardingQueue.getOriginalSource( Matchers.anyString() ) ).thenReturn( message );
+        Mockito.when( forwardingQueue.getOriginalSource( ArgumentMatchers.anyString() ) ).thenReturn( message );
 
         return forwardingQueue;
     }
@@ -198,7 +197,7 @@ public class UCFBaseTests {
 
     protected PEPInterface getMockedPEPInterface( String response ) {
         PEPInterface pep = Mockito.mock( PEPInterface.class );
-        Mockito.when( pep.receiveResponse( Matchers.<Message>any() ) ).thenReturn( response );
+        Mockito.when( pep.receiveResponse( ArgumentMatchers.<Message>any() ) ).thenReturn( response );
         return pep;
     }
 
@@ -207,8 +206,8 @@ public class UCFBaseTests {
     protected ObligationManagerInterface getMockedObligationManager() {
         ObligationManagerInterface obligationManager = Mockito
             .mock( ObligationManagerInterface.class );
-        Mockito.when( obligationManager.translateObligations( Matchers.<PDPEvaluation>any(), Matchers.anyString(),
-            Matchers.anyString() ) ).thenReturn( null );
+        Mockito.when( obligationManager.translateObligations( ArgumentMatchers.<PDPEvaluation>any(), ArgumentMatchers.anyString(),
+            ArgumentMatchers.anyString() ) ).thenReturn( null );
         return obligationManager;
     }
 
@@ -216,9 +215,9 @@ public class UCFBaseTests {
 
     protected PDPInterface getMockedPDP( PDPEvaluation pdpEval ) {
         PDPInterface pdp = Mockito.mock( PDPInterface.class );
-        Mockito.when( pdp.evaluate( Matchers.anyString(), Matchers.<StringBuilder>any(), Matchers.<STATUS>any() ) )
+        Mockito.when( pdp.evaluate( ArgumentMatchers.anyString(), ArgumentMatchers.<StringBuilder>any(), ArgumentMatchers.<STATUS>any() ) )
             .thenReturn( pdpEval );
-        Mockito.when( pdp.evaluate( Matchers.anyString(), Matchers.anyString() ) ).thenReturn( pdpEval );
+        Mockito.when( pdp.evaluate( ArgumentMatchers.anyString(), ArgumentMatchers.anyString() ) ).thenReturn( pdpEval );
         assertNotNull( pdp );
         return pdp;
     }
@@ -233,7 +232,7 @@ public class UCFBaseTests {
 
     protected PAPInterface getMockedPAP( String policy ) {
         PAPInterface pap = Mockito.mock( PAPInterface.class );
-        Mockito.when( pap.retrievePolicy( Matchers.anyString() ) ).thenReturn( policy );
+        Mockito.when( pap.retrievePolicy( ArgumentMatchers.anyString() ) ).thenReturn( policy );
         return pap;
     }
 
@@ -242,15 +241,15 @@ public class UCFBaseTests {
     protected PIPRetrieval getMockedPipRetrieval() {
         PIPRetrieval pipRetrieval = Mockito.mock( PIPRetrieval.class );
         Mockito.doAnswer( a -> {
-            RequestType requestType = a.getArgumentAt( 0, RequestType.class );
-            // List<Attribute> attributeRetrievals = a.getArgumentAt(1, List.class);
+            RequestType requestType = a.getArgument( 0 );
+            // List<Attribute> attributeRetrievals = a.getArgument(1);
             LOGGER.info( "pip retrieve!" );
             requestType.addAttribute( Category.ENVIRONMENT.toString(), DataType.INTEGER.toString(), "virus", "1" );
             requestType.addAttribute( Category.ENVIRONMENT.toString(), DataType.INTEGER.toString(), "telephone", "1" );
             requestType.addAttribute( Category.ENVIRONMENT.toString(), DataType.STRING.toString(), "position", "Pisa" );
 
             return null;
-        } ).when( pipRetrieval ).retrieve( Matchers.<RequestType>any(), Matchers.any() );
+        } ).when( pipRetrieval ).retrieve( ArgumentMatchers.<RequestType>any(), ArgumentMatchers.any() );
         return pipRetrieval;
     }
 
@@ -265,7 +264,7 @@ public class UCFBaseTests {
 
         Mockito.when( pip.getAttributes() ).thenReturn( attributeList );
         Mockito.when( pip.getAttributeIds() ).thenReturn( attributeIdList );
-        Mockito.when( pip.setContextHandlerInterface( Matchers.<ContextHandlerLC>any() ) ).thenReturn( true );
+        Mockito.when( pip.setContextHandlerInterface( ArgumentMatchers.<ContextHandlerLC>any() ) ).thenReturn( true );
 
         return pip;
     }

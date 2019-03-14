@@ -6,8 +6,8 @@
 	OR CONDITIONS OF ANY KIND, either express or implied. See the License for 
 	the specific language governing permissions and limitations under the License. -->
 <project xmlns="http://maven.apache.org/POM/4.0.0"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>it.cnr.iit.usagecontrolframework</groupId>
 	<artifactId>UsageControlFramework</artifactId>
@@ -23,36 +23,11 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>1.5.17.RELEASE</version>
+		<version>2.1.3.RELEASE</version>
 		<relativePath /> <!-- lookup parent from repository -->
 	</parent>
 
 	<build>
-		<pluginManagement>
-			<plugins>
-				<plugin>
-					<groupId>org.apache.tomcat.maven</groupId>
-					<artifactId>tomcat7-maven-plugin</artifactId>
-					<version>2.1</version>
-					<executions>
-						<execution>
-							<id>default-cli</id>
-							<goals>
-								<goal>run-war</goal>
-							</goals>
-							<configuration>
-								<!--<port>14000</port> <path>/usage-control</path> -->
-								<!-- unnecessary to launch the WAR file stand-alone throguh tomcat7:run-war -->
-								<!-- <fork>true</fork> -->
-								<useSeparateTomcatClassLoader>true</useSeparateTomcatClassLoader>
-							</configuration>
-						</execution>
-					</executions>
-				</plugin>
-
-			</plugins>
-		</pluginManagement>
-
 		<plugins>
 			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>
@@ -141,7 +116,7 @@
 			<version>1.0-SNAPSHOT</version>
 		</dependency>
 		<dependency>
-			<groupId>iit.cnr.it.usagecontrolframework</groupId>
+			<groupId>it.cnr.iit.usagecontrolframework</groupId>
 			<artifactId>PIPReader</artifactId>
 			<version>2.0-SNAPSHOT</version>
 		</dependency>

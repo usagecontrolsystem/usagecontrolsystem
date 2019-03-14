@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2018 IIT-CNR
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy
  * of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
@@ -28,7 +28,7 @@ import org.json.JSONObject;
  * subject may require the subject-id. The remote context handler has to put
  * sonly the value inside this class and the return it to the caller.
  * </p>
- * 
+ *
  * @author antonio
  *
  */
@@ -53,7 +53,7 @@ public class AttributeRetrieval {
     /**
      * Constructor for the AttributeRetrieval object with only the attribute id
      * and the additional information
-     * 
+     *
      * @param attributeId
      *          the attribute id
      * @param additionalInformations
@@ -66,7 +66,7 @@ public class AttributeRetrieval {
 
     /**
      * Constructor for teh AttributeRetrieval class
-     * 
+     *
      * @param attributeId
      *          the attributeId
      * @param category
@@ -83,7 +83,7 @@ public class AttributeRetrieval {
 
     /**
      * Constructor for the AttributeRetrieval class
-     * 
+     *
      * @param attributeId
      *          the attributeId
      * @param category
@@ -112,7 +112,7 @@ public class AttributeRetrieval {
 
     /**
      * Retrieves the category
-     * 
+     *
      * @return the category
      */
     public Category getCategory() {
@@ -121,7 +121,7 @@ public class AttributeRetrieval {
 
     /**
      * Retrieves the additional informations
-     * 
+     *
      * @return additional informations
      */
     public String getAdditionalInformations() {
@@ -130,7 +130,7 @@ public class AttributeRetrieval {
 
     /**
      * Retrieves the id of this attribute
-     * 
+     *
      * @return the attribute id
      */
     public String getAttributeId() {
@@ -139,7 +139,7 @@ public class AttributeRetrieval {
 
     /**
      * Set the value of the attribute
-     * 
+     *
      * @param value
      *          the value of the attribute
      */
@@ -149,7 +149,7 @@ public class AttributeRetrieval {
 
     /**
      * Set the value of the categotry
-     * 
+     *
      * @param category
      *          the category as string
      */
@@ -178,7 +178,7 @@ public class AttributeRetrieval {
     }
 
     /**
-     * 
+     *
      */
     public String getValue() {
         return value;
@@ -205,7 +205,7 @@ public class AttributeRetrieval {
      * Given the JSON structure of the item put inside the list from the PIP,
      * extract all the informations and put them inside an AttributeRetrieval
      * object. Doing so all the informations become more usable.
-     * 
+     *
      * @param json
      *          the json inserted by the PIP
      * @return the AttributeRetrieval representation of the JSON

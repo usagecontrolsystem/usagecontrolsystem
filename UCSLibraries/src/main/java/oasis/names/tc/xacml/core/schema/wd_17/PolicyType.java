@@ -38,7 +38,7 @@ import javax.xml.bind.annotation.XmlElements;
 import javax.xml.bind.annotation.XmlSchemaType;
 import javax.xml.bind.annotation.XmlType;
 
-import it.cnr.iit.xacmlutilities.policy.utility.JAXBUtility;
+import it.cnr.iit.utility.JAXBUtility;
 
 /**
  * <p>

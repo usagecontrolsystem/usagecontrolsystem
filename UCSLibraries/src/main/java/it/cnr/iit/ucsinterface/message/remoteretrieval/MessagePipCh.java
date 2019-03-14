@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2018 IIT-CNR
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy
  * of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
@@ -16,26 +16,28 @@
 package it.cnr.iit.ucsinterface.message.remoteretrieval;
 
 import java.util.List;
-
-import com.google.gson.Gson;
-
-import it.cnr.iit.xacmlutilities.Attribute;
+import java.util.Optional;
+import java.util.logging.Logger;
 
 import it.cnr.iit.ucsinterface.message.Message;
 import it.cnr.iit.ucsinterface.message.PART;
+import it.cnr.iit.utility.Utility;
+import it.cnr.iit.xacmlutilities.Attribute;
 
 /**
  * This is the message a PIP sends to a CH and viceversa.
  * <p>
  * We have defined a single class for both local and remote messages, in this
  * way it is a lot easier to pass messages from one source to the other. <br>
- * 
+ *
  * </p>
- * 
+ *
  * @author antonio
  *
  */
 public final class MessagePipCh extends Message {
+    private static final Logger LOGGER = Logger.getLogger( MessagePipCh.class.getName() );
+
     private static final long serialVersionUID = 1L;
 
     public static final int ERROR_CODE = -10;
@@ -48,7 +50,7 @@ public final class MessagePipCh extends Message {
 
     /**
      * Message exchanged between PIP and CH
-     * 
+     *
      * @param source
      *          source of the message
      * @param destination
@@ -66,7 +68,7 @@ public final class MessagePipCh extends Message {
 
     /**
      * Message exchanged between PIP and CH
-     * 
+     *
      * @param source
      *          source of the message
      * @param destination
@@ -91,34 +93,19 @@ public final class MessagePipCh extends Message {
         return 0;
     }
 
-    /**
-     * Sets the motivation for the message. The motivation is a JSON in string
-     * format. Any other format would not be accepted
-     * 
-     * @param motivation
-     *          the motivation of the message
-     * @return true if everything goes ok, false otherwise
-     */
-    /*
-     * private void setMotivation(String motivation) { if (!isInitialized) ; try {
-     * Gson gson = new Gson(); content = gson.fromJson(motivation,
-     * PipChContent.class); } catch (Exception e) { e.printStackTrace();
-     * isInitialized = false; } }
-     */
-
     public void setMotivation( PipChContent content ) {
         if( content != null ) {
             this.content = content;
             isInitialized = true;
         } else {
-            System.err.println( "NULL content" );
+            LOGGER.severe( "NULL content" );
             return;
         }
     }
 
     /**
      * Adds a new attribute to the motivation of the message.
-     * 
+     *
      * @param attribute
      *          the attribute to be added
      * @return true if everything goes ok, false otherwise
@@ -132,7 +119,7 @@ public final class MessagePipCh extends Message {
 
     public List<Attribute> getAttributes() {
         if( !isInitialized ) {
-            System.err.println( "Message not initialized" );
+            LOGGER.severe( "Message not initialized" );
             return null;
         }
         return content.getAttributes();
@@ -140,8 +127,8 @@ public final class MessagePipCh extends Message {
 
     @Override
     public String getMotivation() {
-        Gson gson = new Gson();
-        return gson.toJson( content );
+        Optional<String> optObj = Utility.getJsonStringFromObject( content, false );
+        return optObj.isPresent() ? optObj.get() : "";
     }
 
     public void setAction( ACTION retrieve ) {

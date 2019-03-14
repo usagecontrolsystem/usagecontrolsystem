@@ -15,7 +15,7 @@
  ******************************************************************************/
 package it.cnr.iit.xacmlutilities.policy;
 
-import it.cnr.iit.xacmlutilities.policy.utility.JAXBUtility;
+import it.cnr.iit.utility.JAXBUtility;
 
 import oasis.names.tc.xacml.core.schema.wd_17.RuleType;
 

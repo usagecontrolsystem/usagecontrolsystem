@@ -26,9 +26,8 @@ import it.cnr.iit.pipreader.PIPReader;
 import it.cnr.iit.xacmlutilities.Attribute;
 import it.cnr.iit.xacmlutilities.Category;
 import it.cnr.iit.xacmlutilities.DataType;
-import it.cnr.iit.xacmlutilities.policy.utility.JAXBUtility;
-
 import it.cnr.iit.ucsinterface.contexthandler.AbstractContextHandler;
+import it.cnr.iit.utility.JAXBUtility;
 
 import oasis.names.tc.xacml.core.schema.wd_17.AttributeType;
 import oasis.names.tc.xacml.core.schema.wd_17.AttributeValueType;

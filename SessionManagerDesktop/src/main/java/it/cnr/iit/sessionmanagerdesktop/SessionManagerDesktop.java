@@ -25,13 +25,11 @@ import com.j256.ormlite.stmt.QueryBuilder;
 import com.j256.ormlite.support.ConnectionSource;
 import com.j256.ormlite.table.TableUtils;
 
-import it.cnr.iit.usagecontrolframework.configuration.xmlclasses.XMLSessionManager;
-import it.cnr.iit.xacmlutilities.Attribute;
-
-import it.cnr.iit.ucsinterface.sessionmanager.OnGoingAttribute;
-import it.cnr.iit.ucsinterface.sessionmanager.Session;
+import it.cnr.iit.ucsinterface.sessionmanager.OnGoingAttributesInterface;
 import it.cnr.iit.ucsinterface.sessionmanager.SessionInterface;
 import it.cnr.iit.ucsinterface.sessionmanager.SessionManagerInterface;
+import it.cnr.iit.usagecontrolframework.configuration.xmlclasses.XMLSessionManager;
+import it.cnr.iit.xacmlutilities.Attribute;
 
 /**
  * Creates, updates, deletes and retrieves Sessions by waiting for Context
@@ -681,7 +679,7 @@ final public class SessionManagerDesktop implements SessionManagerInterface {
     }
 
     @Override
-    public List<OnGoingAttribute> getOnGoingAttributes( String sessionId ) {
+    public List<OnGoingAttributesInterface> getOnGoingAttributes( String sessionId ) {
         // BEGIN parameter checking
         validStateAndArguments( sessionId );
         // END parameter checking

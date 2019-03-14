@@ -22,14 +22,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.logging.Logger;
 
-import com.google.gson.Gson;
-
-import it.cnr.iit.usagecontrolframework.configuration.xmlclasses.XMLObligationManager;
-
 import it.cnr.iit.ucsinterface.obligationmanager.ObligationInterface;
 import it.cnr.iit.ucsinterface.obligationmanager.ObligationManagerInterface;
 import it.cnr.iit.ucsinterface.pdp.PDPEvaluation;
 import it.cnr.iit.ucsinterface.pip.PIPOMInterface;
+import it.cnr.iit.usagecontrolframework.configuration.xmlclasses.XMLObligationManager;
+import it.cnr.iit.utility.Utility;
 
 /**
  * This class represents a possible implementation of the ObligationManager
@@ -169,7 +167,7 @@ final public class ObligationManager implements ObligationManagerInterface {
      * the name of the class and, from there, it will create the related object
      *
      * @param obligation
-     *          the obligtion in string format
+     *          the obligation in string format
      * @return an object representing the obligation the PIP has to perform
      */
     private Object createObjectFromString( String obligation,
@@ -184,7 +182,7 @@ final public class ObligationManager implements ObligationManagerInterface {
             return null;
         }
         String json = getJson( obligation );
-        return new Gson().fromJson( json, clazz );
+        return Utility.loadObjectFromJsonString( json, clazz );
     }
 
     private String extractClassName( String obligation ) {

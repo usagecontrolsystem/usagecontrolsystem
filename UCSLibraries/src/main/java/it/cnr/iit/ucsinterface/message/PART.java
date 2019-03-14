@@ -29,31 +29,31 @@ public enum PART {
     PEP( "PEP" ),
     ADVERTISING( "ADVERTISING" );
 
-    private String string;
+    private String value;
 
-    PART( String string ) {
-        this.string = string;
+    PART( String value ) {
+        this.value = value;
     }
 
     @Override
     public String toString() {
-        return string;
+        return value;
     }
 
-    public static PART fromString( String string ) {
-        if( string == null || string.equals( "" ) ) {
+    public static PART fromString( String value ) {
+        if( value == null || value.equals( "" ) ) {
             return null;
         }
-        if( string.equals( PIP.toString() ) ) {
+        if( value.equals( PIP.toString() ) ) {
             return PIP;
         }
-        if( string.equals( PIPRetrieval.toString() ) ) {
+        if( value.equals( PIPRetrieval.toString() ) ) {
             return PIPRetrieval;
         }
-        if( string.equals( CH.toString() ) ) {
+        if( value.equals( CH.toString() ) ) {
             return CH;
         }
-        if( string.equals( PEP.toString() ) ) {
+        if( value.equals( PEP.toString() ) ) {
             return PEP;
         }
         return null;
