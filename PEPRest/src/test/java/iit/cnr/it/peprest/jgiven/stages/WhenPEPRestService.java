@@ -16,7 +16,7 @@ import iit.cnr.it.peprest.PEPRestOperation;
 import iit.cnr.it.peprest.messagetrack.CallerResponse;
 import iit.cnr.it.peprest.messagetrack.MessageStorage;
 import iit.cnr.it.peprest.messagetrack.STATUS;
-import iit.cnr.it.ucsinterface.message.Message;
+import it.cnr.iit.ucsinterface.message.Message;
 
 public class WhenPEPRestService extends Stage<WhenPEPRestService> {
 

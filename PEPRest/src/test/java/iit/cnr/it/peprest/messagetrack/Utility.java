@@ -2,15 +2,15 @@ package iit.cnr.it.peprest.messagetrack;
 
 import java.util.Arrays;
 
-import iit.cnr.it.ucsinterface.message.endaccess.EndAccessMessage;
-import iit.cnr.it.ucsinterface.message.endaccess.EndAccessResponse;
-import iit.cnr.it.ucsinterface.message.reevaluation.ReevaluationResponse;
-import iit.cnr.it.ucsinterface.message.startaccess.StartAccessMessage;
-import iit.cnr.it.ucsinterface.message.startaccess.StartAccessResponse;
-import iit.cnr.it.ucsinterface.message.tryaccess.TryAccessMessage;
-import iit.cnr.it.ucsinterface.message.tryaccess.TryAccessResponse;
-import iit.cnr.it.ucsinterface.message.tryaccess.TryAccessResponseContent;
-import iit.cnr.it.ucsinterface.pdp.PDPResponse;
+import it.cnr.iit.ucsinterface.message.endaccess.EndAccessMessage;
+import it.cnr.iit.ucsinterface.message.endaccess.EndAccessResponse;
+import it.cnr.iit.ucsinterface.message.reevaluation.ReevaluationResponse;
+import it.cnr.iit.ucsinterface.message.startaccess.StartAccessMessage;
+import it.cnr.iit.ucsinterface.message.startaccess.StartAccessResponse;
+import it.cnr.iit.ucsinterface.message.tryaccess.TryAccessMessage;
+import it.cnr.iit.ucsinterface.message.tryaccess.TryAccessResponse;
+import it.cnr.iit.ucsinterface.message.tryaccess.TryAccessResponseContent;
+import it.cnr.iit.ucsinterface.pdp.PDPResponse;
 
 import oasis.names.tc.xacml.core.schema.wd_17.DecisionType;
 import oasis.names.tc.xacml.core.schema.wd_17.ResponseType;

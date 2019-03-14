@@ -28,7 +28,7 @@ import it.cnr.iit.xacmlutilities.Category;
 import it.cnr.iit.xacmlutilities.DataType;
 import it.cnr.iit.xacmlutilities.policy.utility.JAXBUtility;
 
-import iit.cnr.it.ucsinterface.contexthandler.AbstractContextHandler;
+import it.cnr.iit.ucsinterface.contexthandler.AbstractContextHandler;
 
 import oasis.names.tc.xacml.core.schema.wd_17.AttributeType;
 import oasis.names.tc.xacml.core.schema.wd_17.AttributeValueType;

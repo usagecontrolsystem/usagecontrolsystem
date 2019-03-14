@@ -28,10 +28,10 @@ import iit.cnr.it.peprest.PEPRestOperation;
 import iit.cnr.it.peprest.configuration.Configuration;
 import iit.cnr.it.peprest.messagetrack.CallerResponse;
 import iit.cnr.it.peprest.messagetrack.STATUS;
-import iit.cnr.it.ucsinterface.message.Message;
-import iit.cnr.it.ucsinterface.message.endaccess.EndAccessMessage;
-import iit.cnr.it.ucsinterface.message.startaccess.StartAccessMessage;
-import iit.cnr.it.ucsinterface.message.tryaccess.TryAccessMessage;
+import it.cnr.iit.ucsinterface.message.Message;
+import it.cnr.iit.ucsinterface.message.endaccess.EndAccessMessage;
+import it.cnr.iit.ucsinterface.message.startaccess.StartAccessMessage;
+import it.cnr.iit.ucsinterface.message.tryaccess.TryAccessMessage;
 
 import oasis.names.tc.xacml.core.schema.wd_17.DecisionType;
 

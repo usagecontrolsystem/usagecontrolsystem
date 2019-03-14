@@ -29,6 +29,29 @@ import java.util.logging.Logger;
 
 import javax.xml.bind.JAXBException;
 
+import it.cnr.iit.ucs.configuration.BasicConfiguration;
+import it.cnr.iit.ucsinterface.contexthandler.AbstractContextHandler;
+import it.cnr.iit.ucsinterface.contexthandler.STATUS;
+import it.cnr.iit.ucsinterface.contexthandler.scheduler.SchedulerInterface;
+import it.cnr.iit.ucsinterface.message.Message;
+import it.cnr.iit.ucsinterface.message.PART;
+import it.cnr.iit.ucsinterface.message.PURPOSE;
+import it.cnr.iit.ucsinterface.message.endaccess.EndAccessMessage;
+import it.cnr.iit.ucsinterface.message.endaccess.EndAccessResponse;
+import it.cnr.iit.ucsinterface.message.reevaluation.ReevaluationMessage;
+import it.cnr.iit.ucsinterface.message.reevaluation.ReevaluationResponse;
+import it.cnr.iit.ucsinterface.message.remoteretrieval.ACTION;
+import it.cnr.iit.ucsinterface.message.remoteretrieval.MessagePipCh;
+import it.cnr.iit.ucsinterface.message.startaccess.StartAccessMessage;
+import it.cnr.iit.ucsinterface.message.startaccess.StartAccessResponse;
+import it.cnr.iit.ucsinterface.message.tryaccess.TryAccessMessage;
+import it.cnr.iit.ucsinterface.message.tryaccess.TryAccessResponse;
+import it.cnr.iit.ucsinterface.message.tryaccess.TryAccessResponseContent;
+import it.cnr.iit.ucsinterface.pdp.PDPEvaluation;
+import it.cnr.iit.ucsinterface.pip.PIPCHInterface;
+import it.cnr.iit.ucsinterface.pip.exception.PIPException;
+import it.cnr.iit.ucsinterface.sessionmanager.OnGoingAttribute;
+import it.cnr.iit.ucsinterface.sessionmanager.SessionInterface;
 import it.cnr.iit.usagecontrolframework.configuration.xmlclasses.XMLContextHandler;
 import it.cnr.iit.usagecontrolframework.contexthandler.exceptions.RevokeException;
 import it.cnr.iit.usagecontrolframework.contexthandler.exceptions.SessionManagerException;
@@ -37,30 +60,6 @@ import it.cnr.iit.xacmlutilities.Attribute;
 import it.cnr.iit.xacmlutilities.Category;
 import it.cnr.iit.xacmlutilities.policy.PolicyHelper;
 import it.cnr.iit.xacmlutilities.policy.utility.JAXBUtility;
-
-import iit.cnr.it.ucs.configuration.BasicConfiguration;
-import iit.cnr.it.ucsinterface.contexthandler.AbstractContextHandler;
-import iit.cnr.it.ucsinterface.contexthandler.STATUS;
-import iit.cnr.it.ucsinterface.contexthandler.scheduler.SchedulerInterface;
-import iit.cnr.it.ucsinterface.message.Message;
-import iit.cnr.it.ucsinterface.message.PART;
-import iit.cnr.it.ucsinterface.message.PURPOSE;
-import iit.cnr.it.ucsinterface.message.endaccess.EndAccessMessage;
-import iit.cnr.it.ucsinterface.message.endaccess.EndAccessResponse;
-import iit.cnr.it.ucsinterface.message.reevaluation.ReevaluationMessage;
-import iit.cnr.it.ucsinterface.message.reevaluation.ReevaluationResponse;
-import iit.cnr.it.ucsinterface.message.remoteretrieval.ACTION;
-import iit.cnr.it.ucsinterface.message.remoteretrieval.MessagePipCh;
-import iit.cnr.it.ucsinterface.message.startaccess.StartAccessMessage;
-import iit.cnr.it.ucsinterface.message.startaccess.StartAccessResponse;
-import iit.cnr.it.ucsinterface.message.tryaccess.TryAccessMessage;
-import iit.cnr.it.ucsinterface.message.tryaccess.TryAccessResponse;
-import iit.cnr.it.ucsinterface.message.tryaccess.TryAccessResponseContent;
-import iit.cnr.it.ucsinterface.pdp.PDPEvaluation;
-import iit.cnr.it.ucsinterface.pip.PIPCHInterface;
-import iit.cnr.it.ucsinterface.pip.exception.PIPException;
-import iit.cnr.it.ucsinterface.sessionmanager.OnGoingAttribute;
-import iit.cnr.it.ucsinterface.sessionmanager.SessionInterface;
 
 import oasis.names.tc.xacml.core.schema.wd_17.AttributeType;
 import oasis.names.tc.xacml.core.schema.wd_17.AttributesType;
@@ -1376,7 +1375,7 @@ final public class ContextHandlerLC extends AbstractContextHandler {
 
                 PolicyHelper policyHelper = PolicyHelper.buildPolicyHelper( session.getPolicySet() );
                 if( getSessionManagerInterface().checkSession( session.getId(),
-                    null ) != iit.cnr.it.ucsinterface.sessionmanager.ReevaluationTableInterface.STATUS.IN_REEVALUATION ) {
+                    null ) != it.cnr.iit.ucsinterface.sessionmanager.ReevaluationTableInterface.STATUS.IN_REEVALUATION ) {
                     getSessionManagerInterface().insertSession( session, attribute );
                 } else {
                     LOGGER.info( "Session is already under evaluation" );

@@ -16,11 +16,11 @@
 package iit.cnr.it.peprest.proxy;
 
 import iit.cnr.it.peprest.configuration.RequestManagerConf;
-import iit.cnr.it.ucsinterface.message.Message;
-import iit.cnr.it.ucsinterface.message.PURPOSE;
-import iit.cnr.it.ucsinterface.requestmanager.RequestManagerToExternalInterface;
-import iit.cnr.it.utility.RESTAsynchPostStatus;
-import iit.cnr.it.utility.RESTUtils;
+import it.cnr.iit.ucsinterface.message.Message;
+import it.cnr.iit.ucsinterface.message.PURPOSE;
+import it.cnr.iit.ucsinterface.requestmanager.RequestManagerToExternalInterface;
+import it.cnr.iit.utility.RESTAsynchPostStatus;
+import it.cnr.iit.utility.RESTUtils;
 
 public class ProxyRequestManager implements RequestManagerToExternalInterface {
   private String port;

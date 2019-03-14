@@ -6,14 +6,14 @@ import java.util.List;
 import java.util.Optional;
 import java.util.logging.Logger;
 
-import iit.cnr.it.ucsinterface.message.Message;
-import iit.cnr.it.ucsinterface.message.endaccess.EndAccessMessage;
-import iit.cnr.it.ucsinterface.message.endaccess.EndAccessResponse;
-import iit.cnr.it.ucsinterface.message.reevaluation.ReevaluationResponse;
-import iit.cnr.it.ucsinterface.message.startaccess.StartAccessMessage;
-import iit.cnr.it.ucsinterface.message.startaccess.StartAccessResponse;
-import iit.cnr.it.ucsinterface.message.tryaccess.TryAccessMessage;
-import iit.cnr.it.ucsinterface.message.tryaccess.TryAccessResponse;
+import it.cnr.iit.ucsinterface.message.Message;
+import it.cnr.iit.ucsinterface.message.endaccess.EndAccessMessage;
+import it.cnr.iit.ucsinterface.message.endaccess.EndAccessResponse;
+import it.cnr.iit.ucsinterface.message.reevaluation.ReevaluationResponse;
+import it.cnr.iit.ucsinterface.message.startaccess.StartAccessMessage;
+import it.cnr.iit.ucsinterface.message.startaccess.StartAccessResponse;
+import it.cnr.iit.ucsinterface.message.tryaccess.TryAccessMessage;
+import it.cnr.iit.ucsinterface.message.tryaccess.TryAccessResponse;
 
 import oasis.names.tc.xacml.core.schema.wd_17.DecisionType;
 

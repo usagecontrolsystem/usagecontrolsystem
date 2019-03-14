@@ -25,16 +25,15 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.logging.Logger;
 
+import it.cnr.iit.ucsinterface.obligationmanager.ObligationInterface;
+import it.cnr.iit.ucsinterface.pip.PIPBase;
+import it.cnr.iit.ucsinterface.pip.exception.PIPException;
 import it.cnr.iit.usagecontrolframework.configuration.xmlclasses.XMLPip;
+import it.cnr.iit.utility.Utility;
 import it.cnr.iit.xacmlutilities.Attribute;
 import it.cnr.iit.xacmlutilities.Category;
 import it.cnr.iit.xacmlutilities.DataType;
 import it.cnr.iit.xacmlutilities.policy.utility.JAXBUtility;
-
-import iit.cnr.it.ucsinterface.obligationmanager.ObligationInterface;
-import iit.cnr.it.ucsinterface.pip.PIPBase;
-import iit.cnr.it.ucsinterface.pip.exception.PIPException;
-import iit.cnr.it.utility.Utility;
 
 import oasis.names.tc.xacml.core.schema.wd_17.RequestType;
 

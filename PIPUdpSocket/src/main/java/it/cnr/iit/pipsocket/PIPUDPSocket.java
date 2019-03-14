@@ -15,9 +15,9 @@ import java.util.logging.Logger;
 
 import javax.xml.bind.JAXBException;
 
-import iit.cnr.it.ucsinterface.obligationmanager.ObligationInterface;
-import iit.cnr.it.ucsinterface.pip.PIPBase;
-import iit.cnr.it.ucsinterface.pip.exception.PIPException;
+import it.cnr.iit.ucsinterface.obligationmanager.ObligationInterface;
+import it.cnr.iit.ucsinterface.pip.PIPBase;
+import it.cnr.iit.ucsinterface.pip.exception.PIPException;
 import it.cnr.iit.usagecontrolframework.configuration.xmlclasses.XMLPip;
 import it.cnr.iit.xacmlutilities.Attribute;
 import it.cnr.iit.xacmlutilities.Category;

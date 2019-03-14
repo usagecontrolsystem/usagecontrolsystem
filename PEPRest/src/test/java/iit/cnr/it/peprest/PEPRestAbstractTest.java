@@ -19,11 +19,11 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import iit.cnr.it.peprest.proxy.ProxyRequestManager;
-import iit.cnr.it.ucsinterface.message.Message;
-import iit.cnr.it.ucsinterface.message.startaccess.StartAccessResponse;
-import iit.cnr.it.ucsinterface.message.tryaccess.TryAccessResponse;
-import iit.cnr.it.ucsinterface.message.tryaccess.TryAccessResponseContent;
-import iit.cnr.it.ucsinterface.pdp.PDPResponse;
+import it.cnr.iit.ucsinterface.message.Message;
+import it.cnr.iit.ucsinterface.message.startaccess.StartAccessResponse;
+import it.cnr.iit.ucsinterface.message.tryaccess.TryAccessResponse;
+import it.cnr.iit.ucsinterface.message.tryaccess.TryAccessResponseContent;
+import it.cnr.iit.ucsinterface.pdp.PDPResponse;
 
 import oasis.names.tc.xacml.core.schema.wd_17.DecisionType;
 import oasis.names.tc.xacml.core.schema.wd_17.ResponseType;

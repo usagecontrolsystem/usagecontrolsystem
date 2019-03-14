@@ -26,7 +26,7 @@ import com.google.common.io.Resources;
 import it.cnr.iit.usagecontrolframework.configuration.xmlclasses.Configuration;
 import it.cnr.iit.xacmlutilities.policy.utility.JAXBUtility;
 
-import iit.cnr.it.ucsinterface.ucs.AbstractProperties;
+import it.cnr.iit.ucsinterface.ucs.AbstractProperties;
 
 /**
  * This class is in charge of reading the xml provided for the description of

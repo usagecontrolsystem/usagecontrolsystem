@@ -20,9 +20,9 @@ import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 
-import iit.cnr.it.ucsinterface.message.Message;
-import iit.cnr.it.ucsinterface.message.endaccess.EndAccessResponse;
-import iit.cnr.it.ucsinterface.message.tryaccess.TryAccessResponse;
+import it.cnr.iit.ucsinterface.message.Message;
+import it.cnr.iit.ucsinterface.message.endaccess.EndAccessResponse;
+import it.cnr.iit.ucsinterface.message.tryaccess.TryAccessResponse;
 
 @RunWith( SpringJUnit4ClassRunner.class )
 @WebAppConfiguration

@@ -23,8 +23,8 @@ import java.util.logging.Logger;
 
 import it.cnr.iit.usagecontrolframework.configuration.xmlclasses.XMLPap;
 
-import iit.cnr.it.ucsinterface.constants.CONNECTION;
-import iit.cnr.it.ucsinterface.pap.PAPInterface;
+import it.cnr.iit.ucsinterface.constants.CONNECTION;
+import it.cnr.iit.ucsinterface.pap.PAPInterface;
 
 /**
  * This is the proxy to deal with the PAP.

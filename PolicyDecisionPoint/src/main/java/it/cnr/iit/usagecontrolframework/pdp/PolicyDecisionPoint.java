@@ -53,10 +53,10 @@ import it.cnr.iit.usagecontrolframework.configuration.xmlclasses.XMLPdp;
 import it.cnr.iit.xacmlutilities.policy.PolicyHelper;
 import it.cnr.iit.xacmlutilities.policy.utility.JAXBUtility;
 
-import iit.cnr.it.ucsinterface.contexthandler.STATUS;
-import iit.cnr.it.ucsinterface.pdp.AbstractPDP;
-import iit.cnr.it.ucsinterface.pdp.PDPEvaluation;
-import iit.cnr.it.ucsinterface.pdp.PDPResponse;
+import it.cnr.iit.ucsinterface.contexthandler.STATUS;
+import it.cnr.iit.ucsinterface.pdp.AbstractPDP;
+import it.cnr.iit.ucsinterface.pdp.PDPEvaluation;
+import it.cnr.iit.ucsinterface.pdp.PDPResponse;
 
 import oasis.names.tc.xacml.core.schema.wd_17.PolicyType;
 import oasis.names.tc.xacml.core.schema.wd_17.RuleType;

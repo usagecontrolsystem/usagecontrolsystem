@@ -73,7 +73,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>1.5.12.RELEASE</version>
+		<version>1.5.17.RELEASE</version>
 		<relativePath /> <!-- lookup parent from repository -->
 	</parent>
 
@@ -84,12 +84,12 @@
 	</properties>
 
 	<dependencies>
-		<dependency>
-			<groupId>iit.cnr.it.ucsinterface</groupId>
-			<artifactId>UCSInterface</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
-		</dependency>
-
+        <dependency>
+            <groupId>it.cnr.iit.ucslibraries</groupId>
+            <artifactId>UCSLibraries</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
+        
 		<dependency>
 			<groupId>io.springfox</groupId>
 			<artifactId>springfox-swagger2</artifactId>

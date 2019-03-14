@@ -8,9 +8,9 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import iit.cnr.it.ucsinterface.obligationmanager.ObligationInterface;
-import iit.cnr.it.ucsinterface.pip.PIPBase;
-import iit.cnr.it.ucsinterface.pip.exception.PIPException;
+import it.cnr.iit.ucsinterface.obligationmanager.ObligationInterface;
+import it.cnr.iit.ucsinterface.pip.PIPBase;
+import it.cnr.iit.ucsinterface.pip.exception.PIPException;
 import it.cnr.iit.pip.piprole.table.DatabaseConfiguration;
 import it.cnr.iit.pip.piprole.table.UserTable;
 import it.cnr.iit.sqlmiddleware.SQLMiddleware;

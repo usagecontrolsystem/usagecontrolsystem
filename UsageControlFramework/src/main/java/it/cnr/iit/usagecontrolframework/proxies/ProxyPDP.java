@@ -20,11 +20,11 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import iit.cnr.it.ucsinterface.constants.CONNECTION;
-import iit.cnr.it.ucsinterface.contexthandler.STATUS;
-import iit.cnr.it.ucsinterface.pdp.AbstractPDP;
-import iit.cnr.it.ucsinterface.pdp.PDPEvaluation;
-import iit.cnr.it.ucsinterface.pdp.PDPInterface;
+import it.cnr.iit.ucsinterface.constants.CONNECTION;
+import it.cnr.iit.ucsinterface.contexthandler.STATUS;
+import it.cnr.iit.ucsinterface.pdp.AbstractPDP;
+import it.cnr.iit.ucsinterface.pdp.PDPEvaluation;
+import it.cnr.iit.ucsinterface.pdp.PDPInterface;
 import it.cnr.iit.usagecontrolframework.configuration.xmlclasses.XMLPdp;
 
 /**

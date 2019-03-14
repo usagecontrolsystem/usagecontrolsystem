@@ -87,8 +87,8 @@
 
 	<dependencies>
 		<dependency>
-			<groupId>iit.cnr.it.ucsinterface</groupId>
-			<artifactId>UCSInterface</artifactId>
+			<groupId>it.cnr.iit.ucslibraries</groupId>
+			<artifactId>UCSLibraries</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
 

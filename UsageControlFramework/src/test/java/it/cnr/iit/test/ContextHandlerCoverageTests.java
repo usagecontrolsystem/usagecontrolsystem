@@ -16,12 +16,12 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import iit.cnr.it.ucsinterface.contexthandler.ContextHandlerInterface;
-import iit.cnr.it.ucsinterface.message.endaccess.EndAccessMessage;
-import iit.cnr.it.ucsinterface.message.reevaluation.ReevaluationMessage;
-import iit.cnr.it.ucsinterface.message.remoteretrieval.MessagePipCh;
-import iit.cnr.it.ucsinterface.message.startaccess.StartAccessMessage;
-import iit.cnr.it.ucsinterface.message.tryaccess.TryAccessMessage;
+import it.cnr.iit.ucsinterface.contexthandler.ContextHandlerInterface;
+import it.cnr.iit.ucsinterface.message.endaccess.EndAccessMessage;
+import it.cnr.iit.ucsinterface.message.reevaluation.ReevaluationMessage;
+import it.cnr.iit.ucsinterface.message.remoteretrieval.MessagePipCh;
+import it.cnr.iit.ucsinterface.message.startaccess.StartAccessMessage;
+import it.cnr.iit.ucsinterface.message.tryaccess.TryAccessMessage;
 import it.cnr.iit.usagecontrolframework.configuration.xmlclasses.Configuration;
 import it.cnr.iit.usagecontrolframework.contexthandler.ContextHandlerLC;
 import it.cnr.iit.usagecontrolframework.contexthandler.exceptions.RevokeException;

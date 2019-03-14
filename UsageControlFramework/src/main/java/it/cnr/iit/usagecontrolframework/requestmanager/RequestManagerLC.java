@@ -17,20 +17,19 @@ package it.cnr.iit.usagecontrolframework.requestmanager;
 
 import java.util.logging.Logger;
 
+import it.cnr.iit.ucs.configuration.BasicConfiguration;
+import it.cnr.iit.ucsinterface.message.Message;
+import it.cnr.iit.ucsinterface.message.endaccess.EndAccessMessage;
+import it.cnr.iit.ucsinterface.message.endaccess.EndAccessResponse;
+import it.cnr.iit.ucsinterface.message.reevaluation.ReevaluationMessage;
+import it.cnr.iit.ucsinterface.message.reevaluation.ReevaluationResponse;
+import it.cnr.iit.ucsinterface.message.remoteretrieval.MessagePipCh;
+import it.cnr.iit.ucsinterface.message.startaccess.StartAccessMessage;
+import it.cnr.iit.ucsinterface.message.startaccess.StartAccessResponse;
+import it.cnr.iit.ucsinterface.message.tryaccess.TryAccessMessage;
+import it.cnr.iit.ucsinterface.message.tryaccess.TryAccessResponse;
+import it.cnr.iit.ucsinterface.requestmanager.AsynchronousRequestManager;
 import it.cnr.iit.usagecontrolframework.configuration.xmlclasses.XMLRequestManager;
-
-import iit.cnr.it.ucs.configuration.BasicConfiguration;
-import iit.cnr.it.ucsinterface.message.Message;
-import iit.cnr.it.ucsinterface.message.endaccess.EndAccessMessage;
-import iit.cnr.it.ucsinterface.message.endaccess.EndAccessResponse;
-import iit.cnr.it.ucsinterface.message.reevaluation.ReevaluationMessage;
-import iit.cnr.it.ucsinterface.message.reevaluation.ReevaluationResponse;
-import iit.cnr.it.ucsinterface.message.remoteretrieval.MessagePipCh;
-import iit.cnr.it.ucsinterface.message.startaccess.StartAccessMessage;
-import iit.cnr.it.ucsinterface.message.startaccess.StartAccessResponse;
-import iit.cnr.it.ucsinterface.message.tryaccess.TryAccessMessage;
-import iit.cnr.it.ucsinterface.message.tryaccess.TryAccessResponse;
-import iit.cnr.it.ucsinterface.requestmanager.AsynchronousRequestManager;
 
 /**
  * The request manager is an asynchronous component.
@@ -81,7 +80,7 @@ public class RequestManagerLC extends AsynchronousRequestManager {
      * Initializes the request manager with a------ pool of threads
      *
      * @return true if everything goes fine, false in case of exceptions
-    
+
     private boolean initialize() {
     	try {
     		inquirers = Executors
@@ -94,7 +93,7 @@ public class RequestManagerLC extends AsynchronousRequestManager {
     		return false;
     	}
     	return true;
-    
+
     }
      */
 
@@ -203,12 +202,12 @@ public class RequestManagerLC extends AsynchronousRequestManager {
      *
      * @author antonio
      *
-    
+
     private class ContextHandlerInquirer implements Callable<Message> {
-    
+
     	@Override
     	public Message call() {
-    
+
     		while (true) {
     			// BEGIN parameter checking
     			if (!initialize) {
@@ -259,9 +258,9 @@ public class RequestManagerLC extends AsynchronousRequestManager {
      *
      * @author antonio
      *
-    
+
     private class AttributeSupplier implements Callable<Void> {
-    
+
     	@Override
     	public Void call() throws Exception {
     		while (true) {
@@ -308,7 +307,7 @@ public class RequestManagerLC extends AsynchronousRequestManager {
      * @param message
      *          the message returned by the context handler
      * @return the message to be used as response
-    
+
     private MessagePipCh createResponse(Message message) {
     	MessagePipCh chResponse = (MessagePipCh) message;
     	switch (chResponse.getAction()) {

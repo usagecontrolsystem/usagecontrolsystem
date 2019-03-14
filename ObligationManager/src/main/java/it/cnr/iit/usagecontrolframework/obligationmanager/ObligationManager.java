@@ -26,10 +26,10 @@ import com.google.gson.Gson;
 
 import it.cnr.iit.usagecontrolframework.configuration.xmlclasses.XMLObligationManager;
 
-import iit.cnr.it.ucsinterface.obligationmanager.ObligationInterface;
-import iit.cnr.it.ucsinterface.obligationmanager.ObligationManagerInterface;
-import iit.cnr.it.ucsinterface.pdp.PDPEvaluation;
-import iit.cnr.it.ucsinterface.pip.PIPOMInterface;
+import it.cnr.iit.ucsinterface.obligationmanager.ObligationInterface;
+import it.cnr.iit.ucsinterface.obligationmanager.ObligationManagerInterface;
+import it.cnr.iit.ucsinterface.pdp.PDPEvaluation;
+import it.cnr.iit.ucsinterface.pip.PIPOMInterface;
 
 /**
  * This class represents a possible implementation of the ObligationManager
@@ -190,7 +190,7 @@ final public class ObligationManager implements ObligationManagerInterface {
     private String extractClassName( String obligation ) {
         String className = obligation.split( "=" )[0];
         // FIXME
-        return "iit.cnr.it.ucsinterface.obligationmanager.obligationobjects."
+        return "it.cnr.iit.ucsinterface.obligationmanager.obligationobjects."
                 + className;
     }
 

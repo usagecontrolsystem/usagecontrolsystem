@@ -8,11 +8,11 @@ import java.util.concurrent.BlockingQueue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import iit.cnr.it.ucsinterface.contexthandler.ContextHandlerPIPInterface;
-import iit.cnr.it.ucsinterface.message.PART;
-import iit.cnr.it.ucsinterface.message.remoteretrieval.MessagePipCh;
-import iit.cnr.it.ucsinterface.message.remoteretrieval.PipChContent;
-import iit.cnr.it.ucsinterface.pip.exception.PIPException;
+import it.cnr.iit.ucsinterface.contexthandler.ContextHandlerPIPInterface;
+import it.cnr.iit.ucsinterface.message.PART;
+import it.cnr.iit.ucsinterface.message.remoteretrieval.MessagePipCh;
+import it.cnr.iit.ucsinterface.message.remoteretrieval.PipChContent;
+import it.cnr.iit.ucsinterface.pip.exception.PIPException;
 import it.cnr.iit.xacmlutilities.Attribute;
 import it.cnr.iit.xacmlutilities.Category;
 

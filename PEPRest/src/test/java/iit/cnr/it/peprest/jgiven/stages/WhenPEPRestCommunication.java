@@ -24,7 +24,7 @@ import com.tngtech.jgiven.annotation.Quoted;
 import com.tngtech.jgiven.integration.spring.JGivenStage;
 
 import iit.cnr.it.peprest.configuration.Configuration;
-import iit.cnr.it.ucsinterface.message.Message;
+import it.cnr.iit.ucsinterface.message.Message;
 
 @JGivenStage
 public class WhenPEPRestCommunication extends Stage<WhenPEPRestCommunication> {

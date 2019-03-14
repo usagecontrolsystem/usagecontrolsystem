@@ -1,12 +1,12 @@
 package iit.cnr.it.peprest;
 
-import static iit.cnr.it.ucsinterface.node.NodeInterface.ENDACCESSRESPONSE_REST;
-import static iit.cnr.it.ucsinterface.node.NodeInterface.ENDACCESS_REST;
-import static iit.cnr.it.ucsinterface.node.NodeInterface.ONGOINGRESPONSE_REST;
-import static iit.cnr.it.ucsinterface.node.NodeInterface.STARTACCESSRESPONSE_REST;
-import static iit.cnr.it.ucsinterface.node.NodeInterface.STARTACCESS_REST;
-import static iit.cnr.it.ucsinterface.node.NodeInterface.TRYACCESSRESPONSE_REST;
-import static iit.cnr.it.ucsinterface.node.NodeInterface.TRYACCESS_REST;
+import static it.cnr.iit.ucsinterface.node.NodeInterface.ENDACCESSRESPONSE_REST;
+import static it.cnr.iit.ucsinterface.node.NodeInterface.ENDACCESS_REST;
+import static it.cnr.iit.ucsinterface.node.NodeInterface.ONGOINGRESPONSE_REST;
+import static it.cnr.iit.ucsinterface.node.NodeInterface.STARTACCESSRESPONSE_REST;
+import static it.cnr.iit.ucsinterface.node.NodeInterface.STARTACCESS_REST;
+import static it.cnr.iit.ucsinterface.node.NodeInterface.TRYACCESSRESPONSE_REST;
+import static it.cnr.iit.ucsinterface.node.NodeInterface.TRYACCESS_REST;
 
 public enum PEPRestOperation {
 

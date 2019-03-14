@@ -18,8 +18,8 @@ package it.cnr.iit.usagecontrolframework.proxies;
 import java.lang.reflect.Constructor;
 import java.util.logging.Logger;
 
-import iit.cnr.it.ucsinterface.pip.PIPBase;
-import iit.cnr.it.ucsinterface.pip.PIPRetrieval;
+import it.cnr.iit.ucsinterface.pip.PIPBase;
+import it.cnr.iit.ucsinterface.pip.PIPRetrieval;
 import it.cnr.iit.usagecontrolframework.configuration.xmlclasses.XMLPip;
 
 /**

@@ -1,6 +1,6 @@
 package iit.cnr.it.peprest;
 
-import static iit.cnr.it.ucsinterface.node.NodeInterface.TRYACCESSRESPONSE_REST;
+import static it.cnr.iit.ucsinterface.node.NodeInterface.TRYACCESSRESPONSE_REST;
 import static oasis.names.tc.xacml.core.schema.wd_17.DecisionType.PERMIT;
 import static org.apache.http.HttpStatus.SC_OK;
 import static org.junit.Assert.assertEquals;
@@ -16,7 +16,7 @@ import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 
-import iit.cnr.it.ucsinterface.message.Message;
+import it.cnr.iit.ucsinterface.message.Message;
 
 @RunWith( SpringJUnit4ClassRunner.class )
 @WebAppConfiguration

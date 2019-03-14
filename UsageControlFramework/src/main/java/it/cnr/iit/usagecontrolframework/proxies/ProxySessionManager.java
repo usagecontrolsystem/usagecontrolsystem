@@ -25,10 +25,10 @@ import java.util.logging.Logger;
 import it.cnr.iit.usagecontrolframework.configuration.xmlclasses.XMLSessionManager;
 import it.cnr.iit.xacmlutilities.Attribute;
 
-import iit.cnr.it.ucsinterface.constants.CONNECTION;
-import iit.cnr.it.ucsinterface.sessionmanager.OnGoingAttribute;
-import iit.cnr.it.ucsinterface.sessionmanager.SessionInterface;
-import iit.cnr.it.ucsinterface.sessionmanager.SessionManagerInterface;
+import it.cnr.iit.ucsinterface.constants.CONNECTION;
+import it.cnr.iit.ucsinterface.sessionmanager.OnGoingAttribute;
+import it.cnr.iit.ucsinterface.sessionmanager.SessionInterface;
+import it.cnr.iit.ucsinterface.sessionmanager.SessionManagerInterface;
 
 /**
  * This is the proxy to be used to communicate with the session manager.

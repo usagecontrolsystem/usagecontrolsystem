@@ -28,10 +28,10 @@ import com.j256.ormlite.table.TableUtils;
 import it.cnr.iit.usagecontrolframework.configuration.xmlclasses.XMLSessionManager;
 import it.cnr.iit.xacmlutilities.Attribute;
 
-import iit.cnr.it.ucsinterface.sessionmanager.OnGoingAttribute;
-import iit.cnr.it.ucsinterface.sessionmanager.Session;
-import iit.cnr.it.ucsinterface.sessionmanager.SessionInterface;
-import iit.cnr.it.ucsinterface.sessionmanager.SessionManagerInterface;
+import it.cnr.iit.ucsinterface.sessionmanager.OnGoingAttribute;
+import it.cnr.iit.ucsinterface.sessionmanager.Session;
+import it.cnr.iit.ucsinterface.sessionmanager.SessionInterface;
+import it.cnr.iit.ucsinterface.sessionmanager.SessionManagerInterface;
 
 /**
  * Creates, updates, deletes and retrieves Sessions by waiting for Context
@@ -713,21 +713,17 @@ final public class SessionManagerDesktop implements SessionManagerInterface {
         return false;
     }
 
-    private boolean validStateAndArguments( Object... objects ) {
+    private void validStateAndArguments( Object... objects ) {
         if( !isInitialized() ) {
             Throwables.propagateIfPossible( new IllegalStateException( "SessionManager was not correctly initialized" ) );
         }
         if( !checkObjectsNotNull( objects ) ) {
-            throw new IllegalArgumentException( "Passed objects are not valid " );
+            Throwables.propagateIfPossible( new IllegalArgumentException( "Passed objects are not valid" ) );
         }
-        return true;
     }
 
     @Override
     public boolean isInitialized() {
-        if( !initialized ) {
-            throw new IllegalStateException( "SessionManager not initialized correctly" );
-        }
         return initialized;
     }
 

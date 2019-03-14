@@ -9,8 +9,8 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>iit.cnr.it.usagecontrolframework</groupId>
-	<artifactId>UsageControl</artifactId>
+	<groupId>it.cnr.iit.usagecontrolframework</groupId>
+	<artifactId>UsageControlFramework</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
@@ -18,8 +18,7 @@
 	<description>Getting Started Usage Control</description>
 
 	<modules>
-		<module>XACMLUtilities</module>
-		<module>UCSInterface</module>
+		<module>UCSLibraries</module>
 		<module>ObligationManager</module>
 		<module>PEPRest</module>
 		<module>PIPReader</module>

@@ -2,7 +2,7 @@ package iit.cnr.it.peprest.messagetrack;
 
 import java.util.Optional;
 
-import iit.cnr.it.ucsinterface.message.Message;
+import it.cnr.iit.ucsinterface.message.Message;
 
 /**
  * This is the interface that must be implemented by every object that wants to keep rtack of messages going from/to the
