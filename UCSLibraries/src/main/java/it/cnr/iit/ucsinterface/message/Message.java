@@ -17,11 +17,13 @@ package it.cnr.iit.ucsinterface.message;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.logging.Logger;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.google.gson.Gson;
+
+import it.cnr.iit.utility.Utility;
 
 /**
  * This is the class message.
@@ -160,8 +162,10 @@ public class Message implements Comparable<Message>, Serializable {
         // END parameter checking
         this.sourceAddress = source;
         this.destination = destination;
-        // TODO use jackson
-        this.motivation = new Gson().toJson( content );
+
+        Optional<String> optObj = Utility.getJsonStringFromObject( content, false );
+        this.motivation = optObj.isPresent() ? optObj.get() : "";
+
         initialized = true;
     }
 
@@ -187,8 +191,9 @@ public class Message implements Comparable<Message>, Serializable {
             return false;
         }
         // END parameter checking
-        // TODO use jackson
-        this.motivation = new Gson().toJson( motivation );
+        Optional<String> optObj = Utility.getJsonStringFromObject( motivation, false );
+        this.motivation = optObj.isPresent() ? optObj.get() : "";
+
         return true;
     }
 
