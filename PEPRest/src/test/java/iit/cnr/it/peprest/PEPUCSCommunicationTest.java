@@ -15,8 +15,13 @@ import org.mockito.Matchers;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.mock.web.MockHttpServletResponse;
 
+import iit.cnr.it.peprest.messagetrack.MessageStorage;
+import iit.cnr.it.peprest.messagetrack.Utility;
 import iit.cnr.it.ucsinterface.message.Message;
 import iit.cnr.it.ucsinterface.message.PURPOSE;
+import iit.cnr.it.ucsinterface.message.tryaccess.TryAccessMessage;
+
+import oasis.names.tc.xacml.core.schema.wd_17.DecisionType;
 
 @WebMvcTest( value = PEPUCSCommunication.class, secure = false )
 public class PEPUCSCommunicationTest extends PEPRestAbstractTest {
@@ -31,9 +36,12 @@ public class PEPUCSCommunicationTest extends PEPRestAbstractTest {
     public void tryAccessResponseRequestTriggersReceiveResponse() throws Exception {
         pepRest.responses = new ConcurrentHashMap<>();
         pepRest.unanswered = new ConcurrentHashMap<>();
+        pepRest.messageHistory = new MessageStorage();
 
-        Message tryAccessResponse = buildTryAccessResponseDeny();
-        // doCallRealMethod().when(pepRest).receiveResponse(Mockito.any(Message.class));
+        TryAccessMessage message = Utility.buildTryAccessMessage();
+        pepRest.messageHistory.addMessage( message );
+        Message tryAccessResponse = Utility.buildTryAccessResponse( message, DecisionType.DENY, "123456" );
+        doCallRealMethod().when( pepRest ).receiveResponse( Matchers.any( Message.class ) );
 
         MockHttpServletResponse mvcResponse = postResponseToPEPRest( tryAccessResponse, TRYACCESSRESPONSE_REST );
 
