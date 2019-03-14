@@ -29,6 +29,15 @@ import java.util.logging.Logger;
 
 import javax.xml.bind.JAXBException;
 
+import it.cnr.iit.usagecontrolframework.configuration.xmlclasses.XMLContextHandler;
+import it.cnr.iit.usagecontrolframework.contexthandler.exceptions.RevokeException;
+import it.cnr.iit.usagecontrolframework.contexthandler.exceptions.SessionManagerException;
+import it.cnr.iit.usagecontrolframework.contexthandler.exceptions.WrongOrderException;
+import it.cnr.iit.xacmlutilities.Attribute;
+import it.cnr.iit.xacmlutilities.Category;
+import it.cnr.iit.xacmlutilities.policy.PolicyHelper;
+import it.cnr.iit.xacmlutilities.policy.utility.JAXBUtility;
+
 import iit.cnr.it.ucs.configuration.BasicConfiguration;
 import iit.cnr.it.ucsinterface.contexthandler.AbstractContextHandler;
 import iit.cnr.it.ucsinterface.contexthandler.STATUS;
@@ -52,14 +61,7 @@ import iit.cnr.it.ucsinterface.pip.PIPCHInterface;
 import iit.cnr.it.ucsinterface.pip.exception.PIPException;
 import iit.cnr.it.ucsinterface.sessionmanager.OnGoingAttribute;
 import iit.cnr.it.ucsinterface.sessionmanager.SessionInterface;
-import it.cnr.iit.usagecontrolframework.configuration.xmlclasses.XMLContextHandler;
-import it.cnr.iit.usagecontrolframework.contexthandler.exceptions.RevokeException;
-import it.cnr.iit.usagecontrolframework.contexthandler.exceptions.SessionManagerException;
-import it.cnr.iit.usagecontrolframework.contexthandler.exceptions.WrongOrderException;
-import it.cnr.iit.xacmlutilities.Attribute;
-import it.cnr.iit.xacmlutilities.Category;
-import it.cnr.iit.xacmlutilities.policy.PolicyHelper;
-import it.cnr.iit.xacmlutilities.policy.utility.JAXBUtility;
+
 import oasis.names.tc.xacml.core.schema.wd_17.AttributeType;
 import oasis.names.tc.xacml.core.schema.wd_17.AttributesType;
 import oasis.names.tc.xacml.core.schema.wd_17.RequestType;
@@ -259,7 +261,7 @@ final public class ContextHandlerLC extends AbstractContextHandler {
         tryAccessResponseContent.setSessionId( sessionId );
         tryAccessResponseContent.setStatus( pdpResponse );
         tryAccessResponseContent.setPDPEvaluation( pdpEvaluation );
-        tryAccessResponse.setContent( tryAccessResponseContent );
+        tryAccessResponse.setTryAccessResponseContent( tryAccessResponseContent );
         if( tryAccess.getScheduled() ) {
             tryAccessResponse.setDestinationType();
         }

@@ -88,7 +88,7 @@ public class PEPRestServiceScenarioIntegrationTest
 
         // step 4 - post to PEP ReevaluationResponse with permit
         givenMessage.given().a_ReevaluationResponse_request_with_$_decision( DecisionType.PERMIT )
-            .with().an_associated_messageId( 2 );
+            .with().an_associated_messageId( 0 );
         given().and().a_mocked_context_handler_for_$( END_ACCESS.getOperationUri() )
             .with().a_success_response_status_$( HttpStatus.SC_OK );
 

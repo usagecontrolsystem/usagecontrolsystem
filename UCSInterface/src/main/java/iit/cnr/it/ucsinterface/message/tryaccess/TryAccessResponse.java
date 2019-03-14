@@ -40,7 +40,7 @@ public final class TryAccessResponse extends Message {
 
     // states if the message has been correctly created
     @JsonIgnore
-    private volatile boolean responseInitialized = false;
+    private boolean responseInitialized = false;
 
     public TryAccessResponse() {
         super( PART.CH.toString(), PART.PEP.toString() );
@@ -78,25 +78,6 @@ public final class TryAccessResponse extends Message {
             responseInitialized = true;
         }
     }
-
-    /**
-     * Sets the content of the tryAccessResponse message
-     *
-     * @param content
-     *          the content of the response
-     * @return true if everything goes ok, false otherwise
-    
-    public boolean setContent( TryAccessResponseContent content ) {
-        // BEGIN parameter checking
-        if( content == null || !content.isInitialized() || !isInitialized()
-                || !responseInitialized ) {
-            responseInitialized = false;
-            return false;
-        }
-        // END parameter checking
-        tryAccessResponseContent = content;
-        return true;
-    }     */
 
     @Override
     public int compareTo( Message o ) {

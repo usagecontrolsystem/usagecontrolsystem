@@ -34,79 +34,47 @@ import iit.cnr.it.ucsinterface.pdp.PDPEvaluation;
 
 @JsonIgnoreProperties( ignoreUnknown = true )
 public class TryAccessResponseContent {
+
     // the evaluation provided by the PDP
     private PDPEvaluation pdpEvaluation;
 
     // the id of the session
     private String sessionId;
+
     // the status of the tryAccess
     private String status;
-    // states if the response is a correct object or not
 
+    // currently not used
     @JsonIgnore
     private boolean initialized = false;
 
     /**
      * Basic constructor for a TryAccessResponseContent object
      */
-    public TryAccessResponseContent() {
-        initialized = true;
-    }
+    public TryAccessResponseContent() {}
 
-    public boolean setPDPEvaluation( PDPEvaluation pdpEvaluation ) {
+    public void setPDPEvaluation( PDPEvaluation pdpEvaluation ) {
         this.pdpEvaluation = pdpEvaluation;
-        return initialized = ( pdpEvaluation == null );
-    }
-
-    public boolean setSessionId( String sessionId ) {
-        // BEGIN parameter checking
-        if( sessionId == null || sessionId.isEmpty() ) {
-            initialized = false;
-            return false;
-        }
-        // END parameter checking
-        this.sessionId = sessionId;
-        return true;
-    }
-
-    public boolean setStatus( String status ) {
-        // BEGIN parameter checking
-        if( status == null || status.isEmpty() ) {
-            initialized = false;
-            return false;
-        }
-        // END parameter checking
-        this.status = status;
-        return true;
-    }
-
-    public String getStatus() {
-        // BEGIN parameter checking
-        if( !initialized ) {
-            return null;
-        }
-        // END parameter checking
-        return status;
-    }
-
-    public String getSessionId() {
-        // BEGIN parameter checking
-        if( !initialized ) {
-            return null;
-        }
-        // END parameter checking
-        return sessionId;
-    }
-
-    public boolean isInitialized() {
-        return initialized;
-    }
-
-    public void setContentInitialized( boolean contentInitialized ) {
-        this.initialized = contentInitialized;
     }
 
     public PDPEvaluation getPDPEvaluation() {
         return pdpEvaluation;
     }
+
+    public void setStatus( String status ) {
+        this.status = status;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setSessionId( String sessionId ) {
+        this.sessionId = sessionId;
+    }
+
+    public String getSessionId() {
+        return sessionId;
+    }
+
 }
