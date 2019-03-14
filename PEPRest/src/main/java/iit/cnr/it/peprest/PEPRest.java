@@ -71,14 +71,9 @@ public class PEPRest implements PEPInterface, Runnable {
     private RequestManagerToExternalInterface requestManager;
 
     // map of unanswered messages, the key is the id of the message
-    @VisibleForTesting
-    ConcurrentHashMap<String, Message> unanswered = new ConcurrentHashMap<>();
-
-    @VisibleForTesting
-    ConcurrentHashMap<String, Message> responses = new ConcurrentHashMap<>();
-
-    @VisibleForTesting
-    MessageStorage messageHistory = new MessageStorage();
+    private ConcurrentHashMap<String, Message> unanswered = new ConcurrentHashMap<>();
+    private ConcurrentHashMap<String, Message> responses = new ConcurrentHashMap<>();
+    private MessageStorage messageHistory = new MessageStorage();
 
     private Object mutex = new Object();
 
@@ -193,15 +188,13 @@ public class PEPRest implements PEPInterface, Runnable {
                 return message; // TODO: perhaps an exception
             }
         } else {
-            // generic to cater for multiple scenarios, e.g. pause/resume/pause/end etc...
-            // TODO: How do you resume or stop?
+            // generic case to cater for multiple scenarios, e.g. pause/resume/pause/end etc...
             if( chPepMessage.getPDPEvaluation().getResult().contains( PERMIT ) ) {
                 LOGGER.log( Level.INFO, "RESUME EXECUTION" );
             }
             if( chPepMessage.getPDPEvaluation().getResult().contains( DENY ) ) {
                 LOGGER.log( Level.INFO, "STOP EXECUTION" );
             }
-            // TODO: something should happen at the end, e.g. audit log, so we can assert for success
         }
 
         message.setMotivation( "OK" );
@@ -261,23 +254,17 @@ public class PEPRest implements PEPInterface, Runnable {
     private String handleStartAccessResponse( StartAccessResponse response ) {
         LOGGER.info( response.getID() + " Evaluation " + response.getPDPEvaluation().getResult() );
         return response.getPDPEvaluation().getResult();
-        // TODO: why do we need to return this? how can we signal back to the caller that the access started?
-        // TODO: something more should happen here
-        // what if the response is delayed and it is DENY?
-        // how do you reflect this to the client?
     }
 
     private String handleReevaluationResponse( ReevaluationResponse response ) {
         // TODO add the message in the queue and update the status
         onGoingEvaluation( response );
         return response.getPDPEvaluation().getResult();
-        // TODO: why do we need to return this? how can we signal back to the caller that the evaluation is on going
     }
 
     private String handleEndAccessResponse( EndAccessResponse response ) {
         LOGGER.info( response.getID() + " Evaluation " + response.getPDPEvaluation().getResult() );
         return response.getPDPEvaluation().getResult();
-        // TODO: why do we need to return this? how can we signal back to the caller that the access ended?
     }
 
     @Override

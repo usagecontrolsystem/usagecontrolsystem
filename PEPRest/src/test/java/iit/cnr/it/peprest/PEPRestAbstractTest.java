@@ -3,13 +3,10 @@ package iit.cnr.it.peprest;
 import java.io.IOException;
 import java.util.Arrays;
 
-import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -32,9 +29,7 @@ import oasis.names.tc.xacml.core.schema.wd_17.DecisionType;
 import oasis.names.tc.xacml.core.schema.wd_17.ResponseType;
 import oasis.names.tc.xacml.core.schema.wd_17.ResultType;
 
-@RunWith( SpringJUnit4ClassRunner.class )
-@WebAppConfiguration
-public class PEPRestAbstractTest {
+public abstract class PEPRestAbstractTest {
 
     protected static final String SESSION_ID_01 = "SessionId_01";
     protected static final String HOST = "localhost:";
@@ -62,12 +57,6 @@ public class PEPRestAbstractTest {
     }
 
     protected MockHttpServletResponse postResponseToPEPRest( Message jsonMessage, String uri ) throws Exception {
-        // FIXME: system outs and test
-        System.out.println( "RESPONSE: " + new ObjectMapper().writeValueAsString( jsonMessage ) );
-        if( jsonMessage instanceof TryAccessResponse ) {
-            TryAccessResponse response = (TryAccessResponse) jsonMessage;
-            System.out.println( "RESPONSE: " + response.getPDPEvaluation().getResult() );
-        }
         MvcResult mvcResult = mvc
             .perform( MockMvcRequestBuilders.post( uri ).contentType( MediaType.APPLICATION_JSON_VALUE )
                 .accept( MediaType.APPLICATION_JSON_VALUE )

@@ -122,7 +122,7 @@ public class ThenMessage extends Stage<ThenMessage> {
         try {
             assertEquals( "OK", new ObjectMapper().readValue( message.getMotivation(), String.class ) );
         } catch( Exception e ) {
-            e.printStackTrace();
+            fail( e.getLocalizedMessage() );
         }
         return self();
     }
