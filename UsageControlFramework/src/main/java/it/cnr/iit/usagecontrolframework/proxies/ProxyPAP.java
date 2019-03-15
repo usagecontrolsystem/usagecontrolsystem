@@ -228,10 +228,10 @@ final public class ProxyPAP extends Proxy implements PAPInterface {
     @Override
     public boolean ping() {
         if( initialized ) {
-            LOGGER.log( Level.INFO, "PAPProxy correctly configured" );
+            LOGGER.info( "PAPProxy correctly configured" );
             return true;
         } else {
-            LOGGER.log( Level.SEVERE, "PAPProxy wrongly configured" );
+            LOGGER.severe( "PAPProxy wrongly configured" );
             return false;
         }
     }
