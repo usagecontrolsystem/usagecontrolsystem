@@ -23,7 +23,6 @@ class ApiEntity
 
 
 AbstractMessage <|-- ReevaluationMessage
-MessageInterface <|-- AbstractMessage
 AbstractMessage <|-- AbstractRequestMessage
 AbstractMessage <|-- AbstractResponseMessage
 AbstractRequestMessage <|-- TryAccessRequestMessage
@@ -46,7 +45,7 @@ interface MessageInterface {
     getVersion() : String
 }
 
-abstract AbstractMessage {
+abstract AbstractMessage implements MessageInterface{
     - messageId : String
     ~ messageType : MESSAGE_TYPE
     ~ operationType : OPERATION_TYPE
