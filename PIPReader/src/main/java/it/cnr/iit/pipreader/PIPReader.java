@@ -25,10 +25,10 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.logging.Logger;
 
+import it.cnr.iit.ucs.configuration.xmlclasses.XMLPip;
 import it.cnr.iit.ucsinterface.obligationmanager.ObligationInterface;
 import it.cnr.iit.ucsinterface.pip.PIPBase;
 import it.cnr.iit.ucsinterface.pip.exception.PIPException;
-import it.cnr.iit.usagecontrolframework.configuration.xmlclasses.XMLPip;
 import it.cnr.iit.utility.JAXBUtility;
 import it.cnr.iit.utility.Utility;
 import it.cnr.iit.xacmlutilities.Attribute;

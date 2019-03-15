@@ -18,7 +18,7 @@ package it.cnr.iit.ucs.configuration;
 import java.security.InvalidParameterException;
 import java.util.logging.Logger;
 
-import it.cnr.iit.usagecontrolframework.configuration.xmlclasses.Configuration;
+import it.cnr.iit.ucs.configuration.xmlclasses.UCFConfiguration;
 
 /**
  * This is the class in charge of storing basic configuration informations.
@@ -39,8 +39,7 @@ import it.cnr.iit.usagecontrolframework.configuration.xmlclasses.Configuration;
  *
  */
 public final class BasicConfiguration {
-    private static final Logger LOGGER = Logger
-        .getLogger( BasicConfiguration.class.getName() );
+    private static final Logger LOGGER = Logger.getLogger( BasicConfiguration.class.getName() );
 
     private static BasicConfiguration instance = null;
 
@@ -75,7 +74,7 @@ public final class BasicConfiguration {
      * @param configuration
      *          the configuration object created after the conf.xml file
      */
-    public void configure( Configuration configuration ) {
+    public void configure( UCFConfiguration configuration ) {
         // BEGIN parameter checking
         if( configuration == null || configuration.getXmlGeneral().getIp() == null
                 || configuration.getXmlGeneral().getIp().isEmpty()

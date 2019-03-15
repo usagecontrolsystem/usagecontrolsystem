@@ -23,6 +23,9 @@ import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import it.cnr.iit.ucs.configuration.xmlclasses.UCFConfiguration;
+import it.cnr.iit.ucs.configuration.xmlclasses.XMLPip;
+import it.cnr.iit.ucs.configuration.xmlclasses.XMLRequestManager;
 import it.cnr.iit.ucsinterface.contexthandler.ContextHandlerInterface;
 import it.cnr.iit.ucsinterface.contexthandler.STATUS;
 import it.cnr.iit.ucsinterface.forwardingqueue.ForwardingQueueToCHInterface;
@@ -49,9 +52,6 @@ import it.cnr.iit.ucsinterface.pip.PIPRetrieval;
 import it.cnr.iit.ucsinterface.requestmanager.RequestManagerToCHInterface;
 import it.cnr.iit.ucsinterface.sessionmanager.SessionInterface;
 import it.cnr.iit.ucsinterface.sessionmanager.SessionManagerInterface;
-import it.cnr.iit.usagecontrolframework.configuration.xmlclasses.Configuration;
-import it.cnr.iit.usagecontrolframework.configuration.xmlclasses.XMLPip;
-import it.cnr.iit.usagecontrolframework.configuration.xmlclasses.XMLRequestManager;
 import it.cnr.iit.usagecontrolframework.contexthandler.ContextHandlerLC;
 import it.cnr.iit.usagecontrolframework.proxies.PIPBuilder;
 import it.cnr.iit.usagecontrolframework.proxies.ProxyPAP;
@@ -82,7 +82,7 @@ public class UCFBaseTests {
 
     /* Context Hanlder functions */
 
-    protected ContextHandlerLC getContextHandler( Configuration ucsConfiguration ) {
+    protected ContextHandlerLC getContextHandler( UCFConfiguration ucsConfiguration ) {
         ContextHandlerLC contextHandler = new ContextHandlerLC( ucsConfiguration.getCh() );
         return contextHandler;
     }
@@ -97,7 +97,7 @@ public class UCFBaseTests {
         contextHandler.setPIPRetrieval( getMockedPipRetrieval() );
     }
 
-    protected ContextHandlerLC getContextHandlerCorrectlyInitialized( Configuration ucsConfiguration, String policy,
+    protected ContextHandlerLC getContextHandlerCorrectlyInitialized( UCFConfiguration ucsConfiguration, String policy,
             String request ) {
         ContextHandlerLC contextHandler = getContextHandler( ucsConfiguration );
         initContextHandler( contextHandler );
@@ -269,13 +269,13 @@ public class UCFBaseTests {
         return pip;
     }
 
-    protected void addPips( Configuration ucsConfiguration, ContextHandlerLC contextHandler ) {
+    protected void addPips( UCFConfiguration ucsConfiguration, ContextHandlerLC contextHandler ) {
         for( PIPCHInterface pip : getPIPS( ucsConfiguration ) ) {
             contextHandler.addPip( pip );
         }
     }
 
-    protected void addMockedPips( Configuration ucsConfiguration, ContextHandlerLC contextHandler ) {
+    protected void addMockedPips( UCFConfiguration ucsConfiguration, ContextHandlerLC contextHandler ) {
         // TODO FIX THIS HACK
         String[] pips = { "virus", "telephone", "position", "role", "telephone", "time" };
         String[] pipVal = { "0", "0", "Pisa", "IIT", "0", "12:00" };
@@ -299,7 +299,7 @@ public class UCFBaseTests {
         return attr;
     }
 
-    protected ArrayList<PIPCHInterface> getPIPS( Configuration ucsConfiguration ) {
+    protected ArrayList<PIPCHInterface> getPIPS( UCFConfiguration ucsConfiguration ) {
         ArrayList<PIPCHInterface> pips = new ArrayList<>();
 
         for( XMLPip xmlPIP : ucsConfiguration.getPipList() ) {
@@ -312,19 +312,19 @@ public class UCFBaseTests {
         return pips;
     }
 
-    protected SessionManagerInterface getSessionManager( Configuration ucsConfiguration ) {
+    protected SessionManagerInterface getSessionManager( UCFConfiguration ucsConfiguration ) {
         SessionManagerInterface sessionManager = new ProxySessionManager( ucsConfiguration.getSessionManager() );
         assertTrue( sessionManager.isInitialized() );
         return sessionManager;
     }
 
-    protected PDPInterface getPDP( Configuration ucsConfiguration ) {
+    protected PDPInterface getPDP( UCFConfiguration ucsConfiguration ) {
         PDPInterface pdp = new ProxyPDP( ucsConfiguration.getPdp() );
         assertNotNull( pdp );
         return pdp;
     }
 
-    protected PAPInterface getPAP( Configuration ucsConfiguration ) {
+    protected PAPInterface getPAP( UCFConfiguration ucsConfiguration ) {
         PAPInterface pap = new ProxyPAP( ucsConfiguration.getPap() );
         assertNotNull( pap );
         return pap;
@@ -407,9 +407,9 @@ public class UCFBaseTests {
 
     /* Utility functions */
 
-    protected Configuration getUCSConfiguration( String ucsConfigFile )
+    protected UCFConfiguration getUCSConfiguration( String ucsConfigFile )
             throws JAXBException, URISyntaxException, IOException {
-        return (Configuration) loadXMLFromFile( ucsConfigFile, Configuration.class );
+        return (UCFConfiguration) loadXMLFromFile( ucsConfigFile, UCFConfiguration.class );
     }
 
     private Object loadXMLFromFile( String fileName, Class<?> className )

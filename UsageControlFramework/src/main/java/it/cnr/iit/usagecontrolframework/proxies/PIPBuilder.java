@@ -18,9 +18,9 @@ package it.cnr.iit.usagecontrolframework.proxies;
 import java.lang.reflect.Constructor;
 import java.util.logging.Logger;
 
+import it.cnr.iit.ucs.configuration.xmlclasses.XMLPip;
 import it.cnr.iit.ucsinterface.pip.PIPBase;
 import it.cnr.iit.ucsinterface.pip.PIPRetrieval;
-import it.cnr.iit.usagecontrolframework.configuration.xmlclasses.XMLPip;
 
 /**
  * This class is in charge of building up the various PIPs.

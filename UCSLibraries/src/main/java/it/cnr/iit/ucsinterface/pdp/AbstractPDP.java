@@ -15,8 +15,7 @@
  ******************************************************************************/
 package it.cnr.iit.ucsinterface.pdp;
 
-import it.cnr.iit.usagecontrolframework.configuration.xmlclasses.XMLPdp;
-
+import it.cnr.iit.ucs.configuration.xmlclasses.XMLPdp;
 import it.cnr.iit.ucsinterface.obligationmanager.ObligationManagerInterface;
 import it.cnr.iit.ucsinterface.pap.PAPInterface;
 

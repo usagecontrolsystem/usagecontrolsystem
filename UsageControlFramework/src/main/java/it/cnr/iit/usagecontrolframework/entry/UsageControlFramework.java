@@ -25,6 +25,15 @@ import java.util.logging.Logger;
 import org.springframework.scheduling.annotation.Async;
 
 import it.cnr.iit.ucs.configuration.BasicConfiguration;
+import it.cnr.iit.ucs.configuration.xmlclasses.UCFConfiguration;
+import it.cnr.iit.ucs.configuration.xmlclasses.XMLContextHandler;
+import it.cnr.iit.ucs.configuration.xmlclasses.XMLObligationManager;
+import it.cnr.iit.ucs.configuration.xmlclasses.XMLPap;
+import it.cnr.iit.ucs.configuration.xmlclasses.XMLPdp;
+import it.cnr.iit.ucs.configuration.xmlclasses.XMLPep;
+import it.cnr.iit.ucs.configuration.xmlclasses.XMLPip;
+import it.cnr.iit.ucs.configuration.xmlclasses.XMLRequestManager;
+import it.cnr.iit.ucs.configuration.xmlclasses.XMLSessionManager;
 import it.cnr.iit.ucsinterface.contexthandler.AbstractContextHandler;
 import it.cnr.iit.ucsinterface.forwardingqueue.ForwardingQueue;
 import it.cnr.iit.ucsinterface.message.Message;
@@ -48,17 +57,8 @@ import it.cnr.iit.ucsinterface.pip.PIPRetrieval;
 import it.cnr.iit.ucsinterface.requestmanager.AsynchronousRequestManager;
 import it.cnr.iit.ucsinterface.requestmanager.RequestManagerToExternalInterface;
 import it.cnr.iit.ucsinterface.ucs.UCSInterface;
-import it.cnr.iit.usagecontrolframework.configuration.xmlclasses.Configuration;
-import it.cnr.iit.usagecontrolframework.configuration.xmlclasses.XMLContextHandler;
-import it.cnr.iit.usagecontrolframework.configuration.xmlclasses.XMLObligationManager;
-import it.cnr.iit.usagecontrolframework.configuration.xmlclasses.XMLPap;
-import it.cnr.iit.usagecontrolframework.configuration.xmlclasses.XMLPdp;
-import it.cnr.iit.usagecontrolframework.configuration.xmlclasses.XMLPep;
-import it.cnr.iit.usagecontrolframework.configuration.xmlclasses.XMLPip;
-import it.cnr.iit.usagecontrolframework.configuration.xmlclasses.XMLRequestManager;
-import it.cnr.iit.usagecontrolframework.configuration.xmlclasses.XMLSessionManager;
+import it.cnr.iit.usagecontrolframework.configuration.UCFConfigurationLoader;
 import it.cnr.iit.usagecontrolframework.obligationmanager.ObligationManagerBuilder;
-import it.cnr.iit.usagecontrolframework.property.Properties;
 import it.cnr.iit.usagecontrolframework.proxies.PIPBuilder;
 import it.cnr.iit.usagecontrolframework.proxies.ProxyPAP;
 import it.cnr.iit.usagecontrolframework.proxies.ProxyPDP;
@@ -104,7 +104,7 @@ public final class UsageControlFramework implements UCSInterface {
     private static final Logger LOGGER = Logger
         .getLogger( UsageControlFramework.class.getName() );
 
-    private Configuration configuration;
+    private UCFConfiguration configuration;
 
     // local components
     private AbstractContextHandler contextHandler;
@@ -118,7 +118,7 @@ public final class UsageControlFramework implements UCSInterface {
     private ProxySessionManager proxySessionManager;
     private ProxyPDP proxyPDP;
     private ProxyPAP proxyPAP;
-    private Properties properties;
+    private UCFConfigurationLoader properties;
 
     private ForwardingQueue forwardingQueue;
 
@@ -129,9 +129,6 @@ public final class UsageControlFramework implements UCSInterface {
     // components
     // private PerformanceMonitorInterface performanceMonitor;
 
-    /**
-     * This variable has to be checked every time we try to access an object.
-     */
     private volatile boolean initialized = false;
 
     /**
@@ -231,9 +228,9 @@ public final class UsageControlFramework implements UCSInterface {
      *
      * @return the object that represents the configuration file.
      */
-    private Configuration retrieveConfiguration() {
-        properties = new Properties();
-        Configuration configuration = properties.getConfiguration();
+    private UCFConfiguration retrieveConfiguration() {
+        properties = new UCFConfigurationLoader();
+        UCFConfiguration configuration = properties.getConfiguration();
         if( configuration == null ) {
             LOGGER.log( Level.SEVERE,
                 "Configuration is null, properties was not correctly initialized" );

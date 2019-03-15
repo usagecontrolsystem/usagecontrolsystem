@@ -23,7 +23,7 @@ import java.util.logging.Logger;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
-import it.cnr.iit.utility.Utility;
+import it.cnr.iit.utility.JsonUtility;
 
 /**
  * This is the class message.
@@ -162,7 +162,7 @@ public class Message implements Comparable<Message>, Serializable {
         this.sourceAddress = source;
         this.destination = destination;
 
-        Optional<String> optObj = Utility.getJsonStringFromObject( content, false );
+        Optional<String> optObj = JsonUtility.getJsonStringFromObject( content, false );
         this.motivation = optObj.isPresent() ? optObj.get() : "";
 
         initialized = true;
@@ -190,7 +190,7 @@ public class Message implements Comparable<Message>, Serializable {
             return false;
         }
         // END parameter checking
-        Optional<String> optObj = Utility.getJsonStringFromObject( motivation, false );
+        Optional<String> optObj = JsonUtility.getJsonStringFromObject( motivation, false );
         this.motivation = optObj.isPresent() ? optObj.get() : "";
 
         return true;
