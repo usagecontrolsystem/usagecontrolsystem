@@ -23,7 +23,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import it.cnr.iit.profiler.LogProfiler;
 import it.cnr.iit.ucs.exceptions.NotFoundException;
 import it.cnr.iit.ucsinterface.message.endaccess.EndAccessMessage;
 import it.cnr.iit.ucsinterface.message.endaccess.EndAccessResponse;
@@ -36,6 +35,7 @@ import it.cnr.iit.ucsinterface.message.tryaccess.TryAccessMessage;
 import it.cnr.iit.ucsinterface.message.tryaccess.TryAccessResponse;
 import it.cnr.iit.ucsinterface.node.NodeInterface;
 import it.cnr.iit.usagecontrolframework.entry.UsageControlFramework;
+import it.cnr.iit.utility.LogProfiler;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiOperation;
