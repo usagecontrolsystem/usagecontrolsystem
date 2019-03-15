@@ -18,6 +18,7 @@ package it.cnr.iit.usagecontrolframework.requestmanager;
 import java.util.logging.Logger;
 
 import it.cnr.iit.ucs.configuration.BasicConfiguration;
+import it.cnr.iit.ucs.configuration.xmlclasses.XMLRequestManager;
 import it.cnr.iit.ucsinterface.message.Message;
 import it.cnr.iit.ucsinterface.message.endaccess.EndAccessMessage;
 import it.cnr.iit.ucsinterface.message.endaccess.EndAccessResponse;
@@ -29,7 +30,6 @@ import it.cnr.iit.ucsinterface.message.startaccess.StartAccessResponse;
 import it.cnr.iit.ucsinterface.message.tryaccess.TryAccessMessage;
 import it.cnr.iit.ucsinterface.message.tryaccess.TryAccessResponse;
 import it.cnr.iit.ucsinterface.requestmanager.AsynchronousRequestManager;
-import it.cnr.iit.usagecontrolframework.configuration.xmlclasses.XMLRequestManager;
 
 /**
  * The request manager is an asynchronous component.
@@ -80,7 +80,7 @@ public class RequestManagerLC extends AsynchronousRequestManager {
      * Initializes the request manager with a------ pool of threads
      *
      * @return true if everything goes fine, false in case of exceptions
-
+    
     private boolean initialize() {
     	try {
     		inquirers = Executors
@@ -93,7 +93,7 @@ public class RequestManagerLC extends AsynchronousRequestManager {
     		return false;
     	}
     	return true;
-
+    
     }
      */
 
@@ -112,9 +112,7 @@ public class RequestManagerLC extends AsynchronousRequestManager {
         }
         // END parameter checking
 
-        /**
-         * Case in which we have to forward a message to a remote node
-         */
+        // Case in which we have to forward a message to a remote node
         if( message instanceof TryAccessMessage
                 || message instanceof StartAccessMessage
                 || message instanceof EndAccessMessage
@@ -126,9 +124,8 @@ public class RequestManagerLC extends AsynchronousRequestManager {
                 || message instanceof StartAccessResponse
                 || message instanceof EndAccessResponse ) {
             Message original;
-            /**
-             * Case in which we have to forward a response to a remote node
-             */
+
+            // Case in which we have to forward a response to a remote node
             if( ( original = getForwardingQueue()
                 .getOriginalSource( message.getID() ) ) != null ) {
                 reswap( message, original );
@@ -155,7 +152,6 @@ public class RequestManagerLC extends AsynchronousRequestManager {
             } else {
                 getNodeInterface().sendMessage( reevaluation );
             }
-
         }
     }
 
@@ -202,12 +198,12 @@ public class RequestManagerLC extends AsynchronousRequestManager {
      *
      * @author antonio
      *
-
+    
     private class ContextHandlerInquirer implements Callable<Message> {
-
+    
     	@Override
     	public Message call() {
-
+    
     		while (true) {
     			// BEGIN parameter checking
     			if (!initialize) {
@@ -258,9 +254,9 @@ public class RequestManagerLC extends AsynchronousRequestManager {
      *
      * @author antonio
      *
-
+    
     private class AttributeSupplier implements Callable<Void> {
-
+    
     	@Override
     	public Void call() throws Exception {
     		while (true) {
@@ -291,7 +287,7 @@ public class RequestManagerLC extends AsynchronousRequestManager {
     	}
      */
 
-    /*
+    /**
     	private String buildRestResponseFunction(String source) {
     		StringBuilder string = new StringBuilder();
     		string.append("http://" + source + ":8080");
@@ -307,7 +303,7 @@ public class RequestManagerLC extends AsynchronousRequestManager {
      * @param message
      *          the message returned by the context handler
      * @return the message to be used as response
-
+    
     private MessagePipCh createResponse(Message message) {
     	MessagePipCh chResponse = (MessagePipCh) message;
     	switch (chResponse.getAction()) {

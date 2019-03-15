@@ -22,12 +22,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.logging.Logger;
 
+import it.cnr.iit.ucs.configuration.xmlclasses.XMLObligationManager;
 import it.cnr.iit.ucsinterface.obligationmanager.ObligationInterface;
 import it.cnr.iit.ucsinterface.obligationmanager.ObligationManagerInterface;
 import it.cnr.iit.ucsinterface.pdp.PDPEvaluation;
 import it.cnr.iit.ucsinterface.pip.PIPOMInterface;
-import it.cnr.iit.usagecontrolframework.configuration.xmlclasses.XMLObligationManager;
-import it.cnr.iit.utility.Utility;
+import it.cnr.iit.utility.JsonUtility;
 
 /**
  * This class represents a possible implementation of the ObligationManager
@@ -182,7 +182,7 @@ final public class ObligationManager implements ObligationManagerInterface {
             return null;
         }
         String json = getJson( obligation );
-        return Utility.loadObjectFromJsonString( json, clazz );
+        return JsonUtility.loadObjectFromJsonString( json, clazz );
     }
 
     private String extractClassName( String obligation ) {

@@ -22,11 +22,11 @@ import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import it.cnr.iit.ucs.configuration.xmlclasses.XMLSessionManager;
 import it.cnr.iit.ucsinterface.constants.CONNECTION;
 import it.cnr.iit.ucsinterface.sessionmanager.OnGoingAttributesInterface;
 import it.cnr.iit.ucsinterface.sessionmanager.SessionInterface;
 import it.cnr.iit.ucsinterface.sessionmanager.SessionManagerInterface;
-import it.cnr.iit.usagecontrolframework.configuration.xmlclasses.XMLSessionManager;
 import it.cnr.iit.xacmlutilities.Attribute;
 
 /**

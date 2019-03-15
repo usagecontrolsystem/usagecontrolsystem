@@ -4,7 +4,7 @@ import java.util.Map;
 
 import it.cnr.iit.sqlmiddleware.HIBERNATE_CONFIGURATIONS;
 import it.cnr.iit.sqlmiddlewareinterface.SQLMiddlewarePIPConfigurationInterface;
-import it.cnr.iit.usagecontrolframework.configuration.xmlclasses.XMLPip;
+import it.cnr.iit.ucs.configuration.xmlclasses.XMLPip;
 
 /**
  * This class represents the configuration for the SQLMiddleware.

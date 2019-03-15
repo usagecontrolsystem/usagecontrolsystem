@@ -18,9 +18,9 @@ package it.cnr.iit.usagecontrolframework.obligationmanager;
 import java.lang.reflect.Constructor;
 import java.util.List;
 
+import it.cnr.iit.ucs.configuration.xmlclasses.XMLObligationManager;
 import it.cnr.iit.ucsinterface.obligationmanager.ObligationManagerInterface;
 import it.cnr.iit.ucsinterface.pip.PIPOMInterface;
-import it.cnr.iit.usagecontrolframework.configuration.xmlclasses.XMLObligationManager;
 
 /**
  * This class is in charge of building the obligation manager.

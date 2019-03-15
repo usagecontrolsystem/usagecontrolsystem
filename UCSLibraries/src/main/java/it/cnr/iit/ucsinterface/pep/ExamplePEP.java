@@ -25,6 +25,7 @@ import java.util.concurrent.ThreadLocalRandom;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import it.cnr.iit.ucs.configuration.xmlclasses.XMLPep;
 import it.cnr.iit.ucsinterface.message.MEAN;
 import it.cnr.iit.ucsinterface.message.Message;
 import it.cnr.iit.ucsinterface.message.PART;
@@ -37,7 +38,6 @@ import it.cnr.iit.ucsinterface.message.tryaccess.TryAccessMessage;
 import it.cnr.iit.ucsinterface.message.tryaccess.TryAccessMessageBuilder;
 import it.cnr.iit.ucsinterface.message.tryaccess.TryAccessResponse;
 import it.cnr.iit.ucsinterface.requestmanager.RequestManagerToExternalInterface;
-import it.cnr.iit.usagecontrolframework.configuration.xmlclasses.XMLPep;
 import it.cnr.iit.utility.Utility;
 
 /**

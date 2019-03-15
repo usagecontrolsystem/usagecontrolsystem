@@ -51,17 +51,14 @@ import javax.xml.transform.stream.StreamSource;
  *
  */
 public final class JAXBUtility {
-    private static Logger LOGGER = Logger
-        .getLogger( JAXBUtility.class.getName() );
+    private static final Logger LOGGER = Logger.getLogger( JAXBUtility.class.getName() );
 
     // constant that represents the schema we're using
     public static final String SCHEMA = "urn:oasis:names:tc:xacml:3.0:core:schema:wd-17";
 
-    private static boolean DEBUG = false;
-
     /**
      * Takes an object which skeleton has been provided by the xjc utility and
-     * marshals it into a string that represnets the xml
+     * marshals it into a string that represents the xml
      *
      * @param clazz
      *          the class to which the object belongs
@@ -78,23 +75,15 @@ public final class JAXBUtility {
             String name, String schema ) throws JAXBException {
         JAXBContext jaxbContext = JAXBContext.newInstance( clazz );
         Marshaller jaxbMarshaller = jaxbContext.createMarshaller();
-
-        // output pretty printed
-        QName qNAME = new QName( schema, name );
         jaxbMarshaller.setProperty( Marshaller.JAXB_FORMATTED_OUTPUT, true );
+
+        QName qNAME = new QName( schema, name );
         JAXBElement<T> elem = new JAXBElement<>( qNAME, clazz, null, object );
-        // jaxbMarshaller.marshal(customer, file);
 
         StringWriter stringWriter = new StringWriter();
-        String policy;
         jaxbMarshaller.marshal( elem, stringWriter );
-        policy = stringWriter.getBuffer().toString();
-        if( DEBUG == true ) {
-            LOGGER.info( "------------------------" );
-            LOGGER.info( policy );
-        }
 
-        return policy;
+        return stringWriter.getBuffer().toString();
     }
 
     /**
@@ -115,6 +104,7 @@ public final class JAXBUtility {
         Source stream = new StreamSource(
             new ByteArrayInputStream( xmlString.getBytes() ) );
         JAXBElement<T> element = jaxbUnmarshaller.unmarshal( stream, clazz );
+
         return element.getValue();
     }
 

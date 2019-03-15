@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 
+import it.cnr.iit.ucs.configuration.xmlclasses.XMLContextHandler;
 import it.cnr.iit.ucsinterface.forwardingqueue.ForwardingQueueToCHInterface;
 import it.cnr.iit.ucsinterface.obligationmanager.ObligationManagerInterface;
 import it.cnr.iit.ucsinterface.pap.PAPInterface;
@@ -28,7 +29,6 @@ import it.cnr.iit.ucsinterface.pip.PIPRMInterface;
 import it.cnr.iit.ucsinterface.pip.PIPRetrieval;
 import it.cnr.iit.ucsinterface.requestmanager.RequestManagerToCHInterface;
 import it.cnr.iit.ucsinterface.sessionmanager.SessionManagerInterface;
-import it.cnr.iit.usagecontrolframework.configuration.xmlclasses.XMLContextHandler;
 
 /**
  * This is the abstract representation of the context handler object.

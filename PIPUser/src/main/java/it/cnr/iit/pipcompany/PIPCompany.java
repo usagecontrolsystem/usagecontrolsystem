@@ -15,7 +15,7 @@ import it.cnr.iit.pip.piprole.table.DatabaseConfiguration;
 import it.cnr.iit.pip.piprole.table.UserTable;
 import it.cnr.iit.sqlmiddleware.SQLMiddleware;
 import it.cnr.iit.sqlmiddlewareinterface.SQLMiddlewarePIPInterface;
-import it.cnr.iit.usagecontrolframework.configuration.xmlclasses.XMLPip;
+import it.cnr.iit.ucs.configuration.xmlclasses.XMLPip;
 import it.cnr.iit.utility.JAXBUtility;
 import it.cnr.iit.xacmlutilities.Attribute;
 import it.cnr.iit.xacmlutilities.Category;

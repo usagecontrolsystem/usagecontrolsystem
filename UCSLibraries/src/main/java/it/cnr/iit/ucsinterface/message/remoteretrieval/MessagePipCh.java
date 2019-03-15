@@ -21,7 +21,7 @@ import java.util.logging.Logger;
 
 import it.cnr.iit.ucsinterface.message.Message;
 import it.cnr.iit.ucsinterface.message.PART;
-import it.cnr.iit.utility.Utility;
+import it.cnr.iit.utility.JsonUtility;
 import it.cnr.iit.xacmlutilities.Attribute;
 
 /**
@@ -127,7 +127,7 @@ public final class MessagePipCh extends Message {
 
     @Override
     public String getMotivation() {
-        Optional<String> optObj = Utility.getJsonStringFromObject( content, false );
+        Optional<String> optObj = JsonUtility.getJsonStringFromObject( content, false );
         return optObj.isPresent() ? optObj.get() : "";
     }
 

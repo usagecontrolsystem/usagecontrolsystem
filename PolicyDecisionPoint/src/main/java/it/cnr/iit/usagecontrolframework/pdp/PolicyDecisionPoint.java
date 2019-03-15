@@ -49,9 +49,9 @@ import org.wso2.balana.finder.PolicyFinderModule;
 import org.wso2.balana.finder.PolicyFinderResult;
 import org.wso2.balana.xacml3.MultipleCtxResult;
 
-import it.cnr.iit.usagecontrolframework.configuration.xmlclasses.XMLPdp;
 import it.cnr.iit.utility.JAXBUtility;
 import it.cnr.iit.xacmlutilities.policy.PolicyHelper;
+import it.cnr.iit.ucs.configuration.xmlclasses.XMLPdp;
 import it.cnr.iit.ucsinterface.contexthandler.STATUS;
 import it.cnr.iit.ucsinterface.pdp.AbstractPDP;
 import it.cnr.iit.ucsinterface.pdp.PDPEvaluation;

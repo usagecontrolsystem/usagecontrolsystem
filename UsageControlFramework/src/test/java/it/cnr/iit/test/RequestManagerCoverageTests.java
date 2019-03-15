@@ -14,15 +14,15 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import it.cnr.iit.ucs.configuration.xmlclasses.UCFConfiguration;
 import it.cnr.iit.ucsinterface.message.Message;
-import it.cnr.iit.usagecontrolframework.configuration.xmlclasses.Configuration;
 import it.cnr.iit.usagecontrolframework.requestmanager.RequestManagerLC;
 
 @ActiveProfiles( "test" )
 @SpringBootTest
 @RunWith( SpringRunner.class )
 public class RequestManagerCoverageTests extends UCFBaseTests {
-    private Configuration ucsConfiguration;
+    private UCFConfiguration ucsConfiguration;
 
     @PostConstruct
     private void init() throws JAXBException, URISyntaxException, IOException {

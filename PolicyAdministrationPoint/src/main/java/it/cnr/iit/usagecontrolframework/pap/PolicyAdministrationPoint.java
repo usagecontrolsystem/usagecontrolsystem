@@ -26,8 +26,8 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import it.cnr.iit.usagecontrolframework.configuration.xmlclasses.XMLPap;
 import it.cnr.iit.utility.JAXBUtility;
+import it.cnr.iit.ucs.configuration.xmlclasses.XMLPap;
 import it.cnr.iit.ucsinterface.pap.PAPInterface;
 
 import oasis.names.tc.xacml.core.schema.wd_17.PolicyType;

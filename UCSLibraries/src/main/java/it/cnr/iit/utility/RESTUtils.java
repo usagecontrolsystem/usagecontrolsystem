@@ -101,7 +101,7 @@ final public class RESTUtils {
             Class<T> responseType ) {
         RestTemplate restTemplate = new RestTemplate();
 
-        Optional<String> strObj = Utility.getJsonStringFromObject( obj, false );
+        Optional<String> strObj = JsonUtility.getJsonStringFromObject( obj, false );
         String string = strObj.isPresent() ? strObj.get() : "";
 
         ResponseEntity<T> response = restTemplate.postForEntity( url, string,
@@ -196,7 +196,7 @@ final public class RESTUtils {
         headers.setContentType( MediaType.TEXT_PLAIN );
         AsyncRestTemplate restTemplate = new AsyncRestTemplate();
 
-        Optional<String> strObj = Utility.getJsonStringFromObject( obj, false );
+        Optional<String> strObj = JsonUtility.getJsonStringFromObject( obj, false );
         String string = strObj.isPresent() ? strObj.get() : "";
 
         HttpEntity<String> entity = new HttpEntity<>( string, headers );
@@ -233,7 +233,7 @@ final public class RESTUtils {
         headers.setContentType( MediaType.TEXT_PLAIN );
         AsyncRestTemplate restTemplate = new AsyncRestTemplate();
 
-        Optional<String> strObj = Utility.getJsonStringFromObject( obj, false );
+        Optional<String> strObj = JsonUtility.getJsonStringFromObject( obj, false );
         String string = strObj.isPresent() ? strObj.get() : "";
 
         HttpEntity<String> entity = new HttpEntity<>( string, headers );
