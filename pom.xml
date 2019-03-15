@@ -20,7 +20,6 @@
 	<modules>
 		<module>UCSLibraries</module>
 		<module>ObligationManager</module>
-		<module>PEPRest</module>
 		<module>PIPReader</module>
 		<module>PIPUdpSocket</module>
 		<module>PolicyAdministrationPoint</module>
