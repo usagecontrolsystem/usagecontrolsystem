@@ -13,11 +13,9 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  ******************************************************************************/
-package it.cnr.iit.usagecontrolframework.starter;
+package it.cnr.iit.usagecontrolframework.rest;
 
 import org.springframework.boot.SpringApplication;
-
-import it.cnr.iit.usagecontrolframework.rest.RESTApplicationDeployer;
 
 public class Starter {
 
