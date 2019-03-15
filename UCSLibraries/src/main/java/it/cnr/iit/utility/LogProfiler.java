@@ -1,5 +1,5 @@
 
-package it.cnr.iit.profiler;
+package it.cnr.iit.utility;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
@@ -10,11 +10,10 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.TimeZone;
-
-import org.slf4j.Logger;
+import java.util.logging.Logger;
 
 public class LogProfiler {
-    protected Logger LOG = (Logger) java.util.logging.Logger.getLogger( this.getClass().getName() );
+    protected Logger LOG = Logger.getLogger( this.getClass().getName() );
 
     private static LogProfiler instance;
 
