@@ -47,8 +47,7 @@ import it.cnr.iit.utility.RESTUtils;
  *
  */
 public class ProxyPEP extends Proxy implements PEPInterface {
-    private final Logger LOGGER = Logger
-        .getLogger( ProxyPEP.class.getName() );
+    private final Logger LOGGER = Logger.getLogger( ProxyPEP.class.getName() );
 
     private boolean initialized = false;
 
@@ -206,7 +205,7 @@ public class ProxyPEP extends Proxy implements PEPInterface {
     }
 
     @Override
-    public boolean ping() {
+    public boolean isValid() {
         return true;
     }
 

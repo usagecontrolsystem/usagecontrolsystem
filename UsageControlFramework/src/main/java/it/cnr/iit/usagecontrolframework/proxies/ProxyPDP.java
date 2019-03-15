@@ -37,8 +37,7 @@ import it.cnr.iit.ucsinterface.pdp.PDPInterface;
  *
  */
 final public class ProxyPDP extends Proxy implements PDPInterface {
-    private static final Logger LOGGER = Logger
-        .getLogger( ProxyPDP.class.getName() );
+    private static final Logger LOGGER = Logger.getLogger( ProxyPDP.class.getName() );
 
     private volatile boolean initialized = false;
     private String configuration;
@@ -174,14 +173,13 @@ final public class ProxyPDP extends Proxy implements PDPInterface {
     }
 
     @Override
-    public boolean ping() {
+    public boolean isValid() {
         if( initialized ) {
-            LOGGER.log( Level.INFO, "PDPProxy correctly configured" );
-            return true;
+            LOGGER.info( "PAPProxy correctly configured" );
         } else {
-            LOGGER.log( Level.SEVERE, "PDPProxy wrongly configured" );
-            return false;
+            LOGGER.severe( "PAPProxy wrongly configured" );
         }
+        return initialized;
     }
 
     @Override
