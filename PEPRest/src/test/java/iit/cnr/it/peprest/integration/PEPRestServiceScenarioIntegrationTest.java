@@ -6,7 +6,9 @@ import static iit.cnr.it.peprest.PEPRestOperation.START_ACCESS;
 import static iit.cnr.it.peprest.PEPRestOperation.START_ACCESS_RESPONSE;
 import static iit.cnr.it.peprest.PEPRestOperation.TRY_ACCESS;
 import static iit.cnr.it.peprest.PEPRestOperation.TRY_ACCESS_RESPONSE;
+import static iit.cnr.it.peprest.messagetrack.STATUS.ENDACCESS_SENT;
 import static iit.cnr.it.peprest.messagetrack.STATUS.STARTACCESS_PERMIT;
+import static iit.cnr.it.peprest.messagetrack.STATUS.STARTACCESS_SENT;
 import static iit.cnr.it.peprest.messagetrack.STATUS.TRYACCESS_SENT;
 
 import org.apache.http.HttpStatus;
@@ -24,7 +26,6 @@ import iit.cnr.it.peprest.jgiven.stages.GivenContextHandlerRestSimulator;
 import iit.cnr.it.peprest.jgiven.stages.GivenMessage;
 import iit.cnr.it.peprest.jgiven.stages.ThenMessage;
 import iit.cnr.it.peprest.jgiven.stages.WhenPEPRestCommunication;
-import iit.cnr.it.peprest.messagetrack.STATUS;
 
 import oasis.names.tc.xacml.core.schema.wd_17.DecisionType;
 
@@ -38,7 +39,7 @@ public class PEPRestServiceScenarioIntegrationTest
     GivenMessage givenMessage;
 
     @Test
-    public void a_startEvaluation_flow_with_try_and_start_access_messages_in_status_permit_succeeds() {
+    public void a_startEvaluation_flow_with_try_and_start_access_messages_in_status_permit_succeeds_but_reevaluation_with_deny_ends_access() {
         // step 1 - post to PEP a startEvaluation request
         given().a_test_configuration_for_request_with_policy()
             .with().a_test_session_id()
@@ -69,9 +70,9 @@ public class PEPRestServiceScenarioIntegrationTest
         // step 2.1 - check tryAccess message status is updated
         when().the_PEP_messageStatus_for_tryAccess_is_executed();
         then().a_message_body_is_returned()
-            .and().the_message_body_has_$_status( STATUS.STARTACCESS_SENT );
+            .and().the_message_body_has_$_status( STARTACCESS_SENT );
 
-        // step 2.1 - check #of messages in the session (at this stage 2 = 1 for tryAccess, 1 for startAccess)
+        // step 2.2 - check #of messages in the session (at this stage 2 = 1 for tryAccess, 1 for startAccess)
         when().the_PEP_messagesPerSession_is_executed();
         then().a_message_body_is_returned()
             .and().the_message_body_has_the_$_sent_message_Ids( 2 );
@@ -80,23 +81,31 @@ public class PEPRestServiceScenarioIntegrationTest
         givenMessage.given().a_StartAccessResponse_request_with_$_decision( DecisionType.PERMIT )
             .with().an_associated_messageId( 1 );
 
-        when().the_PEP_receiveResponse_is_executed_for_$( START_ACCESS_RESPONSE.getOperationUri() );
-        when().the_PEP_messageStatus_for_tryAccess_is_executed();
+        when().the_PEP_receiveResponse_is_executed_for_$( START_ACCESS_RESPONSE.getOperationUri() )
+            .and().the_PEP_messageStatus_for_tryAccess_is_executed();
+
         then().a_message_body_is_returned()
-            // TODO: .and().the_message_body_contains_$_decision( DecisionType.PERMIT );
             .and().the_message_body_has_$_status( STARTACCESS_PERMIT );
 
-        // step 4 - post to PEP ReevaluationResponse with permit
-        givenMessage.given().a_ReevaluationResponse_request_with_$_decision( DecisionType.DENY )
-            .with().an_associated_messageId( 0 );
+        // step 4 - post to PEP ReevaluationResponse with deny
+        givenMessage.given().a_ReevaluationResponse_request_with_$_decision( DecisionType.DENY );
         given().and().a_mocked_context_handler_for_$( END_ACCESS.getOperationUri() )
             .with().a_success_response_status_$( HttpStatus.SC_OK );
 
         when().the_PEP_receiveResponse_is_executed_for_$( ON_GOING_RESPONSE.getOperationUri() );
 
-        then().a_message_body_is_returned();
-        // TODO: .and().the_message_body_has_$_status( STATUS.ONGOINGACCESS_PERMIT );
         then().a_$_message_is_sent_to_context_handler( END_ACCESS )
             .and().the_asynch_HTTP_POST_request_for_$_was_received_by_context_handler( END_ACCESS.getOperationUri() );
+
+        // step 4.1 - check tryAccess message status is updated
+        when().the_PEP_messageStatus_for_tryAccess_is_executed();
+        then().a_message_body_is_returned()
+            .and().the_message_body_has_$_status( ENDACCESS_SENT );
+
+        // step 4.2 - check #of messages in the session
+        // (at this stage 4 = 1-tryAccess, 1-startAccess, 1-reevaluationResponse, 1-endAccess)
+        when().the_PEP_messagesPerSession_is_executed();
+        then().a_message_body_is_returned()
+            .and().the_message_body_has_the_$_sent_message_Ids( 4 );
     }
 }

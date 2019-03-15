@@ -15,6 +15,8 @@
  ******************************************************************************/
 package it.cnr.iit.ucsinterface.message.reevaluation;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import it.cnr.iit.ucsinterface.message.Message;
 import it.cnr.iit.ucsinterface.message.PART;
 import it.cnr.iit.ucsinterface.message.PURPOSE;
@@ -33,6 +35,7 @@ public class ReevaluationResponse extends Message {
     private volatile boolean chPepInitialized = false;
 
     // the PDP evaluation
+    @JsonProperty
     private PDPEvaluation pdpEvaluation;
 
     private String pepID;
@@ -83,6 +86,14 @@ public class ReevaluationResponse extends Message {
         }
     }
 
+    public ReevaluationResponse( String id ) {
+        super( PART.CH.toString(), PART.PEP.toString(), id );
+        if( isInitialized() ) {
+            purpose = PURPOSE.REEVALUATION_RESPONSE;
+            chPepInitialized = true;
+        }
+    }
+
     // ---------------------------------------------------------------------------
     // GETTERS and SETTERS
     // ---------------------------------------------------------------------------
@@ -113,5 +124,4 @@ public class ReevaluationResponse extends Message {
     public String getPepID() {
         return this.pepID;
     }
-
 }

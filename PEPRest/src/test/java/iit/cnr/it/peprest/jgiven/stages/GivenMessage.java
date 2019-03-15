@@ -13,7 +13,6 @@ import com.tngtech.jgiven.annotation.ExpectedScenarioState;
 import com.tngtech.jgiven.annotation.Hidden;
 import com.tngtech.jgiven.annotation.ProvidedScenarioState;
 
-import iit.cnr.it.peprest.PEPRestOperation;
 import it.cnr.iit.ucsinterface.message.Message;
 import it.cnr.iit.ucsinterface.message.endaccess.EndAccessResponse;
 import it.cnr.iit.ucsinterface.message.reevaluation.ReevaluationResponse;
@@ -21,6 +20,8 @@ import it.cnr.iit.ucsinterface.message.startaccess.StartAccessResponse;
 import it.cnr.iit.ucsinterface.message.tryaccess.TryAccessResponse;
 import it.cnr.iit.ucsinterface.message.tryaccess.TryAccessResponseContent;
 import it.cnr.iit.ucsinterface.pdp.PDPResponse;
+
+import iit.cnr.it.peprest.PEPRestOperation;
 
 import oasis.names.tc.xacml.core.schema.wd_17.DecisionType;
 import oasis.names.tc.xacml.core.schema.wd_17.ResponseType;
@@ -71,13 +72,11 @@ public class GivenMessage extends Stage<GivenMessage> {
     }
 
     protected ReevaluationResponse buildReevaluationResponse( DecisionType decisionType ) {
-        if( messageId == null ) {
-            messageId = UUID.randomUUID().toString();
-        }
         PDPResponse pdpEvaluation = buildPDPResponse( decisionType );
-        ReevaluationResponse reevaluationResponse = new ReevaluationResponse();
+        pdpEvaluation.setSessionId( sessionId );
+        ReevaluationResponse reevaluationResponse = new ReevaluationResponse( sessionId );
         reevaluationResponse.setPDPEvaluation( pdpEvaluation );
-        reevaluationResponse.setId( messageId );
+        reevaluationResponse.setId( UUID.randomUUID().toString() );
         return reevaluationResponse;
     }
 

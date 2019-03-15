@@ -30,12 +30,6 @@ import org.springframework.stereotype.Component;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Throwables;
 
-import iit.cnr.it.peprest.configuration.Configuration;
-import iit.cnr.it.peprest.configuration.PEPConf;
-import iit.cnr.it.peprest.messagetrack.MessageStorage;
-import iit.cnr.it.peprest.messagetrack.MessageStorageInterface;
-import iit.cnr.it.peprest.messagetrack.MessagesPerSession;
-import iit.cnr.it.peprest.proxy.ProxyRequestManager;
 import it.cnr.iit.ucsinterface.message.MEAN;
 import it.cnr.iit.ucsinterface.message.Message;
 import it.cnr.iit.ucsinterface.message.endaccess.EndAccessMessage;
@@ -49,6 +43,13 @@ import it.cnr.iit.ucsinterface.message.tryaccess.TryAccessResponse;
 import it.cnr.iit.ucsinterface.pep.PEPInterface;
 import it.cnr.iit.ucsinterface.requestmanager.RequestManagerToExternalInterface;
 import it.cnr.iit.utility.Utility;
+
+import iit.cnr.it.peprest.configuration.Configuration;
+import iit.cnr.it.peprest.configuration.PEPConf;
+import iit.cnr.it.peprest.messagetrack.MessageStorage;
+import iit.cnr.it.peprest.messagetrack.MessageStorageInterface;
+import iit.cnr.it.peprest.messagetrack.MessagesPerSession;
+import iit.cnr.it.peprest.proxy.ProxyRequestManager;
 
 import oasis.names.tc.xacml.core.schema.wd_17.DecisionType;
 
@@ -182,10 +183,11 @@ public class PEPRest implements PEPInterface, Runnable {
 
             message = requestManager.sendMessageToCH( endAccess );
             if( message.isDeliveredToDestination() ) {
-                unanswered.put( message.getID(), message );
+                unanswered.put( endAccess.getID(), endAccess );
+                messageHistory.addMessage( endAccess );
             } else {
                 LOGGER.log( Level.INFO, "isDeliveredToDestination: " + message.isDeliveredToDestination() );
-                return message; // TODO: perhaps an exception
+                throw Throwables.propagate( new IllegalAccessException( "Unable to deliver messsage to UCS" ) );
             }
         } else {
             // generic case to cater for multiple scenarios, e.g. pause/resume/pause/end etc...
@@ -257,7 +259,7 @@ public class PEPRest implements PEPInterface, Runnable {
     }
 
     private String handleReevaluationResponse( ReevaluationResponse response ) {
-        // TODO add the message in the queue and update the status
+        // TODO isn't this redundant because onGoingEvaluation() is called directly from the rest
         onGoingEvaluation( response );
         return response.getPDPEvaluation().getResult();
     }

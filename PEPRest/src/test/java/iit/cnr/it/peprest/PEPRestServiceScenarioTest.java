@@ -102,7 +102,7 @@ public class PEPRestServiceScenarioTest
             .and().a_mocked_context_handler_for_$( END_ACCESS.getOperationUri() )
             .with().a_fault_response();
 
-        when().PEPRest_service_$_is_executed( ON_GOING_RESPONSE );
+        when().PEPRest_service_$_execution_fails( ON_GOING_RESPONSE );
 
         then().the_Message_motivation_is_NOT_OK()
             .and().the_Message_is_not_placed_into_the_unanswered_queue()
