@@ -13,7 +13,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  ******************************************************************************/
-package it.cnr.iit.usagecontrolframework.proxies;
+package it.cnr.iit.usagecontrolframework.configuration;
 
 import java.lang.reflect.Constructor;
 import java.util.logging.Logger;
@@ -33,12 +33,9 @@ import it.cnr.iit.ucsinterface.pip.PIPRetrieval;
  *
  */
 final public class PIPBuilder {
-    private static final Logger LOGGER = Logger
-        .getLogger( PIPBuilder.class.getName() );
+    private static final Logger LOGGER = Logger.getLogger( PIPBuilder.class.getName() );
 
-    private PIPBuilder() {
-
-    }
+    private PIPBuilder() {}
 
     /**
      * Builds up a pip basing on the class set in the configuration file
@@ -56,18 +53,13 @@ final public class PIPBuilder {
         }
         // END parameter checking
 
-        Class<?> clazz;
-        PIPBase tmp;
         try {
-            // retrieve the name of the class
-            clazz = Class.forName( xmlPip.getClassName() );
-            Constructor<?> constructor;
-            // construct the PIPBase object with the proper constructor
-            constructor = clazz.getConstructor( String.class );
+            Class<?> clazz = Class.forName( xmlPip.getClassName() );
+            Constructor<?> constructor = clazz.getConstructor( String.class );
             LOGGER.info( "\n" + xmlPip.getXMLPipAsString() );
-            tmp = (PIPBase) constructor.newInstance( xmlPip.getXMLPipAsString() );
-            LOGGER.info( "PIP valid : " + ( tmp != null ) );
-            return tmp;
+            PIPBase pipBase = (PIPBase) constructor.newInstance( xmlPip.getXMLPipAsString() );
+            LOGGER.info( "PIP valid : " + ( pipBase != null ) );
+            return pipBase;
         } catch( Exception e ) {
             e.printStackTrace();
             return null;
@@ -93,16 +85,11 @@ final public class PIPBuilder {
         }
         // END parameter checking
 
-        Class<?> clazz;
-        PIPRetrieval tmp;
         try {
-            // retrieve the name of the class
-            clazz = Class.forName( xmlPip.getClassName() );
-            Constructor<?> constructor;
-            // construct the PIPBase object with the proper constructor
-            constructor = clazz.getConstructor( String.class );
-            tmp = (PIPRetrieval) constructor.newInstance( xmlPip.getXMLPipAsString() );
-            return tmp;
+            Class<?> clazz = Class.forName( xmlPip.getClassName() );
+            Constructor<?> constructor = clazz.getConstructor( String.class );
+            PIPRetrieval pipRetrieval = (PIPRetrieval) constructor.newInstance( xmlPip.getXMLPipAsString() );
+            return pipRetrieval;
         } catch( Exception e ) {
             e.printStackTrace();
             return null;

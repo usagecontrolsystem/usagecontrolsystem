@@ -171,8 +171,7 @@ public class ProxySessionManager extends Proxy
                 // TODO
                 return false;
             default:
-                LOGGER.log( Level.SEVERE,
-                    "WRONG communication " + xmlSessionManager.getCommunication() );
+                LOGGER.severe( "WRONG communication " + xmlSessionManager.getCommunication() );
                 return false;
         }
     }
@@ -197,8 +196,7 @@ public class ProxySessionManager extends Proxy
                 // TODO
                 return false;
             default:
-                LOGGER.log( Level.SEVERE,
-                    "WRONG communication " + xmlSessionManager.getCommunication() );
+                LOGGER.severe( "WRONG communication " + xmlSessionManager.getCommunication() );
                 return false;
         }
     }
@@ -255,8 +253,7 @@ public class ProxySessionManager extends Proxy
                 // TODO
                 return null;
             default:
-                LOGGER.log( Level.SEVERE,
-                    "WRONG communication " + xmlSessionManager.getCommunication() );
+                LOGGER.severe( "WRONG communication " + xmlSessionManager.getCommunication() );
                 return null;
         }
     }
@@ -555,7 +552,7 @@ public class ProxySessionManager extends Proxy
     }
 
     @Override
-    public boolean ping() {
+    public boolean isValid() {
         if( initialized ) {
             LOGGER.log( Level.INFO, "SessionManager HELLO" );
             return true;

@@ -18,7 +18,6 @@ package it.cnr.iit.usagecontrolframework.proxies;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import it.cnr.iit.ucs.configuration.xmlclasses.XMLPap;
@@ -41,8 +40,7 @@ import it.cnr.iit.ucsinterface.pap.PAPInterface;
  *
  */
 final public class ProxyPAP extends Proxy implements PAPInterface {
-    private static final Logger LOGGER = Logger
-        .getLogger( ProxyPAP.class.getName() );
+    private static final Logger LOGGER = Logger.getLogger( ProxyPAP.class.getName() );
 
     private boolean initialized = false;
     private String configuration;
@@ -97,8 +95,7 @@ final public class ProxyPAP extends Proxy implements PAPInterface {
                 }
                 break;
             default:
-                LOGGER.log( Level.SEVERE,
-                    "WRONG communication " + xmlPap.getCommunication() );
+                LOGGER.severe( "WRONG communication " + xmlPap.getCommunication() );
                 return;
         }
     }
@@ -226,14 +223,13 @@ final public class ProxyPAP extends Proxy implements PAPInterface {
     }
 
     @Override
-    public boolean ping() {
+    public boolean isValid() {
         if( initialized ) {
             LOGGER.info( "PAPProxy correctly configured" );
-            return true;
         } else {
             LOGGER.severe( "PAPProxy wrongly configured" );
-            return false;
         }
+        return initialized;
     }
 
 }

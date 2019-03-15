@@ -21,8 +21,8 @@ package it.cnr.iit.usagecontrolframework.proxies;
  * With this object we basically provide a skeleton for a proxy. A proxy is
  * basically a wrapper around the real implementation of the object and helps us
  * in dealing with the real object. <br>
- * The only functionality a Proxy abstract object <b>MUST</b> provide is a ping
- * function. The ping function is used to understand if the wrapped object has
+ * The only functionality a Proxy abstract object <b>MUST</b> provide is a isValid
+ * function. The isValid function is used to understand if the wrapped object has
  * been correctly initalized and if the wrapped object is ready.
  * </p>
  *
@@ -30,5 +30,5 @@ package it.cnr.iit.usagecontrolframework.proxies;
  *
  */
 public abstract class Proxy {
-    abstract public boolean ping();
+    abstract public boolean isValid();
 }
