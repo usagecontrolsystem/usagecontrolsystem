@@ -23,15 +23,16 @@ import com.tngtech.jgiven.annotation.ExpectedScenarioState;
 import com.tngtech.jgiven.annotation.Quoted;
 import com.tngtech.jgiven.integration.spring.JGivenStage;
 
+import it.cnr.iit.ucsinterface.message.Message;
+import it.cnr.iit.ucsinterface.message.endaccess.EndAccessMessage;
+import it.cnr.iit.ucsinterface.message.startaccess.StartAccessMessage;
+import it.cnr.iit.ucsinterface.message.tryaccess.TryAccessMessage;
+
 import iit.cnr.it.peprest.PEPRest;
 import iit.cnr.it.peprest.PEPRestOperation;
 import iit.cnr.it.peprest.configuration.Configuration;
 import iit.cnr.it.peprest.messagetrack.CallerResponse;
 import iit.cnr.it.peprest.messagetrack.STATUS;
-import it.cnr.iit.ucsinterface.message.Message;
-import it.cnr.iit.ucsinterface.message.endaccess.EndAccessMessage;
-import it.cnr.iit.ucsinterface.message.startaccess.StartAccessMessage;
-import it.cnr.iit.ucsinterface.message.tryaccess.TryAccessMessage;
 
 import oasis.names.tc.xacml.core.schema.wd_17.DecisionType;
 
@@ -163,10 +164,10 @@ public class ThenMessage extends Stage<ThenMessage> {
         return self();
     }
 
-    public ThenMessage the_message_body_has_$_status( STATUS messageSendStatus ) {
+    public ThenMessage the_message_is_in_$_status( STATUS messageSendStatus ) {
         try {
-            assertNotNull( messageBody );
-            CallerResponse callerResponse = mapFromJson( messageBody, CallerResponse.class );
+            assertNotNull( messageId );
+            CallerResponse callerResponse = pepRest.getMessageHistory().getMessageStatus( messageId ).get();
             assertNotNull( callerResponse.getStatus() );
             assertEquals( messageSendStatus, callerResponse.getStatus() );
         } catch( Exception e ) {
@@ -195,7 +196,6 @@ public class ThenMessage extends Stage<ThenMessage> {
     }
 
     public ThenMessage a_$_message_is_sent_to_context_handler( PEPRestOperation restOperation ) {
-        assertNotNull( pepRest.getMessageHistory() );
         assertTrue( pepRest.getUnanswered().size() > 0 );
         switch( restOperation ) {
             case TRY_ACCESS:
@@ -203,10 +203,14 @@ public class ThenMessage extends Stage<ThenMessage> {
                 assertTrue( messageType instanceof TryAccessMessage );
                 break;
             case START_ACCESS:
-                // TODO: check using msgHistory maybe assertTrue( messageType instanceof StartAccessMessage );
+                messageIds = pepRest.getMessagesPerSession().getMessagesPerSession( sessionId );
+                messageType = pepRest.getUnanswered().get( messageIds.get( 1 ) );
+                assertTrue( messageType instanceof StartAccessMessage );
                 break;
             case END_ACCESS:
-                // TODO: assertTrue( messageType instanceof EndAccessMessage );
+                messageIds = pepRest.getMessagesPerSession().getMessagesPerSession( sessionId );
+                messageType = pepRest.getUnanswered().get( messageIds.get( 3 ) );
+                assertTrue( messageType instanceof EndAccessMessage );
                 break;
             default:
                 fail( "Unknown message type in unanswered map" );

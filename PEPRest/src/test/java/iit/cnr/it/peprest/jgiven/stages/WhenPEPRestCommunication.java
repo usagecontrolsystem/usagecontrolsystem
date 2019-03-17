@@ -1,7 +1,6 @@
 package iit.cnr.it.peprest.jgiven.stages;
 
 import static iit.cnr.it.peprest.PEPRestOperation.FLOW_STATUS;
-import static iit.cnr.it.peprest.PEPRestOperation.MESSAGES_PER_SESSION;
 import static iit.cnr.it.peprest.PEPRestOperation.START_EVALUATION;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
@@ -23,8 +22,9 @@ import com.tngtech.jgiven.annotation.ProvidedScenarioState;
 import com.tngtech.jgiven.annotation.Quoted;
 import com.tngtech.jgiven.integration.spring.JGivenStage;
 
-import iit.cnr.it.peprest.configuration.Configuration;
 import it.cnr.iit.ucsinterface.message.Message;
+
+import iit.cnr.it.peprest.configuration.Configuration;
 
 @JGivenStage
 public class WhenPEPRestCommunication extends Stage<WhenPEPRestCommunication> {
@@ -76,18 +76,6 @@ public class WhenPEPRestCommunication extends Stage<WhenPEPRestCommunication> {
             assertNotNull( mvc );
             MockHttpServletResponse mvcResponse = getFromPEPRestcommunication( FLOW_STATUS.getOperationUri(), "messageId",
                 messageId );
-            messageBody = mvcResponse.getContentAsString();
-        } catch( Exception e ) {
-            fail( e.getLocalizedMessage() );
-        }
-        return self();
-    }
-
-    public WhenPEPRestCommunication the_PEP_messagesPerSession_is_executed() {
-        try {
-            assertNotNull( mvc );
-            MockHttpServletResponse mvcResponse = getFromPEPRestcommunication( MESSAGES_PER_SESSION.getOperationUri(),
-                "sessionId", sessionId );
             messageBody = mvcResponse.getContentAsString();
         } catch( Exception e ) {
             fail( e.getLocalizedMessage() );

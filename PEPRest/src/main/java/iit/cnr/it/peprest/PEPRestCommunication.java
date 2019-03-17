@@ -15,7 +15,6 @@
  ******************************************************************************/
 package iit.cnr.it.peprest;
 
-import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -85,23 +84,6 @@ public class PEPRestCommunication {
         return pepRest.getMessageHistory().getMessageStatus( messageId ).get();
     }
 
-    /**
-     * Retrieves the list of messages exchanged in a certain session
-     * TODO remove this after testings
-     * @return
-     * @throws InterruptedException
-     * @throws ExecutionException
-     */
-    @ApiOperation( httpMethod = "GET", value = "Starts the PEP" )
-    @ApiResponses( value = {
-        @ApiResponse( code = 500, message = "Invalid message received" ),
-        @ApiResponse( code = 200, message = "OK" ) } )
-    @RequestMapping( method = RequestMethod.GET, value = "/messagesPerSession" )
-    public List<String> getMessagesForSession( @RequestAttribute( value = "sessionId" ) String sessionId )
-            throws InterruptedException, ExecutionException {
-        return pepRest.getMessagesPerSession().getMessagesPerSession( sessionId );
-    }
-
     @ApiOperation( httpMethod = "POST", value = "Receives request from PEP for endaccess operation" )
     @ApiResponses( value = {
         @ApiResponse( code = 500, message = "Invalid message received" ),
@@ -117,22 +99,6 @@ public class PEPRestCommunication {
         // END parameter checking
         pepRest.end( sessionId );
     }
-
-//  @Bean
-//  public TaskExecutor taskExecutor() {
-//    return new SimpleAsyncTaskExecutor();
-//  }
-//
-//  @Bean
-//  public CommandLineRunner schedulingRunner(TaskExecutor executor) {
-//    return new CommandLineRunner() {
-//
-//      @Override
-//      public void run(String... arg0) throws Exception {
-//        executor.execute(pepRest);
-//      }
-//    };
-//  }
 
     @Autowired
     public void setPepRest( PEPRest pepRest ) {

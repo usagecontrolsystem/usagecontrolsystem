@@ -19,7 +19,6 @@ public enum PEPRestOperation {
     END_ACCESS_RESPONSE( ENDACCESSRESPONSE_REST ),
     START_EVALUATION( "/startEvaluation" ),
     FLOW_STATUS( "/flowStatus" ),
-    MESSAGES_PER_SESSION( "/messagesPerSession" ),
     FINISH( "/finish" ),
     IS_ALIVE( "/isAlive" ),
     SEND_SYNCHRONOUS( "/sendSynchronous" );
