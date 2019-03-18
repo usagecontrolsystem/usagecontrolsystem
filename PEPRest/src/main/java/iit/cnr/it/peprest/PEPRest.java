@@ -255,11 +255,12 @@ public class PEPRest implements PEPInterface, Runnable {
 
     private String handleStartAccessResponse( StartAccessResponse response ) {
         LOGGER.info( response.getID() + " Evaluation " + response.getPDPEvaluation().getResult() );
+        // TODO: what happens if the start access response is deny?
         return response.getPDPEvaluation().getResult();
     }
 
     private String handleReevaluationResponse( ReevaluationResponse response ) {
-        // TODO isn't this redundant because onGoingEvaluation() is called directly from the rest
+        // TODO isn't this redundant because onGoingEvaluation() is called directly from the rest controller
         onGoingEvaluation( response );
         return response.getPDPEvaluation().getResult();
     }
