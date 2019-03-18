@@ -56,13 +56,13 @@ public class PEPRestServiceScenarioTest
         given().a_test_configuration_for_request_with_policy()
             .with().a_test_session_id()
             .and().a_mocked_context_handler_for_$( restOperation.getOperationUri() )
-            .with().a_success_response_status_$( HttpStatus.SC_OK );
+            .with().a_success_response_status_code_of_$( HttpStatus.SC_OK );
 
         when().PEPRest_service_$_is_executed( restOperation );
 
         then().the_$_message_is_put_in_the_unanswered_queue( restOperation )
             .and().the_message_id_in_the_unanswered_queue_matches_the_one_sent()
-            .and().the_asynch_HTTP_POST_request_for_$_was_received_by_context_handler( restOperation.getOperationUri() );
+            .and().the_asynch_post_request_for_$_was_received_by_context_handler( restOperation.getOperationUri() );
     }
 
     @Test
@@ -77,7 +77,7 @@ public class PEPRestServiceScenarioTest
 
         then().an_illegal_access_exception_is_thrown()
             .and().the_Message_is_not_placed_into_the_unanswered_queue()
-            .but().the_asynch_HTTP_POST_request_for_$_was_received_by_context_handler( restOperation.getOperationUri() );
+            .but().the_asynch_post_request_for_$_was_received_by_context_handler( restOperation.getOperationUri() );
     }
 
     @Test
@@ -85,14 +85,14 @@ public class PEPRestServiceScenarioTest
         givenMessage.given().a_ReevaluationResponse_request_with_$_decision( DecisionType.PERMIT );
         given().and().a_test_configuration_for_request_with_policy()
             .and().a_mocked_context_handler_for_$( END_ACCESS.getOperationUri() )
-            .with().a_success_response_status_$( HttpStatus.SC_OK );
+            .with().a_success_response_status_code_of_$( HttpStatus.SC_OK );
 
         when().PEPRest_service_$_is_executed( ON_GOING_RESPONSE );
 
         then().the_$_message_is_put_in_the_unanswered_queue( END_ACCESS )
             .and().the_Message_motivation_is_OK()
             .and().the_message_id_in_the_unanswered_queue_matches_the_one_sent()
-            .and().the_asynch_HTTP_POST_request_for_$_was_received_by_context_handler( END_ACCESS.getOperationUri() );
+            .and().the_asynch_post_request_for_$_was_received_by_context_handler( END_ACCESS.getOperationUri() );
     }
 
     @Test
@@ -106,7 +106,7 @@ public class PEPRestServiceScenarioTest
 
         then().the_Message_motivation_is_NOT_OK()
             .and().the_Message_is_not_placed_into_the_unanswered_queue()
-            .but().the_asynch_HTTP_POST_request_for_$_was_received_by_context_handler( END_ACCESS.getOperationUri() );
+            .but().the_asynch_post_request_for_$_was_received_by_context_handler( END_ACCESS.getOperationUri() );
     }
 
     @Test
@@ -114,8 +114,8 @@ public class PEPRestServiceScenarioTest
     public void a_response_is_delivered_from_UCS( PEPRestOperation restOperation ) {
 
         givenMessage.given().create_permit_response_for_$( restOperation );
-
-        given().a_mocked_context_handler_for_$( START_ACCESS.getOperationUri() ).with().a_success_response_status_$( HttpStatus.SC_OK );
+        given().and().a_mocked_context_handler_for_$( START_ACCESS.getOperationUri() )
+            .with().a_success_response_status_code_of_$( HttpStatus.SC_OK );
 
         when().PEPRest_service_receive_response_is_executed( restOperation );
 

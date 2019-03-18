@@ -1,6 +1,7 @@
 package iit.cnr.it.peprest.jgiven.stages;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
+import static com.github.tomakehurst.wiremock.client.WireMock.exactly;
 import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static org.junit.Assert.assertEquals;
@@ -94,8 +95,14 @@ public class ThenMessage extends Stage<ThenMessage> {
         return self();
     }
 
-    public ThenMessage the_asynch_HTTP_POST_request_for_$_was_received_by_context_handler( @Quoted String operation ) {
+    public ThenMessage the_asynch_post_request_for_$_was_received_by_context_handler( @Quoted String operation ) {
         wireMockContextHandler.verifyThat( postRequestedFor( urlEqualTo( operation ) )
+            .withHeader( "Content-Type", equalTo( "application/json" ) ) );
+        return self();
+    }
+
+    public ThenMessage the_asynch_post_request_for_$_is_NOT_received_by_context_handler( @Quoted String operation ) {
+        wireMockContextHandler.verifyThat( exactly( 0 ), postRequestedFor( urlEqualTo( operation ) )
             .withHeader( "Content-Type", equalTo( "application/json" ) ) );
         return self();
     }
@@ -211,6 +218,27 @@ public class ThenMessage extends Stage<ThenMessage> {
                 messageIds = pepRest.getMessagesPerSession().getMessagesPerSession( sessionId );
                 messageType = pepRest.getUnanswered().get( messageIds.get( 3 ) );
                 assertTrue( messageType instanceof EndAccessMessage );
+                break;
+            default:
+                fail( "Unknown message type in unanswered map" );
+                break;
+        }
+        return self();
+    }
+
+    public ThenMessage a_$_message_is_NOT_sent_to_context_handler( PEPRestOperation restOperation ) {
+        switch( restOperation ) {
+            case START_ACCESS:
+                try {
+                    pepRest.getMessagesPerSession().getMessagesPerSession( sessionId );
+                } catch( Exception e ) {
+                    expectedException = e;
+                }
+                break;
+            case END_ACCESS:
+//                messageIds = pepRest.getMessagesPerSession().getMessagesPerSession( sessionId );
+//                messageType = pepRest.getUnanswered().get( messageIds.get( 3 ) );
+//                assertTrue( messageType instanceof EndAccessMessage );
                 break;
             default:
                 fail( "Unknown message type in unanswered map" );

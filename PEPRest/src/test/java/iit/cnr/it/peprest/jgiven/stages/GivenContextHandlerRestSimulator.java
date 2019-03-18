@@ -75,7 +75,7 @@ public class GivenContextHandlerRestSimulator extends Stage<GivenContextHandlerR
         return self();
     }
 
-    public GivenContextHandlerRestSimulator a_success_response_status_$( @Quoted int status ) {
+    public GivenContextHandlerRestSimulator a_success_response_status_code_of_$( @Quoted int status ) {
         assertNotNull( "context handler is not initialised", post );
         aResponse = aResponse()
             .withStatus( status )

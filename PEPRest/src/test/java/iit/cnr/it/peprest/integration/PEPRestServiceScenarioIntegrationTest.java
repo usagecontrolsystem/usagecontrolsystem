@@ -9,6 +9,7 @@ import static iit.cnr.it.peprest.PEPRestOperation.TRY_ACCESS_RESPONSE;
 import static iit.cnr.it.peprest.messagetrack.STATUS.ENDACCESS_SENT;
 import static iit.cnr.it.peprest.messagetrack.STATUS.STARTACCESS_PERMIT;
 import static iit.cnr.it.peprest.messagetrack.STATUS.STARTACCESS_SENT;
+import static iit.cnr.it.peprest.messagetrack.STATUS.TRYACCESS_DENY;
 import static iit.cnr.it.peprest.messagetrack.STATUS.TRYACCESS_SENT;
 import static oasis.names.tc.xacml.core.schema.wd_17.DecisionType.DENY;
 import static oasis.names.tc.xacml.core.schema.wd_17.DecisionType.PERMIT;
@@ -44,24 +45,24 @@ public class PEPRestServiceScenarioIntegrationTest
         given().a_test_configuration_for_request_with_policy()
             .with().a_test_session_id()
             .and().a_mocked_context_handler_for_$( TRY_ACCESS.getOperationUri() )
-            .with().a_success_response_status_$( HttpStatus.SC_OK );
+            .with().a_success_response_status_code_of_$( HttpStatus.SC_OK );
 
         when().the_PEP_startEvaluation_is_executed();
 
         then().a_$_message_is_sent_to_context_handler( TRY_ACCESS )
             .and().a_message_id_is_returned()
-            .and().the_asynch_HTTP_POST_request_for_$_was_received_by_context_handler( TRY_ACCESS.getOperationUri() )
+            .and().the_asynch_post_request_for_$_was_received_by_context_handler( TRY_ACCESS.getOperationUri() )
             .and().the_message_is_in_$_status( TRYACCESS_SENT );
 
         // step 2 - post to PEP a TryAccessResponse with permit
         givenMessage.given().a_TryAccessResponse_request_with_$_decision( PERMIT );
         given().and().a_mocked_context_handler_for_$( START_ACCESS.getOperationUri() )
-            .with().a_success_response_status_$( HttpStatus.SC_OK );
+            .with().a_success_response_status_code_of_$( HttpStatus.SC_OK );
 
         when().the_PEP_receiveResponse_is_executed_for_$( TRY_ACCESS_RESPONSE.getOperationUri() );
 
         then().a_$_message_is_sent_to_context_handler( START_ACCESS )
-            .and().the_asynch_HTTP_POST_request_for_$_was_received_by_context_handler( START_ACCESS.getOperationUri() )
+            .and().the_asynch_post_request_for_$_was_received_by_context_handler( START_ACCESS.getOperationUri() )
             .and().the_message_is_in_$_status( STARTACCESS_SENT );
 
         // step 3 - post to PEP StartAccessResponse with permit
@@ -75,12 +76,39 @@ public class PEPRestServiceScenarioIntegrationTest
         // step 4 - post to PEP ReevaluationResponse with deny
         givenMessage.given().a_ReevaluationResponse_request_with_$_decision( DENY );
         given().and().a_mocked_context_handler_for_$( END_ACCESS.getOperationUri() )
-            .with().a_success_response_status_$( HttpStatus.SC_OK );
+            .with().a_success_response_status_code_of_$( HttpStatus.SC_OK );
 
         when().the_PEP_receiveResponse_is_executed_for_$( ON_GOING_RESPONSE.getOperationUri() );
 
         then().a_$_message_is_sent_to_context_handler( END_ACCESS )
-            .and().the_asynch_HTTP_POST_request_for_$_was_received_by_context_handler( END_ACCESS.getOperationUri() )
+            .and().the_asynch_post_request_for_$_was_received_by_context_handler( END_ACCESS.getOperationUri() )
             .and().the_message_is_in_$_status( ENDACCESS_SENT );
+    }
+
+    @Test
+    public void a_startEvaluation_flow_ends_when_try_access_response_has_status_deny() {
+        // step 1 - post to PEP a startEvaluation request
+        given().a_test_configuration_for_request_with_policy()
+            .with().a_test_session_id()
+            .and().a_mocked_context_handler_for_$( TRY_ACCESS.getOperationUri() )
+            .with().a_success_response_status_code_of_$( HttpStatus.SC_OK );
+
+        when().the_PEP_startEvaluation_is_executed();
+
+        then().a_$_message_is_sent_to_context_handler( TRY_ACCESS )
+            .and().a_message_id_is_returned()
+            .and().the_asynch_post_request_for_$_was_received_by_context_handler( TRY_ACCESS.getOperationUri() )
+            .and().the_message_is_in_$_status( TRYACCESS_SENT );
+
+        // step 2 - post to PEP a TryAccessResponse with deny
+        givenMessage.given().a_TryAccessResponse_request_with_$_decision( DENY );
+        given().and().a_mocked_context_handler_for_$( START_ACCESS.getOperationUri() )
+            .with().a_success_response_status_code_of_$( HttpStatus.SC_OK );
+
+        when().the_PEP_receiveResponse_is_executed_for_$( TRY_ACCESS_RESPONSE.getOperationUri() );
+
+        then().a_$_message_is_NOT_sent_to_context_handler( START_ACCESS )
+            .and().the_asynch_post_request_for_$_is_NOT_received_by_context_handler( START_ACCESS.getOperationUri() )
+            .and().the_message_is_in_$_status( TRYACCESS_DENY );
     }
 }
