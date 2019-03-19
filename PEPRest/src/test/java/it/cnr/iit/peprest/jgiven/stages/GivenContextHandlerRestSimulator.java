@@ -5,6 +5,8 @@ import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathMatching;
 import static org.junit.Assert.assertNotNull;
 
+import java.io.File;
+import java.util.Optional;
 import java.util.UUID;
 
 import com.github.tomakehurst.wiremock.client.MappingBuilder;
@@ -17,9 +19,10 @@ import com.tngtech.jgiven.annotation.ProvidedScenarioState;
 import com.tngtech.jgiven.annotation.Quoted;
 import com.tngtech.jgiven.annotation.ScenarioRule;
 
-import it.cnr.iit.peprest.configuration.Configuration;
+import it.cnr.iit.peprest.PEPRest;
+import it.cnr.iit.peprest.configuration.PEPRestConfiguration;
 import it.cnr.iit.peprest.jgiven.rules.MockedHttpServiceTestRule;
-import it.cnr.iit.utility.Utility;
+import it.cnr.iit.utility.JsonUtility;
 
 public class GivenContextHandlerRestSimulator extends Stage<GivenContextHandlerRestSimulator> {
 
@@ -30,7 +33,7 @@ public class GivenContextHandlerRestSimulator extends Stage<GivenContextHandlerR
     WireMock wireMockContextHandler;
 
     @ProvidedScenarioState
-    Configuration configuration;
+    PEPRestConfiguration configuration;
 
     @ProvidedScenarioState
     String sessionId;
@@ -45,7 +48,12 @@ public class GivenContextHandlerRestSimulator extends Stage<GivenContextHandlerR
 
     private void loadConfiguration() {
         if( configuration == null ) {
-            configuration = Utility.retrieveConfiguration( "conf.xml", Configuration.class );
+            File confFile = new File( PEPRest.class.getClassLoader().getResource( "conf.json" ).getFile() );
+            Optional<PEPRestConfiguration> optPEPRestConfiguration = JsonUtility.loadObjectFromJsonFile( confFile,
+                PEPRestConfiguration.class );
+            if( optPEPRestConfiguration.isPresent() ) {
+                configuration = optPEPRestConfiguration.get();
+            }
         }
     }
 
@@ -53,14 +61,14 @@ public class GivenContextHandlerRestSimulator extends Stage<GivenContextHandlerR
         if( configuration == null ) {
             loadConfiguration();
         }
-        return configuration.getRMConf().getIp();
+        return configuration.getRequestManagerConf().getIp();
     }
 
     private int getPort() {
         if( configuration == null ) {
             loadConfiguration();
         }
-        return Integer.parseInt( configuration.getRMConf().getPort() );
+        return Integer.parseInt( configuration.getRequestManagerConf().getPort() );
     }
 
     public GivenContextHandlerRestSimulator a_test_configuration_for_request_with_policy() {

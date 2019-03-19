@@ -16,6 +16,7 @@
 package it.cnr.iit.peprest;
 
 import java.util.concurrent.ExecutionException;
+import java.util.logging.Logger;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -40,7 +41,8 @@ import io.swagger.annotations.ApiResponses;
 @RequestMapping( "/" )
 @EnableAutoConfiguration
 public class PEPRestCommunication {
-    boolean initialized = false;
+
+    protected static final Logger LOGGER = Logger.getLogger( PEPRestCommunication.class.getName() );
 
     private PEPRest pepRest;
 
@@ -81,6 +83,12 @@ public class PEPRestCommunication {
     @RequestMapping( method = RequestMethod.GET, value = "/flowStatus" )
     public CallerResponse getMessageStatus( @RequestAttribute( value = "messageId" ) String messageId )
             throws InterruptedException, ExecutionException {
+        // BEGIN parameter checking
+        if( messageId == null ) {
+            LOGGER.severe( "messageId is null" );
+            throw new HttpMessageNotReadableException( HttpStatus.NO_CONTENT + " : No message id" );
+        }
+        // END parameter checking
         return pepRest.getMessageHistory().getMessageStatus( messageId ).get();
     }
 
@@ -93,7 +101,7 @@ public class PEPRestCommunication {
             throws InterruptedException, ExecutionException {
         // BEGIN parameter checking
         if( sessionId == null ) {
-            System.out.println( "SESSION is null" );
+            LOGGER.severe( "SESSION is null" );
             throw new HttpMessageNotReadableException( HttpStatus.NO_CONTENT + " : No session id" );
         }
         // END parameter checking

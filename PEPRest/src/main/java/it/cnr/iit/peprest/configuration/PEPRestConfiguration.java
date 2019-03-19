@@ -15,53 +15,22 @@
  ******************************************************************************/
 package it.cnr.iit.peprest.configuration;
 
-public class PEPConf {
-    private String ip;
+final public class PEPRestConfiguration {
 
-    private String port;
+    private PEPConf pepConf;
 
-    private String response;
+    private RequestManagerConf requestManagerConf;
 
-    private String revoke;
-
-    private String statusChanged;
-
-    private String policyPath;
-
-    private String requestPath;
-
-    private String id;
-
-    public String getIp() {
-        return ip;
+    public PEPRestConfiguration() {
+        super();
     }
 
-    public String getPort() {
-        return port;
+    public PEPConf getPepConf() {
+        return pepConf;
     }
 
-    public String getResponse() {
-        return response;
-    }
-
-    public String getStatusChanged() {
-        return statusChanged;
-    }
-
-    public String getRevoke() {
-        return revoke;
-    }
-
-    public String getPolicyPath() {
-        return policyPath;
-    }
-
-    public String getRequestPath() {
-        return requestPath;
-    }
-
-    public String getId() {
-        return id;
+    public RequestManagerConf getRequestManagerConf() {
+        return requestManagerConf;
     }
 
 }

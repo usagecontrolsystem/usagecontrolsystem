@@ -1,0 +1,19 @@
+{
+  "pepConf" : {
+    "ip" : "localhost",
+    "port" : "9999",
+    "response" : "",
+    "revoke" : "HARD",
+    "statusChanged" : "onGoingEvaluation",
+    "policyPath" : "policies/PolicyWatch.xml",
+    "requestPath" : "requests/RequestAntonio.xml",
+    "id" : "1"
+  },
+  "requestManagerConf" : {
+    "ip" : "localhost",
+    "port" : "8080",
+    "tryAccess" : "tryAccess",
+    "startAccess" : "startAccess",
+    "endAccess" : "endAccess"
+  }
+}

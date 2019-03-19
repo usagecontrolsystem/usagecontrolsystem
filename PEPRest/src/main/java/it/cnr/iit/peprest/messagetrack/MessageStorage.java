@@ -23,10 +23,11 @@ import oasis.names.tc.xacml.core.schema.wd_17.DecisionType;
  *
  */
 public class MessageStorage implements MessageStorageInterface, MessagesPerSession {
-    private HashMap<String, MessageInformations> messageFlow = new HashMap<>();
-    private HashMap<String, LinkedList<String>> messagesPerSession = new HashMap<>();
 
     private static final Logger LOGGER = Logger.getLogger( MessageStorage.class.getName() );
+
+    private HashMap<String, MessageInformations> messageFlow = new HashMap<>();
+    private HashMap<String, LinkedList<String>> messagesPerSession = new HashMap<>();
 
     @Override
     public Optional<CallerResponse> getMessageStatus( String messageId ) {
@@ -37,7 +38,6 @@ public class MessageStorage implements MessageStorageInterface, MessagesPerSessi
             return Optional.empty();
         }
         return Optional.of( retrieveMessageStatus( messageId ) );
-
     }
 
     private CallerResponse retrieveMessageStatus( String messageId ) {

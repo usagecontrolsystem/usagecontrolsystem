@@ -15,9 +15,6 @@
  ******************************************************************************/
 package it.cnr.iit.peprest;
 
-import java.io.IOException;
-import java.util.HashMap;
-
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.web.support.SpringBootServletInitializer;
@@ -62,7 +59,7 @@ public class Starter extends SpringBootServletInitializer {
 
     /**
      * it just tells swagger that no special configuration are requested
-     * 
+     *
      */
     @Bean
     public UiConfiguration uiConfig() {
@@ -78,14 +75,11 @@ public class Starter extends SpringBootServletInitializer {
             .version( "1.0" ).contact( "antonio.lamarra@iit.cnr.it" ).build();
     }
 
-    public static void main( String args[] )
-            throws InterruptedException, IOException {
-        HashMap<String, Object> props = new HashMap<>();
-        props.put( "server.port", args[0] );
-
-        new SpringApplicationBuilder().sources( Starter.class ).properties( props )
-            .run( args );
-
+    public static void main( String args[] ) {
+        // HashMap<String, Object> props = new HashMap<>();
+        // props.put( "server.port", args[0] );
+        new SpringApplicationBuilder().sources( Starter.class ).run( args );
+        // .properties( props ).run( args );
     }
 
 }
