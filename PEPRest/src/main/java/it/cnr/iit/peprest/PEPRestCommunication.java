@@ -54,15 +54,6 @@ public class PEPRestCommunication {
     @ApiResponses( value = {
         @ApiResponse( code = 500, message = "Invalid message received" ),
         @ApiResponse( code = 200, message = "OK" ) } )
-    @RequestMapping( method = RequestMethod.POST, value = "/sendSynchronous" )
-    public void sendMessage() throws InterruptedException, ExecutionException {
-        pepRest.run();
-    }
-
-    @ApiOperation( httpMethod = "POST", value = "Starts the PEP" )
-    @ApiResponses( value = {
-        @ApiResponse( code = 500, message = "Invalid message received" ),
-        @ApiResponse( code = 200, message = "OK" ) } )
     @RequestMapping( method = RequestMethod.POST, value = "/startEvaluation" )
     public String startEvaluation() {
         return pepRest.tryAccess();

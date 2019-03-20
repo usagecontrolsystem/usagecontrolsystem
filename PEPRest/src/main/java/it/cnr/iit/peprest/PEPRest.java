@@ -16,19 +16,14 @@
 package it.cnr.iit.peprest;
 
 import java.util.Optional;
-import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
-import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Throwables;
 
 import it.cnr.iit.peprest.configuration.Configuration;
@@ -60,7 +55,7 @@ import oasis.names.tc.xacml.core.schema.wd_17.DecisionType;
  *
  */
 @Component
-public class PEPRest implements PEPInterface, Runnable {
+public class PEPRest implements PEPInterface {
 
     private static final Logger LOGGER = Logger.getLogger( PEPRest.class.getName() );
     private static final String UNABLE_TO_DELIVER_MESSSAGE_TO_UCS = "Unable to deliver messsage to UCS";
@@ -262,61 +257,6 @@ public class PEPRest implements PEPInterface, Runnable {
     private String handleEndAccessResponse( EndAccessResponse response ) {
         LOGGER.log( Level.INFO, response.getID() + " Evaluation " + response.getPDPEvaluation().getResult() );
         return response.getPDPEvaluation().getResult();
-    }
-
-    @Override
-    // this method is for local demo tests and needs to be re-coded for PROD
-    public void run() {
-        try {
-            String id = tryAccess();
-            TryAccessResponse tryAccessResponse = (TryAccessResponse) waitForResponse( id );
-            LOGGER.log( Level.INFO, "[TIME] TRYACCESS END {0} ", System.currentTimeMillis() );
-            if( tryAccessResponse.getPDPEvaluation().getResult().contains( PERMIT ) ) {
-                id = startAccess( tryAccessResponse.getSessionId() );
-                StartAccessResponse startAccessResponse = (StartAccessResponse) waitForResponse( id );
-                LOGGER.log( Level.INFO, "[TIME] STARTACCESS END {0} ", System.currentTimeMillis() );
-                if( startAccessResponse.getPDPEvaluation().getResult().contains( PERMIT ) ) {} else {
-                    LOGGER.log( Level.SEVERE, "[TIME] STARTACCESS DENIED {0} ", System.currentTimeMillis() );
-                }
-            } else {
-                LOGGER.log( Level.SEVERE, "[TIME] TRYACCESS DENIED {0} ", System.currentTimeMillis() );
-            }
-        } catch( Exception e ) {
-            LOGGER.log( Level.SEVERE, e.getLocalizedMessage() );
-        }
-    }
-
-    @VisibleForTesting
-    Message waitForResponse( String id ) throws InterruptedException, ExecutionException {
-        ExecutorService executor = Executors.newSingleThreadExecutor();
-        TaskBody taskBody = new TaskBody( id );
-        return executor.submit( taskBody ).get();
-    }
-
-    private class TaskBody implements Callable<Message> {
-
-        private String id;
-
-        public TaskBody( String id ) {
-            this.id = id;
-        }
-
-        @Override
-        public Message call() {
-            try {
-                while( !responses.containsKey( id ) ) {
-                    LOGGER.log( Level.INFO, "First wait" );
-                    synchronized( mutex ) {
-                        mutex.wait();
-                    }
-                }
-                LOGGER.log( Level.INFO, "WAKE UP!" );
-                return responses.remove( id );
-            } catch( InterruptedException e ) { // NOSONAR
-                LOGGER.log( Level.SEVERE, e.getLocalizedMessage() );
-                throw Throwables.propagate( e );
-            }
-        }
     }
 
     public ConcurrentMap<String, Message> getResponses() {
