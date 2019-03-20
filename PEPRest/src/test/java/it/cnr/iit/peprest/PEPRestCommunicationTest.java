@@ -1,8 +1,10 @@
 package it.cnr.iit.peprest;
 
 import static it.cnr.iit.peprest.PEPRestOperation.FINISH;
+import static it.cnr.iit.peprest.PEPRestOperation.FLOW_STATUS;
 import static org.apache.http.HttpStatus.SC_BAD_REQUEST;
 import static org.apache.http.HttpStatus.SC_OK;
+import static org.assertj.core.api.Assertions.fail;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.doCallRealMethod;
@@ -15,6 +17,8 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
+
+import it.cnr.iit.peprest.messagetrack.MessageStorage;
 
 @RunWith( SpringJUnit4ClassRunner.class )
 @WebAppConfiguration
@@ -41,5 +45,21 @@ public class PEPRestCommunicationTest extends PEPRestAbstractTest {
     @Test
     public void finishRequestWithoutSessionIdResultsInBadRequestResponse() throws Exception {
         assertEquals( SC_BAD_REQUEST, postStringResponseToPEPRest( "", FINISH.getOperationUri() ).getStatus() );
+    }
+
+    @Test
+    public void flowStatusRequestWithoutMessageIdResultsInBadRequestResponse() throws Exception {
+        assertEquals( SC_BAD_REQUEST, postGetRequestToPEPRest( "", FLOW_STATUS.getOperationUri() ).getStatus() );
+    }
+
+    @Test( expected = IllegalArgumentException.class )
+    public void flowStatusRequestWithWrongMessageIdResultsInBadRequestResponse() throws Throwable {
+        when( pepRest.getMessageHistory() ).thenReturn( new MessageStorage() );
+        try {
+            postGetRequestToPEPRest( " ", FLOW_STATUS.getOperationUri() ).getStatus();
+            fail( "Should have thrown IllegalArgumentException" );
+        } catch( Exception e ) {
+            throw e.getCause();
+        }
     }
 }

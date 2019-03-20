@@ -73,7 +73,7 @@ public class PEPRestCommunication {
     @RequestMapping( method = RequestMethod.GET, value = "/flowStatus" )
     public CallerResponse getMessageStatus( @RequestAttribute( value = "messageId" ) String messageId ) {
         // BEGIN parameter checking
-        if( messageId == null ) {
+        if( messageId == null || messageId.isEmpty() ) {
             throw new HttpMessageNotReadableException( HttpStatus.NO_CONTENT + " : No message id" );
         }
         // END parameter checking
@@ -92,7 +92,7 @@ public class PEPRestCommunication {
     @RequestMapping( method = RequestMethod.POST, value = "/finish", consumes = MediaType.TEXT_PLAIN_VALUE )
     public void finish( @RequestBody( ) String sessionId ) {
         // BEGIN parameter checking
-        if( sessionId == null ) {
+        if( sessionId == null || sessionId.isEmpty() ) {
             throw new HttpMessageNotReadableException( HttpStatus.NO_CONTENT + " : No session id" );
         }
         // END parameter checking
