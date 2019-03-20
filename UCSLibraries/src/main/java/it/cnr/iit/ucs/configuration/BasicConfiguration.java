@@ -18,8 +18,6 @@ package it.cnr.iit.ucs.configuration;
 import java.security.InvalidParameterException;
 import java.util.logging.Logger;
 
-import it.cnr.iit.ucs.configuration.xmlclasses.UCFConfiguration;
-
 /**
  * This is the class in charge of storing basic configuration informations.
  * <p>
@@ -74,19 +72,19 @@ public final class BasicConfiguration {
      * @param configuration
      *          the configuration object created after the conf.xml file
      */
-    public void configure( UCFConfiguration configuration ) {
+    public void configure( UCSConfiguration configuration ) {
         // BEGIN parameter checking
-        if( configuration == null || configuration.getXmlGeneral().getIp() == null
-                || configuration.getXmlGeneral().getIp().isEmpty()
-                || configuration.getXmlGeneral().getPort() == null
-                || configuration.getXmlGeneral().getPort().isEmpty() ) {
+        if( configuration == null || configuration.getGeneral().getIp() == null
+                || configuration.getGeneral().getIp().isEmpty()
+                || configuration.getGeneral().getPort() == null
+                || configuration.getGeneral().getPort().isEmpty() ) {
             LOGGER.severe( "Invalid configuration file passed as parameter" );
             throw new InvalidParameterException();
         }
         // END parameter checking
-        this.ip = configuration.getXmlGeneral().getIp();
-        this.port = configuration.getXmlGeneral().getPort();
-        this.scheduler = configuration.getScheduler();
+        ip = configuration.getGeneral().getIp();
+        port = configuration.getGeneral().getPort();
+        scheduler = configuration.getGeneral().isSchedulerEnabled();
     }
 
     public String getIp() {

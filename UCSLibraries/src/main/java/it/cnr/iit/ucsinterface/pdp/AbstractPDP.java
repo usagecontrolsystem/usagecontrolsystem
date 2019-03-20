@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2018 IIT-CNR
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy
  * of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
@@ -15,13 +15,13 @@
  ******************************************************************************/
 package it.cnr.iit.ucsinterface.pdp;
 
-import it.cnr.iit.ucs.configuration.xmlclasses.XMLPdp;
+import it.cnr.iit.ucs.configuration.fields.PdpProperties;
 import it.cnr.iit.ucsinterface.obligationmanager.ObligationManagerInterface;
 import it.cnr.iit.ucsinterface.pap.PAPInterface;
 
 /**
  * This is the abstract class providing a schema for the PDP.
- * 
+ *
  * <p>
  * The PDP requires an interface to deal with the obligation manager and another
  * to deal with the PAP. <br>
@@ -29,7 +29,7 @@ import it.cnr.iit.ucsinterface.pap.PAPInterface;
  * class using a volatile variable in charge of saying if the object has been
  * correctly created or not.
  * </p>
- * 
+ *
  * @author antonio
  *
  */
@@ -41,15 +41,16 @@ public abstract class AbstractPDP implements PDPInterface {
     // variable in charge of storing the status of this class.
     private volatile boolean initialized = false;
     // configuration of the pdp
-    private XMLPdp configuration = null;
+    private PdpProperties configuration = null;
 
     /**
      * The constructor for the abstrasct class is empty
      */
-    public AbstractPDP( XMLPdp configuration ) {
+    public AbstractPDP( PdpProperties configuration ) {
         // BEGIN parameter checking
-        if( configuration == null )
+        if( configuration == null ) {
             return;
+        }
         // END parameter checking
         this.configuration = configuration;
     }
@@ -105,7 +106,7 @@ public abstract class AbstractPDP implements PDPInterface {
 
     /**
      * Checks if the object has been correctly initialized
-     * 
+     *
      * @return true if the object has been correctly initialized, false otherwise
      */
     final public boolean isInitialized() {

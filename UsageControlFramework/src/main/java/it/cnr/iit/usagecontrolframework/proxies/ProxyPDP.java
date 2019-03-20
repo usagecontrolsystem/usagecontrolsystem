@@ -17,10 +17,9 @@ package it.cnr.iit.usagecontrolframework.proxies;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import it.cnr.iit.ucs.configuration.xmlclasses.XMLPdp;
+import it.cnr.iit.ucs.configuration.fields.PdpProperties;
 import it.cnr.iit.ucsinterface.constants.CONNECTION;
 import it.cnr.iit.ucsinterface.contexthandler.STATUS;
 import it.cnr.iit.ucsinterface.pdp.AbstractPDP;
@@ -37,13 +36,13 @@ import it.cnr.iit.ucsinterface.pdp.PDPInterface;
  *
  */
 final public class ProxyPDP extends Proxy implements PDPInterface {
+
     private static final Logger LOGGER = Logger.getLogger( ProxyPDP.class.getName() );
 
-    private volatile boolean initialized = false;
-    private String configuration;
+    private PdpProperties properties;
+    private AbstractPDP abstractPDP;
 
-    // effective implementation of the PDP
-    AbstractPDP abstractPDP;
+    private volatile boolean initialized = false;
 
     /**
      * This is the constructor of the proxy to the PDP.
@@ -61,62 +60,58 @@ final public class ProxyPDP extends Proxy implements PDPInterface {
      * </ol>
      * </p>
      *
-     * @param xmlPdp
-     *          the configuration of the PDP in xml form
+     * @param properties
+     *          the configuration of the PDP
      */
-    public ProxyPDP( XMLPdp xmlPdp ) {
+    public ProxyPDP( PdpProperties properties ) {
         // BEGIN parameter checking
-        if( xmlPdp == null ) {
+        if( properties == null ) {
             return;
         }
-        configuration = xmlPdp.getCommunication();
-        if( configuration == null ) {
-            return;
-        }
+        this.properties = properties;
         // END parameter checking
 
-        CONNECTION connection = CONNECTION.getCONNECTION( xmlPdp.getCommunication() );
+        CONNECTION connection = CONNECTION.getCONNECTION( properties.getCommunication() );
         switch( connection ) {
             case API:
-                if( localPdp( xmlPdp ) ) {
+                if( localPdp( properties ) ) {
                     initialized = true;
                 }
                 break;
             case SOCKET:
-                if( connectSocket( xmlPdp ) ) {
+                if( connectSocket( properties ) ) {
                     initialized = true;
                 }
                 break;
             case REST_API:
-                if( connectRest( xmlPdp ) ) {
+                if( connectRest( properties ) ) {
                     initialized = true;
                 }
                 break;
             default:
-                LOGGER.log( Level.SEVERE,
-                    "WRONG communication " + xmlPdp.getCommunication() );
+                LOGGER.severe( "Incorrect communication medium " + properties.getCommunication() );
                 return;
         }
     }
 
-    private boolean connectSocket( XMLPdp xmlPdp ) {
+    private boolean connectSocket( PdpProperties properties ) {
         return false;
     }
 
-    private boolean connectRest( XMLPdp xmlPdp ) {
+    private boolean connectRest( PdpProperties properties ) {
         return false;
     }
 
     /**
      * Initialization of the localPDP
      *
-     * @param xmlPdp
+     * @param properties
      *          the xml configuration of the local pdp
      * @return true if everything goes ok, false otherwise
      */
-    private boolean localPdp( XMLPdp xmlPdp ) {
+    private boolean localPdp( PdpProperties properties ) {
         // BEGIN parameter checking
-        String className = xmlPdp.getClassName();
+        String className = properties.getClassName();
         if( className == null ) {
             return false;
         }
@@ -124,8 +119,8 @@ final public class ProxyPDP extends Proxy implements PDPInterface {
 
         try {
             Constructor<?> constructor = Class.forName( className )
-                .getConstructor( XMLPdp.class );
-            abstractPDP = (AbstractPDP) constructor.newInstance( xmlPdp );
+                .getConstructor( PdpProperties.class );
+            abstractPDP = (AbstractPDP) constructor.newInstance( properties );
             return true;
         } catch( InstantiationException | IllegalAccessException
                 | ClassNotFoundException | NoSuchMethodException | SecurityException
@@ -148,6 +143,7 @@ final public class ProxyPDP extends Proxy implements PDPInterface {
         return null;
     }
 
+    @Override
     public boolean isInitialized() {
         return initialized;
     }
@@ -165,7 +161,7 @@ final public class ProxyPDP extends Proxy implements PDPInterface {
             return;
         }
         // END parameter checking
-        if( ( CONNECTION.getCONNECTION( configuration ) == CONNECTION.API )
+        if( ( CONNECTION.getCONNECTION( properties.getCommunication() ) == CONNECTION.API )
                 && abstractPDP.isInitialized() ) {
             abstractPDP.setPAPInterface( proxyPAP );
             initialized = true;
@@ -173,19 +169,9 @@ final public class ProxyPDP extends Proxy implements PDPInterface {
     }
 
     @Override
-    public boolean isValid() {
-        if( initialized ) {
-            LOGGER.info( "PAPProxy correctly configured" );
-        } else {
-            LOGGER.severe( "PAPProxy wrongly configured" );
-        }
-        return initialized;
-    }
-
-    @Override
     public PDPEvaluation evaluate( String request, StringBuilder policy,
             STATUS status ) {
-        if( initialized == true ) {
+        if( abstractPDP != null ) {
             return abstractPDP.evaluate( request, policy, status );
         }
         return null;

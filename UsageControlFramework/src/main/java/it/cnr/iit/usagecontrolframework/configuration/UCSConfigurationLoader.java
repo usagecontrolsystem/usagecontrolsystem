@@ -15,16 +15,12 @@
  ******************************************************************************/
 package it.cnr.iit.usagecontrolframework.configuration;
 
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.net.URL;
-import java.util.PropertyResourceBundle;
+import java.io.File;
+import java.util.Optional;
+import java.util.logging.Logger;
 
-import com.google.common.base.Charsets;
-import com.google.common.io.Resources;
-
-import it.cnr.iit.ucs.configuration.xmlclasses.UCFConfiguration;
-import it.cnr.iit.utility.JAXBUtility;
+import it.cnr.iit.ucs.configuration.UCSConfiguration;
+import it.cnr.iit.utility.JsonUtility;
 
 /**
  * This class is in charge of reading the xml provided for the description of
@@ -60,76 +56,31 @@ import it.cnr.iit.utility.JAXBUtility;
  * @author antonio
  *
  */
-public final class UCFConfigurationLoader { // extends AbstractProperties {
+public final class UCSConfigurationLoader {
+    protected static final Logger LOGGER = Logger.getLogger( UCSConfigurationLoader.class.getName() );
+
     private static final String APP_PROPERTIES = "classpath:application.properties";
     private static final String UCS_CONFIG = "ucs-config-file";
-    private static final String DEFAULT_UCS_CONFIG = "conf.xml";
+    private static final String DEFAULT_UCS_CONFIG = "conf.json";
 
-    UCFConfiguration configuration;
+    private UCSConfigurationLoader() {}
 
-    private volatile boolean initialized = false;
-
-    /**
-     * Constructor for the properties class
-     */
-    public UCFConfigurationLoader() {
-        if( !buildProperties() ) {
-            return;
-        }
-        initialized = true;
+    public static UCSConfiguration getConfiguration() {
+        // TODO read properties
+        return getConfiguration( DEFAULT_UCS_CONFIG );
     }
 
-    /**
-     * Build the properties returning a value that says if the building was
-     * successful or not
-     *
-     * @return true if everything goes ok, false otherwise
-     */
-    private boolean buildProperties() {
-        try {
-            URL url = Resources.getResource( getXMLConfigurationFileName() );
-            String xml = Resources.toString( url, Charsets.UTF_8 );
+    public static UCSConfiguration getConfiguration( String fileName ) {
+        File confFile = new File( UCSConfigurationLoader.class.getClassLoader().getResource( fileName ).getFile() );
 
-            configuration = JAXBUtility.unmarshalToObject( UCFConfiguration.class, xml );
-            return true;
-        } catch( Exception exception ) {
-            exception.printStackTrace();
-        }
-
-        return false;
-    }
-
-    public UCFConfiguration getConfiguration() {
-        if( initialized == false ) {
+        Optional<UCSConfiguration> optConfiguration = JsonUtility.loadObjectFromJsonFile( confFile,
+            UCSConfiguration.class );
+        if( !optConfiguration.isPresent() ) {
+            LOGGER.severe( "Unable to load ucs configuration." );
+            // TODO throw exception ?
             return null;
         }
-        return configuration;
-    }
-
-    /*@Override
-    public int getThread( String string ) {
-        return 0;
-    }*/
-
-    private String getXMLConfigurationFileName() {
-        String fname = DEFAULT_UCS_CONFIG;
-
-        FileInputStream fis = null;
-        try {
-            fis = new FileInputStream( APP_PROPERTIES );
-            PropertyResourceBundle rb = new PropertyResourceBundle( fis );
-            if( rb.containsKey( UCS_CONFIG ) ) {
-                fname = rb.getString( UCS_CONFIG );
-            }
-        } catch( IOException e ) {}
-
-        if( fis != null ) {
-            try {
-                fis.close();
-            } catch( Exception e ) {}
-        }
-
-        return fname;
+        return optConfiguration.get();
     }
 
 }

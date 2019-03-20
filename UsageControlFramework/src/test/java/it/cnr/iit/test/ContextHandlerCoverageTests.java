@@ -16,7 +16,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import it.cnr.iit.ucs.configuration.xmlclasses.UCFConfiguration;
+import it.cnr.iit.ucs.configuration.UCSConfiguration;
 import it.cnr.iit.ucsinterface.contexthandler.ContextHandlerInterface;
 import it.cnr.iit.ucsinterface.message.endaccess.EndAccessMessage;
 import it.cnr.iit.ucsinterface.message.reevaluation.ReevaluationMessage;
@@ -33,7 +33,7 @@ import oasis.names.tc.xacml.core.schema.wd_17.DecisionType;
 @SpringBootTest
 @RunWith( SpringRunner.class )
 public class ContextHandlerCoverageTests extends UCFBaseTests {
-    private UCFConfiguration ucsConfiguration;
+    private UCSConfiguration ucsConfiguration;
     private String policy;
     private String request;
 

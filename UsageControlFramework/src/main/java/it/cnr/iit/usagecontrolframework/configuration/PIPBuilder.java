@@ -18,9 +18,10 @@ package it.cnr.iit.usagecontrolframework.configuration;
 import java.lang.reflect.Constructor;
 import java.util.logging.Logger;
 
-import it.cnr.iit.ucs.configuration.xmlclasses.XMLPip;
+import it.cnr.iit.ucs.configuration.fields.pip.PipProperties;
 import it.cnr.iit.ucsinterface.pip.PIPBase;
 import it.cnr.iit.ucsinterface.pip.PIPRetrieval;
+import it.cnr.iit.utility.JsonUtility;
 
 /**
  * This class is in charge of building up the various PIPs.
@@ -40,24 +41,25 @@ final public class PIPBuilder {
     /**
      * Builds up a pip basing on the class set in the configuration file
      *
-     * @param xmlPip
+     * @param pipProp
      *          the configuration of the pip
      * @return the PIPInterface to be used to deal with the PIP if everything goes
      *         ok, null otherwise
      */
-    final public static PIPBase build( XMLPip xmlPip ) {
+    final public static PIPBase build( PipProperties pipProp ) {
         // BEGIN parameter checking
-        if( xmlPip == null || xmlPip.getClassName() == null ) {
+        if( pipProp == null || pipProp.getClassName() == null ) {
             LOGGER.warning( "Cannot build PIPBase from xmlPip" );
             return null;
         }
         // END parameter checking
 
         try {
-            Class<?> clazz = Class.forName( xmlPip.getClassName() );
+            Class<?> clazz = Class.forName( pipProp.getClassName() );
             Constructor<?> constructor = clazz.getConstructor( String.class );
-            LOGGER.info( "\n" + xmlPip.getXMLPipAsString() );
-            PIPBase pipBase = (PIPBase) constructor.newInstance( xmlPip.getXMLPipAsString() );
+            String pipStr = JsonUtility.getJsonStringFromObject( pipProp, true ).get();
+            LOGGER.info( "\n" + pipStr );
+            PIPBase pipBase = (PIPBase) constructor.newInstance( pipStr );
             LOGGER.info( "PIP valid : " + ( pipBase != null ) );
             return pipBase;
         } catch( Exception e ) {
@@ -74,21 +76,21 @@ final public class PIPBuilder {
      * hence it needs to communicate with other UCSs in order to know the value of
      * that attribute.
      *
-     * @param xmlPip
+     * @param properties
      *          the PIP configuration in xml format
      * @return the PIPRetrieval object
      */
-    final public static PIPRetrieval buildPIPRetrieval( XMLPip xmlPip ) {
+    final public static PIPRetrieval buildPIPRetrieval( PipProperties properties ) {
         // BEGIN parameter checking
-        if( xmlPip == null || xmlPip.getClassName() == null ) {
+        if( properties == null || properties.getClassName() == null ) {
             return null;
         }
         // END parameter checking
 
         try {
-            Class<?> clazz = Class.forName( xmlPip.getClassName() );
-            Constructor<?> constructor = clazz.getConstructor( String.class );
-            PIPRetrieval pipRetrieval = (PIPRetrieval) constructor.newInstance( xmlPip.getXMLPipAsString() );
+            Class<?> clazz = Class.forName( properties.getClassName() );
+            Constructor<?> constructor = clazz.getConstructor( PipProperties.class );
+            PIPRetrieval pipRetrieval = (PIPRetrieval) constructor.newInstance( properties );
             return pipRetrieval;
         } catch( Exception e ) {
             e.printStackTrace();

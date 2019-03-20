@@ -18,10 +18,9 @@ package it.cnr.iit.usagecontrolframework.proxies;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.concurrent.ExecutionException;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import it.cnr.iit.ucs.configuration.xmlclasses.XMLPep;
+import it.cnr.iit.ucs.configuration.fields.PepProperties;
 import it.cnr.iit.ucsinterface.constants.CONNECTION;
 import it.cnr.iit.ucsinterface.message.Message;
 import it.cnr.iit.ucsinterface.message.endaccess.EndAccessResponse;
@@ -33,6 +32,7 @@ import it.cnr.iit.ucsinterface.pep.ExamplePEP;
 import it.cnr.iit.ucsinterface.pep.PEPInterface;
 import it.cnr.iit.ucsinterface.requestmanager.RequestManagerToExternalInterface;
 import it.cnr.iit.utility.RESTUtils;
+import it.cnr.iit.utility.Utility;
 
 /**
  * This is the proxy towards the PEP.
@@ -47,11 +47,11 @@ import it.cnr.iit.utility.RESTUtils;
  *
  */
 public class ProxyPEP extends Proxy implements PEPInterface {
+
     private final Logger LOGGER = Logger.getLogger( ProxyPEP.class.getName() );
 
     private boolean initialized = false;
 
-    // the type of connection between the proxy and the real PEP
     CONNECTION connection;
 
     // --------------------
@@ -75,41 +75,40 @@ public class ProxyPEP extends Proxy implements PEPInterface {
     /**
      * Constructor for the proxy PEP
      *
-     * @param xmlPep
+     * @param properties
      *          the configuration of the PEP in xml format
      */
-    public ProxyPEP( XMLPep xmlPep ) {
+    public ProxyPEP( PepProperties properties ) {
         // BEGIN parameter checking
-        if( xmlPep == null ) {
+        if( properties == null ) {
             return;
         }
-        String configuration = xmlPep.getCommunication();
+        String configuration = properties.getCommunication();
         if( configuration == null ) {
             return;
         }
         // END parameter checking
-        id = xmlPep.getId();
+        id = properties.getId();
 
-        connection = CONNECTION.getCONNECTION( xmlPep.getCommunication() );
+        connection = CONNECTION.getCONNECTION( properties.getCommunication() );
         switch( connection ) {
             case API:
-                if( localPep( xmlPep ) ) {
+                if( localPep( properties ) ) {
                     initialized = true;
                 }
                 break;
             case SOCKET:
-                if( connectSocket( xmlPep ) ) {
+                if( connectSocket( properties ) ) {
                     initialized = true;
                 }
                 break;
             case REST_API:
-                if( connectRest( xmlPep ) ) {
+                if( connectRest( properties ) ) {
                     initialized = true;
                 }
                 break;
             default:
-                LOGGER.log( Level.SEVERE,
-                    "WRONG communication " + xmlPep.getCommunication() );
+                LOGGER.severe( "Incorrect communication medium : " + properties.getCommunication() );
                 return;
         }
     }
@@ -117,13 +116,13 @@ public class ProxyPEP extends Proxy implements PEPInterface {
     /**
      * Function that performs the instantiation of a local PEP
      *
-     * @param xmlPep
+     * @param properties
      *          the configuration of the PEP
      * @return true if everything goes right, false otherwise
      */
-    private boolean localPep( XMLPep xmlPep ) {
+    private boolean localPep( PepProperties properties ) {
         // BEGIN parameter checking
-        String className = xmlPep.getClassName();
+        String className = properties.getClassName();
         if( className == null ) {
             return false;
         }
@@ -131,8 +130,8 @@ public class ProxyPEP extends Proxy implements PEPInterface {
 
         try {
             Constructor<?> constructor = Class.forName( className )
-                .getConstructor( XMLPep.class );
-            abstractPEP = (ExamplePEP) constructor.newInstance( xmlPep );
+                .getConstructor( PepProperties.class );
+            abstractPEP = (ExamplePEP) constructor.newInstance( properties );
             return true;
         } catch( InstantiationException | IllegalAccessException
                 | ClassNotFoundException | NoSuchMethodException | SecurityException
@@ -149,7 +148,7 @@ public class ProxyPEP extends Proxy implements PEPInterface {
      *          the configuration of the remote PEP
      * @return true if everything goes right, false otherwise
      */
-    private boolean connectSocket( XMLPep xmlPep ) {
+    private boolean connectSocket( PepProperties properties ) {
         return false;
     }
 
@@ -161,52 +160,42 @@ public class ProxyPEP extends Proxy implements PEPInterface {
      *          the configuration file for the pep
      * @return true if everything goes ok, false otherwise
      */
-    private boolean connectRest( XMLPep xmlPep ) {
-        if( ( url = xmlPep.getIp() ) == null ) {
-            LOGGER.log( Level.WARNING,
-                "Missing parameter in configuration file: " + url );
+    private boolean connectRest( PepProperties properties ) {
+        if( ( url = properties.getIp() ) == null ) {
+            LOGGER.warning( "Missing parameter in configuration file: " + url );
             return false;
         }
 
-        if( ( port = xmlPep.getPort() ) == null ) {
-            LOGGER.log( Level.WARNING,
-                "Missing parameter in configuration file: " + url );
+        if( ( port = properties.getPort() ) == null ) {
+            LOGGER.warning( "Missing parameter in configuration file: " + url );
             return false;
         }
 
-        if( ( onGoingEvaluation = xmlPep.getOnGoingEvaluation() ) == null ) {
-            LOGGER.log( Level.WARNING,
-                "Missing parameter in configuration file: " + url );
+        if( ( onGoingEvaluation = properties.getOnGoingEvaluation() ) == null ) {
+            LOGGER.warning( "Missing parameter in configuration file: " + url );
             return false;
         }
 
-        if( ( tryAccessResponse = xmlPep.getTryAccessResponse() ) == null ) {
-            LOGGER.log( Level.WARNING,
-                "Missing parameter in configuration file: " + url );
+        if( ( tryAccessResponse = properties.getTryAccessResponse() ) == null ) {
+            LOGGER.warning( "Missing parameter in configuration file: " + url );
             return false;
         }
 
-        if( ( startAccessResponse = xmlPep.getStartAccessResponse() ) == null ) {
-            LOGGER.log( Level.WARNING,
-                "Missing parameter in configuration file: " + url );
+        if( ( startAccessResponse = properties.getStartAccessResponse() ) == null ) {
+            LOGGER.warning( "Missing parameter in configuration file: " + url );
             return false;
         }
 
-        if( ( endAccessResponse = xmlPep.getEndAccessResponse() ) == null ) {
-            LOGGER.log( Level.WARNING,
-                "Missing parameter in configuration file: " + url );
+        if( ( endAccessResponse = properties.getEndAccessResponse() ) == null ) {
+            LOGGER.warning( "Missing parameter in configuration file: " + url );
             return false;
         }
         return true;
-    }
-
-    public boolean isInitialized() {
-        return initialized;
     }
 
     @Override
-    public boolean isValid() {
-        return true;
+    public boolean isInitialized() {
+        return initialized;
     }
 
     /**
@@ -236,7 +225,7 @@ public class ProxyPEP extends Proxy implements PEPInterface {
                 return abstractPEP.onGoingEvaluation( message );
             case REST_API:
                 RESTUtils.asyncPostAsString(
-                    buildUrl( NodeInterface.ONGOINGRESPONSE_REST ),
+                    Utility.buildUrl( url, port, NodeInterface.ONGOINGRESPONSE_REST ),
                     (ReevaluationResponse) message );
                 break;
             default:
@@ -262,20 +251,20 @@ public class ProxyPEP extends Proxy implements PEPInterface {
              */
             case REST_API:
                 if( message instanceof TryAccessResponse ) {
-                    RESTUtils.asyncPostAsString( buildUrl( tryAccessResponse ),
+                    RESTUtils.asyncPostAsString( Utility.buildUrl( url, port, tryAccessResponse ),
                         (TryAccessResponse) message );
                 }
                 if( message instanceof StartAccessResponse ) {
-                    RESTUtils.asyncPostAsString( buildUrl( startAccessResponse ),
+                    RESTUtils.asyncPostAsString( Utility.buildUrl( url, port, startAccessResponse ),
                         (StartAccessResponse) message );
                 }
                 if( message instanceof EndAccessResponse ) {
-                    RESTUtils.asyncPostAsString( buildUrl( endAccessResponse ),
+                    RESTUtils.asyncPostAsString( Utility.buildUrl( url, port, endAccessResponse ),
                         (EndAccessResponse) message );
                 }
                 break;
             default:
-                LOGGER.log( Level.SEVERE, "Error in the receive response" );
+                LOGGER.severe( "Error in the receive response" );
                 break;
         }
         return "";
@@ -291,7 +280,6 @@ public class ProxyPEP extends Proxy implements PEPInterface {
                 try {
                     abstractPEP.start();
                 } catch( InterruptedException | ExecutionException e ) {
-                    // TODO Auto-generated catch block
                     e.printStackTrace();
                 }
                 break;
@@ -308,13 +296,6 @@ public class ProxyPEP extends Proxy implements PEPInterface {
      *          the name of the function
      * @return the complete url to be used in the rest call
      */
-    private String buildUrl( String function ) {
-        StringBuilder url = new StringBuilder();
-        url.append( "http://" + this.url + ":" );
-        url.append( port + "/" );
-        url.append( function );
-        return url.toString();
-    }
 
     public String getURL() {
         return url;

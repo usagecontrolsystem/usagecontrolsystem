@@ -18,7 +18,7 @@ package it.cnr.iit.usagecontrolframework.obligationmanager;
 import java.lang.reflect.Constructor;
 import java.util.List;
 
-import it.cnr.iit.ucs.configuration.xmlclasses.XMLObligationManager;
+import it.cnr.iit.ucs.configuration.fields.ObligationManagerProperties;
 import it.cnr.iit.ucsinterface.obligationmanager.ObligationManagerInterface;
 import it.cnr.iit.ucsinterface.pip.PIPOMInterface;
 
@@ -43,24 +43,24 @@ final public class ObligationManagerBuilder {
     /**
      * TODO comments
      *
-     * @param xml
+     * @param properties
      * @param pips
      * @param pipRetrieval
      * @return
      */
-    final public static ObligationManagerInterface build( XMLObligationManager xml,
+    final public static ObligationManagerInterface build( ObligationManagerProperties properties,
             List<PIPOMInterface> pips, PIPOMInterface pipRetrieval ) {
         // BEGIN parameter checking
-        if( xml == null || ( pips.size() == 0 && pipRetrieval == null ) ) {
+        if( properties == null || ( pips.size() == 0 && pipRetrieval == null ) ) {
             return null;
         }
         // END parameter checking
         try {
-            String className = xml.getClassName();
+            String className = properties.getClassName();
             Constructor<?> constructor = Class.forName( className )
-                .getConstructor( XMLObligationManager.class );
+                .getConstructor( ObligationManagerProperties.class );
             ObligationManagerInterface obligationManagerInterface = (ObligationManagerInterface) constructor
-                .newInstance( xml );
+                .newInstance( properties );
             obligationManagerInterface.setPIPs( pips, pipRetrieval );
             if( obligationManagerInterface.isInitialized() ) {
                 return obligationManagerInterface;

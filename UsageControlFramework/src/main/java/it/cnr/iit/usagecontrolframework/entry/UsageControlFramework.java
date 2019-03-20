@@ -19,21 +19,20 @@ import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.springframework.scheduling.annotation.Async;
 
 import it.cnr.iit.ucs.configuration.BasicConfiguration;
-import it.cnr.iit.ucs.configuration.xmlclasses.UCFConfiguration;
-import it.cnr.iit.ucs.configuration.xmlclasses.XMLContextHandler;
-import it.cnr.iit.ucs.configuration.xmlclasses.XMLObligationManager;
-import it.cnr.iit.ucs.configuration.xmlclasses.XMLPap;
-import it.cnr.iit.ucs.configuration.xmlclasses.XMLPdp;
-import it.cnr.iit.ucs.configuration.xmlclasses.XMLPep;
-import it.cnr.iit.ucs.configuration.xmlclasses.XMLPip;
-import it.cnr.iit.ucs.configuration.xmlclasses.XMLRequestManager;
-import it.cnr.iit.ucs.configuration.xmlclasses.XMLSessionManager;
+import it.cnr.iit.ucs.configuration.UCSConfiguration;
+import it.cnr.iit.ucs.configuration.fields.ContextHandlerProperties;
+import it.cnr.iit.ucs.configuration.fields.ObligationManagerProperties;
+import it.cnr.iit.ucs.configuration.fields.PapProperties;
+import it.cnr.iit.ucs.configuration.fields.PdpProperties;
+import it.cnr.iit.ucs.configuration.fields.PepProperties;
+import it.cnr.iit.ucs.configuration.fields.RequestManagerProperties;
+import it.cnr.iit.ucs.configuration.fields.pip.PipProperties;
+import it.cnr.iit.ucs.configuration.fields.sessionManager.SessionManagerProperties;
 import it.cnr.iit.ucsinterface.contexthandler.AbstractContextHandler;
 import it.cnr.iit.ucsinterface.forwardingqueue.ForwardingQueue;
 import it.cnr.iit.ucsinterface.message.Message;
@@ -58,7 +57,7 @@ import it.cnr.iit.ucsinterface.requestmanager.AsynchronousRequestManager;
 import it.cnr.iit.ucsinterface.requestmanager.RequestManagerToExternalInterface;
 import it.cnr.iit.ucsinterface.ucs.UCSInterface;
 import it.cnr.iit.usagecontrolframework.configuration.PIPBuilder;
-import it.cnr.iit.usagecontrolframework.configuration.UCFConfigurationLoader;
+import it.cnr.iit.usagecontrolframework.configuration.UCSConfigurationLoader;
 import it.cnr.iit.usagecontrolframework.obligationmanager.ObligationManagerBuilder;
 import it.cnr.iit.usagecontrolframework.proxies.ProxyPAP;
 import it.cnr.iit.usagecontrolframework.proxies.ProxyPDP;
@@ -104,7 +103,7 @@ public final class UsageControlFramework implements UCSInterface {
     private static final Logger LOGGER = Logger
         .getLogger( UsageControlFramework.class.getName() );
 
-    private UCFConfiguration configuration;
+    private UCSConfiguration configuration;
 
     // local components
     private AbstractContextHandler contextHandler;
@@ -118,7 +117,7 @@ public final class UsageControlFramework implements UCSInterface {
     private ProxySessionManager proxySessionManager;
     private ProxyPDP proxyPDP;
     private ProxyPAP proxyPAP;
-    private UCFConfigurationLoader properties;
+    private UCSConfigurationLoader properties;
 
     private ForwardingQueue forwardingQueue;
 
@@ -164,7 +163,9 @@ public final class UsageControlFramework implements UCSInterface {
      * @return
      */
     private boolean buildComponents() {
-        if( ( configuration = retrieveConfiguration() ) == null ) {
+
+        if( ( configuration = UCSConfigurationLoader.getConfiguration() ) == null ) {
+            LOGGER.severe( "Error loading ucs configuration" );
             return false;
         }
 
@@ -173,42 +174,42 @@ public final class UsageControlFramework implements UCSInterface {
         DISTRIBUTED_TYPE distributedType = DISTRIBUTED_TYPE.NONE;
 
         // build the context handler
-        if( !buildCH( distributedType ) ) {
-            LOGGER.log( Level.INFO, "Error in building the context handler" );
+        if( !buildContextHandler( distributedType ) ) {
+            LOGGER.info( "Error in building the context handler" );
             return false;
         }
         // builds the request manager
         if( !buildRequestManager() ) {
-            LOGGER.log( Level.INFO, "Error in building the request manager" );
+            LOGGER.info( "Error in building the request manager" );
             return false;
         }
         // builds the PIPS
         if( !buildPIPs() ) {
-            LOGGER.log( Level.INFO, "Error in building the pips" );
+            LOGGER.info( "Error in building the pips" );
             return false;
         }
 
         // Builds the proxies
 
         if( !buildProxySM() ) {
-            LOGGER.log( Level.INFO, "Error in building the session manager" );
+            LOGGER.info( "Error in building the session manager" );
             return false;
         }
 
         if( !buildObligationManager() ) {
-            LOGGER.log( Level.INFO, "Error in building the obligation manager" );
+            LOGGER.info( "Error in building the obligation manager" );
             return false;
         }
         if( !buildProxyPDP() ) {
-            LOGGER.log( Level.INFO, "Error in building the pdp" );
+            LOGGER.info( "Error in building the pdp" );
             return false;
         }
-        if( !buildProxyPAP() ) {
-            LOGGER.log( Level.INFO, "Error in building the pap" );
+        if( !buildProxyPolicyAdministrationPoint() ) {
+            LOGGER.info( "Error in building the pap" );
             return false;
         }
         if( !buildProxyPEP() ) {
-            LOGGER.log( Level.INFO, "Error in building the pep" );
+            LOGGER.info( "Error in building the pep" );
             return false;
         }
 
@@ -223,38 +224,22 @@ public final class UsageControlFramework implements UCSInterface {
 
     }
 
-    /**
-     * Retrieves the object that represents the configuration file.
-     *
-     * @return the object that represents the configuration file.
-     */
-    private UCFConfiguration retrieveConfiguration() {
-        properties = new UCFConfigurationLoader();
-        UCFConfiguration configuration = properties.getConfiguration();
-        if( configuration == null ) {
-            LOGGER.log( Level.SEVERE,
-                "Configuration is null, properties was not correctly initialized" );
-            return null;
-        }
-        return configuration;
-    }
-
-    private boolean buildCH( DISTRIBUTED_TYPE distributedType ) {
+    private boolean buildContextHandler( DISTRIBUTED_TYPE distributedType ) {
         if( distributedType == null || distributedType == DISTRIBUTED_TYPE.NONE ) {
-            return buildCH();
+            return buildContextHandler();
         } else {
-            XMLContextHandler xmlContextHandler = configuration.getCh();
+            ContextHandlerProperties properties = configuration.getContextHandler();
             try {
-                String className = xmlContextHandler.getClassName();
+                String className = properties.getClassName();
                 Constructor<?> constructor = Class.forName( className )
-                    .getConstructor( XMLContextHandler.class );
+                    .getConstructor( ContextHandlerProperties.class );
                 contextHandler = (AbstractContextHandler) constructor
-                    .newInstance( xmlContextHandler );
+                    .newInstance( properties );
 
                 return true;
             } catch( Exception exception ) {
                 exception.printStackTrace();
-                LOGGER.log( Level.SEVERE, "buildCH failed" );
+                LOGGER.severe( "build ContextHandler(DISTRIBUTED_TYPE) failed" );
                 return false;
             }
         }
@@ -268,19 +253,18 @@ public final class UsageControlFramework implements UCSInterface {
      *
      * @return true if everything goes ok, false otherwise
      */
-    private boolean buildCH() {
-        XMLContextHandler xmlContextHandler = configuration.getCh();
+    private boolean buildContextHandler() {
+        ContextHandlerProperties properties = configuration.getContextHandler();
         try {
-            String className = xmlContextHandler.getClassName();
+            String className = properties.getClassName();
             Constructor<?> constructor = Class.forName( className )
-                .getConstructor( XMLContextHandler.class );
+                .getConstructor( ContextHandlerProperties.class );
             contextHandler = (AbstractContextHandler) constructor
-                .newInstance( xmlContextHandler );
-
+                .newInstance( properties );
             return true;
         } catch( Exception exception ) {
             exception.printStackTrace();
-            LOGGER.log( Level.SEVERE, "buildCH failed" );
+            LOGGER.severe( "build ContextHandler failed" );
             return false;
         }
     }
@@ -295,20 +279,19 @@ public final class UsageControlFramework implements UCSInterface {
      * @return true if everything goes ok, false otherwise
      */
     private boolean buildRequestManager() {
-        XMLRequestManager xmlRequestManager = configuration.getRm();
+        RequestManagerProperties properties = configuration.getRequestManager();
 
         try {
-            String className = xmlRequestManager.getClassName();
+            String className = properties.getClassName();
             Constructor<?> constructor = Class.forName( className )
-                .getConstructor( XMLRequestManager.class );
+                .getConstructor( RequestManagerProperties.class );
             requestManager = (AsynchronousRequestManager) constructor
-                .newInstance( xmlRequestManager );
+                .newInstance( properties );
             return true;
         } catch( Exception exception ) {
-            exception.printStackTrace();
+            LOGGER.severe( "build RequestManager failed" );
+            return false;
         }
-
-        return false;
     }
 
     /**
@@ -321,9 +304,9 @@ public final class UsageControlFramework implements UCSInterface {
      * @return true if all the PIPs are correctly created, false otherwise
      */
     private boolean buildPIPs() {
-        List<XMLPip> list = configuration.getPipList();
-        for( XMLPip xmlPip : list ) {
-            PIPBase pipInterface = PIPBuilder.build( xmlPip );
+        List<PipProperties> pipPropertiesList = configuration.getPipList();
+        for( PipProperties pip : pipPropertiesList ) {
+            PIPBase pipInterface = PIPBuilder.build( pip );
             if( pipInterface == null ) {
                 return false;
             }
@@ -339,8 +322,8 @@ public final class UsageControlFramework implements UCSInterface {
      * @return true if everything goes fine, false otherwise
      */
     private boolean buildProxySM() {
-        XMLSessionManager xmlSM = configuration.getSessionManager();
-        proxySessionManager = new ProxySessionManager( xmlSM );
+        SessionManagerProperties properties = configuration.getSessionManager();
+        proxySessionManager = new ProxySessionManager( properties );
         proxySessionManager.start();
         return proxySessionManager.isInitialized();
     }
@@ -351,8 +334,8 @@ public final class UsageControlFramework implements UCSInterface {
      * @return true if everything goes fine, false otherwise
      */
     private boolean buildObligationManager() {
-        XMLObligationManager xmlOm = configuration.getOm();
-        obligationManager = ObligationManagerBuilder.build( xmlOm,
+        ObligationManagerProperties properties = configuration.getObligationManager();
+        obligationManager = ObligationManagerBuilder.build( properties,
             new ArrayList<PIPOMInterface>( pipList ), pipRetrieval );
         return obligationManager.isInitialized();
     }
@@ -363,8 +346,8 @@ public final class UsageControlFramework implements UCSInterface {
      * @return true if everything goes fine, false otherwise
      */
     private boolean buildProxyPDP() {
-        XMLPdp xmlPdp = configuration.getPdp();
-        proxyPDP = new ProxyPDP( xmlPdp );
+        PdpProperties properties = configuration.getPolicyDecisionPoint();
+        proxyPDP = new ProxyPDP( properties );
         return proxyPDP.isInitialized();
     }
 
@@ -373,9 +356,9 @@ public final class UsageControlFramework implements UCSInterface {
      *
      * @return true if everything goes fine, false otherwise
      */
-    private boolean buildProxyPAP() {
-        XMLPap xmlPap = configuration.getPap();
-        proxyPAP = new ProxyPAP( xmlPap );
+    private boolean buildProxyPolicyAdministrationPoint() {
+        PapProperties properties = configuration.getPolicyAdministrationPoint();
+        proxyPAP = new ProxyPAP( properties );
         return proxyPAP.isInitialized();
     }
 
@@ -388,10 +371,10 @@ public final class UsageControlFramework implements UCSInterface {
      * @throws Exception
      */
     private boolean checkConnection() {
-        List<PIPCHInterface> list = new ArrayList<>( pipList );
+        List<PIPCHInterface> pipchList = new ArrayList<>( pipList );
 
         contextHandler.setInterfaces( proxySessionManager, requestManager, proxyPDP,
-            proxyPAP, list, pipRetrieval, obligationManager, forwardingQueue );
+            proxyPAP, pipchList, pipRetrieval, obligationManager, forwardingQueue );
 
         try {
             contextHandler.startMonitoringThread();
@@ -414,15 +397,14 @@ public final class UsageControlFramework implements UCSInterface {
      * @return true if the proxy was correclty set up, false otherwise
      */
     private boolean buildProxyPEP() {
-
-        List<XMLPep> xmlPep = configuration.getPep();
-        for( XMLPep xml : xmlPep ) {
-            ProxyPEP proxyPEP = new ProxyPEP( xml );
+        List<PepProperties> pepList = configuration.getPepList();
+        for( PepProperties pep : pepList ) {
+            ProxyPEP proxyPEP = new ProxyPEP( pep );
             proxyPEP.setRequestManagerInterface( requestManager );
             if( !proxyPEP.isInitialized() ) {
                 return false;
             }
-            this.proxyPEPMap.put( xml.getId(), proxyPEP );
+            proxyPEPMap.put( pep.getId(), proxyPEP );
         }
         // proxyPEP.setCHInterface(contextHandler);
         return true;

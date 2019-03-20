@@ -10,6 +10,7 @@ import java.util.Optional;
 import java.util.logging.Logger;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 
@@ -19,7 +20,7 @@ public class JsonUtility {
     private JsonUtility() {}
 
     public static Optional<String> getJsonStringFromObject( Object obj, boolean pretty ) {
-        ObjectMapper mapper = new ObjectMapper();
+        ObjectMapper mapper = getObjectMapper();
         ObjectWriter writer = pretty ? mapper.writerWithDefaultPrettyPrinter() : mapper.writer();
 
         try {
@@ -31,7 +32,7 @@ public class JsonUtility {
     }
 
     public static <T> Optional<T> loadObjectFromJsonString( String jsonString, Class<T> clazz ) {
-        ObjectMapper obj = new ObjectMapper();
+        ObjectMapper obj = getObjectMapper();
         try {
             return Optional.of( obj.readValue( jsonString, clazz ) );
         } catch( IOException e ) {
@@ -61,6 +62,12 @@ public class JsonUtility {
         } catch( IOException e ) {
             LOGGER.severe( "Error writing file : " + path + ", " + e.getMessage() );
         }
+    }
+
+    private static ObjectMapper getObjectMapper() {
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.configure( DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, true );
+        return mapper;
     }
 
 }

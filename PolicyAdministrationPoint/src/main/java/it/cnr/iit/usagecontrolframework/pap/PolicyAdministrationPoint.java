@@ -26,9 +26,9 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import it.cnr.iit.utility.JAXBUtility;
-import it.cnr.iit.ucs.configuration.xmlclasses.XMLPap;
+import it.cnr.iit.ucs.configuration.fields.PapProperties;
 import it.cnr.iit.ucsinterface.pap.PAPInterface;
+import it.cnr.iit.utility.JAXBUtility;
 
 import oasis.names.tc.xacml.core.schema.wd_17.PolicyType;
 
@@ -48,8 +48,7 @@ import oasis.names.tc.xacml.core.schema.wd_17.PolicyType;
  *
  */
 public class PolicyAdministrationPoint implements PAPInterface {
-    private Logger LOGGER = Logger
-        .getLogger( PolicyAdministrationPoint.class.getName() );
+    private Logger LOGGER = Logger.getLogger( PolicyAdministrationPoint.class.getName() );
 
     private String policiesFilePath;
 
@@ -63,14 +62,15 @@ public class PolicyAdministrationPoint implements PAPInterface {
      * @param xmlPAP
      *          the xml that describes this PAP
      */
-    public PolicyAdministrationPoint( XMLPap xmlPAP ) {
+    public PolicyAdministrationPoint( PapProperties properties ) {
         // BEGIN parameter checking
-        if( xmlPAP == null ) {
+        if( properties == null ) {
+            // TODO throw exception
             return;
         }
         // END parameter checking
-        policiesFilePath = xmlPAP.getPath();
-        if( policiesFilePath != null && !policiesFilePath.equals( "" ) ) {
+        policiesFilePath = properties.getPath();
+        if( policiesFilePath != null && !policiesFilePath.isEmpty() ) {
             initialized = true;
         }
     }

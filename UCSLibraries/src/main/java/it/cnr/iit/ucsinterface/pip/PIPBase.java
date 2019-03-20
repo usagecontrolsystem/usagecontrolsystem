@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.logging.Logger;
 
+import it.cnr.iit.ucs.configuration.fields.pip.PipProperties;
 import it.cnr.iit.ucsinterface.contexthandler.ContextHandlerPIPInterface;
 import it.cnr.iit.xacmlutilities.Attribute;
 
@@ -42,6 +43,12 @@ public abstract class PIPBase implements PIPCHInterface, PIPOMInterface {
     // path to the file that has to be read
     public static final String FILE_PATH = "FILE_PATH";
 
+    protected ContextHandlerPIPInterface contextHandlerInterface;
+    public HashMap<String, Attribute> attributes = new HashMap<>();
+    private PipProperties properties;
+
+    private volatile boolean initialized = false;
+
     public enum TAGS {
         ENVIRONMENT( "environment" ),
         SUBJECT( "subject" ),
@@ -64,32 +71,21 @@ public abstract class PIPBase implements PIPCHInterface, PIPOMInterface {
         }
     }
 
-    protected ContextHandlerPIPInterface contextHandlerInterface;
-
-    // Properties file used for managing the properties of the PIP
-    private String properties;
-
-    public HashMap<String, Attribute> attributes = new HashMap<>();
-
-    protected String configuration;
-
-    private volatile boolean initialized = false;
-
     /**
      * Basic constructor for a PIP
      *
-     * @param xmlPip
+     * @param properties
      *          the configuration of the PIP
      */
-    public PIPBase( String xmlPip ) {
+    public PIPBase( PipProperties properties ) {
         // BEGIN parameter checking
-        if( xmlPip == null || xmlPip.equals( "" ) ) {
-            LOGGER.severe( "xml is null or empty " );
+        if( properties == null ) {
+            LOGGER.severe( "properties are null" );
             // TODO throw exception
             return;
         }
         // END parameter checking
-        properties = xmlPip;
+        this.properties = properties;
         initialized = true;
     }
 
@@ -106,26 +102,20 @@ public abstract class PIPBase implements PIPCHInterface, PIPOMInterface {
     @Override
     final public ArrayList<Attribute> getAttributes() {
         if( initialized ) {
-            ArrayList<Attribute> arrayList = new ArrayList<>();
-            arrayList.addAll( attributes.values() );
-            return arrayList;
+            // ArrayList<Attribute> arrayList = new ArrayList<>();
+            // arrayList.addAll( attributes.values() );
+            return (ArrayList<Attribute>) attributes.clone();
         }
         return null;
     }
 
     @Override
     final public HashMap<String, Attribute> getAttributesCharacteristics() {
-        if( initialized ) {
-            return attributes;
-        }
-        return null;
+        return attributes;
     }
 
-    final protected String getProperties() {
-        if( initialized ) {
-            return properties;
-        }
-        return null;
+    final protected PipProperties getProperties() {
+        return properties;
     }
 
     final protected boolean isInitialized() {

@@ -13,22 +13,28 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  ******************************************************************************/
-package it.cnr.iit.usagecontrolframework.proxies;
+package it.cnr.iit.ucs.configuration.fields.sessionManager;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
- * This is the proxy abstract object.
- * <p>
- * With this object we basically provide a skeleton for a proxy. A proxy is
- * basically a wrapper around the real implementation of the object and helps us
- * in dealing with the real object. <br>
- * The only functionality a Proxy abstract object <b>MUST</b> provide is a isValid
- * function. The isValid function is used to understand if the wrapped object has
- * been correctly initalized and if the wrapped object is ready.
- * </p>
+ * Xml table
  *
  * @author antonio
  *
  */
-public abstract class Proxy {
-    abstract public boolean isInitialized();
+public class Table {
+
+    private String name;
+    private List<Field> fields = new ArrayList<>();
+
+    public String getName() {
+        return name;
+    }
+
+    public List<Field> getFields() {
+        return fields;
+    }
+
 }

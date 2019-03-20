@@ -19,7 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 
-import it.cnr.iit.ucs.configuration.xmlclasses.XMLContextHandler;
+import it.cnr.iit.ucs.configuration.fields.ContextHandlerProperties;
 import it.cnr.iit.ucsinterface.forwardingqueue.ForwardingQueueToCHInterface;
 import it.cnr.iit.ucsinterface.obligationmanager.ObligationManagerInterface;
 import it.cnr.iit.ucsinterface.pap.PAPInterface;
@@ -51,8 +51,8 @@ import it.cnr.iit.ucsinterface.sessionmanager.SessionManagerInterface;
  *
  */
 public abstract class AbstractContextHandler implements ContextHandlerInterface {
-    private static final Logger LOGGER = Logger
-        .getLogger( AbstractContextHandler.class.getName() );
+
+    private static final Logger LOGGER = Logger.getLogger( AbstractContextHandler.class.getName() );
 
     // interface to the session manager
     private SessionManagerInterface sessionManagerInterface;
@@ -67,7 +67,7 @@ public abstract class AbstractContextHandler implements ContextHandlerInterface 
     // interface to the request manager
     private RequestManagerToCHInterface requestManagerToChInterface;
     // configuration of the context handler
-    private XMLContextHandler configuration;
+    private ContextHandlerProperties configuration;
     // ip of the context handler
     private String ip;
     // port on which the context handler is attached
@@ -77,23 +77,20 @@ public abstract class AbstractContextHandler implements ContextHandlerInterface 
     // forwarding queue interface
     private ForwardingQueueToCHInterface forwardingQueue;
 
-    // states if the context handler has been correctly initialized
     private volatile boolean initialized = false;
 
     /**
      * Superclass constructor. The constructor requires the various interfaces the
      * ContextHandler will have to deal with to work properly.
      *
-     * @param the
-     *          only parameter is the configuration of the actual context handler
+     * @param the only parameter is the configuration of the actual context handler
      *          passed as a JAVA Object.
      *
      */
-    protected AbstractContextHandler( XMLContextHandler configuration ) {
+    protected AbstractContextHandler( ContextHandlerProperties configuration ) {
         this.configuration = configuration;
         ip = configuration.getIp();
         port = configuration.getPort();
-        // verify();
     }
 
     final protected boolean isInitialized() {
@@ -106,8 +103,6 @@ public abstract class AbstractContextHandler implements ContextHandlerInterface 
      * Having the initialized flag to false makes it impossible to deal with this object
      */
     public void verify() {
-        StringBuilder sb = new StringBuilder();
-
         final String[] checkObjectsNames = { "configuration", "sessionManager", "pipList/pipRetrieval",
             "pap", "pdp", "requestManagerToCh", "ip", "port", "forwardingQueue", "obligationManager" };
         final boolean[] checkObjects = { configuration == null, sessionManagerInterface == null,
@@ -115,6 +110,7 @@ public abstract class AbstractContextHandler implements ContextHandlerInterface 
             pdpInterface == null, requestManagerToChInterface == null,
             ip == null, port == null, forwardingQueue == null, obligationManager == null };
 
+        StringBuilder sb = new StringBuilder();
         for( int i = 0; i < checkObjects.length; i++ ) {
             if( checkObjects[i] ) {
                 sb.append( checkObjectsNames[i] ).append( " " );
@@ -146,7 +142,6 @@ public abstract class AbstractContextHandler implements ContextHandlerInterface 
             return;
         }
         this.sessionManagerInterface = sessionManagerInterface;
-        // verify();
     }
 
     final protected List<PIPCHInterface> getPipList() {
@@ -161,7 +156,6 @@ public abstract class AbstractContextHandler implements ContextHandlerInterface 
             return;
         }
         this.pipRetrieval = pipRetrieval;
-        // verify();
     }
 
     final protected PIPRMInterface getPipRetrieval() {
@@ -175,7 +169,7 @@ public abstract class AbstractContextHandler implements ContextHandlerInterface 
         if( pipInterface == null || !initialized ) {
             return;
         }
-        this.pipList.add( pipInterface );
+        pipList.add( pipInterface );
     }
 
     final protected PDPInterface getPdpInterface() {
@@ -190,7 +184,6 @@ public abstract class AbstractContextHandler implements ContextHandlerInterface 
             return;
         }
         this.pdpInterface = pdpInterface;
-        // verify();
     }
 
     final protected PAPInterface getPapInterface() {
@@ -205,7 +198,6 @@ public abstract class AbstractContextHandler implements ContextHandlerInterface 
             return;
         }
         this.papInterface = papInterface;
-        // verify();
     }
 
     final protected RequestManagerToCHInterface getRequestManagerToChInterface() {
@@ -221,7 +213,6 @@ public abstract class AbstractContextHandler implements ContextHandlerInterface 
             return;
         }
         this.requestManagerToChInterface = requestManagerToChInterface;
-        // verify();
     }
 
     final protected String getIp() {
@@ -282,11 +273,9 @@ public abstract class AbstractContextHandler implements ContextHandlerInterface 
      * @param obligationManager
      *          the obligation manager to be used
      */
-    public void setObligationManager(
-            ObligationManagerInterface obligationManager ) {
+    public void setObligationManager( ObligationManagerInterface obligationManager ) {
         if( obligationManager != null ) {
             this.obligationManager = obligationManager;
-            // verify();
         }
     }
 
@@ -297,11 +286,9 @@ public abstract class AbstractContextHandler implements ContextHandlerInterface 
         return obligationManager;
     }
 
-    public void setForwardingQueue(
-            ForwardingQueueToCHInterface forwardingQueue ) {
+    public void setForwardingQueue( ForwardingQueueToCHInterface forwardingQueue ) {
         if( forwardingQueue != null ) {
             this.forwardingQueue = forwardingQueue;
-            // verify();
         }
     }
 
@@ -311,7 +298,7 @@ public abstract class AbstractContextHandler implements ContextHandlerInterface 
      * @return the ForwardingQueueToCHInterface
      */
     final protected ForwardingQueueToCHInterface getForwardingQueue() {
-        return this.forwardingQueue;
+        return forwardingQueue;
     }
 
 }

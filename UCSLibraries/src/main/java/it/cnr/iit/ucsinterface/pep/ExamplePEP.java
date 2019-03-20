@@ -25,7 +25,7 @@ import java.util.concurrent.ThreadLocalRandom;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import it.cnr.iit.ucs.configuration.xmlclasses.XMLPep;
+import it.cnr.iit.ucs.configuration.fields.PepProperties;
 import it.cnr.iit.ucsinterface.message.MEAN;
 import it.cnr.iit.ucsinterface.message.Message;
 import it.cnr.iit.ucsinterface.message.PART;
@@ -51,7 +51,7 @@ public class ExamplePEP implements PEPInterface {
 
     private static final String START_PATH = "data";
 
-    private XMLPep xmlPep;
+    private PepProperties configuration;
     private RequestManagerToExternalInterface requestManager;
     // private ContextHandlerInterface contextHandler;
 
@@ -63,13 +63,13 @@ public class ExamplePEP implements PEPInterface {
 
     private Object mutex = new Object();
 
-    public ExamplePEP( XMLPep xmlPep ) {
+    public ExamplePEP( PepProperties configuration ) {
         // BEGIN parameter checking
-        if( xmlPep == null ) {
+        if( configuration == null ) {
             return;
         }
         // END parameter checking
-        this.xmlPep = xmlPep;
+        this.configuration = configuration;
         initialized = true;
     }
 
@@ -84,7 +84,7 @@ public class ExamplePEP implements PEPInterface {
             request = Utility.readFileAbsPath( START_PATH + "/RequestGiacomo.xml" );
             policy = Utility.readFileAbsPath( START_PATH + "/PolicyGiacomo.xml" );
         }
-        String pepUri = xmlPep.getIp();
+        String pepUri = configuration.getIp();
 
         TryAccessMessageBuilder tryAccessBuilder = new TryAccessMessageBuilder(
             PART.PEP.toString(), PART.CH.toString() );
@@ -165,7 +165,7 @@ public class ExamplePEP implements PEPInterface {
         // END parameter checking
 
         ReevaluationResponse chPepMessage = (ReevaluationResponse) message;
-        if( xmlPep.getRevoke().equals( "HARD" ) ) {
+        if( configuration.getRevoke().equals( "HARD" ) ) {
             EndAccessMessage endAccess = new EndAccessMessage( PART.PEP.toString(),
                 PART.CH.toString() );
             endAccess.setCallback( null, MEAN.API );
@@ -221,7 +221,7 @@ public class ExamplePEP implements PEPInterface {
         private String sessionId;
 
         public EndThread( String s ) {
-            this.sessionId = s;
+            sessionId = s;
         }
 
         @Override

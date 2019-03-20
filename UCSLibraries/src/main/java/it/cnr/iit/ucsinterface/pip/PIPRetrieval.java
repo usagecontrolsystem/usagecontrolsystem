@@ -15,6 +15,8 @@
  ******************************************************************************/
 package it.cnr.iit.ucsinterface.pip;
 
+import it.cnr.iit.ucs.configuration.fields.pip.PipProperties;
+
 /**
  * This is the abstract class for a PIPRetrieval.
  * <p>
@@ -98,8 +100,8 @@ public abstract class PIPRetrieval extends PIPBase implements PIPRMInterface {
      *          the additional parameters required by the PIPRetrieval, preferably
      *          in XML format
      */
-    public PIPRetrieval( String xmlPip ) {
-        super( xmlPip );
+    public PIPRetrieval( PipProperties properties ) {
+        super( properties );
     }
 
 }

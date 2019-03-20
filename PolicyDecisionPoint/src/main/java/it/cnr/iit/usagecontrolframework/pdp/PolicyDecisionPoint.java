@@ -49,13 +49,13 @@ import org.wso2.balana.finder.PolicyFinderModule;
 import org.wso2.balana.finder.PolicyFinderResult;
 import org.wso2.balana.xacml3.MultipleCtxResult;
 
-import it.cnr.iit.utility.JAXBUtility;
-import it.cnr.iit.xacmlutilities.policy.PolicyHelper;
-import it.cnr.iit.ucs.configuration.xmlclasses.XMLPdp;
+import it.cnr.iit.ucs.configuration.fields.PdpProperties;
 import it.cnr.iit.ucsinterface.contexthandler.STATUS;
 import it.cnr.iit.ucsinterface.pdp.AbstractPDP;
 import it.cnr.iit.ucsinterface.pdp.PDPEvaluation;
 import it.cnr.iit.ucsinterface.pdp.PDPResponse;
+import it.cnr.iit.utility.JAXBUtility;
+import it.cnr.iit.xacmlutilities.policy.PolicyHelper;
 
 import oasis.names.tc.xacml.core.schema.wd_17.PolicyType;
 import oasis.names.tc.xacml.core.schema.wd_17.RuleType;
@@ -83,7 +83,7 @@ public final class PolicyDecisionPoint extends AbstractPDP {
     // Configuration of the PDP
     private PDPConfig pdpConfig;
 
-    public PolicyDecisionPoint( XMLPdp configuration ) {
+    public PolicyDecisionPoint( PdpProperties configuration ) {
         super( configuration );
     }
 

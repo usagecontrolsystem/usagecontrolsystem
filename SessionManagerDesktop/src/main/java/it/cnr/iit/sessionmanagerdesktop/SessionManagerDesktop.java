@@ -25,7 +25,7 @@ import com.j256.ormlite.stmt.QueryBuilder;
 import com.j256.ormlite.support.ConnectionSource;
 import com.j256.ormlite.table.TableUtils;
 
-import it.cnr.iit.ucs.configuration.xmlclasses.XMLSessionManager;
+import it.cnr.iit.ucs.configuration.fields.sessionManager.SessionManagerProperties;
 import it.cnr.iit.ucsinterface.sessionmanager.OnGoingAttributesInterface;
 import it.cnr.iit.ucsinterface.sessionmanager.SessionInterface;
 import it.cnr.iit.ucsinterface.sessionmanager.SessionManagerInterface;
@@ -39,8 +39,7 @@ import it.cnr.iit.xacmlutilities.Attribute;
  * @author Fabio Bindi and Filippo Lauria and Antonio La Marra
  */
 final public class SessionManagerDesktop implements SessionManagerInterface {
-    private static Logger LOGGER = Logger
-        .getLogger( SessionManagerDesktop.class.getName() );
+    private static Logger LOGGER = Logger.getLogger( SessionManagerDesktop.class.getName() );
 
     // url to connect to the database
     private String databaseURL;
@@ -55,11 +54,11 @@ final public class SessionManagerDesktop implements SessionManagerInterface {
     /**
      * Constructor
      *
-     * @param databaseURL_
+     * @param databaseURL
      *          URL of the database where data will be stored/retrieved
      */
-    protected SessionManagerDesktop( String databaseURL_ ) {
-        databaseURL = databaseURL_;
+    protected SessionManagerDesktop( String databaseURL ) {
+        this.databaseURL = databaseURL;
         sessionDao = null;
         attributesDao = null;
     }
@@ -70,13 +69,14 @@ final public class SessionManagerDesktop implements SessionManagerInterface {
      * @param databaseURL_
      *          URL of the database where data will be stored/retrieved
      */
-    public SessionManagerDesktop( XMLSessionManager xmlSessionManager ) {
+    public SessionManagerDesktop( SessionManagerProperties properties ) {
         // BEGIN parameter checking
-        if( xmlSessionManager == null || xmlSessionManager.getDriver() == null ) {
+        if( properties == null || properties.getDriver() == null ) {
             return;
         }
         // END parameter checking
-        databaseURL = xmlSessionManager.getDriver();
+        // TODO clean properties since only driver is used
+        databaseURL = properties.getDriver();
         sessionDao = null;
         attributesDao = null;
         initialized = true;

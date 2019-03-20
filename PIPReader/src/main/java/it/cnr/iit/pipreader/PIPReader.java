@@ -25,11 +25,10 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.logging.Logger;
 
-import it.cnr.iit.ucs.configuration.xmlclasses.XMLPip;
+import it.cnr.iit.ucs.configuration.fields.pip.PipProperties;
 import it.cnr.iit.ucsinterface.obligationmanager.ObligationInterface;
 import it.cnr.iit.ucsinterface.pip.PIPBase;
 import it.cnr.iit.ucsinterface.pip.exception.PIPException;
-import it.cnr.iit.utility.JAXBUtility;
 import it.cnr.iit.utility.Utility;
 import it.cnr.iit.xacmlutilities.Attribute;
 import it.cnr.iit.xacmlutilities.Category;
@@ -51,7 +50,8 @@ import oasis.names.tc.xacml.core.schema.wd_17.RequestType;
  *
  */
 final public class PIPReader extends PIPBase {
-    private Logger LOGGER = Logger.getLogger( PIPReader.class.getName() );
+
+    private static Logger LOGGER = Logger.getLogger( PIPReader.class.getName() );
 
     /**
      * Whenever a PIP has to retrieve some informations related to an attribute
@@ -81,17 +81,17 @@ final public class PIPReader extends PIPBase {
     /**
      * Constructor for the PIP reader
      *
-     * @param xmlPip
+     * @param properties
      *          the xml describing the pipreader in string format
      */
-    public PIPReader( String xmlPip ) {
-        super( xmlPip );
+    public PIPReader( PipProperties properties ) {
+        super( properties );
         if( !isInitialized() ) {
             LOGGER.info( "base classe not initialised" );
             return;
         }
 
-        if( initialize( xmlPip ) ) {
+        if( initialize( properties ) ) {
             LOGGER.info( "initialising" );
             initialized = true;
             subscriberTimer = new PRSubscriberTimer( contextHandlerInterface,
@@ -109,10 +109,9 @@ final public class PIPReader extends PIPBase {
      *          the xml of the pip in string format
      * @return true if everything goes ok, false otherwise
      */
-    private boolean initialize( String string ) {
+    private boolean initialize( PipProperties properties ) {
         try {
-            XMLPip xmlPip = JAXBUtility.unmarshalToObject( XMLPip.class, string );
-            Map<String, String> arguments = xmlPip.getAttributes().get( 0 ).getArgs();
+            Map<String, String> arguments = properties.getAttributes().get( 0 ).getArgs();
             Attribute attribute = new Attribute();
             if( !attribute.createAttributeId( arguments.get( ATTRIBUTE_ID ) ) ) {
                 LOGGER.severe( "wrong set Attribute" );
@@ -401,7 +400,7 @@ final public class PIPReader extends PIPBase {
             initialized = false;
             return false;
         }
-        this.expectedCategory = categoryObj;
+        expectedCategory = categoryObj;
         return true;
     }
 

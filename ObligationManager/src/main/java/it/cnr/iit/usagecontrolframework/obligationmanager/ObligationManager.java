@@ -22,7 +22,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.logging.Logger;
 
-import it.cnr.iit.ucs.configuration.xmlclasses.XMLObligationManager;
+import it.cnr.iit.ucs.configuration.fields.ObligationManagerProperties;
 import it.cnr.iit.ucsinterface.obligationmanager.ObligationInterface;
 import it.cnr.iit.ucsinterface.obligationmanager.ObligationManagerInterface;
 import it.cnr.iit.ucsinterface.pdp.PDPEvaluation;
@@ -53,6 +53,7 @@ import it.cnr.iit.utility.JsonUtility;
  *
  */
 final public class ObligationManager implements ObligationManagerInterface {
+
     private final Logger LOGGER = Logger.getLogger( ObligationManager.class.getName() );
 
     // list of pips
@@ -60,21 +61,21 @@ final public class ObligationManager implements ObligationManagerInterface {
     // pip retrieval
     private PIPOMInterface pipRetrieval;
     // xml describing the obligation manager
-    private XMLObligationManager configuration;
+    private ObligationManagerProperties configuration;
     // states if the obligation manager has been correctly initialized
     private volatile boolean initialized = false;
 
     /**
      *
-     * @param obligationManager
+     * @param properties
      */
-    public ObligationManager( XMLObligationManager obligationManager ) {
+    public ObligationManager( ObligationManagerProperties properties ) {
         // BEGIN parameter checking
-        if( obligationManager == null ) {
+        if( properties == null ) {
             return;
         }
         // END parameter checking
-        configuration = obligationManager;
+        configuration = properties;
         initialized = true;
     }
 

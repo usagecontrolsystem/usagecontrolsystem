@@ -14,7 +14,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import it.cnr.iit.ucs.configuration.xmlclasses.UCFConfiguration;
+import it.cnr.iit.ucs.configuration.UCSConfiguration;
 import it.cnr.iit.ucsinterface.message.Message;
 import it.cnr.iit.usagecontrolframework.requestmanager.RequestManagerLC;
 
@@ -22,10 +22,10 @@ import it.cnr.iit.usagecontrolframework.requestmanager.RequestManagerLC;
 @SpringBootTest
 @RunWith( SpringRunner.class )
 public class RequestManagerCoverageTests extends UCFBaseTests {
-    private UCFConfiguration ucsConfiguration;
+    private UCSConfiguration ucsConfiguration;
 
     @PostConstruct
-    private void init() throws JAXBException, URISyntaxException, IOException {
+    private void init() throws URISyntaxException, IOException, JAXBException {
         LOGGER.info( "Init tests" );
         ucsConfiguration = getUCSConfiguration( conf.getUcsConfigFile() );
     }
@@ -50,7 +50,7 @@ public class RequestManagerCoverageTests extends UCFBaseTests {
     public void requestManagerCoverageTest()
             throws JAXBException, URISyntaxException, IOException, NoSuchMethodException, SecurityException,
             InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
-        RequestManagerLC requestManager = getRequestManager( ucsConfiguration.getRm() );
+        RequestManagerLC requestManager = getRequestManager( ucsConfiguration.getRequestManager() );
         requestManager.setInterfaces( getMockedContextHandlerInterface(),
             getMockedPEPMap( "", "" ),
             getMockedNodeInterface(),
@@ -63,7 +63,7 @@ public class RequestManagerCoverageTests extends UCFBaseTests {
     public void requestManagerCoverageTest2()
             throws JAXBException, URISyntaxException, IOException, NoSuchMethodException, SecurityException,
             InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
-        RequestManagerLC requestManager = getRequestManager( ucsConfiguration.getRm() );
+        RequestManagerLC requestManager = getRequestManager( ucsConfiguration.getRequestManager() );
         Message message = new Message( "", "" );
         requestManager.setInterfaces( getMockedContextHandlerInterface(),
             getMockedPEPMap( "", "" ),

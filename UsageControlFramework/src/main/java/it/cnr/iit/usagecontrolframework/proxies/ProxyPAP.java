@@ -20,7 +20,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import java.util.logging.Logger;
 
-import it.cnr.iit.ucs.configuration.xmlclasses.XMLPap;
+import it.cnr.iit.ucs.configuration.fields.PapProperties;
 import it.cnr.iit.ucsinterface.constants.CONNECTION;
 import it.cnr.iit.ucsinterface.pap.PAPInterface;
 
@@ -40,13 +40,13 @@ import it.cnr.iit.ucsinterface.pap.PAPInterface;
  *
  */
 final public class ProxyPAP extends Proxy implements PAPInterface {
+
     private static final Logger LOGGER = Logger.getLogger( ProxyPAP.class.getName() );
 
-    private boolean initialized = false;
-    private String configuration;
+    private PapProperties properties;
+    private PAPInterface papInterface;
 
-    // interface to deal with the PAP (if the PAP runs locally)
-    PAPInterface papInterface;
+    private boolean initialized = false;
 
     /**
      * This is the constructor of the proxy to the PAP.
@@ -63,39 +63,38 @@ final public class ProxyPAP extends Proxy implements PAPInterface {
      * </ol>
      * </p>
      *
-     * @param xmlPap
+     * @param configuration
      *          the configuration of the PAP
      */
-    public ProxyPAP( XMLPap xmlPap ) {
+    public ProxyPAP( PapProperties configuration ) {
         // BEGIN parameter checking
-        if( xmlPap == null ) {
-            return;
-        }
-        configuration = xmlPap.getCommunication();
         if( configuration == null ) {
             return;
+            // TODO throw exception
         }
         // END parameter checking
 
-        CONNECTION connection = CONNECTION.getCONNECTION( xmlPap.getCommunication() );
+        properties = configuration;
+
+        CONNECTION connection = CONNECTION.getCONNECTION( configuration.getCommunication() );
         switch( connection ) {
             case API:
-                if( localPAP( xmlPap ) ) {
+                if( localPAP( configuration ) ) {
                     initialized = true;
                 }
                 break;
             case SOCKET:
-                if( connectSocket( xmlPap ) ) {
+                if( connectSocket( configuration ) ) {
                     initialized = true;
                 }
                 break;
             case REST_API:
-                if( connectRest( xmlPap ) ) {
+                if( connectRest( configuration ) ) {
                     initialized = true;
                 }
                 break;
             default:
-                LOGGER.severe( "WRONG communication " + xmlPap.getCommunication() );
+                LOGGER.severe( "WRONG communication " + configuration.getCommunication() );
                 return;
         }
     }
@@ -103,13 +102,13 @@ final public class ProxyPAP extends Proxy implements PAPInterface {
     /**
      * This is the implementation of the local PAP.
      *
-     * @param xmlPap
+     * @param properties
      *          the configuration of the PAP in xml format
      * @return true if everything goes ok, false otherwise
      */
-    private boolean localPAP( XMLPap xmlPap ) {
+    private boolean localPAP( PapProperties properties ) {
         // BEGIN parameter checking
-        String className = xmlPap.getClassName();
+        String className = properties.getClassName();
         if( className == null || className.equals( "" ) ) {
             return false;
         }
@@ -117,8 +116,8 @@ final public class ProxyPAP extends Proxy implements PAPInterface {
 
         try {
             Constructor<?> constructor = Class.forName( className )
-                .getConstructor( XMLPap.class );
-            papInterface = (PAPInterface) constructor.newInstance( xmlPap );
+                .getConstructor( PapProperties.class );
+            papInterface = (PAPInterface) constructor.newInstance( properties );
             return true;
         } catch( InstantiationException | IllegalAccessException
                 | ClassNotFoundException | NoSuchMethodException | SecurityException
@@ -134,7 +133,7 @@ final public class ProxyPAP extends Proxy implements PAPInterface {
      * @param xmlPap
      * @return
      */
-    private boolean connectSocket( XMLPap xmlPap ) {
+    private boolean connectSocket( PapProperties properties ) {
         // TODO Auto-generated method stub
         return false;
     }
@@ -145,7 +144,7 @@ final public class ProxyPAP extends Proxy implements PAPInterface {
      * @param xmlPap
      * @return
      */
-    private boolean connectRest( XMLPap xmlPap ) {
+    private boolean connectRest( PapProperties properties ) {
         // TODO Auto-generated method stub
         return false;
     }
@@ -160,7 +159,7 @@ final public class ProxyPAP extends Proxy implements PAPInterface {
             return null;
         }
         // END parameter checking
-        CONNECTION connection = CONNECTION.getCONNECTION( configuration );
+        CONNECTION connection = CONNECTION.getCONNECTION( properties.getCommunication() );
         switch( connection ) {
             case API:
                 return papInterface.retrievePolicy( policyId );
@@ -182,7 +181,7 @@ final public class ProxyPAP extends Proxy implements PAPInterface {
             return false;
         }
         // END parameter checking
-        CONNECTION connection = CONNECTION.getCONNECTION( configuration );
+        CONNECTION connection = CONNECTION.getCONNECTION( properties.getCommunication() );
         switch( connection ) {
             case API:
                 return papInterface.addPolicy( policy );
@@ -201,7 +200,7 @@ final public class ProxyPAP extends Proxy implements PAPInterface {
             return null;
         }
         // END parameter checking
-        CONNECTION connection = CONNECTION.getCONNECTION( configuration );
+        CONNECTION connection = CONNECTION.getCONNECTION( properties.getCommunication() );
         switch( connection ) {
             case API:
                 return papInterface.listPolicies();
@@ -218,17 +217,8 @@ final public class ProxyPAP extends Proxy implements PAPInterface {
      *
      * @return the value of the initialized volatile variable
      */
-    public boolean isInitialized() {
-        return initialized;
-    }
-
     @Override
-    public boolean isValid() {
-        if( initialized ) {
-            LOGGER.info( "PAPProxy correctly configured" );
-        } else {
-            LOGGER.severe( "PAPProxy wrongly configured" );
-        }
+    public boolean isInitialized() {
         return initialized;
     }
 

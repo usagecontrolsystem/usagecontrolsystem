@@ -30,7 +30,7 @@ import java.util.logging.Logger;
 import javax.xml.bind.JAXBException;
 
 import it.cnr.iit.ucs.configuration.BasicConfiguration;
-import it.cnr.iit.ucs.configuration.xmlclasses.XMLContextHandler;
+import it.cnr.iit.ucs.configuration.fields.ContextHandlerProperties;
 import it.cnr.iit.ucsinterface.contexthandler.AbstractContextHandler;
 import it.cnr.iit.ucsinterface.contexthandler.STATUS;
 import it.cnr.iit.ucsinterface.contexthandler.exceptions.RevokeException;
@@ -129,10 +129,10 @@ final public class ContextHandlerLC extends AbstractContextHandler {
 
     /**
      *
-     * @param configuration
+     * @param properties
      */
-    public ContextHandlerLC( XMLContextHandler configuration ) {
-        super( configuration );
+    public ContextHandlerLC( ContextHandlerProperties properties ) {
+        super( properties );
     }
 
     /**
@@ -154,9 +154,6 @@ final public class ContextHandlerLC extends AbstractContextHandler {
         continueMonitoring = false;
     }
 
-    // ---------------------------------------------------------------------------
-    // TRYACCESS
-    // ---------------------------------------------------------------------------
     /**
      * tryaccess method invoked by PEP<br>
      * The following actions are performed:

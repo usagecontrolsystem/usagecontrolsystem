@@ -3,6 +3,7 @@ package it.cnr.iit.test;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -23,9 +24,9 @@ import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import it.cnr.iit.ucs.configuration.xmlclasses.UCFConfiguration;
-import it.cnr.iit.ucs.configuration.xmlclasses.XMLPip;
-import it.cnr.iit.ucs.configuration.xmlclasses.XMLRequestManager;
+import it.cnr.iit.ucs.configuration.UCSConfiguration;
+import it.cnr.iit.ucs.configuration.fields.RequestManagerProperties;
+import it.cnr.iit.ucs.configuration.fields.pip.PipProperties;
 import it.cnr.iit.ucsinterface.contexthandler.ContextHandlerInterface;
 import it.cnr.iit.ucsinterface.contexthandler.STATUS;
 import it.cnr.iit.ucsinterface.forwardingqueue.ForwardingQueueToCHInterface;
@@ -59,6 +60,7 @@ import it.cnr.iit.usagecontrolframework.proxies.ProxyPDP;
 import it.cnr.iit.usagecontrolframework.proxies.ProxySessionManager;
 import it.cnr.iit.usagecontrolframework.requestmanager.RequestManagerLC;
 import it.cnr.iit.utility.JAXBUtility;
+import it.cnr.iit.utility.JsonUtility;
 import it.cnr.iit.xacmlutilities.Attribute;
 import it.cnr.iit.xacmlutilities.Category;
 import it.cnr.iit.xacmlutilities.DataType;
@@ -75,15 +77,15 @@ public class UCFBaseTests {
 
     /* Request manager functions */
 
-    protected RequestManagerLC getRequestManager( XMLRequestManager xml ) {
-        RequestManagerLC requestManager = new RequestManagerLC( xml );
+    protected RequestManagerLC getRequestManager( RequestManagerProperties properties ) {
+        RequestManagerLC requestManager = new RequestManagerLC( properties );
         return requestManager;
     }
 
     /* Context Hanlder functions */
 
-    protected ContextHandlerLC getContextHandler( UCFConfiguration ucsConfiguration ) {
-        ContextHandlerLC contextHandler = new ContextHandlerLC( ucsConfiguration.getCh() );
+    protected ContextHandlerLC getContextHandler( UCSConfiguration ucsConfiguration ) {
+        ContextHandlerLC contextHandler = new ContextHandlerLC( ucsConfiguration.getContextHandler() );
         return contextHandler;
     }
 
@@ -97,7 +99,7 @@ public class UCFBaseTests {
         contextHandler.setPIPRetrieval( getMockedPipRetrieval() );
     }
 
-    protected ContextHandlerLC getContextHandlerCorrectlyInitialized( UCFConfiguration ucsConfiguration, String policy,
+    protected ContextHandlerLC getContextHandlerCorrectlyInitialized( UCSConfiguration ucsConfiguration, String policy,
             String request ) {
         ContextHandlerLC contextHandler = getContextHandler( ucsConfiguration );
         initContextHandler( contextHandler );
@@ -269,13 +271,13 @@ public class UCFBaseTests {
         return pip;
     }
 
-    protected void addPips( UCFConfiguration ucsConfiguration, ContextHandlerLC contextHandler ) {
+    protected void addPips( UCSConfiguration ucsConfiguration, ContextHandlerLC contextHandler ) {
         for( PIPCHInterface pip : getPIPS( ucsConfiguration ) ) {
             contextHandler.addPip( pip );
         }
     }
 
-    protected void addMockedPips( UCFConfiguration ucsConfiguration, ContextHandlerLC contextHandler ) {
+    protected void addMockedPips( UCSConfiguration ucsConfiguration, ContextHandlerLC contextHandler ) {
         // TODO FIX THIS HACK
         String[] pips = { "virus", "telephone", "position", "role", "telephone", "time" };
         String[] pipVal = { "0", "0", "Pisa", "IIT", "0", "12:00" };
@@ -299,12 +301,12 @@ public class UCFBaseTests {
         return attr;
     }
 
-    protected ArrayList<PIPCHInterface> getPIPS( UCFConfiguration ucsConfiguration ) {
+    protected ArrayList<PIPCHInterface> getPIPS( UCSConfiguration ucsConfiguration ) {
         ArrayList<PIPCHInterface> pips = new ArrayList<>();
 
-        for( XMLPip xmlPIP : ucsConfiguration.getPipList() ) {
+        for( PipProperties pipProp : ucsConfiguration.getPipList() ) {
             LOGGER.info( "Loading pip" );
-            PIPCHInterface pip = PIPBuilder.build( xmlPIP );
+            PIPCHInterface pip = PIPBuilder.build( pipProp );
             assertNotNull( pip );
             pips.add( pip );
         }
@@ -312,20 +314,20 @@ public class UCFBaseTests {
         return pips;
     }
 
-    protected SessionManagerInterface getSessionManager( UCFConfiguration ucsConfiguration ) {
+    protected SessionManagerInterface getSessionManager( UCSConfiguration ucsConfiguration ) {
         SessionManagerInterface sessionManager = new ProxySessionManager( ucsConfiguration.getSessionManager() );
         assertTrue( sessionManager.isInitialized() );
         return sessionManager;
     }
 
-    protected PDPInterface getPDP( UCFConfiguration ucsConfiguration ) {
-        PDPInterface pdp = new ProxyPDP( ucsConfiguration.getPdp() );
+    protected PDPInterface getPDP( UCSConfiguration ucsConfiguration ) {
+        PDPInterface pdp = new ProxyPDP( ucsConfiguration.getPolicyDecisionPoint() );
         assertNotNull( pdp );
         return pdp;
     }
 
-    protected PAPInterface getPAP( UCFConfiguration ucsConfiguration ) {
-        PAPInterface pap = new ProxyPAP( ucsConfiguration.getPap() );
+    protected PAPInterface getPAP( UCSConfiguration ucsConfiguration ) {
+        PAPInterface pap = new ProxyPAP( ucsConfiguration.getPolicyAdministrationPoint() );
         assertNotNull( pap );
         return pap;
     }
@@ -407,9 +409,13 @@ public class UCFBaseTests {
 
     /* Utility functions */
 
-    protected UCFConfiguration getUCSConfiguration( String ucsConfigFile )
+    protected UCSConfiguration getUCSConfiguration( String ucsConfigFile )
             throws JAXBException, URISyntaxException, IOException {
-        return (UCFConfiguration) loadXMLFromFile( ucsConfigFile, UCFConfiguration.class );
+        ClassLoader classLoader = UCFBaseTests.class.getClassLoader();
+        LOGGER.info( "loading : " + ucsConfigFile );
+        File file = new File( classLoader.getResource( ucsConfigFile ).getFile() );
+
+        return JsonUtility.loadObjectFromJsonFile( file, UCSConfiguration.class ).get();
     }
 
     private Object loadXMLFromFile( String fileName, Class<?> className )

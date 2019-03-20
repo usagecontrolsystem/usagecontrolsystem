@@ -1,5 +1,11 @@
 {
-  "scheduler" : false,
+  "General" : {
+    "ip" : "localhost",
+    "port" : "8080",
+    "rest" : null,
+    "scheduler" : false
+  },
+  "distributed" : null,
   "pipList" : [ {
     "id" : "PIPReaderEnv",
     "className" : "iit.cnr.it.pipreader.PIPReader",
@@ -48,7 +54,6 @@
     "connection" : null,
     "multiattribute" : "false",
     "table" : null,
-    "xmlpipAsString" : "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n<pip id=\"PIPReaderEnv\" class=\"iit.cnr.it.pipreader.PIPReader\" retrieval=\"false\">\n    <attributes>\n        <arg name=\"CATEGORY\" argument=\"urn:oasis:names:tc:xacml:3.0:attribute-category:environment\"/>\n        <arg name=\"DATA_TYPE\" argument=\"http://www.w3.org/2001/XMLSchema#integer\"/>\n        <arg name=\"ATTRIBUTE_ID\" argument=\"urn:oasis:names:tc:xacml:3.0:environment:camera\"/>\n        <arg name=\"FILE_PATH\" argument=\"resources/camera.txt\"/>\n    </attributes>\n    <multiattribute>false</multiattribute>\n</pip>\n"
   } ],
   "sessionManager" : {
     "type" : "Local",
@@ -120,37 +125,36 @@
     "replicationFactor" : "2"
   },
   "proxies" : null,
-  "ch" : {
+  "contextHandler" : {
     "className" : "it.cnr.iit.usagecontrolframework.contexthandler.ContextHandlerLC",
     "thread" : "",
     "communication" : "API",
     "ip" : "localhost",
     "port" : "8080",
     "scheduler" : false,
-    "chAsString" : "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n<ch>\n    <class>it.cnr.iit.usagecontrolframework.contexthandler.ContextHandlerLC</class>\n    <thread></thread>\n    <communication>API</communication>\n    <ip>localhost</ip>\n    <port>8080</port>\n</ch>\n",
     "xmlPipRegister" : null
   },
-  "pdp" : {
+  "policyDecisionPoint" : {
     "className" : "ii.cnr.iit.usagecontrolframework.pdp.PolicyDecisionPoint",
     "thread" : "tbd",
     "communication" : "API"
   },
-  "pap" : {
+  "policyAdministrationPoint" : {
     "className" : "it.cnr.iit.usagecontrolframework.pap.PolicyAdministrationPoint",
     "thread" : "tbd",
     "communication" : "API",
     "path" : null
   },
-  "rm" : {
+  "requestManager" : {
     "className" : "it.cnr.iit.usagecontrolframework.requestmanager.RequestManagerLC",
     "thread" : "1",
     "communication" : "REST",
     "remoteResponse" : "/retrieveRemoteResponse"
   },
-  "om" : {
+  "obligationManager" : {
     "className" : "it.cnr.iit.usagecontrolframework.obligationmanager.ObligationManager"
   },
-  "pep" : [ {
+  "pepList" : [ {
     "className" : "iit.cnr.it.ucsinterface.pep.AbstractPEP",
     "communication" : "REST_API",
     "ip" : "10.0.0.22",
@@ -183,12 +187,5 @@
     "tryAccessResponse" : "tryAccessResponse",
     "startAccessResponse" : "startAccessResponse",
     "endAccessResponse" : "endAccessResponse"
-  } ],
-  "xmlGeneral" : {
-    "ip" : "localhost",
-    "port" : "8080",
-    "rest" : null,
-    "scheduler" : false
-  },
-  "distributed" : null
+  } ]
 }

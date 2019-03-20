@@ -9,8 +9,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.logging.Logger;
 
-import javax.xml.bind.JAXBException;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -29,10 +27,10 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import it.cnr.iit.sessionmanagerdesktop.SessionManagerDesktop;
-import it.cnr.iit.ucs.configuration.xmlclasses.XMLSessionManager;
+import it.cnr.iit.ucs.configuration.fields.sessionManager.SessionManagerProperties;
 import it.cnr.iit.ucsinterface.sessionmanager.OnGoingAttributesInterface;
 import it.cnr.iit.ucsinterface.sessionmanager.SessionInterface;
-import it.cnr.iit.utility.JAXBUtility;
+import it.cnr.iit.utility.JsonUtility;
 
 @EnableConfigurationProperties
 @TestPropertySource( properties = "application-test.properties" )
@@ -101,17 +99,14 @@ public class SessionManagerTest {
 
     @Before
     public void init() {
-        System.out.println( conf );
-        XMLSessionManager xml1 = null;
+        LOGGER.info( conf );
         try {
-            XMLSessionManager xml = JAXBUtility.unmarshalToObject( XMLSessionManager.class, conf );
-            System.out.println( xml.getDriver() );
-            sessionManagerDesktop = new SessionManagerDesktop( xml );
-            xml1 = JAXBUtility.unmarshalToObject( XMLSessionManager.class, failingConf );
-        } catch( JAXBException e ) {
-            // TODO Auto-generated catch block
+            SessionManagerProperties properties = JsonUtility.loadObjectFromJsonString( conf, SessionManagerProperties.class ).get();
+            sessionManagerDesktop = new SessionManagerDesktop( properties );
+            // TODO do a test for failing conf
+            // properties = JAXBUtility.unmarshalToObject( XMLSessionManager.class, failingConf );
+        } catch( Exception e ) {
             e.printStackTrace();
-            assertTrue( xml1 == null );
         }
         sessionManagerDesktop.start();
     }

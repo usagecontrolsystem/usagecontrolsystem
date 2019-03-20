@@ -18,7 +18,7 @@ package it.cnr.iit.usagecontrolframework.requestmanager;
 import java.util.logging.Logger;
 
 import it.cnr.iit.ucs.configuration.BasicConfiguration;
-import it.cnr.iit.ucs.configuration.xmlclasses.XMLRequestManager;
+import it.cnr.iit.ucs.configuration.fields.RequestManagerProperties;
 import it.cnr.iit.ucsinterface.message.Message;
 import it.cnr.iit.ucsinterface.message.endaccess.EndAccessMessage;
 import it.cnr.iit.ucsinterface.message.endaccess.EndAccessResponse;
@@ -69,10 +69,10 @@ public class RequestManagerLC extends AsynchronousRequestManager {
      * basic properties. In this way the Request Manager becomes more easy to be
      * configured
      *
-     * @param xml
+     * @param properties
      */
-    public RequestManagerLC( XMLRequestManager xml ) {
-        super( xml );
+    public RequestManagerLC( RequestManagerProperties properties ) {
+        super( properties );
         initialize = isInitialized();
     }
 
@@ -80,7 +80,7 @@ public class RequestManagerLC extends AsynchronousRequestManager {
      * Initializes the request manager with a------ pool of threads
      *
      * @return true if everything goes fine, false in case of exceptions
-    
+
     private boolean initialize() {
     	try {
     		inquirers = Executors
@@ -93,7 +93,7 @@ public class RequestManagerLC extends AsynchronousRequestManager {
     		return false;
     	}
     	return true;
-    
+
     }
      */
 
@@ -198,12 +198,12 @@ public class RequestManagerLC extends AsynchronousRequestManager {
      *
      * @author antonio
      *
-    
+
     private class ContextHandlerInquirer implements Callable<Message> {
-    
+
     	@Override
     	public Message call() {
-    
+
     		while (true) {
     			// BEGIN parameter checking
     			if (!initialize) {
@@ -254,9 +254,9 @@ public class RequestManagerLC extends AsynchronousRequestManager {
      *
      * @author antonio
      *
-    
+
     private class AttributeSupplier implements Callable<Void> {
-    
+
     	@Override
     	public Void call() throws Exception {
     		while (true) {
@@ -303,7 +303,7 @@ public class RequestManagerLC extends AsynchronousRequestManager {
      * @param message
      *          the message returned by the context handler
      * @return the message to be used as response
-    
+
     private MessagePipCh createResponse(Message message) {
     	MessagePipCh chResponse = (MessagePipCh) message;
     	switch (chResponse.getAction()) {

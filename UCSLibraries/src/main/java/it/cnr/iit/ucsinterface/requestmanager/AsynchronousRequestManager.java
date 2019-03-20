@@ -20,7 +20,7 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.logging.Logger;
 
-import it.cnr.iit.ucs.configuration.xmlclasses.XMLRequestManager;
+import it.cnr.iit.ucs.configuration.fields.RequestManagerProperties;
 import it.cnr.iit.ucsinterface.contexthandler.ContextHandlerInterface;
 import it.cnr.iit.ucsinterface.forwardingqueue.ForwardingQueueToRMInterface;
 import it.cnr.iit.ucsinterface.message.Message;
@@ -61,24 +61,24 @@ public abstract class AsynchronousRequestManager
     private ForwardingQueueToRMInterface forwardingQueue;
 
     // configuration of the request manager
-    private XMLRequestManager xml;
+    private RequestManagerProperties configuration;
     // interface used to communicate with other nodes
     private NodeInterface nodeInterface;
 
     /**
      * Constructor for the request manager
      *
-     * @param xml
-     *          the xml representing the configuration of the request manager
+     * @param configuration
+     *          the object representing the configuration of the request manager
      */
-    protected AsynchronousRequestManager( XMLRequestManager xml ) {
+    protected AsynchronousRequestManager( RequestManagerProperties configuration ) {
         // BEGIN parameter checking
-        if( xml == null ) {
+        if( configuration == null ) {
             return;
         }
         // END parameter checking
         initialized = true;
-        this.xml = xml;
+        this.configuration = configuration;
         nodeInterface = new NodeProxy();
     }
 
@@ -107,7 +107,7 @@ public abstract class AsynchronousRequestManager
         }
         // END parameter checking
         this.contextHandler = contextHandler;
-        this.pep = proxyPEPMap;
+        pep = proxyPEPMap;
         this.forwardingQueue = forwardingQueue;
         this.nodeInterface = nodeInterface;
     }
@@ -157,8 +157,8 @@ public abstract class AsynchronousRequestManager
         return queueToCH;
     }
 
-    final protected XMLRequestManager getXML() {
-        return xml;
+    final protected RequestManagerProperties getConfiguration() {
+        return configuration;
     }
 
     final protected BlockingQueue<MessagePipCh> getRetrieveRequestsQueue() {

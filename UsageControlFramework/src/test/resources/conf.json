@@ -1,0 +1,188 @@
+{
+  "general" : {
+    "ip" : "localhost",
+    "port" : "8080",
+    "rest" : null,
+    "schedulerEnabled" : false
+  },
+  "distributed" : null,
+  "pipList" : [ {
+    "id" : "PIPReaderEnv",
+    "className" : "iit.cnr.it.pipreader.PIPReader",
+    "retrieval" : "false",
+    "attributes" : [ {
+      "args" : {
+        "CATEGORY" : "urn:oasis:names:tc:xacml:1.0:subject-category:access-subject",
+        "ATTRIBUTE_ID" : "urn:oasis:names:tc:xacml:1.0:subject:role",
+        "EXPECTED_CATEGORY" : "urn:oasis:names:tc:xacml:1.0:subject-category:access-subject",
+        "FILE_PATH" : "resources/subject.txt",
+        "DATA_TYPE" : "http://www.w3.org/2001/XMLSchema#string"
+      }
+    } ],
+    "connection" : null,
+    "multiattribute" : "false",
+    "table" : null
+  }, {
+    "id" : "PIPReaderEnv",
+    "className" : "iit.cnr.it.pipreader.PIPReader",
+    "retrieval" : "false",
+    "attributes" : [ {
+      "args" : {
+        "CATEGORY" : "urn:oasis:names:tc:xacml:3.0:attribute-category:environment",
+        "ATTRIBUTE_ID" : "urn:oasis:names:tc:xacml:3.0:environment:light",
+        "FILE_PATH" : "resources/light.txt",
+        "DATA_TYPE" : "http://www.w3.org/2001/XMLSchema#integer"
+      }
+    } ],
+    "connection" : null,
+    "multiattribute" : "false",
+    "table" : null
+  }, {
+    "id" : "PIPReaderEnv",
+    "className" : "iit.cnr.it.pipreader.PIPReader",
+    "retrieval" : "false",
+    "attributes" : [ {
+      "args" : {
+        "CATEGORY" : "urn:oasis:names:tc:xacml:3.0:attribute-category:environment",
+        "ATTRIBUTE_ID" : "urn:oasis:names:tc:xacml:3.0:environment:camera",
+        "FILE_PATH" : "resources/camera.txt",
+        "DATA_TYPE" : "http://www.w3.org/2001/XMLSchema#integer"
+      }
+    } ],
+    "connection" : null,
+    "multiattribute" : "false",
+    "table" : null
+  } ],
+  "sessionManager" : {
+    "type" : "Local",
+    "ip" : "localhost",
+    "cluster" : "Test Cluster",
+    "keyspace" : "sessionmanager",
+    "username" : "root",
+    "password" : "root",
+    "communication" : "API",
+    "className" : "it.cnr.iit.sessionmanagerdesktop.SessionManagerDesktop",
+    "key" : null,
+    "host" : "localhost",
+    "driver" : "jdbc:hsqldb:hsql://localhost/session_manager;sql.syntax_pgs=true?user=sa&password=",
+    "tables" : [ {
+      "name" : "sessions",
+      "fields" : [ {
+        "name" : "id",
+        "type" : "varchar",
+        "key" : "true"
+      }, {
+        "name" : "policy_set",
+        "type" : "text",
+        "key" : null
+      }, {
+        "name" : "original_request",
+        "type" : "text",
+        "key" : null
+      }, {
+        "name" : "status",
+        "type" : "text",
+        "key" : null
+      }, {
+        "name" : "myip",
+        "type" : "text",
+        "key" : null
+      }, {
+        "name" : "pep_uri",
+        "type" : "text",
+        "key" : null
+      } ]
+    }, {
+      "name" : "on_going_attributes",
+      "fields" : [ {
+        "name" : "id",
+        "type" : "varchar",
+        "key" : "true"
+      }, {
+        "name" : "attribute_id",
+        "type" : "varchar",
+        "key" : null
+      }, {
+        "name" : "subject_name",
+        "type" : "varchar",
+        "key" : null
+      }, {
+        "name" : "resource_name",
+        "type" : "varchar",
+        "key" : null
+      }, {
+        "name" : "action_name",
+        "type" : "varchar",
+        "key" : null
+      }, {
+        "name" : "session_id",
+        "type" : "varchar",
+        "key" : null
+      } ]
+    } ],
+    "replicationFactor" : "2"
+  },
+  "proxies" : null,
+  "contextHandler" : {
+    "className" : "it.cnr.iit.usagecontrolframework.contexthandler.ContextHandlerLC",
+    "thread" : "",
+    "communication" : "API",
+    "ip" : "localhost",
+    "port" : "8080",
+    "schedulerEnabled" : false
+  },
+  "policyDecisionPoint" : {
+    "className" : "ii.cnr.iit.usagecontrolframework.pdp.PolicyDecisionPoint",
+    "thread" : "tbd",
+    "communication" : "API"
+  },
+  "policyAdministrationPoint" : {
+    "className" : "it.cnr.iit.usagecontrolframework.pap.PolicyAdministrationPoint",
+    "thread" : "tbd",
+    "communication" : "API",
+    "path" : null
+  },
+  "requestManager" : {
+    "className" : "it.cnr.iit.usagecontrolframework.requestmanager.RequestManagerLC",
+    "thread" : "1",
+    "communication" : "REST",
+    "remoteResponse" : "/retrieveRemoteResponse"
+  },
+  "obligationManager" : {
+    "className" : "it.cnr.iit.usagecontrolframework.obligationmanager.ObligationManager"
+  },
+  "pepList" : [ {
+    "className" : "iit.cnr.it.ucsinterface.pep.AbstractPEP",
+    "communication" : "REST_API",
+    "ip" : "10.0.0.22",
+    "port" : "9999",
+    "revoke" : "SOFT",
+    "id" : "2",
+    "onGoingEvaluation" : "onGoingEvaluation",
+    "tryAccessResponse" : "tryAccessResponse",
+    "startAccessResponse" : "startAccessResponse",
+    "endAccessResponse" : "endAccessResponse"
+  }, {
+    "className" : "iit.cnr.it.ucsinterface.pep.AbstractPEP",
+    "communication" : "REST_API",
+    "ip" : "10.0.0.11",
+    "port" : "9999",
+    "revoke" : "SOFT",
+    "id" : "3",
+    "onGoingEvaluation" : "onGoingEvaluation",
+    "tryAccessResponse" : "tryAccessResponse",
+    "startAccessResponse" : "startAccessResponse",
+    "endAccessResponse" : "endAccessResponse"
+  }, {
+    "className" : "iit.cnr.it.ucsinterface.pep.AbstractPEP",
+    "communication" : "REST_API",
+    "ip" : "10.221.99.190",
+    "port" : "9999",
+    "revoke" : "SOFT",
+    "id" : "1",
+    "onGoingEvaluation" : "onGoingEvaluation",
+    "tryAccessResponse" : "tryAccessResponse",
+    "startAccessResponse" : "startAccessResponse",
+    "endAccessResponse" : "endAccessResponse"
+  } ]
+}
