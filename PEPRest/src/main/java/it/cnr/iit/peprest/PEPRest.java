@@ -73,8 +73,6 @@ public class PEPRest implements PEPInterface {
     private ConcurrentMap<String, Message> responses = new ConcurrentHashMap<>();
     private MessageStorage messageHistory = new MessageStorage();
 
-    private Object mutex = new Object();
-
     private volatile boolean initialized = false;
 
     public PEPRest() {
@@ -198,14 +196,6 @@ public class PEPRest implements PEPInterface {
 
         message.setMotivation( "OK" );
         return message;
-    }
-
-    @Async
-    public void receiveResponseOld( Message message ) {
-        responses.put( message.getID(), message );
-        synchronized( mutex ) {
-            mutex.notifyAll();
-        }
     }
 
     @Override
