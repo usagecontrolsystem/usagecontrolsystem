@@ -16,7 +16,6 @@
 package it.cnr.iit.ucs.configuration.fields.pip;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import it.cnr.iit.ucs.configuration.fields.sessionManager.Table;
 
@@ -31,10 +30,10 @@ public final class PipProperties {
     private String id;
     private String className;
     private String retrieval;
-    private List<Attribute> attributes = new ArrayList<>();
     private Table table;
     private String connection;
     private boolean multiattribute = false;
+    private ArrayList<Attribute> attributes = new ArrayList<>();
 
     public String getId() {
         return id;
@@ -56,8 +55,12 @@ public final class PipProperties {
         return retrieval;
     }
 
-    public List<Attribute> getAttributes() {
+    public ArrayList<Attribute> getAttributes() {
         return attributes;
+    }
+
+    public void setAttributes( ArrayList<Attribute> attributes ) {
+        this.attributes = attributes;
     }
 
     public Table getTable() {

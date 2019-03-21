@@ -27,7 +27,7 @@ public class PIPBuilder {
         return Optional.empty();
     }
 
-    private static Optional<PIPBase> buildPIPBaseFromPipProperties( PipProperties properties ) {
+    public static Optional<PIPBase> buildPIPBaseFromPipProperties( PipProperties properties ) {
         Optional<PIPBase> obj;
 
         try {

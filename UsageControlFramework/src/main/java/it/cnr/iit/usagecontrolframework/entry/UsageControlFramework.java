@@ -19,11 +19,13 @@ import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Optional;
 import java.util.logging.Logger;
 
 import org.springframework.scheduling.annotation.Async;
 
 import it.cnr.iit.ucs.configuration.BasicConfiguration;
+import it.cnr.iit.ucs.configuration.PIPBuilder;
 import it.cnr.iit.ucs.configuration.UCSConfiguration;
 import it.cnr.iit.ucs.configuration.fields.ContextHandlerProperties;
 import it.cnr.iit.ucs.configuration.fields.ObligationManagerProperties;
@@ -56,8 +58,6 @@ import it.cnr.iit.ucsinterface.pip.PIPRetrieval;
 import it.cnr.iit.ucsinterface.requestmanager.AsynchronousRequestManager;
 import it.cnr.iit.ucsinterface.requestmanager.RequestManagerToExternalInterface;
 import it.cnr.iit.ucsinterface.ucs.UCSInterface;
-import it.cnr.iit.usagecontrolframework.configuration.PIPBuilder;
-import it.cnr.iit.usagecontrolframework.configuration.UCSConfigurationLoader;
 import it.cnr.iit.usagecontrolframework.obligationmanager.ObligationManagerBuilder;
 import it.cnr.iit.usagecontrolframework.proxies.ProxyPAP;
 import it.cnr.iit.usagecontrolframework.proxies.ProxyPDP;
@@ -306,12 +306,14 @@ public final class UsageControlFramework implements UCSInterface {
     private boolean buildPIPs() {
         List<PipProperties> pipPropertiesList = configuration.getPipList();
         for( PipProperties pip : pipPropertiesList ) {
-            PIPBase pipInterface = PIPBuilder.build( pip );
-            if( pipInterface == null ) {
+            Optional<PIPBase> optPip = PIPBuilder.buildPIPBaseFromPipProperties( pip );
+
+            if( optPip.isPresent() ) {
                 return false;
             }
-            pipInterface.setContextHandlerInterface( contextHandler );
-            pipList.add( pipInterface );
+            PIPBase pipBase = optPip.get();
+            pipBase.setContextHandlerInterface( contextHandler );
+            pipList.add( pipBase );
         }
         return true;
     }

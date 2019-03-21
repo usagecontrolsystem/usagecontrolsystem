@@ -102,9 +102,9 @@ public abstract class PIPBase implements PIPCHInterface, PIPOMInterface {
     @Override
     final public ArrayList<Attribute> getAttributes() {
         if( initialized ) {
-            // ArrayList<Attribute> arrayList = new ArrayList<>();
-            // arrayList.addAll( attributes.values() );
-            return (ArrayList<Attribute>) attributes.clone();
+            ArrayList<Attribute> arrayList = new ArrayList<>();
+            arrayList.addAll( attributes.values() );
+            return arrayList;
         }
         return null;
     }

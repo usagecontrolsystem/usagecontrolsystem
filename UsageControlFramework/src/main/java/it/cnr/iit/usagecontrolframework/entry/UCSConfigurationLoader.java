@@ -13,7 +13,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  ******************************************************************************/
-package it.cnr.iit.usagecontrolframework.configuration;
+package it.cnr.iit.usagecontrolframework.entry;
 
 import java.io.File;
 import java.util.Optional;

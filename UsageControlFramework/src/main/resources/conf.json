@@ -1,9 +1,9 @@
 {
-  "General" : {
+  "general" : {
     "ip" : "localhost",
     "port" : "8080",
     "rest" : null,
-    "scheduler" : false
+    "schedulerEnabled" : false
   },
   "distributed" : null,
   "pipList" : [ {
@@ -21,8 +21,7 @@
     } ],
     "connection" : null,
     "multiattribute" : "false",
-    "table" : null,
-    "xmlpipAsString" : "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n<pip id=\"PIPReaderEnv\" class=\"iit.cnr.it.pipreader.PIPReader\" retrieval=\"false\">\n    <attributes>\n        <arg name=\"CATEGORY\" argument=\"urn:oasis:names:tc:xacml:1.0:subject-category:access-subject\"/>\n        <arg name=\"DATA_TYPE\" argument=\"http://www.w3.org/2001/XMLSchema#string\"/>\n        <arg name=\"ATTRIBUTE_ID\" argument=\"urn:oasis:names:tc:xacml:1.0:subject:role\"/>\n        <arg name=\"FILE_PATH\" argument=\"resources/subject.txt\"/>\n        <arg name=\"EXPECTED_CATEGORY\" argument=\"urn:oasis:names:tc:xacml:1.0:subject-category:access-subject\"/>\n    </attributes>\n    <multiattribute>false</multiattribute>\n</pip>\n"
+    "table" : null
   }, {
     "id" : "PIPReaderEnv",
     "className" : "iit.cnr.it.pipreader.PIPReader",
@@ -37,8 +36,7 @@
     } ],
     "connection" : null,
     "multiattribute" : "false",
-    "table" : null,
-    "xmlpipAsString" : "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n<pip id=\"PIPReaderEnv\" class=\"iit.cnr.it.pipreader.PIPReader\" retrieval=\"false\">\n    <attributes>\n        <arg name=\"CATEGORY\" argument=\"urn:oasis:names:tc:xacml:3.0:attribute-category:environment\"/>\n        <arg name=\"DATA_TYPE\" argument=\"http://www.w3.org/2001/XMLSchema#integer\"/>\n        <arg name=\"ATTRIBUTE_ID\" argument=\"urn:oasis:names:tc:xacml:3.0:environment:light\"/>\n        <arg name=\"FILE_PATH\" argument=\"resources/light.txt\"/>\n    </attributes>\n    <multiattribute>false</multiattribute>\n</pip>\n"
+    "table" : null
   }, {
     "id" : "PIPReaderEnv",
     "className" : "iit.cnr.it.pipreader.PIPReader",
@@ -53,7 +51,7 @@
     } ],
     "connection" : null,
     "multiattribute" : "false",
-    "table" : null,
+    "table" : null
   } ],
   "sessionManager" : {
     "type" : "Local",
@@ -131,8 +129,7 @@
     "communication" : "API",
     "ip" : "localhost",
     "port" : "8080",
-    "scheduler" : false,
-    "xmlPipRegister" : null
+    "schedulerEnabled" : false
   },
   "policyDecisionPoint" : {
     "className" : "ii.cnr.iit.usagecontrolframework.pdp.PolicyDecisionPoint",

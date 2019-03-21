@@ -24,6 +24,7 @@ import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import it.cnr.iit.ucs.configuration.PIPBuilder;
 import it.cnr.iit.ucs.configuration.UCSConfiguration;
 import it.cnr.iit.ucs.configuration.fields.RequestManagerProperties;
 import it.cnr.iit.ucs.configuration.fields.pip.PipProperties;
@@ -53,7 +54,6 @@ import it.cnr.iit.ucsinterface.pip.PIPRetrieval;
 import it.cnr.iit.ucsinterface.requestmanager.RequestManagerToCHInterface;
 import it.cnr.iit.ucsinterface.sessionmanager.SessionInterface;
 import it.cnr.iit.ucsinterface.sessionmanager.SessionManagerInterface;
-import it.cnr.iit.usagecontrolframework.configuration.PIPBuilder;
 import it.cnr.iit.usagecontrolframework.contexthandler.ContextHandlerLC;
 import it.cnr.iit.usagecontrolframework.proxies.ProxyPAP;
 import it.cnr.iit.usagecontrolframework.proxies.ProxyPDP;
@@ -306,7 +306,7 @@ public class UCFBaseTests {
 
         for( PipProperties pipProp : ucsConfiguration.getPipList() ) {
             LOGGER.info( "Loading pip" );
-            PIPCHInterface pip = PIPBuilder.build( pipProp );
+            PIPCHInterface pip = PIPBuilder.buildPIPBaseFromPipProperties( pipProp ).get();
             assertNotNull( pip );
             pips.add( pip );
         }

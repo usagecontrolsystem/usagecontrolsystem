@@ -16,17 +16,16 @@
 package it.cnr.iit.ucs.configuration.fields.pip;
 
 import java.util.HashMap;
-import java.util.Map;
 
 public class Attribute {
 
-    private Map<String, String> arguments = new HashMap<>();
+    private HashMap<String, String> arguments = new HashMap<>();
 
-    public Map<String, String> getArgs() {
+    public HashMap<String, String> getArgs() {
         return arguments;
     }
 
-    public void setArgs( Map<String, String> args ) {
+    public void setArgs( HashMap<String, String> args ) {
         arguments = args;
     }
 
