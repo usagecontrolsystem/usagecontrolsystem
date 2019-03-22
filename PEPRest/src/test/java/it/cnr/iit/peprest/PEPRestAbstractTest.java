@@ -18,7 +18,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import it.cnr.iit.peprest.PEPRest;
 import it.cnr.iit.peprest.proxy.ProxyRequestManager;
 import it.cnr.iit.ucsinterface.message.Message;
 import it.cnr.iit.ucsinterface.message.startaccess.StartAccessResponse;
@@ -54,6 +53,12 @@ public abstract class PEPRestAbstractTest {
     protected MockHttpServletResponse postStringResponseToPEPRest( String jsonMessage, String uri ) throws Exception {
         MvcResult mvcResult = mvc.perform( MockMvcRequestBuilders.post( uri )
             .contentType( MediaType.TEXT_PLAIN_VALUE ).content( jsonMessage ) ).andReturn();
+        return mvcResult.getResponse();
+    }
+
+    protected MockHttpServletResponse postGetRequestToPEPRest( String messageId, String uri ) throws Exception {
+        MvcResult mvcResult = mvc.perform( MockMvcRequestBuilders.get( uri )
+            .requestAttr( "messageId", messageId ) ).andReturn();
         return mvcResult.getResponse();
     }
 

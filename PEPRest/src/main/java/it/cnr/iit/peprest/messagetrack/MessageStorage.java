@@ -32,7 +32,7 @@ public class MessageStorage implements MessageStorageInterface, MessagesPerSessi
     @Override
     public Optional<CallerResponse> getMessageStatus( String messageId ) {
         if( messageId == null || messageId.isEmpty() ) {
-            throw new NullPointerException( "Invalid message id passed: " + messageId );
+            throw new IllegalArgumentException( "Invalid message id passed: " + messageId );
         }
         if( !messageFlow.containsKey( messageId ) ) {
             return Optional.empty();
@@ -50,7 +50,7 @@ public class MessageStorage implements MessageStorageInterface, MessagesPerSessi
 
     private CallerResponse retrieveLastMessageStatus( String sessionId ) {
         if( sessionId == null || sessionId.isEmpty() ) {
-            throw new IllegalStateException( "TryAccessPermit message without sessionId" );
+            throw new IllegalArgumentException( "TryAccessPermit message without sessionId" );
         }
         String messageId = messagesPerSession.get( sessionId ).getLast();
         return messageFlow.get( messageId ).getCallerResponse();

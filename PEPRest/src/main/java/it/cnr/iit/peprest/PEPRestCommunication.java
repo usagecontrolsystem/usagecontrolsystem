@@ -15,6 +15,7 @@
  ******************************************************************************/
 package it.cnr.iit.peprest;
 
+import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.logging.Logger;
 
@@ -55,17 +56,8 @@ public class PEPRestCommunication {
     @ApiResponses( value = {
         @ApiResponse( code = 500, message = "Invalid message received" ),
         @ApiResponse( code = 200, message = "OK" ) } )
-    @RequestMapping( method = RequestMethod.POST, value = "/sendSynchronous" )
-    public void sendMessage() throws InterruptedException, ExecutionException {
-        pepRest.run();
-    }
-
-    @ApiOperation( httpMethod = "POST", value = "Starts the PEP" )
-    @ApiResponses( value = {
-        @ApiResponse( code = 500, message = "Invalid message received" ),
-        @ApiResponse( code = 200, message = "OK" ) } )
     @RequestMapping( method = RequestMethod.POST, value = "/startEvaluation" )
-    public String startEvaluation() throws InterruptedException, ExecutionException {
+    public String startEvaluation() {
         return pepRest.tryAccess();
     }
 
@@ -81,15 +73,18 @@ public class PEPRestCommunication {
         @ApiResponse( code = 500, message = "Invalid message received" ),
         @ApiResponse( code = 200, message = "OK" ) } )
     @RequestMapping( method = RequestMethod.GET, value = "/flowStatus" )
-    public CallerResponse getMessageStatus( @RequestAttribute( value = "messageId" ) String messageId )
-            throws InterruptedException, ExecutionException {
+    public CallerResponse getMessageStatus( @RequestAttribute( value = "messageId" ) String messageId ) {
         // BEGIN parameter checking
-        if( messageId == null ) {
-            LOGGER.severe( "messageId is null" );
+        if( messageId == null || messageId.isEmpty() ) {
             throw new HttpMessageNotReadableException( HttpStatus.NO_CONTENT + " : No message id" );
         }
         // END parameter checking
-        return pepRest.getMessageHistory().getMessageStatus( messageId ).get();
+        Optional<CallerResponse> callerResponse = pepRest.getMessageHistory().getMessageStatus( messageId );
+        if( callerResponse.isPresent() ) {
+            return callerResponse.get();
+        } else {
+            throw new IllegalArgumentException( "Invalid message id passed: " + messageId );
+        }
     }
 
     @ApiOperation( httpMethod = "POST", value = "Receives request from PEP for endaccess operation" )
@@ -97,11 +92,9 @@ public class PEPRestCommunication {
         @ApiResponse( code = 500, message = "Invalid message received" ),
         @ApiResponse( code = 200, message = "OK" ) } )
     @RequestMapping( method = RequestMethod.POST, value = "/finish", consumes = MediaType.TEXT_PLAIN_VALUE )
-    public void finish( @RequestBody( ) String sessionId )
-            throws InterruptedException, ExecutionException {
+    public void finish( @RequestBody( ) String sessionId ) {
         // BEGIN parameter checking
-        if( sessionId == null ) {
-            LOGGER.severe( "SESSION is null" );
+        if( sessionId == null || sessionId.isEmpty() ) {
             throw new HttpMessageNotReadableException( HttpStatus.NO_CONTENT + " : No session id" );
         }
         // END parameter checking
