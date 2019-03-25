@@ -36,8 +36,7 @@ public class RequestManagerCoverageTests extends UCFBaseTests {
         // nothing to do for now
     }
 
-    // TODO catch exception when it is refactored to do that
-    @Test
+    @Test( expected = NullPointerException.class )
     public void requestManagerCoverageTestShouldFail()
             throws JAXBException, URISyntaxException, IOException, NoSuchMethodException, SecurityException,
             InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
