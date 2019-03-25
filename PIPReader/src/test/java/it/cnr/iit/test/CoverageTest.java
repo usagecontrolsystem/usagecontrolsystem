@@ -158,24 +158,25 @@ public class CoverageTest {
 
     public void testInitialization() {
         fault = new PIPReader( null );
-        // TODO fix these
-        /*
-        fault = new PIPReader( "" );
-        fault = new PIPReader( PIPBuilder.getPipPropertiesFromString( missingCategory ) );
         assertEquals( fault.initialized, false );
-        System.out.println( missingAttributeId );
-        fault = new PIPReader( missingAttributeId );
+
+        fault = new PIPReader( PIPBuilder.getPipPropertiesFromString( missingCategory ).get() );
         assertEquals( fault.initialized, false );
-        fault = null;
-        fault = new PIPReader( missingExpectedCategory );
+
+        fault = new PIPReader( PIPBuilder.getPipPropertiesFromString( missingAttributeId ).get() );
         assertEquals( fault.initialized, false );
-        fault = new PIPReader( missingDataType );
+
+        fault = new PIPReader( PIPBuilder.getPipPropertiesFromString( missingExpectedCategory ).get() );
         assertEquals( fault.initialized, false );
-        fault = new PIPReader( missingFilePath );
+
+        fault = new PIPReader( PIPBuilder.getPipPropertiesFromString( missingDataType ).get() );
         assertEquals( fault.initialized, false );
-        fault = new PIPReader( malformedInput );
+
+        fault = new PIPReader( PIPBuilder.getPipPropertiesFromString( missingFilePath ).get() );
         assertEquals( fault.initialized, false );
-        */
+
+        // fault = new PIPReader( PIPBuilder.getPipPropertiesFromString(malformedInput).get() );
+        // assertEquals( fault.initialized, false );
     }
 
     public void testRetrieve() {
@@ -200,7 +201,6 @@ public class CoverageTest {
         assertTrue( value.equals( "ANALYZE" ) );
         value = testRetrieveAttribute( environmentAttribute, environmentAttributePip );
         assertTrue( value.equals( "30.0" ) );
-        // value = testRetrieveAttribute( subjectAttribute, fault );
     }
 
     private String testRetrieveAttribute( Attribute attribute, PIPReader pipReader ) {
@@ -291,8 +291,6 @@ public class CoverageTest {
         assertTrue( value.equals( "ANALYZE" ) );
         value = testSubscribeAttribute( environmentAttribute, environmentAttributePip );
         assertTrue( value.equals( "30.0" ) );
-        value = testSubscribeAttribute( subjectAttribute, fault );
-        value = testSubscribeAttribute( null, fault );
     }
 
     private String testSubscribeAttribute( Attribute attribute, PIPReader pipReader ) {
