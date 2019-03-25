@@ -26,6 +26,7 @@ import it.cnr.iit.pipreader.PIPReader;
 import it.cnr.iit.ucs.configuration.PIPBuilder;
 import it.cnr.iit.ucsinterface.contexthandler.AbstractContextHandler;
 import it.cnr.iit.utility.JAXBUtility;
+import it.cnr.iit.utility.JsonUtility;
 import it.cnr.iit.xacmlutilities.Attribute;
 import it.cnr.iit.xacmlutilities.Category;
 import it.cnr.iit.xacmlutilities.DataType;
@@ -122,16 +123,19 @@ public class CoverageTest {
 
     private void initAttributes() {
         subjectAttribute.createAttributeId( "urn:oasis:names:tc:xacml:1.0:subject:role" );
-        resourceAttribute.createAttributeId( "urn:oasis:names:tc:xacml:1.0:resource:class" );
-        actionAttribute.createAttributeId( "urn:oasis:names:tc:xacml:1.0:resource:type" );
-        environmentAttribute.createAttributeId( "urn:oasis:names:tc:xacml:3.0:environment:temperature" );
         subjectAttribute.setAttributeDataType( DataType.STRING );
-        resourceAttribute.setAttributeDataType( DataType.STRING );
-        actionAttribute.setAttributeDataType( DataType.STRING );
-        environmentAttribute.setAttributeDataType( DataType.STRING );
         subjectAttribute.setCategory( Category.SUBJECT );
+
+        resourceAttribute.createAttributeId( "urn:oasis:names:tc:xacml:1.0:resource:class" );
+        resourceAttribute.setAttributeDataType( DataType.STRING );
         resourceAttribute.setCategory( Category.RESOURCE );
+
+        actionAttribute.createAttributeId( "urn:oasis:names:tc:xacml:1.0:resource:type" );
+        actionAttribute.setAttributeDataType( DataType.STRING );
         actionAttribute.setCategory( Category.ACTION );
+
+        environmentAttribute.createAttributeId( "urn:oasis:names:tc:xacml:3.0:environment:temperature" );
+        environmentAttribute.setAttributeDataType( DataType.STRING );
         environmentAttribute.setCategory( Category.ENVIRONMENT );
     }
 
@@ -190,6 +194,8 @@ public class CoverageTest {
         assertTrue( value.equals( "IIT" ) );
         value = testRetrieveAttribute( resourceAttribute, resourceAttributePip );
         assertTrue( value.equals( "SECRET" ) );
+        System.out.println( JsonUtility.getJsonStringFromObject( environmentAttributePip, true ).get() );
+        System.out.println( JsonUtility.getJsonStringFromObject( actionAttributePip, true ).get() );
         value = testRetrieveAttribute( actionAttribute, actionAttributePip );
         assertTrue( value.equals( "ANALYZE" ) );
         value = testRetrieveAttribute( environmentAttribute, environmentAttributePip );

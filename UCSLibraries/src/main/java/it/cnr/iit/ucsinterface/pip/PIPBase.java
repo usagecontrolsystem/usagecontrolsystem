@@ -106,6 +106,7 @@ public abstract class PIPBase implements PIPCHInterface, PIPOMInterface {
             arrayList.addAll( attributes.values() );
             return arrayList;
         }
+        LOGGER.severe( "Cannot read attributes, PIP not initialised" );
         return null;
     }
 
