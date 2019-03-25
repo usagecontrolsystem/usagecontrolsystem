@@ -24,10 +24,10 @@ import java.util.logging.Logger;
 
 import org.springframework.scheduling.annotation.Async;
 
-import it.cnr.iit.ucs.configuration.BasicConfiguration;
 import it.cnr.iit.ucs.configuration.PIPBuilder;
 import it.cnr.iit.ucs.configuration.UCSConfiguration;
 import it.cnr.iit.ucs.configuration.fields.ContextHandlerProperties;
+import it.cnr.iit.ucs.configuration.fields.GeneralProperties;
 import it.cnr.iit.ucs.configuration.fields.ObligationManagerProperties;
 import it.cnr.iit.ucs.configuration.fields.PapProperties;
 import it.cnr.iit.ucs.configuration.fields.PdpProperties;
@@ -100,8 +100,7 @@ import it.cnr.iit.usagecontrolframework.proxies.ProxySessionManager;
  *
  */
 public final class UsageControlFramework implements UCSInterface {
-    private static final Logger LOGGER = Logger
-        .getLogger( UsageControlFramework.class.getName() );
+    private static final Logger LOGGER = Logger.getLogger( UsageControlFramework.class.getName() );
 
     private UCSConfiguration configuration;
 
@@ -117,16 +116,11 @@ public final class UsageControlFramework implements UCSInterface {
     private ProxySessionManager proxySessionManager;
     private ProxyPDP proxyPDP;
     private ProxyPAP proxyPAP;
-    private UCSConfigurationLoader properties;
 
     private ForwardingQueue forwardingQueue;
 
     // the only component not initialized here
     private NodeInterface nodeInterface;
-
-    // performance monitor component, it can be considered as related to all the
-    // components
-    // private PerformanceMonitorInterface performanceMonitor;
 
     private volatile boolean initialized = false;
 
@@ -169,8 +163,6 @@ public final class UsageControlFramework implements UCSInterface {
             return false;
         }
 
-        BasicConfiguration.getBasicConfiguration().configure( configuration );
-
         DISTRIBUTED_TYPE distributedType = DISTRIBUTED_TYPE.NONE;
 
         // build the context handler
@@ -188,14 +180,11 @@ public final class UsageControlFramework implements UCSInterface {
             LOGGER.info( "Error in building the pips" );
             return false;
         }
-
-        // Builds the proxies
-
+        // builds the proxies
         if( !buildProxySM() ) {
             LOGGER.info( "Error in building the session manager" );
             return false;
         }
-
         if( !buildObligationManager() ) {
             LOGGER.info( "Error in building the obligation manager" );
             return false;
@@ -214,7 +203,7 @@ public final class UsageControlFramework implements UCSInterface {
         }
 
         forwardingQueue = new ForwardingQueue();
-        nodeInterface = new NodeProxy();
+        nodeInterface = new NodeProxy( configuration.getGeneral() );
         System.out.println( "*******************\nCC" );
         // checks if every component is ok
         if( !checkConnection() ) {
@@ -225,25 +214,8 @@ public final class UsageControlFramework implements UCSInterface {
     }
 
     private boolean buildContextHandler( DISTRIBUTED_TYPE distributedType ) {
-        if( distributedType == null || distributedType == DISTRIBUTED_TYPE.NONE ) {
-            return buildContextHandler();
-        } else {
-            ContextHandlerProperties properties = configuration.getContextHandler();
-            try {
-                String className = properties.getClassName();
-                Constructor<?> constructor = Class.forName( className )
-                    .getConstructor( ContextHandlerProperties.class );
-                contextHandler = (AbstractContextHandler) constructor
-                    .newInstance( properties );
-
-                return true;
-            } catch( Exception exception ) {
-                exception.printStackTrace();
-                LOGGER.severe( "build ContextHandler(DISTRIBUTED_TYPE) failed" );
-                return false;
-            }
-        }
-
+        // if( distributedType == null || distributedType == DISTRIBUTED_TYPE.NONE ) {
+        return buildContextHandler();
     }
 
     /**
@@ -258,9 +230,9 @@ public final class UsageControlFramework implements UCSInterface {
         try {
             String className = properties.getClassName();
             Constructor<?> constructor = Class.forName( className )
-                .getConstructor( ContextHandlerProperties.class );
+                .getConstructor( GeneralProperties.class, ContextHandlerProperties.class );
             contextHandler = (AbstractContextHandler) constructor
-                .newInstance( properties );
+                .newInstance( configuration.getGeneral(), properties );
             return true;
         } catch( Exception exception ) {
             exception.printStackTrace();
@@ -284,9 +256,9 @@ public final class UsageControlFramework implements UCSInterface {
         try {
             String className = properties.getClassName();
             Constructor<?> constructor = Class.forName( className )
-                .getConstructor( RequestManagerProperties.class );
+                .getConstructor( GeneralProperties.class, RequestManagerProperties.class );
             requestManager = (AsynchronousRequestManager) constructor
-                .newInstance( properties );
+                .newInstance( configuration.getGeneral(), properties );
             return true;
         } catch( Exception exception ) {
             LOGGER.severe( "build RequestManager failed" );

@@ -26,7 +26,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import it.cnr.iit.ucs.configuration.PIPBuilder;
 import it.cnr.iit.ucs.configuration.UCSConfiguration;
-import it.cnr.iit.ucs.configuration.fields.RequestManagerProperties;
 import it.cnr.iit.ucs.configuration.fields.pip.PipProperties;
 import it.cnr.iit.ucsinterface.contexthandler.ContextHandlerInterface;
 import it.cnr.iit.ucsinterface.contexthandler.STATUS;
@@ -77,15 +76,15 @@ public class UCFBaseTests {
 
     /* Request manager functions */
 
-    protected RequestManagerLC getRequestManager( RequestManagerProperties properties ) {
-        RequestManagerLC requestManager = new RequestManagerLC( properties );
+    protected RequestManagerLC getRequestManager( UCSConfiguration ucsConfiguration ) {
+        RequestManagerLC requestManager = new RequestManagerLC( ucsConfiguration.getGeneral(), ucsConfiguration.getRequestManager() );
         return requestManager;
     }
 
     /* Context Hanlder functions */
 
     protected ContextHandlerLC getContextHandler( UCSConfiguration ucsConfiguration ) {
-        ContextHandlerLC contextHandler = new ContextHandlerLC( ucsConfiguration.getContextHandler() );
+        ContextHandlerLC contextHandler = new ContextHandlerLC( ucsConfiguration.getGeneral(), ucsConfiguration.getContextHandler() );
         return contextHandler;
     }
 

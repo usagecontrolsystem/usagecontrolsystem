@@ -20,6 +20,7 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.logging.Logger;
 
+import it.cnr.iit.ucs.configuration.fields.GeneralProperties;
 import it.cnr.iit.ucs.configuration.fields.RequestManagerProperties;
 import it.cnr.iit.ucsinterface.contexthandler.ContextHandlerInterface;
 import it.cnr.iit.ucsinterface.forwardingqueue.ForwardingQueueToRMInterface;
@@ -61,25 +62,27 @@ public abstract class AsynchronousRequestManager
     private ForwardingQueueToRMInterface forwardingQueue;
 
     // configuration of the request manager
-    private RequestManagerProperties configuration;
+    protected RequestManagerProperties properties;
+    protected GeneralProperties generalProperties;
     // interface used to communicate with other nodes
     private NodeInterface nodeInterface;
 
     /**
      * Constructor for the request manager
      *
-     * @param configuration
+     * @param properties
      *          the object representing the configuration of the request manager
      */
-    protected AsynchronousRequestManager( RequestManagerProperties configuration ) {
+    protected AsynchronousRequestManager( GeneralProperties generalProperties, RequestManagerProperties properties ) {
         // BEGIN parameter checking
-        if( configuration == null ) {
+        if( properties == null || generalProperties == null ) {
             return;
         }
         // END parameter checking
         initialized = true;
-        this.configuration = configuration;
-        nodeInterface = new NodeProxy();
+        this.properties = properties;
+        this.generalProperties = generalProperties;
+        nodeInterface = new NodeProxy( generalProperties );
     }
 
     /**
@@ -158,7 +161,7 @@ public abstract class AsynchronousRequestManager
     }
 
     final protected RequestManagerProperties getConfiguration() {
-        return configuration;
+        return properties;
     }
 
     final protected BlockingQueue<MessagePipCh> getRetrieveRequestsQueue() {

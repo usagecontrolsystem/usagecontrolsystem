@@ -15,7 +15,7 @@
  ******************************************************************************/
 package it.cnr.iit.ucsinterface.node;
 
-import it.cnr.iit.ucs.configuration.BasicConfiguration;
+import it.cnr.iit.ucs.configuration.fields.GeneralProperties;
 import it.cnr.iit.ucsinterface.constants.CONNECTION;
 import it.cnr.iit.ucsinterface.message.Message;
 import it.cnr.iit.ucsinterface.message.endaccess.EndAccessMessage;
@@ -44,7 +44,12 @@ import it.cnr.iit.utility.RESTUtils;
  */
 public class NodeProxy implements NodeInterface {
 
+    private GeneralProperties generalProperties;
     private CONNECTION connection = CONNECTION.REST_API;
+
+    public NodeProxy( GeneralProperties generalProperties ) {
+        this.generalProperties = generalProperties;
+    }
 
     @Override
     public void sendMessage( Message message ) {
@@ -121,7 +126,7 @@ public class NodeProxy implements NodeInterface {
         // TODO fix this
         StringBuilder url = new StringBuilder();
         url.append( "http://" + message.getDestination() + ":" );
-        url.append( BasicConfiguration.getBasicConfiguration().getPort() );
+        url.append( generalProperties.getPort() );
         url.append( function );
         return url.toString();
     }

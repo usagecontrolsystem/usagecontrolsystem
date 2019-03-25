@@ -29,8 +29,8 @@ import java.util.logging.Logger;
 
 import javax.xml.bind.JAXBException;
 
-import it.cnr.iit.ucs.configuration.BasicConfiguration;
 import it.cnr.iit.ucs.configuration.fields.ContextHandlerProperties;
+import it.cnr.iit.ucs.configuration.fields.GeneralProperties;
 import it.cnr.iit.ucsinterface.contexthandler.AbstractContextHandler;
 import it.cnr.iit.ucsinterface.contexthandler.STATUS;
 import it.cnr.iit.ucsinterface.contexthandler.exceptions.RevokeException;
@@ -103,9 +103,6 @@ import oasis.names.tc.xacml.core.schema.wd_17.RequestType;
 final public class ContextHandlerLC extends AbstractContextHandler {
     private final Logger LOGGER = Logger.getLogger( ContextHandlerLC.class.getName() );
 
-    // ---------------------------------------------------------------------------
-    // CONSTANTS
-    // ---------------------------------------------------------------------------
     private final static String TRYACCESS_POLICY = "pre";
     private final static String STARTACCESS_POLICY = "ongoing";
     private final static String ENDACCESS_POLICY = "post";
@@ -113,9 +110,6 @@ final public class ContextHandlerLC extends AbstractContextHandler {
     // address
     public static final String PEP_ID_SEPARATOR = "#";
 
-    // ---------------------------------------------------------------------------
-    // ContextHandler components
-    // ---------------------------------------------------------------------------
     // monitors if the value of an attribute changes
     private AttributeMonitor attributeMonitor = new AttributeMonitor();
     // queue in charge of storing the changing in the attributes
@@ -131,8 +125,8 @@ final public class ContextHandlerLC extends AbstractContextHandler {
      *
      * @param properties
      */
-    public ContextHandlerLC( ContextHandlerProperties properties ) {
-        super( properties );
+    public ContextHandlerLC( GeneralProperties generalProperties, ContextHandlerProperties properties ) {
+        super( generalProperties, properties );
     }
 
     /**
@@ -1394,8 +1388,8 @@ final public class ContextHandlerLC extends AbstractContextHandler {
                  * System.currentTimeMillis()); return null; } else {
                  */
                 ReevaluationMessage reevaluationMessage = new ReevaluationMessage(
-                    BasicConfiguration.getBasicConfiguration().getIp(),
-                    BasicConfiguration.getBasicConfiguration().getIp() );
+                    generalProperties.getIp(),
+                    generalProperties.getIp() );
                 reevaluationMessage.setSession( session );
                 LOGGER.info( "[TIME] reevaluation starts at " + System.currentTimeMillis() );
                 reevaluate( reevaluationMessage );

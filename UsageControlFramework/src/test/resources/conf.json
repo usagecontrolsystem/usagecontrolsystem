@@ -8,7 +8,7 @@
   "distributed" : null,
   "pipList" : [ {
     "id" : "PIPReaderEnv",
-    "className" : "iit.cnr.it.pipreader.PIPReader",
+    "className" : "it.cnr.iit.pipreader.PIPReader",
     "retrieval" : "false",
     "attributes" : [ {
       "args" : {
@@ -24,7 +24,7 @@
     "table" : null
   }, {
     "id" : "PIPReaderEnv",
-    "className" : "iit.cnr.it.pipreader.PIPReader",
+    "className" : "it.cnr.iit.pipreader.PIPReader",
     "retrieval" : "false",
     "attributes" : [ {
       "args" : {
@@ -39,7 +39,7 @@
     "table" : null
   }, {
     "id" : "PIPReaderEnv",
-    "className" : "iit.cnr.it.pipreader.PIPReader",
+    "className" : "it.cnr.iit.pipreader.PIPReader",
     "retrieval" : "false",
     "attributes" : [ {
       "args" : {
@@ -152,7 +152,7 @@
     "className" : "it.cnr.iit.usagecontrolframework.obligationmanager.ObligationManager"
   },
   "pepList" : [ {
-    "className" : "iit.cnr.it.ucsinterface.pep.AbstractPEP",
+    "className" : "it.cnr.iit.ucsinterface.pep.AbstractPEP",
     "communication" : "REST_API",
     "ip" : "10.0.0.22",
     "port" : "9999",
@@ -163,7 +163,7 @@
     "startAccessResponse" : "startAccessResponse",
     "endAccessResponse" : "endAccessResponse"
   }, {
-    "className" : "iit.cnr.it.ucsinterface.pep.AbstractPEP",
+    "className" : "it.cnr.iit.ucsinterface.pep.AbstractPEP",
     "communication" : "REST_API",
     "ip" : "10.0.0.11",
     "port" : "9999",
@@ -174,7 +174,7 @@
     "startAccessResponse" : "startAccessResponse",
     "endAccessResponse" : "endAccessResponse"
   }, {
-    "className" : "iit.cnr.it.ucsinterface.pep.AbstractPEP",
+    "className" : "it.cnr.iit.ucsinterface.pep.AbstractPEP",
     "communication" : "REST_API",
     "ip" : "10.221.99.190",
     "port" : "9999",

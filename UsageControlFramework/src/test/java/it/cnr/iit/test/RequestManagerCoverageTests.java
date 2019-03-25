@@ -50,7 +50,7 @@ public class RequestManagerCoverageTests extends UCFBaseTests {
     public void requestManagerCoverageTest()
             throws JAXBException, URISyntaxException, IOException, NoSuchMethodException, SecurityException,
             InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
-        RequestManagerLC requestManager = getRequestManager( ucsConfiguration.getRequestManager() );
+        RequestManagerLC requestManager = getRequestManager( ucsConfiguration );
         requestManager.setInterfaces( getMockedContextHandlerInterface(),
             getMockedPEPMap( "", "" ),
             getMockedNodeInterface(),
@@ -63,7 +63,7 @@ public class RequestManagerCoverageTests extends UCFBaseTests {
     public void requestManagerCoverageTest2()
             throws JAXBException, URISyntaxException, IOException, NoSuchMethodException, SecurityException,
             InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
-        RequestManagerLC requestManager = getRequestManager( ucsConfiguration.getRequestManager() );
+        RequestManagerLC requestManager = getRequestManager( ucsConfiguration );
         Message message = new Message( "", "" );
         requestManager.setInterfaces( getMockedContextHandlerInterface(),
             getMockedPEPMap( "", "" ),

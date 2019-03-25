@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.logging.Logger;
 
 import it.cnr.iit.ucs.configuration.fields.ContextHandlerProperties;
+import it.cnr.iit.ucs.configuration.fields.GeneralProperties;
 import it.cnr.iit.ucsinterface.forwardingqueue.ForwardingQueueToCHInterface;
 import it.cnr.iit.ucsinterface.obligationmanager.ObligationManagerInterface;
 import it.cnr.iit.ucsinterface.pap.PAPInterface;
@@ -66,8 +67,6 @@ public abstract class AbstractContextHandler implements ContextHandlerInterface 
     private PAPInterface papInterface;
     // interface to the request manager
     private RequestManagerToCHInterface requestManagerToChInterface;
-    // configuration of the context handler
-    private ContextHandlerProperties configuration;
     // ip of the context handler
     private String ip;
     // port on which the context handler is attached
@@ -76,6 +75,9 @@ public abstract class AbstractContextHandler implements ContextHandlerInterface 
     private ObligationManagerInterface obligationManager;
     // forwarding queue interface
     private ForwardingQueueToCHInterface forwardingQueue;
+
+    protected GeneralProperties generalProperties;
+    protected ContextHandlerProperties properties;
 
     private volatile boolean initialized = false;
 
@@ -87,10 +89,11 @@ public abstract class AbstractContextHandler implements ContextHandlerInterface 
      *          passed as a JAVA Object.
      *
      */
-    protected AbstractContextHandler( ContextHandlerProperties configuration ) {
-        this.configuration = configuration;
-        ip = configuration.getIp();
-        port = configuration.getPort();
+    protected AbstractContextHandler( GeneralProperties generalProperties, ContextHandlerProperties properties ) {
+        this.properties = properties;
+        this.generalProperties = generalProperties;
+        ip = properties.getIp();
+        port = properties.getPort();
     }
 
     final protected boolean isInitialized() {
@@ -105,7 +108,7 @@ public abstract class AbstractContextHandler implements ContextHandlerInterface 
     public void verify() {
         final String[] checkObjectsNames = { "configuration", "sessionManager", "pipList/pipRetrieval",
             "pap", "pdp", "requestManagerToCh", "ip", "port", "forwardingQueue", "obligationManager" };
-        final boolean[] checkObjects = { configuration == null, sessionManagerInterface == null,
+        final boolean[] checkObjects = { properties == null, sessionManagerInterface == null,
             pipList == null && pipRetrieval == null, papInterface == null,
             pdpInterface == null, requestManagerToChInterface == null,
             ip == null, port == null, forwardingQueue == null, obligationManager == null };
