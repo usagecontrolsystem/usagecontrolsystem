@@ -16,20 +16,14 @@
 package it.cnr.iit.peprest.configuration;
 
 public class PEPProperties {
+
     private String ip;
-
     private String port;
-
     private String response;
-
     private String revoke;
-
     private String statusChanged;
-
     private String policyPath;
-
     private String requestPath;
-
     private String id;
 
     public String getIp() {

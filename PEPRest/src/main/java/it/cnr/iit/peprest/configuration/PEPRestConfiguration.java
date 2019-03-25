@@ -18,7 +18,6 @@ package it.cnr.iit.peprest.configuration;
 final public class PEPRestConfiguration {
 
     private PEPProperties pep;
-
     private RequestManagerProperties requestManager;
 
     public PEPRestConfiguration() {

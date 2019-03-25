@@ -24,6 +24,7 @@ import it.cnr.iit.utility.RESTUtils;
 import it.cnr.iit.utility.Utility;
 
 public class ProxyRequestManager implements RequestManagerToExternalInterface {
+
     private String port;
     private String url;
     private String startAccess;
@@ -41,18 +42,26 @@ public class ProxyRequestManager implements RequestManagerToExternalInterface {
     @Override
     public Message sendMessageToCH( Message message ) {
         RESTAsynchPostStatus postStatus = RESTAsynchPostStatus.PENDING;
-        if( message.getPurpose() == PURPOSE.TRYACCESS ) {
-            postStatus = RESTUtils.asyncPost( Utility.buildUrl( url, port, tryAccess ), message );
-        }
-        if( message.getPurpose() == PURPOSE.STARTACCESS ) {
-            postStatus = RESTUtils.asyncPost( Utility.buildUrl( url, port, startAccess ), message );
-        }
-        if( message.getPurpose() == PURPOSE.ENDACCESS ) {
-            postStatus = RESTUtils.asyncPost( Utility.buildUrl( url, port, endAccess ), message );
-        }
+        String api = getApiNameFromPurpose( message.getPurpose() );
+
+        postStatus = RESTUtils.asyncPost( Utility.buildUrl( url, port, api ), message );
+
         if( postStatus == RESTAsynchPostStatus.SUCCESS ) {
             message.setDeliveredToDestination( true );
         }
         return message;
+    }
+
+    private String getApiNameFromPurpose( PURPOSE purpose ) {
+        switch( purpose ) {
+            case TRYACCESS:
+                return tryAccess;
+            case STARTACCESS:
+                return startAccess;
+            case ENDACCESS:
+                return endAccess;
+            default:
+                return "";
+        }
     }
 }
