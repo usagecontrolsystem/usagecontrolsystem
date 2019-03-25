@@ -17,20 +17,20 @@ package it.cnr.iit.peprest.configuration;
 
 final public class PEPRestConfiguration {
 
-    private PEPConf pepConf;
+    private PEPProperties pep;
 
-    private RequestManagerConf requestManagerConf;
+    private RequestManagerProperties requestManager;
 
     public PEPRestConfiguration() {
         super();
     }
 
-    public PEPConf getPepConf() {
-        return pepConf;
+    public PEPProperties getPep() {
+        return pep;
     }
 
-    public RequestManagerConf getRequestManagerConf() {
-        return requestManagerConf;
+    public RequestManagerProperties getRequestManager() {
+        return requestManager;
     }
 
 }

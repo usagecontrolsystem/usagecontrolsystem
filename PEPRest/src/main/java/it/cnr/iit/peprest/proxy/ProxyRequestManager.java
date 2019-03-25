@@ -15,7 +15,7 @@
  ******************************************************************************/
 package it.cnr.iit.peprest.proxy;
 
-import it.cnr.iit.peprest.configuration.RequestManagerConf;
+import it.cnr.iit.peprest.configuration.RequestManagerProperties;
 import it.cnr.iit.ucsinterface.message.Message;
 import it.cnr.iit.ucsinterface.message.PURPOSE;
 import it.cnr.iit.ucsinterface.requestmanager.RequestManagerToExternalInterface;
@@ -29,7 +29,7 @@ public class ProxyRequestManager implements RequestManagerToExternalInterface {
   private String endAccess;
   private String tryAccess;
 
-  public ProxyRequestManager(RequestManagerConf requestManagerConf) {
+  public ProxyRequestManager(RequestManagerProperties requestManagerConf) {
     this.port = requestManagerConf.getPort();
     this.url = requestManagerConf.getIp();
     this.startAccess = requestManagerConf.getStartAccess();

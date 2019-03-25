@@ -61,14 +61,14 @@ public class GivenContextHandlerRestSimulator extends Stage<GivenContextHandlerR
         if( configuration == null ) {
             loadConfiguration();
         }
-        return configuration.getRequestManagerConf().getIp();
+        return configuration.getRequestManager().getIp();
     }
 
     private int getPort() {
         if( configuration == null ) {
             loadConfiguration();
         }
-        return Integer.parseInt( configuration.getRequestManagerConf().getPort() );
+        return Integer.parseInt( configuration.getRequestManager().getPort() );
     }
 
     public GivenContextHandlerRestSimulator a_test_configuration_for_request_with_policy() {

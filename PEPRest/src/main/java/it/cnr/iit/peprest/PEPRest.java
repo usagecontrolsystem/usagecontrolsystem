@@ -85,15 +85,15 @@ public class PEPRest implements PEPInterface {
         }
 
         configuration = optPEPRestConfiguration.get();
-        requestManager = new ProxyRequestManager( configuration.getRequestManagerConf() );
+        requestManager = new ProxyRequestManager( configuration.getRequestManager() );
     }
 
     public String tryAccess() {
-        String request = Utility.readFileAbsPath( configuration.getPepConf().getRequestPath() );
-        String policy = Utility.readFileAbsPath( configuration.getPepConf().getPolicyPath() );
+        String request = Utility.readFileAbsPath( configuration.getPep().getRequestPath() );
+        String policy = Utility.readFileAbsPath( configuration.getPep().getPolicyPath() );
 
-        TryAccessMessageBuilder tryAccessBuilder = new TryAccessMessageBuilder( configuration.getPepConf().getId(),
-            configuration.getPepConf().getIp() );
+        TryAccessMessageBuilder tryAccessBuilder = new TryAccessMessageBuilder( configuration.getPep().getId(),
+            configuration.getPep().getIp() );
         tryAccessBuilder.setPepUri( buildOnGoingEvaluationInterface() ).setPolicy( policy ).setRequest( request );
         TryAccessMessage tryAccessMessage = tryAccessBuilder.build();
         tryAccessMessage.setCallback( buildResponseInterface( "tryAccessResponse" ), MEAN.REST );
@@ -110,8 +110,8 @@ public class PEPRest implements PEPInterface {
     }
 
     public String startAccess( String sessionId ) {
-        StartAccessMessage startAccessMessage = new StartAccessMessage( configuration.getPepConf().getId(),
-            configuration.getPepConf().getIp() );
+        StartAccessMessage startAccessMessage = new StartAccessMessage( configuration.getPep().getId(),
+            configuration.getPep().getIp() );
         startAccessMessage.setSessionId( sessionId );
         startAccessMessage.setCallback( buildResponseInterface( "startAccessResponse" ), MEAN.REST );
         try {
@@ -132,8 +132,8 @@ public class PEPRest implements PEPInterface {
     }
 
     public String endAccess( String sessionId ) {
-        EndAccessMessage endAccessMessage = new EndAccessMessage( configuration.getPepConf().getId(),
-            configuration.getPepConf().getIp() );
+        EndAccessMessage endAccessMessage = new EndAccessMessage( configuration.getPep().getId(),
+            configuration.getPep().getIp() );
         endAccessMessage.setSessionId( sessionId );
         endAccessMessage.setCallback( buildResponseInterface( "endAccessResponse" ), MEAN.REST );
         try {
@@ -167,10 +167,10 @@ public class PEPRest implements PEPInterface {
         LOGGER.log( Level.INFO, "[TIME] ON_GOING_EVAL {0} ", System.currentTimeMillis() );
 
         ReevaluationResponse chPepMessage = (ReevaluationResponse) message;
-        if( configuration.getPepConf().getRevoke().equals( "HARD" ) ) {
+        if( configuration.getPep().getRevoke().equals( "HARD" ) ) {
             LOGGER.log( Level.INFO, "[TIME] sending endacces {0} ", System.currentTimeMillis() );
-            EndAccessMessage endAccess = new EndAccessMessage( configuration.getPepConf().getId(),
-                configuration.getPepConf().getIp() );
+            EndAccessMessage endAccess = new EndAccessMessage( configuration.getPep().getId(),
+                configuration.getPep().getIp() );
             endAccess.setCallback( null, MEAN.REST );
             endAccess.setSessionId( chPepMessage.getPDPEvaluation().getSessionId() );
 
@@ -253,14 +253,14 @@ public class PEPRest implements PEPInterface {
 
     private final String buildResponseInterface( String name ) {
         StringBuilder response = new StringBuilder();
-        response.append( "http://" + configuration.getPepConf().getIp() + ":" );
-        response.append( configuration.getPepConf().getPort() + "/" );
+        response.append( "http://" + configuration.getPep().getIp() + ":" );
+        response.append( configuration.getPep().getPort() + "/" );
         response.append( name );
         return response.toString();
     }
 
     private String buildOnGoingEvaluationInterface() {
-        return buildResponseInterface( configuration.getPepConf().getStatusChanged() );
+        return buildResponseInterface( configuration.getPep().getStatusChanged() );
     }
 
     public void end( String sessionId ) {

@@ -1,5 +1,5 @@
 {
-  "pepConf" : {
+  "pep" : {
     "ip" : "localhost",
     "port" : "9999",
     "response" : "",
@@ -9,7 +9,7 @@
     "requestPath" : "requests/RequestAntonio.xml",
     "id" : "1"
   },
-  "requestManagerconf" : {
+  "requestManager" : {
     "ip" : "localhost",
     "port" : "8080",
     "tryAccess" : "tryAccess",

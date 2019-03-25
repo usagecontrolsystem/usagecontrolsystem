@@ -15,7 +15,7 @@
  ******************************************************************************/
 package it.cnr.iit.peprest.configuration;
 
-public class PEPConf {
+public class PEPProperties {
     private String ip;
 
     private String port;

@@ -15,7 +15,7 @@
  ******************************************************************************/
 package it.cnr.iit.peprest.configuration;
 
-public class RequestManagerConf {
+public class RequestManagerProperties {
 
     private String ip;
 
