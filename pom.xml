@@ -28,6 +28,7 @@
 		<module>UsageControlFramework</module>
 		<module>SQLMiddleware</module>
 		<module>PIPUser</module>
+		<module>PEPRest</module>
 	</modules>
 
 </project>
