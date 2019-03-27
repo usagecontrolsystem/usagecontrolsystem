@@ -15,6 +15,8 @@
  ******************************************************************************/
 package it.cnr.iit.ucsinterface.message.endaccess;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import it.cnr.iit.ucsinterface.message.Message;
 import it.cnr.iit.ucsinterface.message.PART;
 import it.cnr.iit.ucsinterface.message.PURPOSE;
@@ -32,7 +34,13 @@ public class EndAccessResponse extends Message {
     // status of the startaccess
     private String status;
     // the evaluation provided by the PDP
+    @JsonProperty
     private PDPEvaluation pdpEvaluation;
+
+    public EndAccessResponse() {
+        super( PART.CH.toString(), PART.PEP.toString() );
+        purpose = PURPOSE.TRYACCESS_RESPONSE;
+    }
 
     /**
      * Constructor for an EndAccessResponse

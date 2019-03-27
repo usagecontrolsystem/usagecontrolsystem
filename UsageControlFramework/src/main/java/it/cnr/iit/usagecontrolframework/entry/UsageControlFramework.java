@@ -280,7 +280,8 @@ public final class UsageControlFramework implements UCSInterface {
         for( PipProperties pip : pipPropertiesList ) {
             Optional<PIPBase> optPip = PIPBuilder.buildPIPBaseFromPipProperties( pip );
 
-            if( optPip.isPresent() ) {
+            // FIXME WORKAROUND because the if present not working
+            if( optPip.get() == null ) {
                 return false;
             }
             PIPBase pipBase = optPip.get();

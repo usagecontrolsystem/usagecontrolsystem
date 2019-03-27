@@ -30,7 +30,7 @@ public final class UCSConfigurationLoader {
 
     private static final String APP_PROPERTIES = "classpath:application.properties";
     private static final String PROPERTIES_CONFIG_KEY = "ucs-config-file";
-    private static final String DEFAULT_CONFIG_FILE = "conf.json";
+    private static final String DEFAULT_CONFIG_FILE = "demo1.json";
 
     private UCSConfigurationLoader() {}
 

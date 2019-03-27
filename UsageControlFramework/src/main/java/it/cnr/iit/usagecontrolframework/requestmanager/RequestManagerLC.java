@@ -15,6 +15,9 @@
  ******************************************************************************/
 package it.cnr.iit.usagecontrolframework.requestmanager;
 
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.logging.Logger;
 
 import it.cnr.iit.ucs.configuration.fields.GeneralProperties;
@@ -53,13 +56,14 @@ public class RequestManagerLC extends AsynchronousRequestManager {
      * This is the pool of thread in charge of polling the queue to retrieve
      * messages coming to the CH
      */
-    // private ExecutorService inquirers;
+    private ExecutorService inquirers;
 
     /*
      * This is the thread in charge of handling the operations requested from a
      * remote PIP except from reevaluation.
-     */
-    // private ExecutorService attributeSupplier;
+
+    private ExecutorService attributeSupplier;
+    */
 
     // states if the request manager has been correctly initialized
     private volatile boolean initialize = false;
@@ -73,6 +77,7 @@ public class RequestManagerLC extends AsynchronousRequestManager {
      */
     public RequestManagerLC( GeneralProperties generalProperties, RequestManagerProperties properties ) {
         super( generalProperties, properties );
+        initialize();
         initialize = isInitialized();
     }
 
@@ -80,22 +85,19 @@ public class RequestManagerLC extends AsynchronousRequestManager {
      * Initializes the request manager with a------ pool of threads
      *
      * @return true if everything goes fine, false in case of exceptions
-    
+    */
     private boolean initialize() {
-    	try {
-    		inquirers = Executors
-    		    .newFixedThreadPool(Integer.parseInt(getXML().getThread().trim()));
-    		inquirers.submit(new ContextHandlerInquirer());
-    		attributeSupplier = Executors.newSingleThreadExecutor();
-    		attributeSupplier.submit(new AttributeSupplier());
-    	} catch (Exception e) {
-    		e.printStackTrace();
-    		return false;
-    	}
-    	return true;
-    
+        try {
+            inquirers = Executors
+                .newFixedThreadPool( 2 );
+            inquirers.submit( new ContextHandlerInquirer() );
+        } catch( Exception e ) {
+            e.printStackTrace();
+            return false;
+        }
+        return true;
+
     }
-     */
 
     @Override
     public synchronized void sendMessageToOutside( Message message ) {
@@ -136,11 +138,10 @@ public class RequestManagerLC extends AsynchronousRequestManager {
                 if( message.getDestinationType() ) {
                     getNodeInterface().sendMessage( message );
                 } else {
-                    getPEPInterface().get( message.getDestination() )
+                    String string = getPEPInterface().get( message.getDestination() )
                         .receiveResponse( message );
                 }
             }
-
         } else if( message instanceof ReevaluationResponse ) {
             ReevaluationResponse reevaluation = (ReevaluationResponse) message;
             LOGGER.info( "[TIME] Effectively Sending on going evaluation "
@@ -153,7 +154,6 @@ public class RequestManagerLC extends AsynchronousRequestManager {
                 getNodeInterface().sendMessage( reevaluation );
             }
         }
-
     }
 
     private void reswap( Message message, Message original ) {
@@ -199,49 +199,44 @@ public class RequestManagerLC extends AsynchronousRequestManager {
      *
      * @author antonio
      *
-    
+    */
     private class ContextHandlerInquirer implements Callable<Message> {
-    
-    	@Override
-    	public Message call() {
-    
-    		while (true) {
-    			// BEGIN parameter checking
-    			if (!initialize) {
-    				LOGGER.warn("Request Manager not initialized correctly");
-    				return null;
-    			}
-    			// END parameter checking
-    			try {
-    				Message message = getQueueToCH().take();
-    				if (message instanceof TryAccessMessage) {
-    					getContextHandler().tryAccess(message);
-    				}
-    				if (message instanceof StartAccessMessage) {
-    					getContextHandler().startAccess(message);
-    				}
-    				if (message instanceof EndAccessMessage) {
-    					getContextHandler().endAccess(message);
-    				}
-    				if (message instanceof ReevaluationMessage) {
-    					getContextHandler().reevaluate(message);
-    				}
-    				if (message instanceof TryAccessResponse) {
-    				}
-    				if (message instanceof StartAccessResponse) {
-    				}
-    				if (message instanceof EndAccessResponse) {
-    				}
-    				if (message instanceof ReevaluationResponse) {
-    				}
-    			} catch (Exception e) {
-    				e.printStackTrace();
-    				return null;
-    			}
-    		}
-    	}
+
+        @Override
+        public Message call() {
+
+            while( true ) {
+                // BEGIN parameter checking
+                if( !initialize ) {
+                    LOGGER.warning( "Request Manager not initialized correctly" );
+                    return null;
+                }
+                // END parameter checking
+                try {
+                    Message message = getQueueToCH().take();
+                    if( message instanceof TryAccessMessage ) {
+                        getContextHandler().tryAccess( message );
+                    }
+                    if( message instanceof StartAccessMessage ) {
+                        getContextHandler().startAccess( message );
+                    }
+                    if( message instanceof EndAccessMessage ) {
+                        getContextHandler().endAccess( message );
+                    }
+                    if( message instanceof ReevaluationMessage ) {
+                        getContextHandler().reevaluate( message );
+                    }
+                    if( message instanceof TryAccessResponse ) {}
+                    if( message instanceof StartAccessResponse ) {}
+                    if( message instanceof EndAccessResponse ) {}
+                    if( message instanceof ReevaluationResponse ) {}
+                } catch( Exception e ) {
+                    e.printStackTrace();
+                    return null;
+                }
+            }
+        }
     }
-     */
 
     /**
      * This is the thread in charge of handling the messages coming from remote

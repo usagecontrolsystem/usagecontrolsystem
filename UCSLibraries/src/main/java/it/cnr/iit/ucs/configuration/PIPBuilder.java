@@ -34,7 +34,7 @@ public class PIPBuilder {
             Class<?> clazz = Class.forName( properties.getClassName() );
             Constructor<?> constructor = clazz.getConstructor( PipProperties.class );
             PIPBase pip = (PIPBase) constructor.newInstance( properties );
-            return Optional.of( pip );
+            return Optional.ofNullable( pip );
         } catch( Exception e ) {
             LOGGER.severe( "Cannot build PIPBase from properties : " + e.getMessage() );
             e.printStackTrace();

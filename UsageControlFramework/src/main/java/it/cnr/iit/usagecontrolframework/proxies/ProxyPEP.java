@@ -31,6 +31,7 @@ import it.cnr.iit.ucsinterface.node.NodeInterface;
 import it.cnr.iit.ucsinterface.pep.ExamplePEP;
 import it.cnr.iit.ucsinterface.pep.PEPInterface;
 import it.cnr.iit.ucsinterface.requestmanager.RequestManagerToExternalInterface;
+import it.cnr.iit.utility.RESTAsynchPostStatus;
 import it.cnr.iit.utility.RESTUtils;
 import it.cnr.iit.utility.Utility;
 
@@ -224,7 +225,7 @@ public class ProxyPEP extends Proxy implements PEPInterface {
             case API:
                 return abstractPEP.onGoingEvaluation( message );
             case REST_API:
-                RESTUtils.asyncPostAsString(
+                RESTUtils.asyncPostResponse(
                     Utility.buildUrl( url, port, NodeInterface.ONGOINGRESPONSE_REST ),
                     (ReevaluationResponse) message );
                 break;
@@ -250,24 +251,28 @@ public class ProxyPEP extends Proxy implements PEPInterface {
              * </p>
              */
             case REST_API:
+                RESTAsynchPostStatus postStatus = RESTAsynchPostStatus.PENDING;
                 if( message instanceof TryAccessResponse ) {
-                    RESTUtils.asyncPostAsString( Utility.buildUrl( url, port, tryAccessResponse ),
+                    postStatus = RESTUtils.asyncPostResponse( Utility.buildUrl( url, port, tryAccessResponse ),
                         (TryAccessResponse) message );
                 }
                 if( message instanceof StartAccessResponse ) {
-                    RESTUtils.asyncPostAsString( Utility.buildUrl( url, port, startAccessResponse ),
+                    postStatus = RESTUtils.asyncPostResponse( Utility.buildUrl( url, port, startAccessResponse ),
                         (StartAccessResponse) message );
                 }
                 if( message instanceof EndAccessResponse ) {
-                    RESTUtils.asyncPostAsString( Utility.buildUrl( url, port, endAccessResponse ),
+                    postStatus = RESTUtils.asyncPostResponse( Utility.buildUrl( url, port, endAccessResponse ),
                         (EndAccessResponse) message );
+                }
+                if( postStatus == RESTAsynchPostStatus.SUCCESS ) {
+                    return "OK";
                 }
                 break;
             default:
                 LOGGER.severe( "Error in the receive response" );
                 break;
         }
-        return "";
+        return "OK";
 
     }
 
