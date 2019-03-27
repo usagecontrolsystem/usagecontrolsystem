@@ -64,7 +64,7 @@ final class PRSubscriberTimer extends TimerTask {
 
     /**
      * Constructor for a new Subscriber timer
-     * 
+     *
      * @param contextHandler
      *          the interface to the context handler
      * @param map
@@ -84,6 +84,7 @@ final class PRSubscriberTimer extends TimerTask {
             // System.out.println("[PipFile] Subscribe iteration");
             Category category = entry.getCategory();
             String newValue = "";
+            LOGGER.log( Level.INFO, "[TIME] polling on value of the attribute for change." );
             if( category == Category.ENVIRONMENT ) {
                 newValue = read();
             } else {
@@ -114,7 +115,7 @@ final class PRSubscriberTimer extends TimerTask {
     /**
      * Effective retrieval of the monitored value, before this retrieval many
      * checks may have to be performed
-     * 
+     *
      * @return the requested string
      * @throws PIPException
      */
@@ -125,18 +126,18 @@ final class PRSubscriberTimer extends TimerTask {
     /**
      * Reads the file looking for the line containing the filter we are passing as
      * argument and the role stated as other parameter
-     * 
+     *
      * <br>
      * NOTE we suppose that in the file each line has the following structure:
      * filter\tattribute.
-     * 
+     *
      * @param filter
      *          the string to be used to search for the item we're interested into
      * @param role
      *          the role of the string
      * @return the string or null
-     * 
-     * 
+     *
+     *
      * @throws PIPException
      */
     private String read( String filter ) {
@@ -163,7 +164,7 @@ final class PRSubscriberTimer extends TimerTask {
 
     /**
      * Sets the context handler interface
-     * 
+     *
      * @param contextHandler
      */
     public void setContextHandlerInterface(
