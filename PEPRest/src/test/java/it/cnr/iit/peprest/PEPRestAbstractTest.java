@@ -57,8 +57,8 @@ public abstract class PEPRestAbstractTest {
     }
 
     protected MockHttpServletResponse postGetRequestToPEPRest( String messageId, String uri ) throws Exception {
-        MvcResult mvcResult = mvc.perform( MockMvcRequestBuilders.get( uri )
-            .requestAttr( "messageId", messageId ) ).andReturn();
+        MvcResult mvcResult = mvc.perform( MockMvcRequestBuilders.get( uri ).param( "messageId", messageId )
+        /*.requestAttr( "messageId", messageId ) */ ).andReturn();
         return mvcResult.getResponse();
     }
 
