@@ -76,8 +76,6 @@ public class Starter extends SpringBootServletInitializer {
     }
 
     public static void main( String args[] ) {
-        // HashMap<String, Object> props = new HashMap<>();
-        // props.put( "server.port", args[0] );
         new SpringApplicationBuilder().sources( Starter.class ).run( args );
         // .properties( props ).run( args );
     }

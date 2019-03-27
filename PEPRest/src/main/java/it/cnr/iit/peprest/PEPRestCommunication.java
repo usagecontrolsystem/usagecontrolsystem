@@ -24,10 +24,10 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageNotReadableException;
-import org.springframework.web.bind.annotation.RequestAttribute;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import it.cnr.iit.peprest.messagetrack.CallerResponse;
@@ -73,7 +73,7 @@ public class PEPRestCommunication {
         @ApiResponse( code = 500, message = "Invalid message received" ),
         @ApiResponse( code = 200, message = "OK" ) } )
     @RequestMapping( method = RequestMethod.GET, value = "/flowStatus" )
-    public CallerResponse getMessageStatus( @RequestAttribute( value = "messageId" ) String messageId ) {
+    public CallerResponse getMessageStatus( @RequestParam( value = "messageId" ) String messageId ) {
         // BEGIN parameter checking
         if( messageId == null || messageId.isEmpty() ) {
             throw new HttpMessageNotReadableException( HttpStatus.NO_CONTENT + " : No message id" );
