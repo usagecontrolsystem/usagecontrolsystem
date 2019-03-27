@@ -127,13 +127,40 @@ final public class RESTUtils {
         headers.setContentType( MediaType.APPLICATION_JSON );
         HttpEntity<E> entity = new HttpEntity<>( obj, headers );
         AsyncRestTemplate restTemplate = new AsyncRestTemplate();
-        restTemplate.postForEntity( url, entity, Void.class );
-
-        ListenableFuture<ResponseEntity<Void>> future = restTemplate.postForEntity( url, entity, Void.class );
+        // restTemplate.postForEntity( url, entity, Void.class );
         try {
+            ListenableFuture<ResponseEntity<Void>> future = restTemplate.postForEntity( url, entity, Void.class );
+
             if( future == null || !future.get().getStatusCode().is2xxSuccessful() ) {
                 return RESTAsynchPostStatus.FAILURE;
             }
+            return RESTAsynchPostStatus.SUCCESS;
+        } catch( Exception e ) {
+            if( e.getCause() instanceof HttpServerErrorException ) {
+                return RESTAsynchPostStatus.SERVER_ERROR;
+            }
+            return RESTAsynchPostStatus.FAILURE;
+        }
+    }
+
+    /**
+     * Post an object to the host specified by the url parameter, expecting no
+     * returning object.
+     *
+     * @param url
+     *          the complete url of the host
+     * @param obj
+     *          the object to send using the post http method
+     */
+    public static <E> RESTAsynchPostStatus asyncPostResponse( String url, E obj ) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType( MediaType.APPLICATION_JSON );
+        HttpEntity<E> entity = new HttpEntity<>( obj, headers );
+        AsyncRestTemplate restTemplate = new AsyncRestTemplate();
+        // restTemplate.postForEntity( url, entity, Void.class );
+
+        ListenableFuture<ResponseEntity<Void>> future = restTemplate.postForEntity( url, entity, Void.class );
+        try {
             return RESTAsynchPostStatus.SUCCESS;
         } catch( Exception e ) {
             if( e.getCause() instanceof HttpServerErrorException ) {

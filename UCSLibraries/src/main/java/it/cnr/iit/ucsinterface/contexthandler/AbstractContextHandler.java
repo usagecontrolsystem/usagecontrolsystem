@@ -169,7 +169,7 @@ public abstract class AbstractContextHandler implements ContextHandlerInterface 
     }
 
     public void addPip( PIPCHInterface pipInterface ) {
-        if( pipInterface == null || !initialized ) {
+        if( pipInterface == null ) {
             return;
         }
         pipList.add( pipInterface );
