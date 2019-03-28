@@ -31,12 +31,12 @@ public class ProxyRequestManager implements RequestManagerToExternalInterface {
     private String endAccess;
     private String tryAccess;
 
-    public ProxyRequestManager( RequestManagerProperties requestManagerConf ) {
-        port = requestManagerConf.getPort();
-        url = requestManagerConf.getIp();
-        startAccess = requestManagerConf.getStartAccess();
-        endAccess = requestManagerConf.getEndAccess();
-        tryAccess = requestManagerConf.getTryAccess();
+    public ProxyRequestManager( RequestManagerProperties properties ) {
+        port = properties.getPort();
+        url = properties.getIp();
+        startAccess = properties.getStartAccess();
+        endAccess = properties.getEndAccess();
+        tryAccess = properties.getTryAccess();
     }
 
     @Override
