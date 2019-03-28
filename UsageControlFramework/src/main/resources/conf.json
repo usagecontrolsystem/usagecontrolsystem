@@ -1,7 +1,7 @@
 {
   "general" : {
     "ip" : "localhost",
-    "port" : "8080",
+    "port" : "9998",
     "rest" : null,
     "schedulerEnabled" : false
   },
