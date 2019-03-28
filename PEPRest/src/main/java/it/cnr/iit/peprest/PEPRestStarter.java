@@ -13,13 +13,20 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  ******************************************************************************/
-package it.cnr.iit.usagecontrolframework.rest;
+package it.cnr.iit.peprest;
 
+import java.util.Collections;
+import java.util.Optional;
+import java.util.logging.Logger;
+
+import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
-import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
+import org.springframework.boot.web.support.SpringBootServletInitializer;
 import org.springframework.context.annotation.Bean;
-import org.springframework.scheduling.annotation.EnableAsync;
+
+import it.cnr.iit.peprest.configuration.PEPRestConfiguration;
+import it.cnr.iit.peprest.configuration.PEPRestConfigurationLoader;
 
 import springfox.documentation.builders.ApiInfoBuilder;
 import springfox.documentation.builders.PathSelectors;
@@ -29,16 +36,11 @@ import springfox.documentation.spring.web.plugins.Docket;
 import springfox.documentation.swagger.web.UiConfiguration;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
-/**
- * This is the deployer for the rest api provided by the usage control framework
- *
- * @author antonio
- *
- */
 @SpringBootApplication
 @EnableSwagger2
-@EnableAsync
-public class RESTApplicationDeployer extends SpringBootServletInitializer {
+public class PEPRestStarter extends SpringBootServletInitializer {
+
+    private static final Logger LOGGER = Logger.getLogger( PEPRestStarter.class.getName() );
 
     /**
      * Spring boot method for configuring the current application, right now it
@@ -46,16 +48,17 @@ public class RESTApplicationDeployer extends SpringBootServletInitializer {
      * sub classes --> CLASSES THAT ARE IN SUBPACKAGES of this class
      */
     @Override
-    protected SpringApplicationBuilder configure( SpringApplicationBuilder application ) {
-        return application.sources( RESTApplicationDeployer.class );
+    protected SpringApplicationBuilder configure(
+            SpringApplicationBuilder application ) {
+        return application.sources( PEPRestStarter.class );
     }
 
     /**
-     * Docker is a SwaggerUI configuration component, in particular specifies to use
-     * the V2.0 (SWAGGER_2) of swagger generated interfaces it also tells to include
-     * only path that are under / if other rest interfaces are added with different
-     * base path, they won't be included this path selector can be removed if all
-     * interfaces should be documented.
+     * Docker is a SwaggerUI configuration component, in particular specifies to
+     * use the V2.0 (SWAGGER_2) of swagger generated interfaces it also tells to
+     * include only path that are under / if other rest interfaces are added with
+     * different base path, they won't be included this path selector can be
+     * removed if all interfaces should be documented.
      */
     @Bean
     public Docket documentation() {
@@ -66,7 +69,7 @@ public class RESTApplicationDeployer extends SpringBootServletInitializer {
 
     /**
      * it just tells swagger that no special configuration are requested
-     * 
+     *
      */
     @Bean
     public UiConfiguration uiConfig() {
@@ -78,8 +81,24 @@ public class RESTApplicationDeployer extends SpringBootServletInitializer {
      * interface, only for documentation
      */
     private ApiInfo metadata() {
-        return new ApiInfoBuilder().title( "Usage Control System REST API" ).description( "API for Usage Control System" )
+        return new ApiInfoBuilder().title( "PEP REST API" ).description( "API for PEP" )
             .version( "1.0" ).contact( "antonio.lamarra@iit.cnr.it" ).build();
+    }
+
+    public static void main( String args[] ) {
+        // TODO use spring beans and load the conifg only once
+        Optional<PEPRestConfiguration> optConfiguration = PEPRestConfigurationLoader.getConfiguration();
+
+        if( !optConfiguration.isPresent() ) {
+            LOGGER.severe( PEPRestConfigurationLoader.CONFIG_ERR_MESSAGE );
+            return;
+        }
+
+        PEPRestConfiguration configuration = optConfiguration.get();
+
+        SpringApplication app = new SpringApplication( PEPRestStarter.class );
+        app.setDefaultProperties( Collections.singletonMap( "server.port", configuration.getPep().getPort() ) );
+        app.run( args );
     }
 
 }

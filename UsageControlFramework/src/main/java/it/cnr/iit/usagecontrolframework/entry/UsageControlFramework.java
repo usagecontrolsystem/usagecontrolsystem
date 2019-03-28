@@ -157,12 +157,14 @@ public final class UsageControlFramework implements UCSInterface {
      * @return
      */
     private boolean buildComponents() {
+        Optional<UCSConfiguration> optConfiguration = UCSConfigurationLoader.getConfiguration();
 
-        if( ( configuration = UCSConfigurationLoader.getConfiguration() ) == null ) {
-            LOGGER.severe( "Error loading ucs configuration" );
+        if( !optConfiguration.isPresent() ) {
+            LOGGER.severe( UCSConfigurationLoader.CONFIG_ERR_MESSAGE );
             return false;
         }
 
+        configuration = optConfiguration.get();
         DISTRIBUTED_TYPE distributedType = DISTRIBUTED_TYPE.NONE;
 
         // build the context handler

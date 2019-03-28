@@ -13,12 +13,21 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  ******************************************************************************/
-package it.cnr.iit.peprest;
+package it.cnr.iit.usagecontrolframework.rest;
 
+import java.util.Collections;
+import java.util.Optional;
+import java.util.logging.Logger;
+
+import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
-import org.springframework.boot.web.support.SpringBootServletInitializer;
+import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
 import org.springframework.context.annotation.Bean;
+import org.springframework.scheduling.annotation.EnableAsync;
+
+import it.cnr.iit.ucs.configuration.UCSConfiguration;
+import it.cnr.iit.usagecontrolframework.entry.UCSConfigurationLoader;
 
 import springfox.documentation.builders.ApiInfoBuilder;
 import springfox.documentation.builders.PathSelectors;
@@ -28,9 +37,18 @@ import springfox.documentation.spring.web.plugins.Docket;
 import springfox.documentation.swagger.web.UiConfiguration;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
+/**
+ * This is the deployer for the rest api provided by the usage control framework
+ *
+ * @author antonio
+ *
+ */
 @SpringBootApplication
 @EnableSwagger2
-public class Starter extends SpringBootServletInitializer {
+@EnableAsync
+public class UCFRestStarter extends SpringBootServletInitializer {
+
+    private static final Logger LOGGER = Logger.getLogger( UCFRestStarter.class.getName() );
 
     /**
      * Spring boot method for configuring the current application, right now it
@@ -38,17 +56,16 @@ public class Starter extends SpringBootServletInitializer {
      * sub classes --> CLASSES THAT ARE IN SUBPACKAGES of this class
      */
     @Override
-    protected SpringApplicationBuilder configure(
-            SpringApplicationBuilder application ) {
-        return application.sources( Starter.class );
+    protected SpringApplicationBuilder configure( SpringApplicationBuilder application ) {
+        return application.sources( UCFRestStarter.class );
     }
 
     /**
-     * Docker is a SwaggerUI configuration component, in particular specifies to
-     * use the V2.0 (SWAGGER_2) of swagger generated interfaces it also tells to
-     * include only path that are under / if other rest interfaces are added with
-     * different base path, they won't be included this path selector can be
-     * removed if all interfaces should be documented.
+     * Docker is a SwaggerUI configuration component, in particular specifies to use
+     * the V2.0 (SWAGGER_2) of swagger generated interfaces it also tells to include
+     * only path that are under / if other rest interfaces are added with different
+     * base path, they won't be included this path selector can be removed if all
+     * interfaces should be documented.
      */
     @Bean
     public Docket documentation() {
@@ -71,13 +88,22 @@ public class Starter extends SpringBootServletInitializer {
      * interface, only for documentation
      */
     private ApiInfo metadata() {
-        return new ApiInfoBuilder().title( "PEP REST API" ).description( "API for PEP" )
+        return new ApiInfoBuilder().title( "Usage Control System REST API" ).description( "API for Usage Control System" )
             .version( "1.0" ).contact( "antonio.lamarra@iit.cnr.it" ).build();
     }
 
     public static void main( String args[] ) {
-        new SpringApplicationBuilder().sources( Starter.class ).run( args );
-        // .properties( props ).run( args );
+        Optional<UCSConfiguration> optConfiguration = UCSConfigurationLoader.getConfiguration();
+
+        if( !optConfiguration.isPresent() ) {
+            LOGGER.severe( UCSConfigurationLoader.CONFIG_ERR_MESSAGE );
+            return;
+        }
+
+        SpringApplication app = new SpringApplication( UCFRestStarter.class );
+        app.setDefaultProperties(
+            Collections.singletonMap( "server.port", optConfiguration.get().getGeneral().getPort() ) );
+        app.run( args );
     }
 
 }

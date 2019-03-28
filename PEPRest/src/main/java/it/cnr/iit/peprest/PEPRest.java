@@ -15,7 +15,6 @@
  ******************************************************************************/
 package it.cnr.iit.peprest;
 
-import java.io.File;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -28,6 +27,7 @@ import org.springframework.stereotype.Component;
 import com.google.common.base.Throwables;
 
 import it.cnr.iit.peprest.configuration.PEPRestConfiguration;
+import it.cnr.iit.peprest.configuration.PEPRestConfigurationLoader;
 import it.cnr.iit.peprest.messagetrack.MessageStorage;
 import it.cnr.iit.peprest.messagetrack.MessageStorageInterface;
 import it.cnr.iit.peprest.messagetrack.MessagesPerSession;
@@ -44,7 +44,6 @@ import it.cnr.iit.ucsinterface.message.tryaccess.TryAccessMessageBuilder;
 import it.cnr.iit.ucsinterface.message.tryaccess.TryAccessResponse;
 import it.cnr.iit.ucsinterface.pep.PEPInterface;
 import it.cnr.iit.ucsinterface.requestmanager.RequestManagerToExternalInterface;
-import it.cnr.iit.utility.JsonUtility;
 import it.cnr.iit.utility.Utility;
 
 import oasis.names.tc.xacml.core.schema.wd_17.DecisionType;
@@ -74,12 +73,10 @@ public class PEPRest implements PEPInterface {
     private MessageStorage messageHistory = new MessageStorage();
 
     public PEPRest() {
-        File confFile = new File( PEPRest.class.getClassLoader().getResource( "conf.json" ).getFile() );
+        Optional<PEPRestConfiguration> optPEPRestConfiguration = PEPRestConfigurationLoader.getConfiguration();
 
-        Optional<PEPRestConfiguration> optPEPRestConfiguration = JsonUtility.loadObjectFromJsonFile( confFile,
-            PEPRestConfiguration.class );
         if( !optPEPRestConfiguration.isPresent() ) {
-            LOGGER.severe( "Unable to load configuration." );
+            LOGGER.severe( PEPRestConfigurationLoader.CONFIG_ERR_MESSAGE );
             // TODO throw exception ?
             return;
         }

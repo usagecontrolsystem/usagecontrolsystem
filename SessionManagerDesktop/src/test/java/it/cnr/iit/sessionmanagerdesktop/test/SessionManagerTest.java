@@ -94,7 +94,6 @@ public class SessionManagerTest {
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks( this );
-
     }
 
     @Before

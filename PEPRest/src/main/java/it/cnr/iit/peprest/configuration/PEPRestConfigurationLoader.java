@@ -13,7 +13,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  ******************************************************************************/
-package it.cnr.iit.usagecontrolframework.entry;
+package it.cnr.iit.peprest.configuration;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -22,27 +22,27 @@ import java.util.Optional;
 import java.util.PropertyResourceBundle;
 import java.util.logging.Logger;
 
-import it.cnr.iit.ucs.configuration.UCSConfiguration;
 import it.cnr.iit.utility.JsonUtility;
 
-public final class UCSConfigurationLoader {
-    protected static final Logger LOGGER = Logger.getLogger( UCSConfigurationLoader.class.getName() );
+public final class PEPRestConfigurationLoader {
+
+    protected static final Logger LOGGER = Logger.getLogger( PEPRestConfigurationLoader.class.getName() );
 
     private static final String PROPERTIES_FILE = "application.properties";
-    private static final String PROPERTIES_CONFIG_KEY = "ucs-config-file";
+    private static final String PROPERTIES_CONFIG_KEY = "pep-config-file";
     private static final String DEFAULT_CONFIG_FILE = "conf.json";
 
-    public static final String CONFIG_ERR_MESSAGE = "error loading the ucs configuration file ...";
+    public static final String CONFIG_ERR_MESSAGE = "error loading the pep configuration file ...";
 
-    private UCSConfigurationLoader() {}
+    private PEPRestConfigurationLoader() {}
 
-    public static Optional<UCSConfiguration> getConfiguration( String fileName ) {
-        File confFile = new File( UCSConfigurationLoader.class.getClassLoader().getResource( fileName ).getFile() );
+    public static Optional<PEPRestConfiguration> getConfiguration( String fileName ) {
+        File confFile = new File( PEPRestConfigurationLoader.class.getClassLoader().getResource( fileName ).getFile() );
 
-        return JsonUtility.loadObjectFromJsonFile( confFile, UCSConfiguration.class );
+        return JsonUtility.loadObjectFromJsonFile( confFile, PEPRestConfiguration.class );
     }
 
-    public static Optional<UCSConfiguration> getConfiguration() {
+    public static Optional<PEPRestConfiguration> getConfiguration() {
         return getConfiguration( getConfigurationFileName() );
     }
 
@@ -52,14 +52,17 @@ public final class UCSConfigurationLoader {
 
         FileInputStream fis = null;
         try {
-            File confFile = new File( UCSConfigurationLoader.class.getClassLoader()
+            File confFile = new File( PEPRestConfigurationLoader.class.getClassLoader()
                 .getResource( PROPERTIES_FILE ).getFile() );
             fis = new FileInputStream( confFile );
             PropertyResourceBundle rb = new PropertyResourceBundle( fis );
             if( rb.containsKey( PROPERTIES_CONFIG_KEY ) ) {
                 fname = rb.getString( PROPERTIES_CONFIG_KEY );
             }
-        } catch( IOException e ) {}
+        } catch( IOException e ) {
+            System.out.println( e.getMessage() );
+            e.printStackTrace();
+        }
 
         if( fis != null ) {
             try {
