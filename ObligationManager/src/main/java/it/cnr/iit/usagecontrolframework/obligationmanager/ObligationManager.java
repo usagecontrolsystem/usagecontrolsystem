@@ -61,7 +61,7 @@ final public class ObligationManager implements ObligationManagerInterface {
     // pip retrieval
     private PIPOMInterface pipRetrieval;
     // xml describing the obligation manager
-    private ObligationManagerProperties configuration;
+    private ObligationManagerProperties properties;
     // states if the obligation manager has been correctly initialized
     private volatile boolean initialized = false;
 
@@ -75,7 +75,7 @@ final public class ObligationManager implements ObligationManagerInterface {
             return;
         }
         // END parameter checking
-        configuration = properties;
+        this.properties = properties;
         initialized = true;
     }
 
@@ -96,7 +96,7 @@ final public class ObligationManager implements ObligationManagerInterface {
         if( ( ( pips == null || pips.size() == 0 ) && pipRetrieval == null )
                 || !isInitialized() ) {
             LOGGER.severe( "Invalid provided PIPS: " + ( pips == null ) + "\t" + ( ( pips != null ? pips.size() == 0 : 0 ) )
-                    + "\t" + ( pipRetrieval == null ) + "\t" + ( configuration == null ) );
+                    + "\t" + ( pipRetrieval == null ) + "\t" + ( properties == null ) );
             return false;
         }
         // END parameter checking
