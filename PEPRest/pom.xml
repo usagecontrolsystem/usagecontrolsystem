@@ -80,6 +80,7 @@
 		        </execution>
 		      </executions>
 		      <configuration>
+		       <outputDirectory>/var/www/html/jgiven/</outputDirectory>
 		        <format>html</format>
 		      </configuration>
 		    </plugin>
