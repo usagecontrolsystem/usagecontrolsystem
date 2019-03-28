@@ -54,7 +54,7 @@ final public class Utility {
         if( absFilePath != null ) {
             filePath = absFilePath;
         } else {
-            LOGGER.info( "Attempting to read file using provided filePath." );
+            LOGGER.fine( "Attempting to read file using provided filePath." );
         }
 
         try {
@@ -96,6 +96,9 @@ final public class Utility {
             URL input = classLoader.getResource( relPath );
             return input.getPath();
         } catch( Exception e ) {
+            if( e instanceof NullPointerException ) {
+                return null;
+            }
             LOGGER.severe( "Unable to find absolute path due to error: " + e.getMessage() );
             return null;
         }
