@@ -13,23 +13,15 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  ******************************************************************************/
-package it.cnr.iit.ucs.configuration.fields;
-
-import java.util.ArrayList;
-import java.util.List;
+package it.cnr.iit.ucs.constants;
 
 /**
- * Proxy xml
+ * States the infrastructure we're using for the distributed approach. Types are
+ * mutually exclusive.
  *
  * @author antonio
  *
  */
-public class ProxiesProperties {
-
-    private List<String> proxyClasses = new ArrayList<>();
-
-    public List<String> getProxyClasses() {
-        return proxyClasses;
-    }
-
+public enum DISTRIBUTED_TYPE {
+    CASSANDRA, KADEMLIA, NONE
 }

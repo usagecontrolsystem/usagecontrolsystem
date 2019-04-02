@@ -21,8 +21,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.logging.Logger;
 
-import it.cnr.iit.ucs.configuration.fields.sessionManager.SessionManagerProperties;
-import it.cnr.iit.ucsinterface.constants.CONNECTION;
+import it.cnr.iit.ucs.configuration.session_manager.SessionManagerProperties;
+import it.cnr.iit.ucs.constants.CONNECTION;
 import it.cnr.iit.ucsinterface.sessionmanager.OnGoingAttributesInterface;
 import it.cnr.iit.ucsinterface.sessionmanager.SessionInterface;
 import it.cnr.iit.ucsinterface.sessionmanager.SessionManagerInterface;

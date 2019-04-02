@@ -13,7 +13,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  ******************************************************************************/
-package it.cnr.iit.ucs.configuration.fields;
+package it.cnr.iit.ucs.configuration;
 
 public class PepProperties {
 

@@ -19,8 +19,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 
-import it.cnr.iit.ucs.configuration.fields.ContextHandlerProperties;
-import it.cnr.iit.ucs.configuration.fields.GeneralProperties;
+import it.cnr.iit.ucs.configuration.ContextHandlerProperties;
+import it.cnr.iit.ucs.configuration.GeneralProperties;
 import it.cnr.iit.ucsinterface.forwardingqueue.ForwardingQueueToCHInterface;
 import it.cnr.iit.ucsinterface.obligationmanager.ObligationManagerInterface;
 import it.cnr.iit.ucsinterface.pap.PAPInterface;

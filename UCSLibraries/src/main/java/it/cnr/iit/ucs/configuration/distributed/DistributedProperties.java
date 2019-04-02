@@ -13,19 +13,18 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  ******************************************************************************/
-package it.cnr.iit.ucs.configuration.fields;
+package it.cnr.iit.ucs.configuration.distributed;
 
-/**
- * ObligationManager conf
- *
- * @author antonio
- *
- */
-public class ObligationManagerProperties {
+public class DistributedProperties {
 
-    private String className;
+    private CassandraProperties cassandra;
+    private KademliaProperties kademlia;
 
-    public String getClassName() {
-        return className;
+    public CassandraProperties getCassandra() {
+        return cassandra;
+    }
+
+    public KademliaProperties getKademlia() {
+        return kademlia;
     }
 }

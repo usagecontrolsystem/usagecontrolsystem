@@ -23,7 +23,7 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import it.cnr.iit.pipreader.PIPReader;
-import it.cnr.iit.ucs.configuration.PIPBuilder;
+import it.cnr.iit.ucs.builders.PIPBuilder;
 import it.cnr.iit.ucsinterface.contexthandler.AbstractContextHandler;
 import it.cnr.iit.utility.JAXBUtility;
 import it.cnr.iit.utility.JsonUtility;

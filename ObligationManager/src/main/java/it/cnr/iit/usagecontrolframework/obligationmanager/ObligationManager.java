@@ -22,7 +22,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.logging.Logger;
 
-import it.cnr.iit.ucs.configuration.fields.ObligationManagerProperties;
+import it.cnr.iit.ucs.configuration.ObligationManagerProperties;
 import it.cnr.iit.ucsinterface.obligationmanager.ObligationInterface;
 import it.cnr.iit.ucsinterface.obligationmanager.ObligationManagerInterface;
 import it.cnr.iit.ucsinterface.pdp.PDPEvaluation;

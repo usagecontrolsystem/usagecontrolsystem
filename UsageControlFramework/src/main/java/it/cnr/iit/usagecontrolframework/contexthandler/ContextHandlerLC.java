@@ -29,8 +29,8 @@ import java.util.logging.Logger;
 
 import javax.xml.bind.JAXBException;
 
-import it.cnr.iit.ucs.configuration.fields.ContextHandlerProperties;
-import it.cnr.iit.ucs.configuration.fields.GeneralProperties;
+import it.cnr.iit.ucs.configuration.ContextHandlerProperties;
+import it.cnr.iit.ucs.configuration.GeneralProperties;
 import it.cnr.iit.ucsinterface.contexthandler.AbstractContextHandler;
 import it.cnr.iit.ucsinterface.contexthandler.STATUS;
 import it.cnr.iit.ucsinterface.contexthandler.exceptions.RevokeException;

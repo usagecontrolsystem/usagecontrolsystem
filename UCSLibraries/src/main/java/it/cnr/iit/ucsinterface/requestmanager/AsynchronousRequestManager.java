@@ -20,8 +20,8 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.logging.Logger;
 
-import it.cnr.iit.ucs.configuration.fields.GeneralProperties;
-import it.cnr.iit.ucs.configuration.fields.RequestManagerProperties;
+import it.cnr.iit.ucs.configuration.GeneralProperties;
+import it.cnr.iit.ucs.configuration.RequestManagerProperties;
 import it.cnr.iit.ucsinterface.contexthandler.ContextHandlerInterface;
 import it.cnr.iit.ucsinterface.forwardingqueue.ForwardingQueueToRMInterface;
 import it.cnr.iit.ucsinterface.message.Message;

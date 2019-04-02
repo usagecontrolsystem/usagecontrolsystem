@@ -20,8 +20,8 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.concurrent.ExecutionException;
 import java.util.logging.Logger;
 
-import it.cnr.iit.ucs.configuration.fields.PepProperties;
-import it.cnr.iit.ucsinterface.constants.CONNECTION;
+import it.cnr.iit.ucs.configuration.PepProperties;
+import it.cnr.iit.ucs.constants.CONNECTION;
 import it.cnr.iit.ucsinterface.message.Message;
 import it.cnr.iit.ucsinterface.message.endaccess.EndAccessResponse;
 import it.cnr.iit.ucsinterface.message.reevaluation.ReevaluationResponse;

@@ -24,9 +24,9 @@ import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import it.cnr.iit.ucs.configuration.PIPBuilder;
+import it.cnr.iit.ucs.builders.PIPBuilder;
 import it.cnr.iit.ucs.configuration.UCSConfiguration;
-import it.cnr.iit.ucs.configuration.fields.pip.PipProperties;
+import it.cnr.iit.ucs.configuration.pip.PipProperties;
 import it.cnr.iit.ucsinterface.contexthandler.ContextHandlerInterface;
 import it.cnr.iit.ucsinterface.contexthandler.STATUS;
 import it.cnr.iit.ucsinterface.forwardingqueue.ForwardingQueueToCHInterface;

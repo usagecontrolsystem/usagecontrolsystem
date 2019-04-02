@@ -13,38 +13,35 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  ******************************************************************************/
-package it.cnr.iit.ucsinterface.constants;
+package it.cnr.iit.ucs.configuration;
 
 /**
- *  Constants to be used in the communication tag in the xml file
- *  */
-public enum CONNECTION {
-    API( "API" ),
-    REST_API( "REST_API" ),
-    SOCKET( "SOCKET" );
+ * Request manager xml
+ *
+ * @author antonio
+ *
+ */
 
-    private String string;
+public class RequestManagerProperties {
 
-    private CONNECTION( String string ) {
-        this.string = string;
+    private String className;
+    private String thread;
+    private String communication;
+    private String remoteResponse;
+
+    public String getClassName() {
+        return className;
     }
 
-    public static CONNECTION getCONNECTION( String string ) {
-        if( string.equals( API.toString() ) ) {
-            return API;
-        } else if( string.equals( REST_API.toString() ) ) {
-            return REST_API;
-        } else if( string.equals( SOCKET.toString() ) ) {
-            return SOCKET;
-        } else {
-            return null;
-        }
-
+    public String getThread() {
+        return thread;
     }
 
-    @Override
-    public String toString() {
-        return string;
+    public String getCommunication() {
+        return communication;
     }
 
+    public String getRemoteResponse() {
+        return remoteResponse;
+    }
 }

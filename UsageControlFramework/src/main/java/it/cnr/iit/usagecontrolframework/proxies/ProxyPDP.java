@@ -19,8 +19,8 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.logging.Logger;
 
-import it.cnr.iit.ucs.configuration.fields.PdpProperties;
-import it.cnr.iit.ucsinterface.constants.CONNECTION;
+import it.cnr.iit.ucs.configuration.PdpProperties;
+import it.cnr.iit.ucs.constants.CONNECTION;
 import it.cnr.iit.ucsinterface.contexthandler.STATUS;
 import it.cnr.iit.ucsinterface.pdp.AbstractPDP;
 import it.cnr.iit.ucsinterface.pdp.PDPEvaluation;

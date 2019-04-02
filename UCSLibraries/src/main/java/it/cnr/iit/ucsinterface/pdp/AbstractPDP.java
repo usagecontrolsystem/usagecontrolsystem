@@ -15,7 +15,7 @@
  ******************************************************************************/
 package it.cnr.iit.ucsinterface.pdp;
 
-import it.cnr.iit.ucs.configuration.fields.PdpProperties;
+import it.cnr.iit.ucs.configuration.PdpProperties;
 import it.cnr.iit.ucsinterface.obligationmanager.ObligationManagerInterface;
 import it.cnr.iit.ucsinterface.pap.PAPInterface;
 

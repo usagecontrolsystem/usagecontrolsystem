@@ -13,34 +13,23 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  ******************************************************************************/
-package it.cnr.iit.ucs.configuration.fields;
+package it.cnr.iit.ucs.configuration.distributed;
 
-/**
- * PAP xml
- *
- * @author antonio
- *
- */
-public class PapProperties {
+public class KademliaContact {
+    private String nodeId;
+    private String address;
+    private int udpPort;
 
-    private String className;
-    private String thread;
-    private String communication;
-    private String path;
-
-    public String getClassName() {
-        return className;
+    public String getNodeId() {
+        return nodeId;
     }
 
-    public String getThread() {
-        return thread;
+    public String getAddress() {
+        return address;
     }
 
-    public String getPath() {
-        return path;
+    public int getUdpPort() {
+        return udpPort;
     }
 
-    public String getCommunication() {
-        return communication;
-    }
 }

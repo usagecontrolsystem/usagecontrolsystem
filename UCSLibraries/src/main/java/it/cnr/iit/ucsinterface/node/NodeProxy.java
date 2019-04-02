@@ -15,8 +15,8 @@
  ******************************************************************************/
 package it.cnr.iit.ucsinterface.node;
 
-import it.cnr.iit.ucs.configuration.fields.GeneralProperties;
-import it.cnr.iit.ucsinterface.constants.CONNECTION;
+import it.cnr.iit.ucs.configuration.GeneralProperties;
+import it.cnr.iit.ucs.constants.CONNECTION;
 import it.cnr.iit.ucsinterface.message.Message;
 import it.cnr.iit.ucsinterface.message.endaccess.EndAccessMessage;
 import it.cnr.iit.ucsinterface.message.endaccess.EndAccessResponse;

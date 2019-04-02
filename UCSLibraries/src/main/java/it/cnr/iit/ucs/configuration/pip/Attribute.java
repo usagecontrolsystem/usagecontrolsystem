@@ -13,15 +13,20 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  ******************************************************************************/
-package it.cnr.iit.usagecontrolframework.entry;
+package it.cnr.iit.ucs.configuration.pip;
 
-/**
- * States the infrastructure we're using for the distributed approach. Types are
- * mutually exclusive.
- *
- * @author antonio
- *
- */
-public enum DISTRIBUTED_TYPE {
-    CASSANDRA, KADEMLIA, NONE
+import java.util.HashMap;
+
+public class Attribute {
+
+    private HashMap<String, String> arguments = new HashMap<>();
+
+    public HashMap<String, String> getArgs() {
+        return arguments;
+    }
+
+    public void setArgs( HashMap<String, String> args ) {
+        arguments = args;
+    }
+
 }

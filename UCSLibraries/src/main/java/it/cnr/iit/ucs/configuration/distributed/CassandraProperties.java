@@ -13,44 +13,31 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  ******************************************************************************/
-package it.cnr.iit.ucs.configuration.fields.pip;
+package it.cnr.iit.ucs.configuration.distributed;
 
-public class PipRegisterProperties {
+import java.util.ArrayList;
 
-    private String driver;
-    private String className;
-    private String cluster;
-    private String keyspace;
-    private String replicator;
+public class CassandraProperties {
+
     private String host;
-    private String port;
+    private String cluster;
+    private ArrayList<String> keyspaces;
+    private String replicator;
 
-    public String getDriver() {
-        return driver;
-    }
-
-    public String getClassName() {
-        return className;
+    public String getHost() {
+        return host;
     }
 
     public String getCluster() {
         return cluster;
     }
 
-    public String getKeySpace() {
-        return keyspace;
+    public ArrayList<String> getKeyspaces() {
+        return keyspaces;
     }
 
     public String getReplicator() {
         return replicator;
-    }
-
-    public String getHost() {
-        return host;
-    }
-
-    public String getPort() {
-        return port;
     }
 
 }

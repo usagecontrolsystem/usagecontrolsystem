@@ -13,18 +13,29 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  ******************************************************************************/
-package it.cnr.iit.ucs.configuration.fields.distributed;
+package it.cnr.iit.ucs.configuration;
 
-public class DistributedProperties {
+/**
+ * PDP xml
+ *
+ * @author antonio
+ *
+ */
+public class PdpProperties {
 
-    private CassandraProperties cassandra;
-    private KademliaProperties kademlia;
+    private String className;
+    private String thread;
+    private String communication;
 
-    public CassandraProperties getCassandra() {
-        return cassandra;
+    public String getClassName() {
+        return className;
     }
 
-    public KademliaProperties getKademlia() {
-        return kademlia;
+    public String getThread() {
+        return thread;
+    }
+
+    public String getCommunication() {
+        return communication;
     }
 }

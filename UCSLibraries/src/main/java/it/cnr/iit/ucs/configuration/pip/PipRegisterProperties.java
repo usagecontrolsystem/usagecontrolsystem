@@ -13,37 +13,44 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  ******************************************************************************/
-package it.cnr.iit.ucs.configuration.fields;
+package it.cnr.iit.ucs.configuration.pip;
 
-public class GeneralProperties {
+public class PipRegisterProperties {
 
-    private String ip;
+    private String driver;
+    private String className;
+    private String cluster;
+    private String keyspace;
+    private String replicator;
+    private String host;
     private String port;
-    private String rest;
-    private boolean schedulerEnabled;
 
-    public String getIp() {
-        return ip;
+    public String getDriver() {
+        return driver;
     }
 
-    public void setIp( String ip ) {
-        this.ip = ip;
+    public String getClassName() {
+        return className;
+    }
+
+    public String getCluster() {
+        return cluster;
+    }
+
+    public String getKeySpace() {
+        return keyspace;
+    }
+
+    public String getReplicator() {
+        return replicator;
+    }
+
+    public String getHost() {
+        return host;
     }
 
     public String getPort() {
         return port;
-    }
-
-    public void setPort( String port ) {
-        this.port = port;
-    }
-
-    public String getRest() {
-        return rest;
-    }
-
-    public boolean isSchedulerEnabled() {
-        return schedulerEnabled;
     }
 
 }

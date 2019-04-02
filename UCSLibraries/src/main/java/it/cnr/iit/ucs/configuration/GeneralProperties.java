@@ -13,29 +13,37 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  ******************************************************************************/
-package it.cnr.iit.ucs.configuration.fields;
+package it.cnr.iit.ucs.configuration;
 
-/**
- * PDP xml
- *
- * @author antonio
- *
- */
-public class PdpProperties {
+public class GeneralProperties {
 
-    private String className;
-    private String thread;
-    private String communication;
+    private String ip;
+    private String port;
+    private String rest;
+    private boolean schedulerEnabled;
 
-    public String getClassName() {
-        return className;
+    public String getIp() {
+        return ip;
     }
 
-    public String getThread() {
-        return thread;
+    public void setIp( String ip ) {
+        this.ip = ip;
     }
 
-    public String getCommunication() {
-        return communication;
+    public String getPort() {
+        return port;
     }
+
+    public void setPort( String port ) {
+        this.port = port;
+    }
+
+    public String getRest() {
+        return rest;
+    }
+
+    public boolean isSchedulerEnabled() {
+        return schedulerEnabled;
+    }
+
 }

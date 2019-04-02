@@ -13,20 +13,28 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  ******************************************************************************/
-package it.cnr.iit.ucs.configuration.fields.pip;
+package it.cnr.iit.ucs.configuration.session_manager;
 
-import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.List;
 
-public class Attribute {
+/**
+ * Xml table
+ *
+ * @author antonio
+ *
+ */
+public class Table {
 
-    private HashMap<String, String> arguments = new HashMap<>();
+    private String name;
+    private List<Field> fields = new ArrayList<>();
 
-    public HashMap<String, String> getArgs() {
-        return arguments;
+    public String getName() {
+        return name;
     }
 
-    public void setArgs( HashMap<String, String> args ) {
-        arguments = args;
+    public List<Field> getFields() {
+        return fields;
     }
 
 }

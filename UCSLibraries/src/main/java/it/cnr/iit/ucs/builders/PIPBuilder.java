@@ -1,10 +1,10 @@
-package it.cnr.iit.ucs.configuration;
+package it.cnr.iit.ucs.builders;
 
 import java.lang.reflect.Constructor;
 import java.util.Optional;
 import java.util.logging.Logger;
 
-import it.cnr.iit.ucs.configuration.fields.pip.PipProperties;
+import it.cnr.iit.ucs.configuration.pip.PipProperties;
 import it.cnr.iit.ucsinterface.pip.PIPBase;
 import it.cnr.iit.utility.JsonUtility;
 

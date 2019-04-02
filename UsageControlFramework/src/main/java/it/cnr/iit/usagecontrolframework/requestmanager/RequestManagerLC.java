@@ -20,8 +20,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.logging.Logger;
 
-import it.cnr.iit.ucs.configuration.fields.GeneralProperties;
-import it.cnr.iit.ucs.configuration.fields.RequestManagerProperties;
+import it.cnr.iit.ucs.configuration.GeneralProperties;
+import it.cnr.iit.ucs.configuration.RequestManagerProperties;
 import it.cnr.iit.ucsinterface.message.Message;
 import it.cnr.iit.ucsinterface.message.endaccess.EndAccessMessage;
 import it.cnr.iit.ucsinterface.message.endaccess.EndAccessResponse;

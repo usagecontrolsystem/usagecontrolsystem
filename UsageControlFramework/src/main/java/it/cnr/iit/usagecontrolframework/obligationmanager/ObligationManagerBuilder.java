@@ -18,7 +18,7 @@ package it.cnr.iit.usagecontrolframework.obligationmanager;
 import java.lang.reflect.Constructor;
 import java.util.List;
 
-import it.cnr.iit.ucs.configuration.fields.ObligationManagerProperties;
+import it.cnr.iit.ucs.configuration.ObligationManagerProperties;
 import it.cnr.iit.ucsinterface.obligationmanager.ObligationManagerInterface;
 import it.cnr.iit.ucsinterface.pip.PIPOMInterface;
 

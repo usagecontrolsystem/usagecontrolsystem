@@ -25,7 +25,7 @@ import com.j256.ormlite.stmt.QueryBuilder;
 import com.j256.ormlite.support.ConnectionSource;
 import com.j256.ormlite.table.TableUtils;
 
-import it.cnr.iit.ucs.configuration.fields.sessionManager.SessionManagerProperties;
+import it.cnr.iit.ucs.configuration.session_manager.SessionManagerProperties;
 import it.cnr.iit.ucsinterface.sessionmanager.OnGoingAttributesInterface;
 import it.cnr.iit.ucsinterface.sessionmanager.SessionInterface;
 import it.cnr.iit.ucsinterface.sessionmanager.SessionManagerInterface;

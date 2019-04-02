@@ -13,53 +13,19 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  ******************************************************************************/
-package it.cnr.iit.ucs.configuration.fields;
-
-import it.cnr.iit.ucs.configuration.fields.pip.PipRegisterProperties;
+package it.cnr.iit.ucs.configuration;
 
 /**
- * Context handler xml
+ * ObligationManager conf
  *
  * @author antonio
  *
  */
-
-public class ContextHandlerProperties {
+public class ObligationManagerProperties {
 
     private String className;
-    private String thread;
-    private String communication;
-    private String ip;
-    private String port;
-    private PipRegisterProperties pipRegister;
-    private boolean schedulerEnabled;
 
     public String getClassName() {
         return className;
     }
-
-    public String getThread() {
-        return thread;
-    }
-
-    public String getCommunication() {
-        return communication;
-    }
-
-    public String getIp() {
-        return ip;
-    }
-
-    public String getPort() {
-        return port;
-    }
-
-    public PipRegisterProperties getXmlPipRegister() {
-        return pipRegister;
-    }
-
-    public boolean isSchedulerEnabled() {
-        return schedulerEnabled;
-    }
-
 }

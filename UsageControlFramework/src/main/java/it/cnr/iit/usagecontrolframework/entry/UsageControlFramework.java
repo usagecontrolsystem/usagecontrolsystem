@@ -24,17 +24,18 @@ import java.util.logging.Logger;
 
 import org.springframework.scheduling.annotation.Async;
 
-import it.cnr.iit.ucs.configuration.PIPBuilder;
+import it.cnr.iit.ucs.builders.PIPBuilder;
+import it.cnr.iit.ucs.configuration.ContextHandlerProperties;
+import it.cnr.iit.ucs.configuration.GeneralProperties;
+import it.cnr.iit.ucs.configuration.ObligationManagerProperties;
+import it.cnr.iit.ucs.configuration.PapProperties;
+import it.cnr.iit.ucs.configuration.PdpProperties;
+import it.cnr.iit.ucs.configuration.PepProperties;
+import it.cnr.iit.ucs.configuration.RequestManagerProperties;
 import it.cnr.iit.ucs.configuration.UCSConfiguration;
-import it.cnr.iit.ucs.configuration.fields.ContextHandlerProperties;
-import it.cnr.iit.ucs.configuration.fields.GeneralProperties;
-import it.cnr.iit.ucs.configuration.fields.ObligationManagerProperties;
-import it.cnr.iit.ucs.configuration.fields.PapProperties;
-import it.cnr.iit.ucs.configuration.fields.PdpProperties;
-import it.cnr.iit.ucs.configuration.fields.PepProperties;
-import it.cnr.iit.ucs.configuration.fields.RequestManagerProperties;
-import it.cnr.iit.ucs.configuration.fields.pip.PipProperties;
-import it.cnr.iit.ucs.configuration.fields.sessionManager.SessionManagerProperties;
+import it.cnr.iit.ucs.configuration.pip.PipProperties;
+import it.cnr.iit.ucs.configuration.session_manager.SessionManagerProperties;
+import it.cnr.iit.ucs.constants.DISTRIBUTED_TYPE;
 import it.cnr.iit.ucsinterface.contexthandler.AbstractContextHandler;
 import it.cnr.iit.ucsinterface.forwardingqueue.ForwardingQueue;
 import it.cnr.iit.ucsinterface.message.Message;

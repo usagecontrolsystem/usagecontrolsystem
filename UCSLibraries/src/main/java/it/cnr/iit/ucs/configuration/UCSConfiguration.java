@@ -18,17 +18,9 @@ package it.cnr.iit.ucs.configuration;
 import java.util.ArrayList;
 import java.util.List;
 
-import it.cnr.iit.ucs.configuration.fields.ContextHandlerProperties;
-import it.cnr.iit.ucs.configuration.fields.GeneralProperties;
-import it.cnr.iit.ucs.configuration.fields.ObligationManagerProperties;
-import it.cnr.iit.ucs.configuration.fields.PapProperties;
-import it.cnr.iit.ucs.configuration.fields.PdpProperties;
-import it.cnr.iit.ucs.configuration.fields.PepProperties;
-import it.cnr.iit.ucs.configuration.fields.ProxiesProperties;
-import it.cnr.iit.ucs.configuration.fields.RequestManagerProperties;
-import it.cnr.iit.ucs.configuration.fields.distributed.DistributedProperties;
-import it.cnr.iit.ucs.configuration.fields.pip.PipProperties;
-import it.cnr.iit.ucs.configuration.fields.sessionManager.SessionManagerProperties;
+import it.cnr.iit.ucs.configuration.distributed.DistributedProperties;
+import it.cnr.iit.ucs.configuration.pip.PipProperties;
+import it.cnr.iit.ucs.configuration.session_manager.SessionManagerProperties;
 
 /**
  * These are the classes required to perform marshalling/unmarshalling of the

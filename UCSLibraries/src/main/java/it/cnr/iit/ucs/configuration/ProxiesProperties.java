@@ -13,28 +13,23 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  ******************************************************************************/
-package it.cnr.iit.ucs.configuration.fields.sessionManager;
+package it.cnr.iit.ucs.configuration;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Xml table
+ * Proxy xml
  *
  * @author antonio
  *
  */
-public class Table {
+public class ProxiesProperties {
 
-    private String name;
-    private List<Field> fields = new ArrayList<>();
+    private List<String> proxyClasses = new ArrayList<>();
 
-    public String getName() {
-        return name;
-    }
-
-    public List<Field> getFields() {
-        return fields;
+    public List<String> getProxyClasses() {
+        return proxyClasses;
     }
 
 }

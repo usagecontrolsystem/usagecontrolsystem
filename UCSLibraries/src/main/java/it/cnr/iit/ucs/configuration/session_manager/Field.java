@@ -13,31 +13,30 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  ******************************************************************************/
-package it.cnr.iit.ucs.configuration.fields.distributed;
+package it.cnr.iit.ucs.configuration.session_manager;
 
-import java.util.ArrayList;
+/**
+ * Table field xml
+ *
+ * @author antonio
+ *
+ */
+public class Field {
 
-public class CassandraProperties {
+    private String name;
+    private String type;
+    private String key;
 
-    private String host;
-    private String cluster;
-    private ArrayList<String> keyspaces;
-    private String replicator;
-
-    public String getHost() {
-        return host;
+    public String getName() {
+        return name;
     }
 
-    public String getCluster() {
-        return cluster;
+    public String getType() {
+        return type;
     }
 
-    public ArrayList<String> getKeyspaces() {
-        return keyspaces;
-    }
-
-    public String getReplicator() {
-        return replicator;
+    public String getKey() {
+        return key;
     }
 
 }

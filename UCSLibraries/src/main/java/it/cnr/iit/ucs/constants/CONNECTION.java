@@ -13,30 +13,38 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  ******************************************************************************/
-package it.cnr.iit.ucs.configuration.fields.sessionManager;
+package it.cnr.iit.ucs.constants;
 
 /**
- * Table field xml
- *
- * @author antonio
- *
- */
-public class Field {
+ *  Constants to be used in the communication tag in the xml file
+ *  */
+public enum CONNECTION {
+    API( "API" ),
+    REST_API( "REST_API" ),
+    SOCKET( "SOCKET" );
 
-    private String name;
-    private String type;
-    private String key;
+    private String string;
 
-    public String getName() {
-        return name;
+    private CONNECTION( String string ) {
+        this.string = string;
     }
 
-    public String getType() {
-        return type;
+    public static CONNECTION getCONNECTION( String string ) {
+        if( string.equals( API.toString() ) ) {
+            return API;
+        } else if( string.equals( REST_API.toString() ) ) {
+            return REST_API;
+        } else if( string.equals( SOCKET.toString() ) ) {
+            return SOCKET;
+        } else {
+            return null;
+        }
+
     }
 
-    public String getKey() {
-        return key;
+    @Override
+    public String toString() {
+        return string;
     }
 
 }

@@ -13,11 +13,11 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  ******************************************************************************/
-package it.cnr.iit.ucs.configuration.fields.pip;
+package it.cnr.iit.ucs.configuration.pip;
 
 import java.util.ArrayList;
 
-import it.cnr.iit.ucs.configuration.fields.sessionManager.Table;
+import it.cnr.iit.ucs.configuration.session_manager.Table;
 
 /**
  * PIP conf
