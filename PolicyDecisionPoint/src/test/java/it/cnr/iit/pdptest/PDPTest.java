@@ -12,7 +12,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import it.cnr.iit.ucsinterface.contexthandler.STATUS;
+import it.cnr.iit.ucs.constants.STATUS;
 import it.cnr.iit.ucsinterface.pdp.PDPEvaluation;
 import it.cnr.iit.usagecontrolframework.pdp.PolicyDecisionPoint;
 

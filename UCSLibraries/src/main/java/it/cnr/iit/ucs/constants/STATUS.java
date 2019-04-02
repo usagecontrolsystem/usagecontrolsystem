@@ -13,7 +13,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  ******************************************************************************/
-package it.cnr.iit.ucsinterface.contexthandler;
+package it.cnr.iit.ucs.constants;
 
 public enum STATUS {
     TRYACCESS,

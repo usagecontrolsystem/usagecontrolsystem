@@ -50,7 +50,7 @@ import org.wso2.balana.finder.PolicyFinderResult;
 import org.wso2.balana.xacml3.MultipleCtxResult;
 
 import it.cnr.iit.ucs.configuration.PdpProperties;
-import it.cnr.iit.ucsinterface.contexthandler.STATUS;
+import it.cnr.iit.ucs.constants.STATUS;
 import it.cnr.iit.ucsinterface.pdp.AbstractPDP;
 import it.cnr.iit.ucsinterface.pdp.PDPEvaluation;
 import it.cnr.iit.ucsinterface.pdp.PDPResponse;

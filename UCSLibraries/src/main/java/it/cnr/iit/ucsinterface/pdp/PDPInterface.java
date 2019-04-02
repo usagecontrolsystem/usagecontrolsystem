@@ -15,7 +15,7 @@
  ******************************************************************************/
 package it.cnr.iit.ucsinterface.pdp;
 
-import it.cnr.iit.ucsinterface.contexthandler.STATUS;
+import it.cnr.iit.ucs.constants.STATUS;
 
 /**
  * This is the interface to the PDP.

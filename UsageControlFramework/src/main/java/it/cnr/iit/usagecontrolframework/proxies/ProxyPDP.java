@@ -21,7 +21,7 @@ import java.util.logging.Logger;
 
 import it.cnr.iit.ucs.configuration.PdpProperties;
 import it.cnr.iit.ucs.constants.CONNECTION;
-import it.cnr.iit.ucsinterface.contexthandler.STATUS;
+import it.cnr.iit.ucs.constants.STATUS;
 import it.cnr.iit.ucsinterface.pdp.AbstractPDP;
 import it.cnr.iit.ucsinterface.pdp.PDPEvaluation;
 import it.cnr.iit.ucsinterface.pdp.PDPInterface;

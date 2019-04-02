@@ -31,8 +31,8 @@ import javax.xml.bind.JAXBException;
 
 import it.cnr.iit.ucs.configuration.ContextHandlerProperties;
 import it.cnr.iit.ucs.configuration.GeneralProperties;
+import it.cnr.iit.ucs.constants.STATUS;
 import it.cnr.iit.ucsinterface.contexthandler.AbstractContextHandler;
-import it.cnr.iit.ucsinterface.contexthandler.STATUS;
 import it.cnr.iit.ucsinterface.contexthandler.exceptions.RevokeException;
 import it.cnr.iit.ucsinterface.contexthandler.exceptions.SessionManagerException;
 import it.cnr.iit.ucsinterface.contexthandler.exceptions.WrongOrderException;
