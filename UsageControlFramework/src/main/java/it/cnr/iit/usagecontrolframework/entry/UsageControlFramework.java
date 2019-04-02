@@ -279,19 +279,22 @@ public final class UsageControlFramework implements UCSInterface {
      * @return true if all the PIPs are correctly created, false otherwise
      */
     private boolean buildPIPs() {
+        int failures = 0;
         List<PipProperties> pipPropertiesList = configuration.getPipList();
         for( PipProperties pip : pipPropertiesList ) {
             Optional<PIPBase> optPip = PIPBuilder.buildPIPBaseFromPipProperties( pip );
 
-            // FIXME WORKAROUND because the if present not working
-            if( optPip.get() == null ) {
-                return false;
+            if( !optPip.isPresent() ) {
+                LOGGER.severe( "Error building pip" );
+                failures++;
+                continue;
             }
+
             PIPBase pipBase = optPip.get();
             pipBase.setContextHandlerInterface( contextHandler );
             pipList.add( pipBase );
         }
-        return true;
+        return failures == 0;
     }
 
     /**
