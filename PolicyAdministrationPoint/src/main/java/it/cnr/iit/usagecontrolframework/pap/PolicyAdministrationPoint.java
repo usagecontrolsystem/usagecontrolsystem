@@ -16,15 +16,15 @@
 package it.cnr.iit.usagecontrolframework.pap;
 
 import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.FileOutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
-import java.util.logging.Level;
+import java.util.Optional;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 import it.cnr.iit.ucs.configuration.PapProperties;
 import it.cnr.iit.ucsinterface.pap.PAPInterface;
@@ -48,19 +48,25 @@ import oasis.names.tc.xacml.core.schema.wd_17.PolicyType;
  *
  */
 public class PolicyAdministrationPoint implements PAPInterface {
+
     private Logger LOGGER = Logger.getLogger( PolicyAdministrationPoint.class.getName() );
 
-    private String policiesFilePath;
+    private PapProperties properties;
 
-    private static final String policyExtension = ".pol"; // isn't it .xml ?
+    private static final String POLICY_FILE_EXTENSION = ".pol";
+
+    private static final String MSG_ERR_POLICY_READ = "Error reading policy file : {0} -> {1}";
+    private static final String MSG_ERR_POLICY_WRITE = "Error writing policy file : {0} -> {1}";
+    private static final String MSG_ERR_POLICY_INVALID = "Invalid policy contents : {0}";
+    private static final String MSG_WARN_POLICY_EXISTS = "Policy file already existent";
 
     private volatile boolean initialized = false;
 
     /**
      * Constructor for the policy administration point
      *
-     * @param xmlPAP
-     *          the xml that describes this PAP
+     * @param properties
+     *          the properties that describes this PAP
      */
     public PolicyAdministrationPoint( PapProperties properties ) {
         // BEGIN parameter checking
@@ -69,8 +75,9 @@ public class PolicyAdministrationPoint implements PAPInterface {
             return;
         }
         // END parameter checking
-        policiesFilePath = properties.getPath();
-        if( policiesFilePath != null && !policiesFilePath.isEmpty() ) {
+        this.properties = properties;
+        if( properties.getPath() != null &&
+                Paths.get( properties.getPath() ).toFile().isDirectory() ) {
             initialized = true;
         }
     }
@@ -85,24 +92,21 @@ public class PolicyAdministrationPoint implements PAPInterface {
     @Override
     public String retrievePolicy( String policyId ) {
         // BEGIN parameter checking
-        if( initialized == false ) {
-            return null;
-        }
-        if( policyId == null || policyId.equals( "" ) ) {
+        if( initialized == false ||
+                policyId == null || policyId.equals( "" ) ) {
             return null;
         }
         // END parameter checking
-        String policy = null;
+
+        Path path = getPolicyPath( policyId );
         try {
-            Path path = Paths.get( policiesFilePath, policyId + policyExtension );
-            policy = new String( Files.readAllBytes( path ) );
-        } catch( IOException e ) {
-            LOGGER.severe( "error while reading policy file : " + e.getMessage() );
-            e.printStackTrace();
+            return new String( Files.readAllBytes( path ) );
+        } catch( Exception e ) {
+            LOGGER.severe( String.format( MSG_ERR_POLICY_READ, path, e.getMessage() ) );
             // TODO throw exception
         }
 
-        return policy;
+        return null;
     }
 
     /**
@@ -110,47 +114,55 @@ public class PolicyAdministrationPoint implements PAPInterface {
      *
      * @param policy
      *          the policy to be added
-     * @return true if everything goes ok, false otherwise
+     * @return true if everything goes OK, false otherwise
      */
     @Override
     public boolean addPolicy( String policy ) {
-
         // BEGIN parameter checking
         if( initialized == false ) {
             return false;
         }
-        if( policy == null ) {
+
+        Optional<PolicyType> optPolicyType = getXACMLPolicyFromString( policy );
+        if( !optPolicyType.isPresent() ) {
             return false;
         }
-        PolicyType policyType;
-        try {
-            policyType = JAXBUtility.unmarshalToObject( PolicyType.class, policy );
-        } catch( Exception e ) {
-            e.printStackTrace();
-            LOGGER.log( Level.SEVERE, "Invalid policy " + policy );
-            return false;
-        }
-        if( policyType == null ) {
-            return false;
-        }
-        if( ( new File( policiesFilePath + File.separator + policy + policyExtension ) ).exists() ) {
+        PolicyType policyType = optPolicyType.get();
+
+        if( getPolicyPath( policyType.getPolicyId() ).toFile().exists() ) {
+            LOGGER.warning( MSG_WARN_POLICY_EXISTS );
             return true;
         }
         // END parameter checking
 
-        try {
-            FileWriter fileWriter = new FileWriter(
-                policiesFilePath + File.separator + policy + policyExtension );
-            fileWriter.write( policy );
-            fileWriter.flush();
-            fileWriter.close();
-            return true;
-        } catch( IOException ioException ) {
-            ioException.printStackTrace();
-            LOGGER.log( Level.SEVERE, "IOException in writing to file " + policiesFilePath
-                    + File.separator + policy + policyExtension );
+        return writePolicy( policyType.getPolicyId(), policy );
+    }
+
+    private boolean writePolicy( String policyId, String policy ) {
+        String path = getPolicyPath( policyId ).toString();
+
+        try (FileOutputStream fos = new FileOutputStream( path )) {
+            fos.write( policy.getBytes() );
+        } catch( Exception e ) {
+            LOGGER.severe( String.format( MSG_ERR_POLICY_WRITE, path, e.getMessage() ) );
+            return false;
         }
-        return false;
+
+        return true;
+    }
+
+    private Path getPolicyPath( String policyId ) {
+        return Paths.get( properties.getPath(), policyId, POLICY_FILE_EXTENSION );
+    }
+
+    private Optional<PolicyType> getXACMLPolicyFromString( String policy ) {
+        try {
+            PolicyType policyType = JAXBUtility.unmarshalToObject( PolicyType.class, policy );
+            return Optional.of( policyType );
+        } catch( Exception e ) {
+            LOGGER.severe( MSG_ERR_POLICY_INVALID );
+        }
+        return Optional.empty();
     }
 
     /**
@@ -160,13 +172,10 @@ public class PolicyAdministrationPoint implements PAPInterface {
      */
     @Override
     public List<String> listPolicies() {
-        List<String> list = new ArrayList<>();
-        File directory = new File( policiesFilePath );
-        File[] files = directory.listFiles();
-        for( File file : files ) {
-            list.add( file.getName() );
-        }
-        return list;
+        File directory = new File( properties.getPath() );
+        File[] files = directory.listFiles( ( dir, name ) -> name.toLowerCase().endsWith( POLICY_FILE_EXTENSION ) );
+        return Arrays.asList( files ).parallelStream()
+            .map( file -> file.getName() ).collect( Collectors.toList() );
     }
 
 }
