@@ -13,21 +13,21 @@ public class PIPBuilder {
 
     private PIPBuilder() {}
 
-    public static Optional<PipProperties> getPipPropertiesFromString( String properties ) {
+    public static Optional<PipProperties> getPropertiesFromString( String properties ) {
         Optional<PipProperties> obj = JsonUtility.loadObjectFromJsonString( properties, PipProperties.class );
         return obj;
     }
 
-    public static Optional<PIPBase> buildPIPBaseFromString( String strProperties ) {
-        Optional<PipProperties> properties = getPipPropertiesFromString( strProperties );
+    public static Optional<PIPBase> buildFromString( String strProperties ) {
+        Optional<PipProperties> properties = getPropertiesFromString( strProperties );
         if( properties.isPresent() ) {
-            return buildPIPBaseFromPipProperties( properties.get() );
+            return buildFromProperties( properties.get() );
         }
         LOGGER.severe( "Cannot build PIPBase from string : use a valid PipProperties json" );
         return Optional.empty();
     }
 
-    public static Optional<PIPBase> buildPIPBaseFromPipProperties( PipProperties properties ) {
+    public static Optional<PIPBase> buildFromProperties( PipProperties properties ) {
         Optional<PIPBase> obj;
 
         try {

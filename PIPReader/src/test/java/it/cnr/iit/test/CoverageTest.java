@@ -98,10 +98,10 @@ public class CoverageTest {
         try {
             resetRequest();
             abstractContextHandler = Mockito.mock( AbstractContextHandler.class );
-            subjectAttributePip = new PIPReader( PIPBuilder.getPipPropertiesFromString( subjectPip ).get() );
-            resourceAttributePip = new PIPReader( PIPBuilder.getPipPropertiesFromString( resourcePip ).get() );
-            actionAttributePip = new PIPReader( PIPBuilder.getPipPropertiesFromString( actionPip ).get() );
-            environmentAttributePip = new PIPReader( PIPBuilder.getPipPropertiesFromString( environmentPip ).get() );
+            subjectAttributePip = new PIPReader( PIPBuilder.getPropertiesFromString( subjectPip ).get() );
+            resourceAttributePip = new PIPReader( PIPBuilder.getPropertiesFromString( resourcePip ).get() );
+            actionAttributePip = new PIPReader( PIPBuilder.getPropertiesFromString( actionPip ).get() );
+            environmentAttributePip = new PIPReader( PIPBuilder.getPropertiesFromString( environmentPip ).get() );
             assertTrue( subjectAttributePip.initialized );
             initAttributes();
             subjectAttributePip.setContextHandlerInterface( abstractContextHandler );
@@ -160,19 +160,19 @@ public class CoverageTest {
         fault = new PIPReader( null );
         assertEquals( fault.initialized, false );
 
-        fault = new PIPReader( PIPBuilder.getPipPropertiesFromString( missingCategory ).get() );
+        fault = new PIPReader( PIPBuilder.getPropertiesFromString( missingCategory ).get() );
         assertEquals( fault.initialized, false );
 
-        fault = new PIPReader( PIPBuilder.getPipPropertiesFromString( missingAttributeId ).get() );
+        fault = new PIPReader( PIPBuilder.getPropertiesFromString( missingAttributeId ).get() );
         assertEquals( fault.initialized, false );
 
-        fault = new PIPReader( PIPBuilder.getPipPropertiesFromString( missingExpectedCategory ).get() );
+        fault = new PIPReader( PIPBuilder.getPropertiesFromString( missingExpectedCategory ).get() );
         assertEquals( fault.initialized, false );
 
-        fault = new PIPReader( PIPBuilder.getPipPropertiesFromString( missingDataType ).get() );
+        fault = new PIPReader( PIPBuilder.getPropertiesFromString( missingDataType ).get() );
         assertEquals( fault.initialized, false );
 
-        fault = new PIPReader( PIPBuilder.getPipPropertiesFromString( missingFilePath ).get() );
+        fault = new PIPReader( PIPBuilder.getPropertiesFromString( missingFilePath ).get() );
         assertEquals( fault.initialized, false );
 
         // fault = new PIPReader( PIPBuilder.getPipPropertiesFromString(malformedInput).get() );

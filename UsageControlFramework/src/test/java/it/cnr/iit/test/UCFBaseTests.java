@@ -305,7 +305,7 @@ public class UCFBaseTests {
 
         for( PipProperties pipProp : ucsConfiguration.getPipList() ) {
             LOGGER.info( "Loading pip" );
-            PIPCHInterface pip = PIPBuilder.buildPIPBaseFromPipProperties( pipProp ).get();
+            PIPCHInterface pip = PIPBuilder.buildFromProperties( pipProp ).get();
             assertNotNull( pip );
             pips.add( pip );
         }

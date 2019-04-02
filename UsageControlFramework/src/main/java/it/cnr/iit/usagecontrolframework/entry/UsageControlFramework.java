@@ -282,7 +282,7 @@ public final class UsageControlFramework implements UCSInterface {
         int failures = 0;
 
         for( PipProperties pip : configuration.getPipList() ) {
-            Optional<PIPBase> optPip = PIPBuilder.buildPIPBaseFromPipProperties( pip );
+            Optional<PIPBase> optPip = PIPBuilder.buildFromProperties( pip );
 
             if( !optPip.isPresent() ) {
                 LOGGER.severe( "Error building pip" );
