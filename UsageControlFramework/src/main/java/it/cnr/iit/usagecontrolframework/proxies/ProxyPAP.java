@@ -15,11 +15,11 @@
  ******************************************************************************/
 package it.cnr.iit.usagecontrolframework.proxies;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 import java.util.List;
+import java.util.Optional;
 import java.util.logging.Logger;
 
+import it.cnr.iit.ucs.builders.PAPBuilder;
 import it.cnr.iit.ucs.configuration.PapProperties;
 import it.cnr.iit.ucs.constants.CONNECTION;
 import it.cnr.iit.ucsinterface.pap.PAPInterface;
@@ -63,38 +63,37 @@ final public class ProxyPAP extends Proxy implements PAPInterface {
      * </ol>
      * </p>
      *
-     * @param configuration
+     * @param properties
      *          the configuration of the PAP
      */
-    public ProxyPAP( PapProperties configuration ) {
+    public ProxyPAP( PapProperties properties ) {
         // BEGIN parameter checking
-        if( configuration == null ) {
+        if( properties == null ) {
             return;
             // TODO throw exception
         }
         // END parameter checking
 
-        properties = configuration;
+        this.properties = properties;
 
-        CONNECTION connection = CONNECTION.getCONNECTION( configuration.getCommunication() );
-        switch( connection ) {
+        switch( getConnection() ) {
             case API:
-                if( localPAP( configuration ) ) {
+                if( setLocalPAP( properties ) ) {
                     initialized = true;
                 }
                 break;
             case SOCKET:
-                if( connectSocket( configuration ) ) {
+                if( connectSocket( properties ) ) {
                     initialized = true;
                 }
                 break;
             case REST_API:
-                if( connectRest( configuration ) ) {
+                if( connectRest( properties ) ) {
                     initialized = true;
                 }
                 break;
             default:
-                LOGGER.severe( "WRONG communication " + configuration.getCommunication() );
+                LOGGER.severe( "WRONG communication " + properties.getCommunication() );
                 return;
         }
     }
@@ -106,46 +105,22 @@ final public class ProxyPAP extends Proxy implements PAPInterface {
      *          the configuration of the PAP in xml format
      * @return true if everything goes ok, false otherwise
      */
-    private boolean localPAP( PapProperties properties ) {
-        // BEGIN parameter checking
-        String className = properties.getClassName();
-        if( className == null || className.equals( "" ) ) {
-            return false;
-        }
-        // END parameter checking
+    private boolean setLocalPAP( PapProperties properties ) {
+        Optional<PAPInterface> optPAP = PAPBuilder.buildFromProperties( properties );
 
-        try {
-            Constructor<?> constructor = Class.forName( className )
-                .getConstructor( PapProperties.class );
-            papInterface = (PAPInterface) constructor.newInstance( properties );
+        if( optPAP.isPresent() ) {
+            papInterface = optPAP.get();
             return true;
-        } catch( InstantiationException | IllegalAccessException
-                | ClassNotFoundException | NoSuchMethodException | SecurityException
-                | IllegalArgumentException | InvocationTargetException e ) {
-            e.printStackTrace();
         }
+
         return false;
     }
 
-    /**
-     * TODO
-     *
-     * @param xmlPap
-     * @return
-     */
     private boolean connectSocket( PapProperties properties ) {
-        // TODO Auto-generated method stub
         return false;
     }
 
-    /**
-     * TODO
-     *
-     * @param xmlPap
-     * @return
-     */
     private boolean connectRest( PapProperties properties ) {
-        // TODO Auto-generated method stub
         return false;
     }
 
@@ -159,8 +134,7 @@ final public class ProxyPAP extends Proxy implements PAPInterface {
             return null;
         }
         // END parameter checking
-        CONNECTION connection = CONNECTION.getCONNECTION( properties.getCommunication() );
-        switch( connection ) {
+        switch( getConnection() ) {
             case API:
                 return papInterface.retrievePolicy( policyId );
             case SOCKET:
@@ -181,8 +155,7 @@ final public class ProxyPAP extends Proxy implements PAPInterface {
             return false;
         }
         // END parameter checking
-        CONNECTION connection = CONNECTION.getCONNECTION( properties.getCommunication() );
-        switch( connection ) {
+        switch( getConnection() ) {
             case API:
                 return papInterface.addPolicy( policy );
             case SOCKET:
@@ -200,8 +173,7 @@ final public class ProxyPAP extends Proxy implements PAPInterface {
             return null;
         }
         // END parameter checking
-        CONNECTION connection = CONNECTION.getCONNECTION( properties.getCommunication() );
-        switch( connection ) {
+        switch( getConnection() ) {
             case API:
                 return papInterface.listPolicies();
             case SOCKET:
@@ -210,6 +182,10 @@ final public class ProxyPAP extends Proxy implements PAPInterface {
                 return null;
         }
         return null;
+    }
+
+    private CONNECTION getConnection() {
+        return CONNECTION.valueOf( properties.getCommunication() );
     }
 
     /**
