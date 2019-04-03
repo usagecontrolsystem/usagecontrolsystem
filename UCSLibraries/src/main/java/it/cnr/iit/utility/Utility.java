@@ -95,10 +95,9 @@ final public class Utility {
             ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
             URL input = classLoader.getResource( relPath );
             return input.getPath();
+        } catch( NullPointerException e ) {
+            return null;
         } catch( Exception e ) {
-            if( e instanceof NullPointerException ) {
-                return null;
-            }
             LOGGER.severe( "Unable to find absolute path due to error: " + e.getMessage() );
             return null;
         }
