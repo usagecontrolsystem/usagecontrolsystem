@@ -49,12 +49,13 @@ import oasis.names.tc.xacml.core.schema.wd_17.PolicyType;
  */
 public class PolicyAdministrationPoint implements PAPInterface {
 
-    private Logger LOGGER = Logger.getLogger( PolicyAdministrationPoint.class.getName() );
+    private Logger log = Logger.getLogger( PolicyAdministrationPoint.class.getName() );
 
     private PapProperties properties;
 
     private static final String POLICY_FILE_EXTENSION = ".pol";
 
+    private static final String MSG_EX_NOT_INITIALISED = "PAP not initialised";
     private static final String MSG_ERR_POLICY_READ = "Error reading policy file : {0} -> {1}";
     private static final String MSG_ERR_POLICY_WRITE = "Error writing policy file : {0} -> {1}";
     private static final String MSG_ERR_POLICY_INVALID = "Invalid policy contents : {0}";
@@ -102,7 +103,7 @@ public class PolicyAdministrationPoint implements PAPInterface {
         try {
             return new String( Files.readAllBytes( path ) );
         } catch( Exception e ) {
-            LOGGER.severe( String.format( MSG_ERR_POLICY_READ, path, e.getMessage() ) );
+            log.severe( String.format( MSG_ERR_POLICY_READ, path, e.getMessage() ) );
             // TODO throw exception
         }
 
@@ -119,8 +120,8 @@ public class PolicyAdministrationPoint implements PAPInterface {
     @Override
     public boolean addPolicy( String policy ) {
         // BEGIN parameter checking
-        if( initialized == false ) {
-            return false;
+        if( !initialized ) {
+            throw new IllegalStateException( MSG_EX_NOT_INITIALISED );
         }
 
         Optional<PolicyType> optPolicyType = getXACMLPolicyFromString( policy );
@@ -130,7 +131,7 @@ public class PolicyAdministrationPoint implements PAPInterface {
         PolicyType policyType = optPolicyType.get();
 
         if( getPolicyPath( policyType.getPolicyId() ).toFile().exists() ) {
-            LOGGER.warning( MSG_WARN_POLICY_EXISTS );
+            log.warning( MSG_WARN_POLICY_EXISTS );
             return true;
         }
         // END parameter checking
@@ -144,7 +145,7 @@ public class PolicyAdministrationPoint implements PAPInterface {
         try (FileOutputStream fos = new FileOutputStream( path )) {
             fos.write( policy.getBytes() );
         } catch( Exception e ) {
-            LOGGER.severe( String.format( MSG_ERR_POLICY_WRITE, path, e.getMessage() ) );
+            log.severe( String.format( MSG_ERR_POLICY_WRITE, path, e.getMessage() ) );
             return false;
         }
 
@@ -160,7 +161,7 @@ public class PolicyAdministrationPoint implements PAPInterface {
             PolicyType policyType = JAXBUtility.unmarshalToObject( PolicyType.class, policy );
             return Optional.of( policyType );
         } catch( Exception e ) {
-            LOGGER.severe( MSG_ERR_POLICY_INVALID );
+            log.severe( MSG_ERR_POLICY_INVALID );
         }
         return Optional.empty();
     }
