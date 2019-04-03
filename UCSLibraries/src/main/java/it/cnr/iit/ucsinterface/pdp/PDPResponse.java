@@ -17,12 +17,14 @@ package it.cnr.iit.ucsinterface.pdp;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 
 import javax.xml.bind.JAXBException;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+import it.cnr.iit.ucs.builders.PIPBuilder;
 import it.cnr.iit.utility.JAXBUtility;
 
 import oasis.names.tc.xacml.core.schema.wd_17.ObligationType;
@@ -42,9 +44,12 @@ import oasis.names.tc.xacml.core.schema.wd_17.ResponseType;
 
 @JsonIgnoreProperties( ignoreUnknown = true )
 public final class PDPResponse implements PDPEvaluation {
-    // states if the object has been correctly initialized
-    @JsonIgnore
-    private boolean initialized = false;
+
+    private static Logger LOG = Logger.getLogger( PIPBuilder.class.getName() );
+
+    private static final String MSG_ERR_UNMARSHAL = "Error unmarshalling xml : {0}";
+
+    private static final String MSG_ERR_MARSHAL = "Error marshalling to xml : {0}";
 
     // the response provided by the PDP object
     private ResponseType responseType = null;
@@ -54,6 +59,10 @@ public final class PDPResponse implements PDPEvaluation {
 
     // list of firing rules
     private ArrayList<Integer> firingRules = new ArrayList<>();
+
+    // states if the object has been correctly initialized
+    @JsonIgnore
+    private boolean initialized = false;
 
     /**
      * Constructor for the PDP response
@@ -100,7 +109,7 @@ public final class PDPResponse implements PDPEvaluation {
         try {
             responseType = JAXBUtility.unmarshalToObject( ResponseType.class, string );
         } catch( Exception e ) {
-            e.printStackTrace();
+            LOG.severe( String.format( MSG_ERR_UNMARSHAL, e.getMessage() ) );
         }
     }
 
@@ -120,9 +129,9 @@ public final class PDPResponse implements PDPEvaluation {
         try {
             return JAXBUtility.marshalToString( ResponseType.class, responseType, "Response", JAXBUtility.SCHEMA );
         } catch( JAXBException e ) {
-            e.printStackTrace();
-            return "";
+            LOG.severe( String.format( MSG_ERR_MARSHAL, e.getMessage() ) );
         }
+        return "";
     }
 
     @Override
