@@ -11,6 +11,9 @@ import it.cnr.iit.utility.JsonUtility;
 public class PIPBuilder {
     private static Logger LOGGER = Logger.getLogger( PIPBuilder.class.getName() );
 
+    private static final String MSG_ERR_BUILD_PROP = "Error building PIPBase from properties : {0}";
+    private static final String MSG_ERR_BUILD_STR = "Error building PIPBase from properties string";
+
     private PIPBuilder() {}
 
     public static Optional<PipProperties> getPropertiesFromString( String properties ) {
@@ -20,11 +23,11 @@ public class PIPBuilder {
 
     public static Optional<PIPBase> buildFromString( String strProperties ) {
         Optional<PipProperties> properties = getPropertiesFromString( strProperties );
-        if( properties.isPresent() ) {
-            return buildFromProperties( properties.get() );
+        if( !properties.isPresent() ) {
+            LOGGER.severe( MSG_ERR_BUILD_STR );
+            return Optional.empty();
         }
-        LOGGER.severe( "Cannot build PIPBase from string : use a valid PipProperties json" );
-        return Optional.empty();
+        return buildFromProperties( properties.get() );
     }
 
     public static Optional<PIPBase> buildFromProperties( PipProperties properties ) {
@@ -34,10 +37,9 @@ public class PIPBuilder {
             Class<?> clazz = Class.forName( properties.getClassName() );
             Constructor<?> constructor = clazz.getConstructor( PipProperties.class );
             PIPBase pip = (PIPBase) constructor.newInstance( properties );
-            return Optional.ofNullable( pip );
+            return Optional.of( pip );
         } catch( Exception e ) {
-            LOGGER.severe( "Cannot build PIPBase from properties : " + e.getMessage() );
-            e.printStackTrace();
+            LOGGER.severe( String.format( MSG_ERR_BUILD_PROP, e.getMessage() ) );
         }
         return Optional.empty();
     }
