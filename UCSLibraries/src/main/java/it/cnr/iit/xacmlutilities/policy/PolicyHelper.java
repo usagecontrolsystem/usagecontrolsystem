@@ -76,7 +76,7 @@ import oasis.names.tc.xacml.core.schema.wd_17.RuleType;
  */
 public class PolicyHelper implements PolicyHelperInterface {
 
-    private final static Logger LOG = Logger.getLogger( PolicyHelper.class.getName() );
+    private final static Logger log = Logger.getLogger( PolicyHelper.class.getName() );
 
     private static final String MSG_ERR_UNMASHAL_POLICY = "Error unmarshalling policy : {0}";
     private static final String MSG_ERR_MARSHAL_POLICY = "Error marshalling policy : {0}";
@@ -124,10 +124,10 @@ public class PolicyHelper implements PolicyHelperInterface {
 
         List<Object> list = policyType
             .getCombinerParametersOrRuleCombinerParametersOrVariableDefinition();
+
         for( Object obj : list ) {
             if( obj.getClass().toString().contains( "RuleType" ) ) {
                 RuleType ruleType = (RuleType) obj;
-                // if (ruleType.getRuleId().equals("rule-permit")) {
                 List<ConditionType> conditions = ruleType.getCondition();
                 if( conditions != null ) {
                     for( ConditionType conditionType : conditions ) {
@@ -145,7 +145,8 @@ public class PolicyHelper implements PolicyHelperInterface {
                 }
             }
         }
-        LOG.warning( String.format( MSG_WARN_COND_NOT_FOUND, conditionName ) );
+
+        log.warning( String.format( MSG_WARN_COND_NOT_FOUND, conditionName ) );
         return null;
     }
 
@@ -299,7 +300,7 @@ public class PolicyHelper implements PolicyHelperInterface {
         try {
             return JAXBUtility.unmarshalToObject( PolicyType.class, policy );
         } catch( Exception e ) {
-            LOG.severe( String.format( MSG_ERR_UNMASHAL_POLICY, e.getMessage() ) );
+            log.severe( String.format( MSG_ERR_UNMASHAL_POLICY, e.getMessage() ) );
         }
         return null;
     }
@@ -309,9 +310,9 @@ public class PolicyHelper implements PolicyHelperInterface {
             return JAXBUtility.marshalToString( PolicyType.class, policy, "Policy",
                 JAXBUtility.SCHEMA );
         } catch( JAXBException e ) {
-            LOG.severe( String.format( MSG_ERR_MARSHAL_POLICY, e.getMessage() ) );
-            return null;
+            log.severe( String.format( MSG_ERR_MARSHAL_POLICY, e.getMessage() ) );
         }
+        return null;
     }
 
     /**
