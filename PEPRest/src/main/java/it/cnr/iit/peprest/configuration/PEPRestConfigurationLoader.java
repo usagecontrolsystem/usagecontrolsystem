@@ -67,7 +67,9 @@ public final class PEPRestConfigurationLoader {
         if( fis != null ) {
             try {
                 fis.close();
-            } catch( Exception e ) {}
+            } catch( Exception e ) {
+                // nothing to do here
+            }
         }
 
         return fname;
