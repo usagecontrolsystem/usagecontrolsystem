@@ -18,8 +18,7 @@ public class PAPBuilder {
     private PAPBuilder() {}
 
     public static Optional<PapProperties> getPropertiesFromString( String properties ) {
-        Optional<PapProperties> obj = JsonUtility.loadObjectFromJsonString( properties, PapProperties.class );
-        return obj;
+        return JsonUtility.loadObjectFromJsonString( properties, PapProperties.class );
     }
 
     public static Optional<PAPInterface> buildFromString( String strProperties ) {
