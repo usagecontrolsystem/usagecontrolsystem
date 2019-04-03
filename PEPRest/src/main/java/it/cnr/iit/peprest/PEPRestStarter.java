@@ -40,7 +40,7 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 @EnableSwagger2
 public class PEPRestStarter extends SpringBootServletInitializer {
 
-    private static final Logger LOGGER = Logger.getLogger( PEPRestStarter.class.getName() );
+    private static final Logger LOG = Logger.getLogger( PEPRestStarter.class.getName() );
 
     /**
      * Spring boot method for configuring the current application, right now it
@@ -85,12 +85,12 @@ public class PEPRestStarter extends SpringBootServletInitializer {
             .version( "1.0" ).contact( "antonio.lamarra@iit.cnr.it" ).build();
     }
 
-    public static void main( String args[] ) {
-        // TODO use spring beans and load the conifg only once
+    public static void main( String[] args ) {
+        // TODO use spring beans and load the config only once
         Optional<PEPRestConfiguration> optConfiguration = PEPRestConfigurationLoader.getConfiguration();
 
         if( !optConfiguration.isPresent() ) {
-            LOGGER.severe( PEPRestConfigurationLoader.CONFIG_ERR_MESSAGE );
+            LOG.severe( PEPRestConfigurationLoader.CONFIG_ERR_MESSAGE );
             return;
         }
 
