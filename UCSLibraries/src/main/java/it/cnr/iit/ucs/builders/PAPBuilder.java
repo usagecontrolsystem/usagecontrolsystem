@@ -10,7 +10,10 @@ import it.cnr.iit.ucsinterface.pap.PAPInterface;
 import it.cnr.iit.utility.JsonUtility;
 
 public class PAPBuilder {
-    private static Logger LOGGER = Logger.getLogger( PAPBuilder.class.getName() );
+    private static Logger LOG = Logger.getLogger( PAPBuilder.class.getName() );
+
+    private static final String MSG_ERR_BUILD_PROP = "Error building PAP from properties : {0}";
+    private static final String MSG_ERR_BUILD_STR = "Error building PAP from properties string";
 
     private PAPBuilder() {}
 
@@ -24,7 +27,7 @@ public class PAPBuilder {
         if( properties.isPresent() ) {
             return buildFromProperties( properties.get() );
         }
-        LOGGER.severe( "Cannot build from string : use valid properties json" );
+        LOG.severe( MSG_ERR_BUILD_STR );
         return Optional.empty();
     }
 
@@ -35,9 +38,9 @@ public class PAPBuilder {
             Class<?> clazz = Class.forName( properties.getClassName() );
             Constructor<?> constructor = clazz.getConstructor( PipProperties.class );
             PAPInterface pap = (PAPInterface) constructor.newInstance( properties );
-            return Optional.ofNullable( pap );
+            return Optional.of( pap );
         } catch( Exception e ) {
-            LOGGER.severe( "Cannot build PAP from properties : " + e.getMessage() );
+            LOG.severe( String.format( MSG_ERR_BUILD_PROP, e.getMessage() ) );
         }
         return Optional.empty();
     }
