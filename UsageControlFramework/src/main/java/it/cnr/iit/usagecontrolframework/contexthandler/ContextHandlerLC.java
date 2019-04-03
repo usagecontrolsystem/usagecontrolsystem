@@ -945,12 +945,6 @@ final public class ContextHandlerLC extends AbstractContextHandler {
 
             log.info( "[TIME] EndAccess evaluation ends at " + System.currentTimeMillis() );
 
-            // if( pdpEvaluation.getResult().equalsIgnoreCase( "Permit" ) ) {
-            // PDP returns PERMIT obligation
-            // getObligationManager().translateObligations( pdpEvaluation, sessionId, END_STATUS );
-            // } else {
-            // PDP returns DENY, INDETERMINATE or NOT APPLICABLE obligation
-            // }
             getObligationManager().translateObligations( pdpEvaluation, sessionId, END_STATUS );
 
             EndAccessResponse response = new EndAccessResponse( endAccessMessage.getDestination(),
