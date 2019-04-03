@@ -31,7 +31,8 @@ import oasis.names.tc.xacml.core.schema.wd_17.RequestType;
  *
  */
 public class PIPRole extends PIPBase {
-    private static final Logger LOGGER = Logger.getLogger( PIPRole.class.getName() );
+
+    private static final Logger log = Logger.getLogger( PIPRole.class.getName() );
 
     /**
      * Whenever a PIP has to retrieve some informations related to an attribute
@@ -56,7 +57,6 @@ public class PIPRole extends PIPBase {
 
     private boolean initialized = false;
 
-    // TODO switch to pip object
     public PIPRole( PipProperties properties ) {
         super( properties );
         if( !super.isInitialized() ) {
@@ -65,7 +65,7 @@ public class PIPRole extends PIPBase {
         if( initialize( properties ) ) {
             subscriberTimer = new PSQLSubscriberTimer( contextHandlerInterface,
                 subscriptions, sqlMiddlewarePIPInterface );
-            timer.scheduleAtFixedRate( subscriberTimer, 0, 10 * 1000 );
+            timer.scheduleAtFixedRate( subscriberTimer, 0, 10L * 1000 );
         }
 
     }
@@ -82,18 +82,18 @@ public class PIPRole extends PIPBase {
             Map<String, String> arguments = properties.getAttributes().get( 0 ).getArgs();
             Attribute attribute = new Attribute();
             if( !attribute.createAttributeId( arguments.get( ATTRIBUTE_ID ) ) ) {
-                LOGGER.log( Level.SEVERE, "[PIPReader] wrong set Attribute" );
+                log.log( Level.SEVERE, "[PIPReader] wrong set Attribute" );
                 return false;
             }
             if( !attribute
                 .setCategory( Category.toCATEGORY( arguments.get( CATEGORY ) ) ) ) {
-                LOGGER.log( Level.SEVERE,
+                log.log( Level.SEVERE,
                     "[PIPReader] wrong set category " + arguments.get( CATEGORY ) );
                 return false;
             }
             if( !attribute.setAttributeDataType(
                 DataType.toDATATYPE( arguments.get( DATA_TYPE ) ) ) ) {
-                LOGGER.log( Level.SEVERE, "[PIPReader] wrong set datatype" );
+                log.log( Level.SEVERE, "[PIPReader] wrong set datatype" );
                 return false;
             }
             if( attribute.getCategory() != Category.ENVIRONMENT ) {
@@ -125,7 +125,7 @@ public class PIPRole extends PIPBase {
     public void subscribe( RequestType accessRequest ) throws PIPException {
         // BEGIN parameter checking
         if( accessRequest == null || !initialized || !isInitialized() ) {
-            LOGGER.log( Level.SEVERE, "[PIPREader] wrong initialization" + initialized
+            log.log( Level.SEVERE, "[PIPREader] wrong initialization" + initialized
                     + "\t" + isInitialized() );
             return;
         }
@@ -135,7 +135,7 @@ public class PIPRole extends PIPBase {
 
         if( subscriberTimer.getContextHandler() == null
                 || contextHandlerInterface == null ) {
-            LOGGER.log( Level.SEVERE, "Context handler not set" );
+            log.log( Level.SEVERE, "Context handler not set" );
             return;
         }
 
@@ -172,7 +172,7 @@ public class PIPRole extends PIPBase {
     public void retrieve( RequestType accessRequest ) throws PIPException {
         // BEGIN parameter checking
         if( accessRequest == null || !initialized || !isInitialized() ) {
-            LOGGER.log( Level.SEVERE, "[PIPREader] wrong initialization" + initialized
+            log.log( Level.SEVERE, "[PIPREader] wrong initialization" + initialized
                     + "\t" + isInitialized() );
             return;
         }
@@ -197,7 +197,7 @@ public class PIPRole extends PIPBase {
     public boolean unsubscribe( List<Attribute> attributes ) throws PIPException {
         // BEGIN parameter checking
         if( attributes == null || !initialized || !isInitialized() ) {
-            LOGGER.log( Level.SEVERE, "[PIPREader] wrong initialization" + initialized
+            log.log( Level.SEVERE, "[PIPREader] wrong initialization" + initialized
                     + "\t" + isInitialized() );
             return false;
         }
@@ -209,7 +209,7 @@ public class PIPRole extends PIPBase {
                     if( attributeS.getAdditionalInformations()
                         .equals( attribute.getAdditionalInformations() ) ) {
                         subscriptions.remove( attributeS );
-                        LOGGER.info( "UNSUB " + subscriptions.size() );
+                        log.info( "UNSUB " + subscriptions.size() );
                         return true;
                     }
                 }
@@ -237,7 +237,7 @@ public class PIPRole extends PIPBase {
 
         if( subscriberTimer.getContextHandler() == null
                 || contextHandlerInterface == null ) {
-            LOGGER.log( Level.SEVERE, "Context handler not set" );
+            log.log( Level.SEVERE, "Context handler not set" );
             return null;
         }
 
