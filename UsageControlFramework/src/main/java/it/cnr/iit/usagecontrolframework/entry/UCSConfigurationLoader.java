@@ -26,7 +26,8 @@ import it.cnr.iit.ucs.configuration.UCSConfiguration;
 import it.cnr.iit.utility.JsonUtility;
 
 public final class UCSConfigurationLoader {
-    protected static final Logger LOGGER = Logger.getLogger( UCSConfigurationLoader.class.getName() );
+
+    protected static final Logger log = Logger.getLogger( UCSConfigurationLoader.class.getName() );
 
     private static final String PROPERTIES_FILE = "application.properties";
     private static final String PROPERTIES_CONFIG_KEY = "ucs-config-file";
