@@ -228,7 +228,7 @@ public class ExamplePEP implements PEPInterface {
         public void run() {
             int random = ThreadLocalRandom.current().nextInt( 20, 30 );
             try {
-                Thread.sleep( random * 1000 );
+                Thread.sleep( random * 1000L );
                 String id = endAccess( sessionId );
                 EndAccessResponse endAccessResponse;
                 endAccessResponse = (EndAccessResponse) waitForResponse( id );
