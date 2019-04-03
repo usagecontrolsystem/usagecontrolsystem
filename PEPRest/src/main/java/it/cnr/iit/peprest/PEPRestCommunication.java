@@ -43,7 +43,7 @@ import io.swagger.annotations.ApiResponses;
 @EnableAutoConfiguration
 public class PEPRestCommunication {
 
-    protected static final Logger LOGGER = Logger.getLogger( PEPRestCommunication.class.getName() );
+    protected static final Logger LOG = Logger.getLogger( PEPRestCommunication.class.getName() );
 
     private PEPRest pepRest;
 

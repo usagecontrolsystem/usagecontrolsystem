@@ -12,39 +12,38 @@ package it.cnr.iit.peprest.messagetrack;
  * evaluation of its session</li>
  * </ol>
  * </p>
- * 
+ *
  * @author anton
  *
  */
 public class CallerResponse {
-  private STATUS status;
 
-  private String sessionId;
+    private STATUS status;
+    private String sessionId;
+    private String derivedMessageId;
 
-  private String derivedMessageId;
+    public STATUS getStatus() {
+        return status;
+    }
 
-  public STATUS getStatus() {
-    return status;
-  }
+    public void setStatus( STATUS status ) {
+        this.status = status;
+    }
 
-  public void setStatus(STATUS status) {
-    this.status = status;
-  }
+    public String getSessionId() {
+        return sessionId;
+    }
 
-  public String getSessionId() {
-    return sessionId;
-  }
+    public void setSessionId( String sessionId ) {
+        this.sessionId = sessionId;
+    }
 
-  public void setSessionId(String sessionId) {
-    this.sessionId = sessionId;
-  }
+    public String getDerivedMessageId() {
+        return derivedMessageId;
+    }
 
-  public String getDerivedMessageId() {
-    return derivedMessageId;
-  }
-
-  public void setDerivedMessageId(String derivedMessageId) {
-    this.derivedMessageId = derivedMessageId;
-  }
+    public void setDerivedMessageId( String derivedMessageId ) {
+        this.derivedMessageId = derivedMessageId;
+    }
 
 }

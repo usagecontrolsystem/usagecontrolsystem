@@ -57,7 +57,7 @@ import oasis.names.tc.xacml.core.schema.wd_17.DecisionType;
 @Component
 public class PEPRest implements PEPInterface {
 
-    private static final Logger LOGGER = Logger.getLogger( PEPRest.class.getName() );
+    private static final Logger LOG = Logger.getLogger( PEPRest.class.getName() );
     private static final String UNABLE_TO_DELIVER_MESSSAGE_TO_UCS = "Unable to deliver messsage to UCS";
     private static final String IS_MSG_DELIVERED_TO_DESTINATION = "isDeliveredToDestination: {0} ";
     private static final String DENY = DecisionType.DENY.value();
@@ -76,7 +76,7 @@ public class PEPRest implements PEPInterface {
         Optional<PEPRestConfiguration> optPEPRestConfiguration = PEPRestConfigurationLoader.getConfiguration();
 
         if( !optPEPRestConfiguration.isPresent() ) {
-            LOGGER.severe( PEPRestConfigurationLoader.CONFIG_ERR_MESSAGE );
+            LOG.severe( PEPRestConfigurationLoader.CONFIG_ERR_MESSAGE );
             // TODO throw exception ?
             return;
         }
@@ -94,14 +94,14 @@ public class PEPRest implements PEPInterface {
         tryAccessBuilder.setPepUri( buildOnGoingEvaluationInterface() ).setPolicy( policy ).setRequest( request );
         TryAccessMessage tryAccessMessage = tryAccessBuilder.build();
         tryAccessMessage.setCallback( buildResponseInterface( "tryAccessResponse" ), MEAN.REST );
-        LOGGER.log( Level.INFO, "[TIME] TRYACCESS {0} ", System.currentTimeMillis() );
+        LOG.log( Level.INFO, "[TIME] TRYACCESS {0} ", System.currentTimeMillis() );
         Message message = requestManager.sendMessageToCH( tryAccessMessage );
         if( message.isDeliveredToDestination() ) {
             unanswered.put( tryAccessMessage.getID(), tryAccessMessage );
             messageHistory.addMessage( tryAccessMessage );
             return tryAccessMessage.getID();
         } else {
-            LOGGER.log( Level.WARNING, IS_MSG_DELIVERED_TO_DESTINATION, message.isDeliveredToDestination() );
+            LOG.log( Level.WARNING, IS_MSG_DELIVERED_TO_DESTINATION, message.isDeliveredToDestination() );
             throw Throwables.propagate( new IllegalAccessException( UNABLE_TO_DELIVER_MESSSAGE_TO_UCS ) );
         }
     }
@@ -112,18 +112,18 @@ public class PEPRest implements PEPInterface {
         startAccessMessage.setSessionId( sessionId );
         startAccessMessage.setCallback( buildResponseInterface( "startAccessResponse" ), MEAN.REST );
         try {
-            LOGGER.log( Level.INFO, "[TIME] STARTACCESS {0} ", System.currentTimeMillis() );
+            LOG.log( Level.INFO, "[TIME] STARTACCESS {0} ", System.currentTimeMillis() );
             Message message = requestManager.sendMessageToCH( startAccessMessage );
             if( message.isDeliveredToDestination() ) {
                 unanswered.put( startAccessMessage.getID(), startAccessMessage );
                 messageHistory.addMessage( startAccessMessage );
                 return startAccessMessage.getID();
             } else {
-                LOGGER.log( Level.WARNING, IS_MSG_DELIVERED_TO_DESTINATION, message.isDeliveredToDestination() );
+                LOG.log( Level.WARNING, IS_MSG_DELIVERED_TO_DESTINATION, message.isDeliveredToDestination() );
                 throw Throwables.propagate( new IllegalAccessException( UNABLE_TO_DELIVER_MESSSAGE_TO_UCS ) );
             }
         } catch( Exception e ) { // NOSONAR
-            LOGGER.severe( e.getLocalizedMessage() );
+            LOG.severe( e.getLocalizedMessage() );
             throw Throwables.propagate( e );
         }
     }
@@ -134,18 +134,18 @@ public class PEPRest implements PEPInterface {
         endAccessMessage.setSessionId( sessionId );
         endAccessMessage.setCallback( buildResponseInterface( "endAccessResponse" ), MEAN.REST );
         try {
-            LOGGER.log( Level.INFO, "[TIME] ENDACCESS {0} ", System.currentTimeMillis() );
+            LOG.log( Level.INFO, "[TIME] ENDACCESS {0} ", System.currentTimeMillis() );
             Message message = requestManager.sendMessageToCH( endAccessMessage );
             if( message.isDeliveredToDestination() ) {
                 unanswered.put( endAccessMessage.getID(), endAccessMessage );
                 messageHistory.addMessage( endAccessMessage );
                 return endAccessMessage.getID();
             } else {
-                LOGGER.log( Level.INFO, IS_MSG_DELIVERED_TO_DESTINATION, message.isDeliveredToDestination() );
+                LOG.log( Level.INFO, IS_MSG_DELIVERED_TO_DESTINATION, message.isDeliveredToDestination() );
                 throw Throwables.propagate( new IllegalAccessException( UNABLE_TO_DELIVER_MESSSAGE_TO_UCS ) );
             }
         } catch( Exception e ) { // NOSONAR
-            LOGGER.severe( e.getLocalizedMessage() );
+            LOG.severe( e.getLocalizedMessage() );
             throw Throwables.propagate( e );
         }
     }
@@ -155,17 +155,17 @@ public class PEPRest implements PEPInterface {
     public Message onGoingEvaluation( Message message ) {
         // BEGIN parameter checking
         if( !( message instanceof ReevaluationResponse ) ) {
-            LOGGER.severe( "Message not valid" );
+            LOG.severe( "Message not valid" );
             throw Throwables.propagate( new IllegalArgumentException( "Invalid message type'" ) );
         }
         // END parameter checking
         responses.put( message.getID(), message );
         messageHistory.addMessage( message );
-        LOGGER.log( Level.INFO, "[TIME] ON_GOING_EVAL {0} ", System.currentTimeMillis() );
+        LOG.log( Level.INFO, "[TIME] ON_GOING_EVAL {0} ", System.currentTimeMillis() );
 
         ReevaluationResponse chPepMessage = (ReevaluationResponse) message;
         if( configuration.getPep().getRevoke().equals( "HARD" ) ) {
-            LOGGER.log( Level.INFO, "[TIME] sending endacces {0} ", System.currentTimeMillis() );
+            LOG.log( Level.INFO, "[TIME] sending endacces {0} ", System.currentTimeMillis() );
             EndAccessMessage endAccess = new EndAccessMessage( configuration.getPep().getId(),
                 configuration.getPep().getIp() );
             endAccess.setCallback( null, MEAN.REST );
@@ -176,16 +176,16 @@ public class PEPRest implements PEPInterface {
                 unanswered.put( endAccess.getID(), endAccess );
                 messageHistory.addMessage( endAccess );
             } else {
-                LOGGER.log( Level.INFO, IS_MSG_DELIVERED_TO_DESTINATION, message.isDeliveredToDestination() );
+                LOG.log( Level.INFO, IS_MSG_DELIVERED_TO_DESTINATION, message.isDeliveredToDestination() );
                 throw Throwables.propagate( new IllegalAccessException( UNABLE_TO_DELIVER_MESSSAGE_TO_UCS ) );
             }
         } else {
             // generic case to cater for multiple scenarios, e.g. pause/resume/pause/end etc...
             if( chPepMessage.getPDPEvaluation().getResult().contains( PERMIT ) ) {
-                LOGGER.info( "RESUME EXECUTION" );
+                LOG.info( "RESUME EXECUTION" );
             }
             if( chPepMessage.getPDPEvaluation().getResult().contains( DENY ) ) {
-                LOGGER.info( "STOP EXECUTION" );
+                LOG.info( "STOP EXECUTION" );
             }
         }
 
@@ -202,7 +202,7 @@ public class PEPRest implements PEPInterface {
             messageHistory.addMessage( message );
             return handleResponse( message );
         } catch( Exception e ) { // NOSONAR
-            LOGGER.severe( "Error occured while evaluating the response: " + e.getLocalizedMessage() ); // NOSONAR
+            LOG.severe( "Error occured while evaluating the response: " + e.getLocalizedMessage() ); // NOSONAR
             throw Throwables.propagate( e );
         }
     }
@@ -226,7 +226,7 @@ public class PEPRest implements PEPInterface {
      * @return a String stating the result of the evaluation or the ID of the startaccess message
      */
     private String handleTryAccessResponse( TryAccessResponse response ) {
-        LOGGER.log( Level.INFO, " Evaluation {0} ", response.getPDPEvaluation().getResult() );
+        LOG.log( Level.INFO, " Evaluation {0} ", response.getPDPEvaluation().getResult() );
         if( response.getPDPEvaluation().getResult().contains( PERMIT ) ) {
             return startAccess( response.getSessionId() );
         }
@@ -234,13 +234,13 @@ public class PEPRest implements PEPInterface {
     }
 
     private String handleStartAccessResponse( StartAccessResponse response ) {
-        LOGGER.info( response.getID() + " Evaluation " + response.getPDPEvaluation().getResult() );
+        LOG.info( response.getID() + " Evaluation " + response.getPDPEvaluation().getResult() );
         // if the start access response is deny then notify device to stop
         return response.getPDPEvaluation().getResult();
     }
 
     private String handleEndAccessResponse( EndAccessResponse response ) {
-        LOGGER.info( response.getID() + " Evaluation " + response.getPDPEvaluation().getResult() );
+        LOG.info( response.getID() + " Evaluation " + response.getPDPEvaluation().getResult() );
         return response.getPDPEvaluation().getResult();
     }
 
@@ -261,7 +261,7 @@ public class PEPRest implements PEPInterface {
     }
 
     public void end( String sessionId ) {
-        LOGGER.log( Level.INFO, "[TIME] Sending endAccess {0} ", System.currentTimeMillis() );
+        LOG.log( Level.INFO, "[TIME] Sending endAccess {0} ", System.currentTimeMillis() );
         endAccess( sessionId );
     }
 

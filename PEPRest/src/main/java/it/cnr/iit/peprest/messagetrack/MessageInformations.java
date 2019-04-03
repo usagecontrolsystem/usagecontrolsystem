@@ -20,10 +20,9 @@ import oasis.names.tc.xacml.core.schema.wd_17.DecisionType;
  *
  */
 public class MessageInformations {
+
     private CallerResponse callerResponse;
-
     private String messageId;
-
     private PDPEvaluation evaluation;
 
     public String getMessageId() {
@@ -39,7 +38,7 @@ public class MessageInformations {
     }
 
     public void setEvaluationList( PDPEvaluation evaluationList ) {
-        this.evaluation = evaluationList;
+        evaluation = evaluationList;
     }
 
     public CallerResponse getCallerResponse() {

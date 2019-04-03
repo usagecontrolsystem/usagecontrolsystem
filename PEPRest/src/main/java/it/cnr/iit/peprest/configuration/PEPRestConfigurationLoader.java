@@ -26,7 +26,7 @@ import it.cnr.iit.utility.JsonUtility;
 
 public final class PEPRestConfigurationLoader {
 
-    protected static final Logger LOGGER = Logger.getLogger( PEPRestConfigurationLoader.class.getName() );
+    protected static final Logger LOG = Logger.getLogger( PEPRestConfigurationLoader.class.getName() );
 
     private static final String PROPERTIES_FILE = "application.properties";
     private static final String PROPERTIES_CONFIG_KEY = "pep-config-file";

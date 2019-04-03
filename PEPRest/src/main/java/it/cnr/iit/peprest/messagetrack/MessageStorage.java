@@ -24,7 +24,7 @@ import oasis.names.tc.xacml.core.schema.wd_17.DecisionType;
  */
 public class MessageStorage implements MessageStorageInterface, MessagesPerSession {
 
-    private static final Logger LOGGER = Logger.getLogger( MessageStorage.class.getName() );
+    private static final Logger LOG = Logger.getLogger( MessageStorage.class.getName() );
 
     private HashMap<String, MessageInformations> messageFlow = new HashMap<>();
     private HashMap<String, LinkedList<String>> messagesPerSession = new HashMap<>();
@@ -59,7 +59,7 @@ public class MessageStorage implements MessageStorageInterface, MessagesPerSessi
     @Override
     public boolean addMessage( Message message ) {
         if( message == null ) {
-            LOGGER.severe( "Message is null" );
+            LOG.severe( "Message is null" );
             return false;
         }
         if( messageFlow.containsKey( message.getID() ) ) {
@@ -109,7 +109,7 @@ public class MessageStorage implements MessageStorageInterface, MessagesPerSessi
 
     private boolean insert( MessageInformations messageInformations ) {
         if( messageInformations == null ) {
-            LOGGER.severe( "MessageInformations is null" );
+            LOG.severe( "MessageInformations is null" );
             return false;
         }
         messageFlow.put( messageInformations.getMessageId(), messageInformations );

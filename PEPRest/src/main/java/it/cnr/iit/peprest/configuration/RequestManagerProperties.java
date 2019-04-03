@@ -18,13 +18,9 @@ package it.cnr.iit.peprest.configuration;
 public class RequestManagerProperties {
 
     private String ip;
-
     private String port;
-
     private String tryAccess;
-
     private String startAccess;
-
     private String endAccess;
 
     public String getIp() {
