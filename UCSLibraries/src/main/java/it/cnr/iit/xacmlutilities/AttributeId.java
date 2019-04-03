@@ -1,44 +1,42 @@
 /*
  * CNR - IIT (2015-2016)
- * 
+ *
  * @authors Fabio Bindi and Filippo Lauria
  */
 package it.cnr.iit.xacmlutilities;
 
 /**
  * Creates the Attribute ID of an attribute object
- * 
+ *
  * @author Fabio Bindi and Filippo Lauria
  */
 public final class AttributeId {
 
-    private String attributeId;
+    private String attributeId = "";
 
     /**
      * Constructor
      */
-    public AttributeId() {
-        attributeId = "";
-    }
+    public AttributeId() {}
 
     /**
      * Constructor: creates an attributeId from a string
-     * 
-     * @param attributeId_
+     *
+     * @param attributeId
      *          string containing the attributeId to set
      */
-    public AttributeId( String attributeId_ ) {
-        set( attributeId_ );
+    public AttributeId( String attributeId ) {
+        set( attributeId );
     }
 
     /**
      * Sets the value of the attribute ID
-     * 
-     * @param attributeId_
+     *
+     * @param attributeId
      *          string containing the attributeId to set
      */
-    public void set( String attributeId_ ) {
-        attributeId = attributeId_;
+    public void set( String attributeId ) {
+        this.attributeId = attributeId;
     }
 
     @Override
@@ -48,18 +46,25 @@ public final class AttributeId {
 
     /**
      * Compares this attribute ID with another
-     * 
-     * @param attributeId_
+     *
+     * @param attributeId
      *          attributeId to be compared
      * @return true if the attribute IDs are equals; false otherwise
      */
-    public boolean equals( AttributeId attributeId_ ) {
-        return attributeId.equalsIgnoreCase( attributeId_.toString() );
+    @Override
+    public boolean equals( Object o ) {
+        if( o == this ) {
+            return true;
+        }
+        if( !( o instanceof AttributeId ) ) {
+            return false;
+        }
+        return attributeId.equalsIgnoreCase( ( (AttributeId) o ).toString() );
     }
 
     /**
      * Checks if the attribute ID is compliant to the LDAP RFC
-     * 
+     *
      * @return true if the attributeId is compliant, false otherwise
      */
     public boolean isLdapAttribute() {
@@ -72,7 +77,7 @@ public final class AttributeId {
 
     /**
      * Gets the name of the attribute from the whole attributeId
-     * 
+     *
      * @return the attribute name
      */
     public String getSplittedAttribute() {
@@ -85,7 +90,7 @@ public final class AttributeId {
 
     /**
      * Creates an attributeId compliant to the LDAP RFC from the attribute name
-     * 
+     *
      * @param suffix
      *          the attibute name
      */

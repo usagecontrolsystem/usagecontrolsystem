@@ -36,6 +36,7 @@ import java.util.logging.Logger;
  *
  */
 public class SubscriptionQueue<T> {
+
     protected static final Logger log = Logger.getLogger( SubscriptionQueue.class.getName() );
 
     // the queue in which the various PIPs will put monitored attributes
