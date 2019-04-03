@@ -58,13 +58,11 @@ final public class Utility {
             log.fine( "Attempting to read file using provided filePath." );
         }
 
-        try {
-            Scanner scanner = new Scanner( new File( filePath ) );
+        try (Scanner scanner = new Scanner( new File( filePath ) )) {
             StringBuilder stringB = new StringBuilder();
             while( scanner.hasNext() ) {
                 stringB.append( scanner.nextLine() );
             }
-            scanner.close();
             return stringB.toString();
             // return new String( Files.readAllBytes( Paths.get( filePath ) ), Charset.forName( "UTF-8" ) );
         } catch( IOException exception ) {
