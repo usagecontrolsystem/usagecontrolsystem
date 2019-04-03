@@ -31,7 +31,8 @@ import java.util.logging.Logger;
  *
  */
 final public class Utility {
-    private static final Logger LOGGER = Logger.getLogger( Utility.class.getName() );
+
+    private static final Logger log = Logger.getLogger( Utility.class.getName() );
 
     private Utility() {
 
@@ -54,7 +55,7 @@ final public class Utility {
         if( absFilePath != null ) {
             filePath = absFilePath;
         } else {
-            LOGGER.fine( "Attempting to read file using provided filePath." );
+            log.fine( "Attempting to read file using provided filePath." );
         }
 
         try {
@@ -67,7 +68,7 @@ final public class Utility {
             return stringB.toString();
             // return new String( Files.readAllBytes( Paths.get( filePath ) ), Charset.forName( "UTF-8" ) );
         } catch( IOException exception ) {
-            LOGGER.severe( "Unable to read file due to error: " + exception.getLocalizedMessage() );
+            log.severe( "Unable to read file due to error: " + exception.getLocalizedMessage() );
             return null;
         }
     }
@@ -75,7 +76,7 @@ final public class Utility {
     private static boolean isValidPath( String filePath ) {
         // BEGIN parameter checking
         if( filePath == null || filePath.isEmpty() ) {
-            LOGGER.severe( "String for filePath can not be empty." );
+            log.severe( "String for filePath can not be empty." );
             return false;
         }
         return true;
@@ -98,7 +99,7 @@ final public class Utility {
         } catch( NullPointerException e ) {
             return null;
         } catch( Exception e ) {
-            LOGGER.severe( "Unable to find absolute path due to error: " + e.getMessage() );
+            log.severe( "Unable to find absolute path due to error: " + e.getMessage() );
             return null;
         }
     }
@@ -121,7 +122,7 @@ final public class Utility {
             T configObj = JAXBUtility.unmarshalToObject( configClass, xml );
             return configObj;
         } catch( Exception e ) {
-            LOGGER.severe( "Unable to read config file due to error: " + e.getLocalizedMessage() );
+            log.severe( "Unable to read config file due to error: " + e.getLocalizedMessage() );
             throw new IllegalStateException( "Unable to read config file due to error: " + e.getLocalizedMessage() );
         }
     }
