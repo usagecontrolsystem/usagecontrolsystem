@@ -22,7 +22,6 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadLocalRandom;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import it.cnr.iit.ucs.configuration.PepProperties;
@@ -142,16 +141,16 @@ public class ExamplePEP implements PEPInterface {
     public Message onGoingEvaluation( Message message ) {
         // BEGIN parameter checking
         if( message == null || !( message instanceof ReevaluationResponse ) ) {
-            System.err.println( "Message not valid" );
+            log.severe( "Message not valid" );
             return null;
         }
         if( !initialized ) {
-            System.err.println( "Cannot answer the message" );
+            log.severe( "Cannot answer the message" );
             return null;
         }
         if( !message.getSource().equals( PART.CH.toString() )
                 || !message.getDestination().equals( PART.PEP.toString() ) ) {
-            System.err.println( "Message in invalid format" );
+            log.severe( "Message in invalid format" );
             return null;
         }
         // END parameter checking
@@ -165,11 +164,11 @@ public class ExamplePEP implements PEPInterface {
             requestManager.sendMessageToCH( endAccess );
         } else {
             if( chPepMessage.getPDPEvaluation().getResult().contains( "Permit" ) ) {
-                log.log( Level.INFO,
+                log.info(
                     "[TIME] RESUME EXECUTION " + System.currentTimeMillis() );
             }
             if( chPepMessage.getPDPEvaluation().getResult().contains( "Deny" ) ) {
-                log.log( Level.INFO,
+                log.info(
                     "[TIME] STOP EXECUTION " + System.currentTimeMillis() );
             }
         }
@@ -187,19 +186,18 @@ public class ExamplePEP implements PEPInterface {
 
     public void start() throws InterruptedException, ExecutionException {
         String id = tryAccess();
-        log.log( Level.INFO, id );
+        log.info( id );
         TryAccessResponse tryAccessResponse = (TryAccessResponse) waitForResponse(
             id );
-        System.out.println(
-            "Response: " + tryAccessResponse.getPDPEvaluation().getResult() );
+        log.info( "Response: " + tryAccessResponse.getPDPEvaluation().getResult() );
         if( tryAccessResponse.getPDPEvaluation().getResult().contains( "Permit" ) ) {
-            log.log( Level.INFO, "Starting startaccess" );
+            log.info( "Starting startaccess" );
             id = startAccess( tryAccessResponse.getSessionId() );
             StartAccessResponse startAccessResponse = (StartAccessResponse) waitForResponse(
                 id );
             if( startAccessResponse.getPDPEvaluation().getResult()
                 .contains( "Permit" ) ) {
-                log.log( Level.INFO, "Permit success" );
+                log.info( "Permit success" );
                 Thread thread = new Thread(
                     new EndThread( tryAccessResponse.getSessionId() ) );
                 thread.start();
@@ -224,11 +222,9 @@ public class ExamplePEP implements PEPInterface {
                 String id = endAccess( sessionId );
                 EndAccessResponse endAccessResponse;
                 endAccessResponse = (EndAccessResponse) waitForResponse( id );
-                log.log( Level.INFO,
-                    endAccessResponse.getPDPEvaluation().getResult() );
+                log.info( endAccessResponse.getPDPEvaluation().getResult() );
             } catch( InterruptedException | ExecutionException e ) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+                Thread.currentThread().interrupt();
             }
         }
     }
@@ -270,14 +266,13 @@ public class ExamplePEP implements PEPInterface {
                     synchronized( mutex ) {
                         mutex.wait();
                     }
-                    log.log( Level.INFO, responses.toString() + "\t"
+                    log.info( responses.toString() + "\t"
                             + responses.containsKey( id ) + "\t" + id );
                 }
-                log.log( Level.INFO, "CALL Message arrived" );
+                log.info( "CALL Message arrived" );
                 return responses.remove( id );
             } catch( InterruptedException e ) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+                Thread.currentThread().interrupt();
                 return null;
             }
         }
