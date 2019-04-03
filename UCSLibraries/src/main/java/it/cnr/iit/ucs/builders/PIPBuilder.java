@@ -9,7 +9,8 @@ import it.cnr.iit.ucsinterface.pip.PIPBase;
 import it.cnr.iit.utility.JsonUtility;
 
 public class PIPBuilder {
-    private static Logger LOGGER = Logger.getLogger( PIPBuilder.class.getName() );
+
+    private static Logger LOG = Logger.getLogger( PIPBuilder.class.getName() );
 
     private static final String MSG_ERR_BUILD_PROP = "Error building PIPBase from properties : {0}";
     private static final String MSG_ERR_BUILD_STR = "Error building PIPBase from properties string";
@@ -24,7 +25,7 @@ public class PIPBuilder {
     public static Optional<PIPBase> buildFromString( String strProperties ) {
         Optional<PipProperties> properties = getPropertiesFromString( strProperties );
         if( !properties.isPresent() ) {
-            LOGGER.severe( MSG_ERR_BUILD_STR );
+            LOG.severe( MSG_ERR_BUILD_STR );
             return Optional.empty();
         }
         return buildFromProperties( properties.get() );
@@ -39,7 +40,7 @@ public class PIPBuilder {
             PIPBase pip = (PIPBase) constructor.newInstance( properties );
             return Optional.of( pip );
         } catch( Exception e ) {
-            LOGGER.severe( String.format( MSG_ERR_BUILD_PROP, e.getMessage() ) );
+            LOG.severe( String.format( MSG_ERR_BUILD_PROP, e.getMessage() ) );
         }
         return Optional.empty();
     }
