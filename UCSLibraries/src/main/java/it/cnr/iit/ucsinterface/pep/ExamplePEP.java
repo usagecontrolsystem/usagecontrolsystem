@@ -47,7 +47,7 @@ import it.cnr.iit.utility.Utility;
  *
  */
 public class ExamplePEP implements PEPInterface {
-    protected static final Logger LOGGER = Logger.getLogger( ExamplePEP.class.getName() );
+    protected static final Logger log = Logger.getLogger( ExamplePEP.class.getName() );
 
     private static final String START_PATH = "data";
 
@@ -165,11 +165,11 @@ public class ExamplePEP implements PEPInterface {
             requestManager.sendMessageToCH( endAccess );
         } else {
             if( chPepMessage.getPDPEvaluation().getResult().contains( "Permit" ) ) {
-                LOGGER.log( Level.INFO,
+                log.log( Level.INFO,
                     "[TIME] RESUME EXECUTION " + System.currentTimeMillis() );
             }
             if( chPepMessage.getPDPEvaluation().getResult().contains( "Deny" ) ) {
-                LOGGER.log( Level.INFO,
+                log.log( Level.INFO,
                     "[TIME] STOP EXECUTION " + System.currentTimeMillis() );
             }
         }
@@ -187,19 +187,19 @@ public class ExamplePEP implements PEPInterface {
 
     public void start() throws InterruptedException, ExecutionException {
         String id = tryAccess();
-        LOGGER.log( Level.INFO, id );
+        log.log( Level.INFO, id );
         TryAccessResponse tryAccessResponse = (TryAccessResponse) waitForResponse(
             id );
         System.out.println(
             "Response: " + tryAccessResponse.getPDPEvaluation().getResult() );
         if( tryAccessResponse.getPDPEvaluation().getResult().contains( "Permit" ) ) {
-            LOGGER.log( Level.INFO, "Starting startaccess" );
+            log.log( Level.INFO, "Starting startaccess" );
             id = startAccess( tryAccessResponse.getSessionId() );
             StartAccessResponse startAccessResponse = (StartAccessResponse) waitForResponse(
                 id );
             if( startAccessResponse.getPDPEvaluation().getResult()
                 .contains( "Permit" ) ) {
-                LOGGER.log( Level.INFO, "Permit success" );
+                log.log( Level.INFO, "Permit success" );
                 Thread thread = new Thread(
                     new EndThread( tryAccessResponse.getSessionId() ) );
                 thread.start();
@@ -224,7 +224,7 @@ public class ExamplePEP implements PEPInterface {
                 String id = endAccess( sessionId );
                 EndAccessResponse endAccessResponse;
                 endAccessResponse = (EndAccessResponse) waitForResponse( id );
-                LOGGER.log( Level.INFO,
+                log.log( Level.INFO,
                     endAccessResponse.getPDPEvaluation().getResult() );
             } catch( InterruptedException | ExecutionException e ) {
                 // TODO Auto-generated catch block
@@ -270,10 +270,10 @@ public class ExamplePEP implements PEPInterface {
                     synchronized( mutex ) {
                         mutex.wait();
                     }
-                    LOGGER.log( Level.INFO, responses.toString() + "\t"
+                    log.log( Level.INFO, responses.toString() + "\t"
                             + responses.containsKey( id ) + "\t" + id );
                 }
-                LOGGER.log( Level.INFO, "CALL Message arrived" );
+                log.log( Level.INFO, "CALL Message arrived" );
                 return responses.remove( id );
             } catch( InterruptedException e ) {
                 // TODO Auto-generated catch block
