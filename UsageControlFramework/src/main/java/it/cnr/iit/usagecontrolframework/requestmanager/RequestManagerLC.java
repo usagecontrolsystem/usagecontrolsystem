@@ -50,7 +50,8 @@ import it.cnr.iit.ucsinterface.requestmanager.AsynchronousRequestManager;
  *
  */
 public class RequestManagerLC extends AsynchronousRequestManager {
-    private static Logger LOGGER = Logger.getLogger( RequestManagerLC.class.getName() );
+
+    private static final  Logger log = Logger.getLogger( RequestManagerLC.class.getName() );
 
     /*
      * This is the pool of thread in charge of polling the queue to retrieve
@@ -66,7 +67,7 @@ public class RequestManagerLC extends AsynchronousRequestManager {
     */
 
     // states if the request manager has been correctly initialized
-    private volatile boolean initialize = false;
+    private volatile boolean initialized = false;
 
     /**
      * Constructor for the RequestManager starting from an XML which describes the
@@ -78,7 +79,7 @@ public class RequestManagerLC extends AsynchronousRequestManager {
     public RequestManagerLC( GeneralProperties generalProperties, RequestManagerProperties properties ) {
         super( generalProperties, properties );
         initialize();
-        initialize = isInitialized();
+        initialized = isInitialized();
     }
 
     /**
@@ -104,12 +105,12 @@ public class RequestManagerLC extends AsynchronousRequestManager {
         // BEGIN parameter checking
         if( !isInitialized() ) {
             // TODO throw exception
-            LOGGER.warning( "Invalid state of the request manager" );
+            log.warning( "Invalid state of the request manager" );
             return;
         }
         if( message == null ) {
             // TODO throw exception
-            LOGGER.warning( "Invalid message" );
+            log.warning( "Invalid message" );
             return;
         }
         // END parameter checking
@@ -144,7 +145,7 @@ public class RequestManagerLC extends AsynchronousRequestManager {
             }
         } else if( message instanceof ReevaluationResponse ) {
             ReevaluationResponse reevaluation = (ReevaluationResponse) message;
-            LOGGER.info( "[TIME] Effectively Sending on going evaluation "
+            log.info( "[TIME] Effectively Sending on going evaluation "
                     + System.currentTimeMillis() );
             if( message.getDestination()
                 .equals( generalProperties.getIp() ) ) {
@@ -207,8 +208,8 @@ public class RequestManagerLC extends AsynchronousRequestManager {
 
             while( true ) {
                 // BEGIN parameter checking
-                if( !initialize ) {
-                    LOGGER.warning( "Request Manager not initialized correctly" );
+                if( !initialized ) {
+                    log.warning( "Request Manager not initialized correctly" );
                     return null;
                 }
                 // END parameter checking

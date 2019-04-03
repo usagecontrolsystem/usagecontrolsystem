@@ -59,7 +59,7 @@ import it.cnr.iit.ucsinterface.pip.PIPRetrieval;
 import it.cnr.iit.ucsinterface.requestmanager.AsynchronousRequestManager;
 import it.cnr.iit.ucsinterface.requestmanager.RequestManagerToExternalInterface;
 import it.cnr.iit.ucsinterface.ucs.UCSInterface;
-import it.cnr.iit.usagecontrolframework.obligationmanager.ObligationManagerBuilder;
+import it.cnr.iit.usagecontrolframework.builders.ObligationManagerBuilder;
 import it.cnr.iit.usagecontrolframework.proxies.ProxyPAP;
 import it.cnr.iit.usagecontrolframework.proxies.ProxyPDP;
 import it.cnr.iit.usagecontrolframework.proxies.ProxyPEP;
@@ -101,7 +101,8 @@ import it.cnr.iit.usagecontrolframework.proxies.ProxySessionManager;
  *
  */
 public final class UsageControlFramework implements UCSInterface {
-    private static final Logger LOGGER = Logger.getLogger( UsageControlFramework.class.getName() );
+
+    private static final Logger log = Logger.getLogger( UsageControlFramework.class.getName() );
 
     private UCSConfiguration configuration;
 
@@ -161,7 +162,7 @@ public final class UsageControlFramework implements UCSInterface {
         Optional<UCSConfiguration> optConfiguration = UCSConfigurationLoader.getConfiguration();
 
         if( !optConfiguration.isPresent() ) {
-            LOGGER.severe( UCSConfigurationLoader.CONFIG_ERR_MESSAGE );
+            log.severe( UCSConfigurationLoader.CONFIG_ERR_MESSAGE );
             return false;
         }
 
@@ -170,38 +171,38 @@ public final class UsageControlFramework implements UCSInterface {
 
         // build the context handler
         if( !buildContextHandler( distributedType ) ) {
-            LOGGER.info( "Error in building the context handler" );
+            log.info( "Error in building the context handler" );
             return false;
         }
         // builds the request manager
         if( !buildRequestManager() ) {
-            LOGGER.info( "Error in building the request manager" );
+            log.info( "Error in building the request manager" );
             return false;
         }
         // builds the PIPS
         if( !buildPIPs() ) {
-            LOGGER.info( "Error in building the pips" );
+            log.info( "Error in building the pips" );
             return false;
         }
         // builds the proxies
         if( !buildProxySM() ) {
-            LOGGER.info( "Error in building the session manager" );
+            log.info( "Error in building the session manager" );
             return false;
         }
         if( !buildObligationManager() ) {
-            LOGGER.info( "Error in building the obligation manager" );
+            log.info( "Error in building the obligation manager" );
             return false;
         }
         if( !buildProxyPDP() ) {
-            LOGGER.info( "Error in building the pdp" );
+            log.info( "Error in building the pdp" );
             return false;
         }
         if( !buildProxyPolicyAdministrationPoint() ) {
-            LOGGER.info( "Error in building the pap" );
+            log.info( "Error in building the pap" );
             return false;
         }
         if( !buildProxyPEP() ) {
-            LOGGER.info( "Error in building the pep" );
+            log.info( "Error in building the pep" );
             return false;
         }
 
@@ -239,7 +240,7 @@ public final class UsageControlFramework implements UCSInterface {
             return true;
         } catch( Exception exception ) {
             exception.printStackTrace();
-            LOGGER.severe( "build ContextHandler failed" );
+            log.severe( "build ContextHandler failed" );
             return false;
         }
     }
@@ -264,7 +265,7 @@ public final class UsageControlFramework implements UCSInterface {
                 .newInstance( configuration.getGeneral(), properties );
             return true;
         } catch( Exception exception ) {
-            LOGGER.severe( "build RequestManager failed" );
+            log.severe( "build RequestManager failed" );
             return false;
         }
     }
@@ -285,7 +286,7 @@ public final class UsageControlFramework implements UCSInterface {
             Optional<PIPBase> optPip = PIPBuilder.buildFromProperties( pip );
 
             if( !optPip.isPresent() ) {
-                LOGGER.severe( "Error building pip" );
+                log.severe( "Error building pip" );
                 failures++;
                 continue;
             }

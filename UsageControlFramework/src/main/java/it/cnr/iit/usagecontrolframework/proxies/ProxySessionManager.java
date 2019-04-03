@@ -53,7 +53,7 @@ import it.cnr.iit.xacmlutilities.Attribute;
  */
 public class ProxySessionManager extends Proxy implements SessionManagerInterface {
 
-    private Logger LOGGER = Logger.getLogger( ProxySessionManager.class.getName() );
+    private static final Logger log = Logger.getLogger( ProxySessionManager.class.getName() );
 
     private SessionManagerProperties properties;
     private SessionManagerInterface sessionManagerInterface;
@@ -71,9 +71,10 @@ public class ProxySessionManager extends Proxy implements SessionManagerInterfac
             return;
         }
         // END parameter checking
+
         this.properties = properties;
-        CONNECTION connection = CONNECTION.getCONNECTION( properties.getCommunication() );
-        switch( connection ) {
+
+        switch( getConnection() ) {
             case API:
                 if( localSM( properties ) ) {
                     initialized = true;
@@ -90,7 +91,7 @@ public class ProxySessionManager extends Proxy implements SessionManagerInterfac
                 }
                 break;
             default:
-                LOGGER.severe( "Incorrect communication medium : " + properties.getCommunication() );
+                log.severe( "Incorrect communication medium : " + properties.getCommunication() );
                 return;
         }
     }
@@ -152,9 +153,8 @@ public class ProxySessionManager extends Proxy implements SessionManagerInterfac
             return false;
         }
         // END parameter checking
-        CONNECTION connection = CONNECTION
-            .getCONNECTION( properties.getCommunication() );
-        switch( connection ) {
+
+        switch( getConnection() ) {
             case API:
                 started = sessionManagerInterface.start();
                 return started;
@@ -165,7 +165,7 @@ public class ProxySessionManager extends Proxy implements SessionManagerInterfac
                 // TODO
                 return false;
             default:
-                LOGGER.severe( "Incorrect communication medium : " + properties.getCommunication() );
+                log.severe( "Incorrect communication medium : " + properties.getCommunication() );
                 return false;
         }
     }
@@ -177,9 +177,8 @@ public class ProxySessionManager extends Proxy implements SessionManagerInterfac
             return false;
         }
         // END parameter checking
-        CONNECTION connection = CONNECTION
-            .getCONNECTION( properties.getCommunication() );
-        switch( connection ) {
+
+        switch( getConnection() ) {
             case API:
                 started = !sessionManagerInterface.stop();
                 return !started;
@@ -190,7 +189,7 @@ public class ProxySessionManager extends Proxy implements SessionManagerInterfac
                 // TODO
                 return false;
             default:
-                LOGGER.severe( "Incorrect communication medium : " + properties.getCommunication() );
+                log.severe( "Incorrect communication medium : " + properties.getCommunication() );
                 return false;
         }
     }
@@ -204,9 +203,8 @@ public class ProxySessionManager extends Proxy implements SessionManagerInterfac
             return false;
         }
         // END parameter checking
-        CONNECTION connection = CONNECTION
-            .getCONNECTION( properties.getCommunication() );
-        switch( connection ) {
+
+        switch( getConnection() ) {
             case API:
                 return sessionManagerInterface.createEntryForSubject( sessionId,
                     policySet, originalRequest, onGoingAttributesForSubject, status,
@@ -233,9 +231,8 @@ public class ProxySessionManager extends Proxy implements SessionManagerInterfac
             return null;
         }
         // END parameter checking
-        CONNECTION connection = CONNECTION
-            .getCONNECTION( properties.getCommunication() );
-        switch( connection ) {
+
+        switch( getConnection() ) {
             case API:
                 return sessionManagerInterface.createEntryForResource( sessionId,
                     policySet, originalRequest, onGoingAttributesForObject, status,
@@ -247,7 +244,7 @@ public class ProxySessionManager extends Proxy implements SessionManagerInterfac
                 // TODO
                 return null;
             default:
-                LOGGER.severe( "Incorrect communication medium : " + properties.getCommunication() );
+                log.severe( "Incorrect communication medium : " + properties.getCommunication() );
                 return null;
         }
     }
@@ -265,9 +262,8 @@ public class ProxySessionManager extends Proxy implements SessionManagerInterfac
             return null;
         }
         // END parameter checking
-        CONNECTION connection = CONNECTION
-            .getCONNECTION( properties.getCommunication() );
-        switch( connection ) {
+
+        switch( getConnection() ) {
             case API:
                 return sessionManagerInterface.createEntry( sessionId, policySet,
                     originalRequest, onGoingAttributesForSubject,
@@ -298,9 +294,8 @@ public class ProxySessionManager extends Proxy implements SessionManagerInterfac
             return null;
         }
         // END parameter checking
-        CONNECTION connection = CONNECTION
-            .getCONNECTION( properties.getCommunication() );
-        switch( connection ) {
+
+        switch( getConnection() ) {
             case API:
                 return sessionManagerInterface.createEntryForAction( sessionId,
                     policySet, originalRequest, onGoingAttributesForAction, status,
@@ -327,9 +322,8 @@ public class ProxySessionManager extends Proxy implements SessionManagerInterfac
             return null;
         }
         // END parameter checking
-        CONNECTION connection = CONNECTION
-            .getCONNECTION( properties.getCommunication() );
-        switch( connection ) {
+
+        switch( getConnection() ) {
             case API:
                 return sessionManagerInterface.createEntryForEnvironment( sessionId,
                     policySet, originalRequest, onGoingAttributesForEnvironment, status,
@@ -354,9 +348,8 @@ public class ProxySessionManager extends Proxy implements SessionManagerInterfac
             return null;
         }
         // END parameter checking
-        CONNECTION connection = CONNECTION
-            .getCONNECTION( properties.getCommunication() );
-        switch( connection ) {
+
+        switch( getConnection() ) {
             case API:
                 return sessionManagerInterface.updateEntry( sessionId, status );
             case SOCKET:
@@ -377,9 +370,8 @@ public class ProxySessionManager extends Proxy implements SessionManagerInterfac
             return null;
         }
         // END parameter checking
-        CONNECTION connection = CONNECTION
-            .getCONNECTION( properties.getCommunication() );
-        switch( connection ) {
+
+        switch( getConnection() ) {
             case API:
                 return sessionManagerInterface.deleteEntry( sessionId );
             case SOCKET:
@@ -400,9 +392,8 @@ public class ProxySessionManager extends Proxy implements SessionManagerInterfac
             return null;
         }
         // END parameter checking
-        CONNECTION connection = CONNECTION
-            .getCONNECTION( properties.getCommunication() );
-        switch( connection ) {
+
+        switch( getConnection() ) {
             case API:
                 return sessionManagerInterface.getSessionsForAttribute( attributeId );
             case SOCKET:
@@ -424,9 +415,8 @@ public class ProxySessionManager extends Proxy implements SessionManagerInterfac
             return null;
         }
         // END parameter checking
-        CONNECTION connection = CONNECTION
-            .getCONNECTION( properties.getCommunication() );
-        switch( connection ) {
+
+        switch( getConnection() ) {
             case API:
                 return sessionManagerInterface
                     .getSessionsForSubjectAttributes( subjectName, attributeId );
@@ -450,9 +440,8 @@ public class ProxySessionManager extends Proxy implements SessionManagerInterfac
             return null;
         }
         // END parameter checking
-        CONNECTION connection = CONNECTION
-            .getCONNECTION( properties.getCommunication() );
-        switch( connection ) {
+
+        switch( getConnection() ) {
             case API:
                 return sessionManagerInterface
                     .getSessionsForResourceAttributes( objectName, attributeId );
@@ -476,9 +465,8 @@ public class ProxySessionManager extends Proxy implements SessionManagerInterfac
             return null;
         }
         // END parameter checking
-        CONNECTION connection = CONNECTION
-            .getCONNECTION( properties.getCommunication() );
-        switch( connection ) {
+
+        switch( getConnection() ) {
             case API:
                 return sessionManagerInterface
                     .getSessionsForActionAttributes( actionName, attributeId );
@@ -501,9 +489,8 @@ public class ProxySessionManager extends Proxy implements SessionManagerInterfac
             return null;
         }
         // END parameter checking
-        CONNECTION connection = CONNECTION
-            .getCONNECTION( properties.getCommunication() );
-        switch( connection ) {
+
+        switch( getConnection() ) {
             case API:
                 return sessionManagerInterface.getSessionForId( sessionId );
             case SOCKET:
@@ -524,9 +511,8 @@ public class ProxySessionManager extends Proxy implements SessionManagerInterfac
             return null;
         }
         // END parameter checking
-        CONNECTION connection = CONNECTION
-            .getCONNECTION( properties.getCommunication() );
-        switch( connection ) {
+
+        switch( getConnection() ) {
             case API:
                 return sessionManagerInterface.getSessionsForStatus( status );
             case SOCKET:
@@ -541,11 +527,6 @@ public class ProxySessionManager extends Proxy implements SessionManagerInterfac
     }
 
     @Override
-    public boolean isInitialized() {
-        return initialized;
-    }
-
-    @Override
     public List<SessionInterface> getSessionsForEnvironmentAttributes(
             String attributeId ) {
         // BEGIN parameter checking
@@ -553,9 +534,8 @@ public class ProxySessionManager extends Proxy implements SessionManagerInterfac
             return null;
         }
         // END parameter checking
-        CONNECTION connection = CONNECTION
-            .getCONNECTION( properties.getCommunication() );
-        switch( connection ) {
+
+        switch( getConnection() ) {
             case API:
                 return sessionManagerInterface
                     .getSessionsForEnvironmentAttributes( attributeId );
@@ -578,9 +558,8 @@ public class ProxySessionManager extends Proxy implements SessionManagerInterfac
             return null;
         }
         // END parameter checking
-        CONNECTION connection = CONNECTION
-            .getCONNECTION( properties.getCommunication() );
-        switch( connection ) {
+
+        switch( getConnection() ) {
             case API:
                 return sessionManagerInterface.getOnGoingAttributes( sessionId );
             case SOCKET:
@@ -601,9 +580,8 @@ public class ProxySessionManager extends Proxy implements SessionManagerInterfac
             return null;
         }
         // END parameter checking
-        CONNECTION connection = CONNECTION
-            .getCONNECTION( properties.getCommunication() );
-        switch( connection ) {
+
+        switch( getConnection() ) {
             case API:
                 return sessionManagerInterface.checkSession( sessionId, attribute );
             case SOCKET:
@@ -624,9 +602,8 @@ public class ProxySessionManager extends Proxy implements SessionManagerInterfac
             return false;
         }
         // END parameter checking
-        CONNECTION connection = CONNECTION
-            .getCONNECTION( properties.getCommunication() );
-        switch( connection ) {
+
+        switch( getConnection() ) {
             case API:
                 return sessionManagerInterface.insertSession( session, attribute );
             case SOCKET:
@@ -647,9 +624,8 @@ public class ProxySessionManager extends Proxy implements SessionManagerInterfac
             return false;
         }
         // END parameter checking
-        CONNECTION connection = CONNECTION
-            .getCONNECTION( properties.getCommunication() );
-        switch( connection ) {
+
+        switch( getConnection() ) {
             case API:
                 return sessionManagerInterface.stopSession( session );
             case SOCKET:
@@ -661,6 +637,16 @@ public class ProxySessionManager extends Proxy implements SessionManagerInterfac
             default:
                 return sessionManagerInterface.stopSession( session );
         }
+    }
+
+    @Override
+    public boolean isInitialized() {
+        return initialized;
+    }
+
+    @Override
+    protected CONNECTION getConnection() {
+        return CONNECTION.valueOf( properties.getCommunication() );
     }
 
 }

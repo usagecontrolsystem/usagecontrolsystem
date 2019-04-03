@@ -76,7 +76,7 @@ import oasis.names.tc.xacml.core.schema.wd_17.RuleType;
  */
 public class PolicyHelper implements PolicyHelperInterface {
 
-    private final static Logger log = Logger.getLogger( PolicyHelper.class.getName() );
+    private static final Logger log = Logger.getLogger( PolicyHelper.class.getName() );
 
     private static final String MSG_ERR_UNMASHAL_POLICY = "Error unmarshalling policy : {0}";
     private static final String MSG_ERR_MARSHAL_POLICY = "Error marshalling policy : {0}";

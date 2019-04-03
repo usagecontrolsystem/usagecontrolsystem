@@ -48,7 +48,6 @@ public final class PDPResponse implements PDPEvaluation {
     private static Logger LOG = Logger.getLogger( PIPBuilder.class.getName() );
 
     private static final String MSG_ERR_UNMARSHAL = "Error unmarshalling xml : {0}";
-
     private static final String MSG_ERR_MARSHAL = "Error marshalling to xml : {0}";
 
     // the response provided by the PDP object
@@ -122,7 +121,6 @@ public final class PDPResponse implements PDPEvaluation {
         return responseType;
     }
 
-    // TODO change name
     @Override
     @JsonIgnore
     public String getResponse() {

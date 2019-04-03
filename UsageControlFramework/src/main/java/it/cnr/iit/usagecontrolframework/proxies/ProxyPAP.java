@@ -41,7 +41,7 @@ import it.cnr.iit.ucsinterface.pap.PAPInterface;
  */
 final public class ProxyPAP extends Proxy implements PAPInterface {
 
-    private static final Logger LOGGER = Logger.getLogger( ProxyPAP.class.getName() );
+    private static final Logger log = Logger.getLogger( ProxyPAP.class.getName() );
 
     private PapProperties properties;
     private PAPInterface papInterface;
@@ -93,7 +93,7 @@ final public class ProxyPAP extends Proxy implements PAPInterface {
                 }
                 break;
             default:
-                LOGGER.severe( "WRONG communication " + properties.getCommunication() );
+                log.severe( "WRONG communication " + properties.getCommunication() );
                 return;
         }
     }
@@ -184,7 +184,8 @@ final public class ProxyPAP extends Proxy implements PAPInterface {
         return null;
     }
 
-    private CONNECTION getConnection() {
+    @Override
+    protected CONNECTION getConnection() {
         return CONNECTION.valueOf( properties.getCommunication() );
     }
 

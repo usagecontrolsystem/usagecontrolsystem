@@ -48,7 +48,7 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 @EnableAsync
 public class UCFRestStarter extends SpringBootServletInitializer {
 
-    private static final Logger LOGGER = Logger.getLogger( UCFRestStarter.class.getName() );
+    private static final Logger log = Logger.getLogger( UCFRestStarter.class.getName() );
 
     /**
      * Spring boot method for configuring the current application, right now it
@@ -96,7 +96,7 @@ public class UCFRestStarter extends SpringBootServletInitializer {
         Optional<UCSConfiguration> optConfiguration = UCSConfigurationLoader.getConfiguration();
 
         if( !optConfiguration.isPresent() ) {
-            LOGGER.severe( UCSConfigurationLoader.CONFIG_ERR_MESSAGE );
+            log.severe( UCSConfigurationLoader.CONFIG_ERR_MESSAGE );
             return;
         }
 

@@ -58,7 +58,8 @@ import io.swagger.annotations.ApiResponses;
 @RestController
 @RequestMapping( "/" )
 public class UCFRestController {
-    private static final Logger LOGGER = Logger.getLogger( UCFRestController.class.getName() );
+
+    private static final Logger log = Logger.getLogger( UCFRestController.class.getName() );
 
     private UsageControlFramework usageControlFramework = new UsageControlFramework();
 
@@ -90,7 +91,7 @@ public class UCFRestController {
             throw new NotFoundException();
         }
         // END parameter checking
-        LOGGER.info( "[TIME] Startaccess received " + System.currentTimeMillis() );
+        log.info( "[TIME] Startaccess received " + System.currentTimeMillis() );
         usageControlFramework.startAccess( message );
     }
 
@@ -105,7 +106,7 @@ public class UCFRestController {
             throw new NotFoundException();
         }
         // END parameter checking
-        LOGGER.info( "[TIME] Endaccess received " + System.currentTimeMillis() );
+        log.info( "[TIME] Endaccess received " + System.currentTimeMillis() );
         usageControlFramework.endAccess( message );
     }
 
@@ -121,7 +122,7 @@ public class UCFRestController {
         }
         // END parameter checking
 
-        LOGGER.info( "[TIME] Reevaluation received " + System.currentTimeMillis() );
+        log.info( "[TIME] Reevaluation received " + System.currentTimeMillis() );
         usageControlFramework.onGoingEvaluation( message );
     }
 
@@ -180,7 +181,7 @@ public class UCFRestController {
             throw new NotFoundException();
         }
         // END parameter checking
-        LOGGER.info( "[TIME] Startaccess received " + System.currentTimeMillis() );
+        log.info( "[TIME] Startaccess received " + System.currentTimeMillis() );
         usageControlFramework.startAccessResponse( message );
     }
 
@@ -195,7 +196,7 @@ public class UCFRestController {
             throw new NotFoundException();
         }
         // END parameter checking
-        LOGGER.info( "[TIME] Endaccess received " + System.currentTimeMillis() );
+        log.info( "[TIME] Endaccess received " + System.currentTimeMillis() );
         usageControlFramework.endAccessResponse( message );
     }
 
@@ -211,7 +212,7 @@ public class UCFRestController {
         }
         // END parameter checking
 
-        LOGGER.info( "[TIME] On going Evaluation received " + System.currentTimeMillis() );
+        log.info( "[TIME] On going Evaluation received " + System.currentTimeMillis() );
         usageControlFramework.onGoingEvaluationResponse( message );
     }
 }

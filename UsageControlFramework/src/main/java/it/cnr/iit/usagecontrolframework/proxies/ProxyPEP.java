@@ -49,11 +49,11 @@ import it.cnr.iit.utility.Utility;
  */
 public class ProxyPEP extends Proxy implements PEPInterface {
 
-    private final Logger LOGGER = Logger.getLogger( ProxyPEP.class.getName() );
+    private static final Logger log = Logger.getLogger( ProxyPEP.class.getName() );
 
     private boolean initialized = false;
 
-    CONNECTION connection;
+    PepProperties properties;
 
     // --------------------
     // case of a local PEP
@@ -71,7 +71,6 @@ public class ProxyPEP extends Proxy implements PEPInterface {
     private String startAccessResponse = "";
     private String endAccessResponse = "";
     private String onGoingEvaluation = "";
-    private String id = "";
 
     /**
      * Constructor for the proxy PEP
@@ -89,10 +88,9 @@ public class ProxyPEP extends Proxy implements PEPInterface {
             return;
         }
         // END parameter checking
-        id = properties.getId();
+        this.properties = properties;
 
-        connection = CONNECTION.getCONNECTION( properties.getCommunication() );
-        switch( connection ) {
+        switch( getConnection() ) {
             case API:
                 if( localPep( properties ) ) {
                     initialized = true;
@@ -109,7 +107,7 @@ public class ProxyPEP extends Proxy implements PEPInterface {
                 }
                 break;
             default:
-                LOGGER.severe( "Incorrect communication medium : " + properties.getCommunication() );
+                log.severe( "Incorrect communication medium : " + properties.getCommunication() );
                 return;
         }
     }
@@ -157,46 +155,41 @@ public class ProxyPEP extends Proxy implements PEPInterface {
      * Configures all the strings required to connect to a remote PEP via rest
      * interface
      *
-     * @param xmlPe
+     * @param properties
      *          the configuration file for the pep
      * @return true if everything goes ok, false otherwise
      */
     private boolean connectRest( PepProperties properties ) {
         if( ( url = properties.getIp() ) == null ) {
-            LOGGER.warning( "Missing parameter in configuration file: " + url );
+            log.warning( "Missing parameter in configuration file: " + url );
             return false;
         }
 
         if( ( port = properties.getPort() ) == null ) {
-            LOGGER.warning( "Missing parameter in configuration file: " + url );
+            log.warning( "Missing parameter in configuration file: " + url );
             return false;
         }
 
         if( ( onGoingEvaluation = properties.getOnGoingEvaluation() ) == null ) {
-            LOGGER.warning( "Missing parameter in configuration file: " + url );
+            log.warning( "Missing parameter in configuration file: " + url );
             return false;
         }
 
         if( ( tryAccessResponse = properties.getTryAccessResponse() ) == null ) {
-            LOGGER.warning( "Missing parameter in configuration file: " + url );
+            log.warning( "Missing parameter in configuration file: " + url );
             return false;
         }
 
         if( ( startAccessResponse = properties.getStartAccessResponse() ) == null ) {
-            LOGGER.warning( "Missing parameter in configuration file: " + url );
+            log.warning( "Missing parameter in configuration file: " + url );
             return false;
         }
 
         if( ( endAccessResponse = properties.getEndAccessResponse() ) == null ) {
-            LOGGER.warning( "Missing parameter in configuration file: " + url );
+            log.warning( "Missing parameter in configuration file: " + url );
             return false;
         }
         return true;
-    }
-
-    @Override
-    public boolean isInitialized() {
-        return initialized;
     }
 
     /**
@@ -209,7 +202,7 @@ public class ProxyPEP extends Proxy implements PEPInterface {
      */
     public void setRequestManagerInterface(
             RequestManagerToExternalInterface requestManager ) {
-        switch( connection ) {
+        switch( getConnection() ) {
             case API:
                 abstractPEP.setRequestManagerInterface( requestManager );
                 break;
@@ -221,7 +214,7 @@ public class ProxyPEP extends Proxy implements PEPInterface {
 
     @Override
     public Message onGoingEvaluation( Message message ) {
-        switch( connection ) {
+        switch( getConnection() ) {
             case API:
                 return abstractPEP.onGoingEvaluation( message );
             case REST_API:
@@ -237,7 +230,7 @@ public class ProxyPEP extends Proxy implements PEPInterface {
 
     @Override
     public String receiveResponse( Message message ) {
-        switch( connection ) {
+        switch( getConnection() ) {
             case API:
                 abstractPEP.receiveResponse( message );
                 break;
@@ -269,7 +262,7 @@ public class ProxyPEP extends Proxy implements PEPInterface {
                 }
                 break;
             default:
-                LOGGER.severe( "Error in the receive response" );
+                log.severe( "Error in the receive response" );
                 break;
         }
         return "OK";
@@ -280,7 +273,7 @@ public class ProxyPEP extends Proxy implements PEPInterface {
      * Function to start the local PEP
      */
     public void start() {
-        switch( connection ) {
+        switch( getConnection() ) {
             case API:
                 try {
                     abstractPEP.start();
@@ -301,12 +294,21 @@ public class ProxyPEP extends Proxy implements PEPInterface {
      *          the name of the function
      * @return the complete url to be used in the rest call
      */
-
     public String getURL() {
         return url;
     }
 
     public String getPort() {
         return port;
+    }
+
+    @Override
+    protected CONNECTION getConnection() {
+        return CONNECTION.valueOf( properties.getCommunication() );
+    }
+
+    @Override
+    public boolean isInitialized() {
+        return initialized;
     }
 }

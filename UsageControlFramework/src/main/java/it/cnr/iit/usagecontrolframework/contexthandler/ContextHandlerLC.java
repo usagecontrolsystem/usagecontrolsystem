@@ -101,11 +101,12 @@ import oasis.names.tc.xacml.core.schema.wd_17.RequestType;
  *
  */
 final public class ContextHandlerLC extends AbstractContextHandler {
-    private final Logger LOGGER = Logger.getLogger( ContextHandlerLC.class.getName() );
 
-    private final static String TRYACCESS_POLICY = "pre";
-    private final static String STARTACCESS_POLICY = "ongoing";
-    private final static String ENDACCESS_POLICY = "post";
+    private static final  Logger log = Logger.getLogger( ContextHandlerLC.class.getName() );
+
+    private static final String TRYACCESS_POLICY = "pre";
+    private static final String STARTACCESS_POLICY = "ongoing";
+    private static final String ENDACCESS_POLICY = "post";
     // this is the string that, in an URI separates the PEP from the node
     // address
     public static final String PEP_ID_SEPARATOR = "#";
@@ -169,12 +170,12 @@ final public class ContextHandlerLC extends AbstractContextHandler {
     // TODO use TryAccessMessage(review message classes family) directly as a parameter
     public void tryAccess( Message message ) {
         if( !isInitialized() || message == null || !( message instanceof TryAccessMessage ) ) {
-            LOGGER.severe( "INVALID tryAccess " + isInitialized() + "\t" + ( message instanceof TryAccessMessage ) );
+            log.severe( "INVALID tryAccess " + isInitialized() + "\t" + ( message instanceof TryAccessMessage ) );
             // TODO should throw exception ?
             return;
         }
 
-        LOGGER.info( "[TIME] tryaccess received at " + System.currentTimeMillis() );
+        log.info( "[TIME] tryaccess received at " + System.currentTimeMillis() );
 
         TryAccessMessage tryAccess = (TryAccessMessage) message;
 
@@ -182,7 +183,7 @@ final public class ContextHandlerLC extends AbstractContextHandler {
 
         // eventual scheduling
         List<Attribute> attributes = policyHelper.getAttributesForCondition( TRYACCESS_POLICY );
-        LOGGER.info( "[TIME] tryaccess begin scheduling " + System.currentTimeMillis() );
+        log.info( "[TIME] tryaccess begin scheduling " + System.currentTimeMillis() );
         // HashMap<String, Integer> attributesIP = retrieveAttributesIp(attributes);
         /*
          * if (!tryAccess.getScheduled()) { String ip =
@@ -201,9 +202,9 @@ final public class ContextHandlerLC extends AbstractContextHandler {
         // make the request complete before reevaluation
         String requestFull = makeRequestFull( request, attributes, STATUS.TRYACCESS, true );
 
-        LOGGER.info( requestFull );
-        LOGGER.info( "-------------" );
-        LOGGER.info( policy );
+        log.info( requestFull );
+        log.info( "-------------" );
+        log.info( policy );
 
         // perform the evaluation
         StringBuilder policyBuilder = new StringBuilder();
@@ -216,7 +217,7 @@ final public class ContextHandlerLC extends AbstractContextHandler {
         String status = TRY_STATUS;
 
         String pdpResponse = pdpEvaluation.getResult();
-        LOGGER.info( "[TIME] tryaccess evaluated at " + System.currentTimeMillis() + " response : " + pdpResponse );
+        log.info( "[TIME] tryaccess evaluated at " + System.currentTimeMillis() + " response : " + pdpResponse );
 
         // if access decision is PERMIT - update SM DB entry
         if( pdpResponse.equalsIgnoreCase( "Permit" ) ) {
@@ -230,7 +231,7 @@ final public class ContextHandlerLC extends AbstractContextHandler {
                         : getIp() + PEP_ID_SEPARATOR + tryAccess.getSource(),
                 policyHelper, tryAccess.getScheduled() ? tryAccess.getSource() : getIp() );
 
-            LOGGER.info( "[TIME] PERMIT tryaccess ends at " + System.currentTimeMillis() );
+            log.info( "[TIME] PERMIT tryaccess ends at " + System.currentTimeMillis() );
 
             // // obligation
             // getObligationManager().translateObligations(pdpEvaluation,
@@ -285,7 +286,7 @@ final public class ContextHandlerLC extends AbstractContextHandler {
                 tryAccessMessage.setSource( getIp() );
                 tryAccessMessage.setDestination( ip );
                 tryAccessMessage.setScheduled();
-                LOGGER.info( "[TIME] tryAccess scheduled to other node " + System.currentTimeMillis() );
+                log.info( "[TIME] tryAccess scheduled to other node " + System.currentTimeMillis() );
                 getRequestManagerToChInterface().sendMessageToOutside( tryAccessMessage );
                 break;
             case STARTACCESS:
@@ -294,7 +295,7 @@ final public class ContextHandlerLC extends AbstractContextHandler {
                 startAccessMessage.setSource( getIp() );
                 startAccessMessage.setDestination( ip );
                 startAccessMessage.setScheduled();
-                LOGGER.info( "[TIME] startAccess scheduled to other node " + System.currentTimeMillis() );
+                log.info( "[TIME] startAccess scheduled to other node " + System.currentTimeMillis() );
                 getRequestManagerToChInterface().sendMessageToOutside( startAccessMessage );
                 break;
             case ENDACCESS:
@@ -303,12 +304,12 @@ final public class ContextHandlerLC extends AbstractContextHandler {
                 endAccessMessage.setSource( getIp() );
                 endAccessMessage.setDestination( ip );
                 endAccessMessage.setScheduled();
-                LOGGER.info( "[TIME] endAccess scheduled to other node " + System.currentTimeMillis() );
+                log.info( "[TIME] endAccess scheduled to other node " + System.currentTimeMillis() );
                 getRequestManagerToChInterface().sendMessageToOutside( endAccessMessage );
                 break;
             case REEVALUATION:
                 ReevaluationMessage reevaluationMessage = (ReevaluationMessage) message;
-                LOGGER.info( "[TIME] reevaluation scheduled to other node " + System.currentTimeMillis() );
+                log.info( "[TIME] reevaluation scheduled to other node " + System.currentTimeMillis() );
                 getRequestManagerToChInterface().sendMessageToOutside( reevaluationMessage );
                 return;
             default:
@@ -350,15 +351,15 @@ final public class ContextHandlerLC extends AbstractContextHandler {
             // handles all the cases except startaccess
             if( status == STATUS.TRYACCESS || status == STATUS.ENDACCESS || status == STATUS.REVOKE ) {
                 List<Attribute> external = extractExternal( attributes, requestType );
-                LOGGER.info( external.toString() );
+                log.info( external.toString() );
                 retrieveLocalAttributes( requestType );
                 if( complete && external.size() > 0 ) {
                     if( getPipRetrieval() != null ) {
-                        LOGGER.info( "[TIME] retrieve external start at " + System.currentTimeMillis() );
+                        log.info( "[TIME] retrieve external start at " + System.currentTimeMillis() );
                         getPipRetrieval().retrieve( requestType, external );
-                        LOGGER.info( "[TIME] retrieve external ends at " + System.currentTimeMillis() );
+                        log.info( "[TIME] retrieve external ends at " + System.currentTimeMillis() );
                     } else {
-                        LOGGER.warning( "Policy requires attributes that are not accessible!!" );
+                        log.warning( "Policy requires attributes that are not accessible!!" );
                         return null;
                     }
                 }
@@ -373,11 +374,11 @@ final public class ContextHandlerLC extends AbstractContextHandler {
                 subscribeLocalAttributes( requestType );
                 if( complete && external.size() > 0 ) {
                     if( getPipRetrieval() != null ) {
-                        LOGGER.info( "[TIME] Subscribe external starts at " + System.currentTimeMillis() );
+                        log.info( "[TIME] Subscribe external starts at " + System.currentTimeMillis() );
                         getPipRetrieval().subscribe( requestType, external );
-                        LOGGER.info( "[TIME] subscribe external ends at " + System.currentTimeMillis() );
+                        log.info( "[TIME] subscribe external ends at " + System.currentTimeMillis() );
                     } else {
-                        LOGGER.warning( "Policy requires attributes that are not accessible!!" );
+                        log.warning( "Policy requires attributes that are not accessible!!" );
                         return null;
                     }
                 }
@@ -476,7 +477,7 @@ final public class ContextHandlerLC extends AbstractContextHandler {
         if( policy == null ) {
             policy = getPapInterface().retrievePolicy( tryAccess.getPolicyId() );
             if( policy == null ) {
-                LOGGER.warning( "UNABLE to RETRIEVE the POLICY" );
+                log.warning( "UNABLE to RETRIEVE the POLICY" );
                 return null;
             }
         }
@@ -528,7 +529,7 @@ final public class ContextHandlerLC extends AbstractContextHandler {
             if( !getSessionManagerInterface().createEntry( sessionId, uxacmlPol, request, onGoingAttributesForSubject,
                 onGoingAttributesForResource, onGoingAttributesForAction, onGoingAttributesForEnvironment, status,
                 pepUri, ip, subjectName, resourceName, actionName ) ) {
-                LOGGER.severe( "[Context Handler] TryAccess: some error occurred, session " + sessionId
+                log.severe( "[Context Handler] TryAccess: some error occurred, session " + sessionId
                         + " has not been stored correctly" );
             }
         } catch( Exception e ) {
@@ -589,13 +590,13 @@ final public class ContextHandlerLC extends AbstractContextHandler {
     public void startAccess( Message message ) throws Exception {
         // BEGIN parameter checking
         if( !isInitialized() || message == null || !( message instanceof StartAccessMessage ) ) {
-            LOGGER.log( Level.SEVERE,
+            log.log( Level.SEVERE,
                 "INVALID startAccess " + isInitialized() + "\t" + ( message instanceof StartAccessMessage ) );
             return;
         }
         // END parameter checking
 
-        LOGGER.info( "[TIME] startaccess begins at " + System.currentTimeMillis() );
+        log.info( "[TIME] startaccess begins at " + System.currentTimeMillis() );
 
         StartAccessMessage startAccessMessage = (StartAccessMessage) message;
         String sessionId = startAccessMessage.getSessionId();
@@ -611,7 +612,7 @@ final public class ContextHandlerLC extends AbstractContextHandler {
         PolicyHelper policyHelper = PolicyHelper.buildPolicyHelper( sessionToReevaluate.getPolicySet() );
 
         List<Attribute> attributes = policyHelper.getAttributesForCondition( STARTACCESS_POLICY );
-        LOGGER.info( "[TIME] startaccess begin scheduling at " + System.currentTimeMillis() );
+        log.info( "[TIME] startaccess begin scheduling at " + System.currentTimeMillis() );
         HashMap<String, Integer> attributesIP = retrieveAttributesIp( attributes );
         /*
          * if (!startAccessMessage.getScheduled()) { String ip =
@@ -630,7 +631,7 @@ final public class ContextHandlerLC extends AbstractContextHandler {
         if( sessionToReevaluate == null || ( !sessionToReevaluate.getStatus().equals( TRY_STATUS ) ) ) {
             // no request to reevaluate(some problem occurred during request and
             // policy retrieving)
-            LOGGER.log( Level.WARNING,
+            log.log( Level.WARNING,
                 "[Context Handler] Startaccess: tryaccess must be performed yet for session " + sessionId );
             throw new WrongOrderException(
                 "[Context Handler] Startaccess: tryaccess must be performed yet for session " + sessionId );
@@ -646,7 +647,7 @@ final public class ContextHandlerLC extends AbstractContextHandler {
         PDPEvaluation pdpEvaluation = getPdpInterface().evaluate( requestFull,
             policyHelper.getConditionForEvaluation( STARTACCESS_POLICY ) );
 
-        LOGGER.info( "[TIME] startaccess evaluation ends at " + System.currentTimeMillis() );
+        log.info( "[TIME] startaccess evaluation ends at " + System.currentTimeMillis() );
 
         response.setStatus( pdpEvaluation.getResult() );
         response.setResponse( pdpEvaluation );
@@ -659,9 +660,9 @@ final public class ContextHandlerLC extends AbstractContextHandler {
 
             // update session status
             if( !getSessionManagerInterface().updateEntry( sessionId, START_STATUS ) ) {
-                LOGGER.info( "[Context Handler] Startaccess: session " + sessionId + " status not updated" );
+                log.info( "[Context Handler] Startaccess: session " + sessionId + " status not updated" );
             }
-            LOGGER.info( "[TIME] PERMIT startaccess ends at " + System.currentTimeMillis() );
+            log.info( "[TIME] PERMIT startaccess ends at " + System.currentTimeMillis() );
             response.setStatus( pdpEvaluation.getResult() );
         } else { // PDP returns DENY, INDETERMINATE or NOT APPLICABLE
                  // obligation
@@ -671,11 +672,11 @@ final public class ContextHandlerLC extends AbstractContextHandler {
             // after
             // performing unsubscribe operation for the on going attributes
             if( revoke( sessionToReevaluate, attributesIP ) ) {
-                LOGGER.log( Level.INFO,
+                log.log( Level.INFO,
                     "[Context Handler] Startaccess: access is revoked for session with ID: " + sessionId );
                 // delete db entry for session sId
                 if( !getSessionManagerInterface().deleteEntry( sessionId ) ) {
-                    LOGGER.log( Level.SEVERE,
+                    log.log( Level.SEVERE,
                         "[Context Handler] Startaccess: Some problem occurred during entry deletion for session "
                                 + sessionId );
                     throw new SessionManagerException(
@@ -683,7 +684,7 @@ final public class ContextHandlerLC extends AbstractContextHandler {
                                 + sessionId );
                 }
             }
-            LOGGER.log( Level.SEVERE,
+            log.log( Level.SEVERE,
                 "[Context Handler] Startaccess: Some problem occurred during execution of revokaccess for session "
                         + sessionId );
             throw new RevokeException(
@@ -710,7 +711,7 @@ final public class ContextHandlerLC extends AbstractContextHandler {
      */
     private synchronized boolean revoke( SessionInterface session, HashMap<String, Integer> attributesIP ) {
 
-        LOGGER.info( "[TIME] revoke begins at " + System.currentTimeMillis() );
+        log.info( "[TIME] revoke begins at " + System.currentTimeMillis() );
 
         boolean otherSessions = true;
 
@@ -741,7 +742,7 @@ final public class ContextHandlerLC extends AbstractContextHandler {
         // database entry for the current must be deleted
         try {
             if( !getSessionManagerInterface().deleteEntry( session.getId() ) ) {
-                LOGGER.log( Level.SEVERE,
+                log.log( Level.SEVERE,
                     "[Context Handler] Endaccess: Some problem occurred during entry deletion for session "
                             + session.getId() );
                 throw new SessionManagerException(
@@ -753,7 +754,7 @@ final public class ContextHandlerLC extends AbstractContextHandler {
             return false;
         }
 
-        LOGGER.info( "[TIME] revoke ends at " + System.currentTimeMillis() );
+        log.info( "[TIME] revoke ends at " + System.currentTimeMillis() );
 
         return true;
     }
@@ -881,11 +882,11 @@ final public class ContextHandlerLC extends AbstractContextHandler {
     public void endAccess( Message message ) {
         // BEGIN parameter checking
         if( !isInitialized() ) {
-            LOGGER.severe( "CH not initialized correctly" );
+            log.severe( "CH not initialized correctly" );
             return;
         }
         if( message == null || !( message instanceof EndAccessMessage ) ) {
-            LOGGER.severe( "Invalid message in endaccess" );
+            log.severe( "Invalid message in endaccess" );
             return;
         }
         // END parameter checking
@@ -893,7 +894,7 @@ final public class ContextHandlerLC extends AbstractContextHandler {
             EndAccessMessage endAccessMessage = (EndAccessMessage) message;
             String sessionId = endAccessMessage.getSessionId();
 
-            LOGGER.info( "[TIME] endaccess begins at " + System.currentTimeMillis() );
+            log.info( "[TIME] endaccess begins at " + System.currentTimeMillis() );
 
             // LOGGER.log(Level.INFO,
             // "[Context Handler] Endaccess is received for session ID: " +
@@ -911,7 +912,7 @@ final public class ContextHandlerLC extends AbstractContextHandler {
             if( ( !sessionToReevaluate.getStatus().equals( START_STATUS )
                     && !sessionToReevaluate.getStatus().equals( REVOKE_STATUS ) ) ) {
                 // no entry exists for the actual session
-                LOGGER.log( Level.INFO,
+                log.log( Level.INFO,
                     "[Context Handler] Endaccess: a tryaccess or startaccess must be performed yet for session "
                             + sessionId + ", or the related endaccess has already been executed" );
                 throw new WrongOrderException(
@@ -921,7 +922,7 @@ final public class ContextHandlerLC extends AbstractContextHandler {
 
             PolicyHelper policyHelper = PolicyHelper.buildPolicyHelper( sessionToReevaluate.getPolicySet() );
 
-            LOGGER.info( "[TIME] endaccess scheduler starts at " + System.currentTimeMillis() );
+            log.info( "[TIME] endaccess scheduler starts at " + System.currentTimeMillis() );
             List<Attribute> attributes = policyHelper.getAttributesForCondition( ENDACCESS_POLICY );
             HashMap<String, Integer> attributesIP = retrieveAttributesIp( attributes );
             /*
@@ -942,7 +943,7 @@ final public class ContextHandlerLC extends AbstractContextHandler {
             PDPEvaluation pdpEvaluation = getPdpInterface().evaluate( requestFull,
                 policyHelper.getConditionForEvaluation( ENDACCESS_POLICY ) );
 
-            LOGGER.info( "[TIME] EndAccess evaluation ends at " + System.currentTimeMillis() );
+            log.info( "[TIME] EndAccess evaluation ends at " + System.currentTimeMillis() );
 
             if( pdpEvaluation.getResult().equalsIgnoreCase( "Permit" ) ) {
                 // PDP returns PERMIT obligation
@@ -963,7 +964,7 @@ final public class ContextHandlerLC extends AbstractContextHandler {
 
             // access must be revoked
             if( revoke( sessionToReevaluate, attributesIP ) ) {
-                LOGGER.info( "[TIME] endaccess evaluation with revoke ends at " + System.currentTimeMillis() );
+                log.info( "[TIME] endaccess evaluation with revoke ends at " + System.currentTimeMillis() );
             }
 
             getRequestManagerToChInterface().sendMessageToOutside( response );
@@ -983,9 +984,9 @@ final public class ContextHandlerLC extends AbstractContextHandler {
      */
     @Override
     public void attributeChanged( Message message ) {
-        LOGGER.info( "Attribute changed received " + System.currentTimeMillis() );
+        log.info( "Attribute changed received " + System.currentTimeMillis() );
         if( message == null || !( message instanceof MessagePipCh ) ) {
-            LOGGER.warning( "Invalid message provided" );
+            log.warning( "Invalid message provided" );
         }
         // non blocking insertion in the queue of attributes changed
         attributesChanged.put( (MessagePipCh) message );
@@ -1101,19 +1102,19 @@ final public class ContextHandlerLC extends AbstractContextHandler {
 
         @Override
         public void run() {
-            LOGGER.info( "Attribute monitor started" );
+            log.info( "Attribute monitor started" );
             while( continueMonitoring ) {
                 try {
                     MessagePipCh message = attributesChanged.take();
                     List<Attribute> attributes = message.getAttributes();
 
                     if( attributes == null ) {
-                        LOGGER.warning( "Attributes list in the message is null" );
+                        log.warning( "Attributes list in the message is null" );
                         continue;
                     }
 
                     if( !manageChanges( attributes, !message.getDestination().equals( PART.CH.toString() ) ) ) {
-                        LOGGER.warning( "Unable to handle all the changes" );
+                        log.warning( "Unable to handle all the changes" );
                     }
 
                     if( sleepTime > 0 ) {
@@ -1180,10 +1181,10 @@ final public class ContextHandlerLC extends AbstractContextHandler {
             try {
                 // retrieve the attribute retrieval object from the JSON
                 // retrieve the list of interested sessions
-                LOGGER.info( "reevaluateSessions attrId : " + attribute.getAttributeId() );
+                log.info( "reevaluateSessions attrId : " + attribute.getAttributeId() );
                 List<SessionInterface> interestedSessions = retrieveSessions( attribute );
                 if( interestedSessions == null || interestedSessions.size() == 0 ) {
-                    LOGGER.info( "There are no sessions" );
+                    log.info( "There are no sessions" );
                     return true;
                 }
                 if( isRemote ) {
@@ -1196,7 +1197,7 @@ final public class ContextHandlerLC extends AbstractContextHandler {
                     // if there aren't other sessions to be reevaluated, perform
                     // a notify
                     if( interestedSessions.size() == 0 ) {
-                        LOGGER.info( "There are no other sessions" );
+                        log.info( "There are no other sessions" );
                         return true;
                     }
                 }
@@ -1209,7 +1210,7 @@ final public class ContextHandlerLC extends AbstractContextHandler {
                 }
                 return true;
             } catch( Exception e ) {
-                LOGGER.severe( "[Reevaluate sessions error] " + e.getMessage() );
+                log.severe( "[Reevaluate sessions error] " + e.getMessage() );
                 e.printStackTrace();
                 return false;
             }
@@ -1275,7 +1276,7 @@ final public class ContextHandlerLC extends AbstractContextHandler {
                     return getSessionManagerInterface()
                         .getSessionsForEnvironmentAttributes( attrId );
                 default:
-                    LOGGER.severe( "Invalid attribute passed" );
+                    log.severe( "Invalid attribute passed" );
                     return null;
             }
         }
@@ -1362,19 +1363,19 @@ final public class ContextHandlerLC extends AbstractContextHandler {
          */
         private String reevaluateSession( SessionInterface session, Attribute attribute ) {
             try {
-                LOGGER.info( "[TIME] reevaluation begins at " + System.currentTimeMillis() );
+                log.info( "[TIME] reevaluation begins at " + System.currentTimeMillis() );
 
                 PolicyHelper policyHelper = PolicyHelper.buildPolicyHelper( session.getPolicySet() );
                 if( getSessionManagerInterface().checkSession( session.getId(),
                     null ) != it.cnr.iit.ucsinterface.sessionmanager.ReevaluationTableInterface.STATUS.IN_REEVALUATION ) {
                     getSessionManagerInterface().insertSession( session, attribute );
                 } else {
-                    LOGGER.info( "Session is already under evaluation" );
+                    log.info( "Session is already under evaluation" );
                     return null;
                 }
 
                 List<Attribute> attributes = policyHelper.getAttributesForCondition( STARTACCESS_POLICY );
-                LOGGER.info( "[TIME] reevaluation scheduler starts at " + System.currentTimeMillis() );
+                log.info( "[TIME] reevaluation scheduler starts at " + System.currentTimeMillis() );
                 HashMap<String, Integer> attributesIP = retrieveAttributesIp( attributes );
                 // String ip = scheduler.getIp(attributesIP);
                 /*
@@ -1391,14 +1392,14 @@ final public class ContextHandlerLC extends AbstractContextHandler {
                     generalProperties.getIp(),
                     generalProperties.getIp() );
                 reevaluationMessage.setSession( session );
-                LOGGER.info( "[TIME] reevaluation starts at " + System.currentTimeMillis() );
+                log.info( "[TIME] reevaluation starts at " + System.currentTimeMillis() );
                 reevaluate( reevaluationMessage );
-                LOGGER.info( "[TIME] reevaluation ends at " + System.currentTimeMillis() );
+                log.info( "[TIME] reevaluation ends at " + System.currentTimeMillis() );
                 getSessionManagerInterface().stopSession( session );
                 // }
 
             } catch( Exception e ) {
-                LOGGER.severe( "Error in PIP retrieve" );
+                log.severe( "Error in PIP retrieve" );
                 e.printStackTrace();
             }
             return null;
@@ -1409,7 +1410,7 @@ final public class ContextHandlerLC extends AbstractContextHandler {
     public synchronized void reevaluate( Message message ) {
         // BEGIN parameter checking
         if( message == null || !( message instanceof ReevaluationMessage ) ) {
-            LOGGER.severe( "Invalid message received for reevaluation" );
+            log.severe( "Invalid message received for reevaluation" );
             return;
         }
         // END parameter checking
@@ -1435,11 +1436,11 @@ final public class ContextHandlerLC extends AbstractContextHandler {
         // UXACMLPolicySet policySet = evaluate(request, uxacmlPol,
         // STARTACCESS_POLICY);
 
-        LOGGER.info( "[TIME] decision " + pdpEvaluation.getResult() + " taken at " + System.currentTimeMillis() );
+        log.info( "[TIME] decision " + pdpEvaluation.getResult() + " taken at " + System.currentTimeMillis() );
         String destination;
         String[] uriSplitted = session.getPEPUri().split( PEP_ID_SEPARATOR );
         destination = session.getPEPUri().split( PEP_ID_SEPARATOR )[0];
-        LOGGER.info( "DESTINATION: " + destination + "\t" + session.getStatus() );
+        log.info( "DESTINATION: " + destination + "\t" + session.getStatus() );
         ReevaluationResponse chPepMessage = new ReevaluationResponse( getIp(), destination );
         pdpEvaluation.setSessionId( session.getId() );
         chPepMessage.setPDPEvaluation( pdpEvaluation );
@@ -1447,13 +1448,13 @@ final public class ContextHandlerLC extends AbstractContextHandler {
         getSessionManagerInterface().stopSession( session );
         if( ( session.getStatus().equals( START_STATUS ) || session.getStatus().equals( TRY_STATUS ) )
                 && pdpEvaluation.getResult().contains( "Deny" ) ) {
-            LOGGER.info( "[TIME] Sending revoke " + System.currentTimeMillis() );
+            log.info( "[TIME] Sending revoke " + System.currentTimeMillis() );
             getSessionManagerInterface().updateEntry( session.getId(), REVOKE_STATUS );
             getRequestManagerToChInterface().sendMessageToOutside( chPepMessage );
         }
 
         if( session.getStatus().equals( REVOKE_STATUS ) && pdpEvaluation.getResult().contains( "Permit" ) ) {
-            LOGGER.info( "[TIME] Sending resume " + System.currentTimeMillis() );
+            log.info( "[TIME] Sending resume " + System.currentTimeMillis() );
             getSessionManagerInterface().updateEntry( session.getId(), START_STATUS );
             getRequestManagerToChInterface().sendMessageToOutside( chPepMessage );
         }

@@ -15,6 +15,8 @@
  ******************************************************************************/
 package it.cnr.iit.usagecontrolframework.proxies;
 
+import it.cnr.iit.ucs.constants.CONNECTION;
+
 /**
  * This is the proxy abstract object.
  * <p>
@@ -31,4 +33,6 @@ package it.cnr.iit.usagecontrolframework.proxies;
  */
 public abstract class Proxy {
     abstract public boolean isInitialized();
+
+    abstract protected CONNECTION getConnection();
 }

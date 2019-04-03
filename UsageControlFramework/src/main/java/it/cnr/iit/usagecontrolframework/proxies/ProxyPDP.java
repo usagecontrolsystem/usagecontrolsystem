@@ -37,7 +37,7 @@ import it.cnr.iit.ucsinterface.pdp.PDPInterface;
  */
 final public class ProxyPDP extends Proxy implements PDPInterface {
 
-    private static final Logger LOGGER = Logger.getLogger( ProxyPDP.class.getName() );
+    private static final Logger log = Logger.getLogger( ProxyPDP.class.getName() );
 
     private PdpProperties properties;
     private AbstractPDP abstractPDP;
@@ -89,7 +89,7 @@ final public class ProxyPDP extends Proxy implements PDPInterface {
                 }
                 break;
             default:
-                LOGGER.severe( "Incorrect communication medium " + properties.getCommunication() );
+                log.severe( "Incorrect communication medium " + properties.getCommunication() );
                 return;
         }
     }
@@ -143,11 +143,6 @@ final public class ProxyPDP extends Proxy implements PDPInterface {
         return null;
     }
 
-    @Override
-    public boolean isInitialized() {
-        return initialized;
-    }
-
     /**
      * Sets the interfaces the PDP needs to deal with the ObligationManager and
      * the PAP
@@ -177,4 +172,13 @@ final public class ProxyPDP extends Proxy implements PDPInterface {
         return null;
     }
 
+    @Override
+    protected CONNECTION getConnection() {
+        return CONNECTION.valueOf( properties.getCommunication() );
+    }
+
+    @Override
+    public boolean isInitialized() {
+        return initialized;
+    }
 }
