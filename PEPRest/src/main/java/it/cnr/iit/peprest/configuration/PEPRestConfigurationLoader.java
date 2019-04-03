@@ -32,7 +32,7 @@ public final class PEPRestConfigurationLoader {
     private static final String PROPERTIES_CONFIG_KEY = "pep-config-file";
     private static final String DEFAULT_CONFIG_FILE = "conf.json";
 
-    public static final String CONFIG_ERR_MESSAGE = "error loading the pep configuration file ...";
+    public static final String CONFIG_ERR_MESSAGE = "Error loading the pep configuration file : {0}";
 
     private PEPRestConfigurationLoader() {}
 
@@ -46,7 +46,6 @@ public final class PEPRestConfigurationLoader {
         return getConfiguration( getConfigurationFileName() );
     }
 
-    // TODO use spring
     private static String getConfigurationFileName() {
         String fname = DEFAULT_CONFIG_FILE;
 
@@ -60,8 +59,7 @@ public final class PEPRestConfigurationLoader {
                 fname = rb.getString( PROPERTIES_CONFIG_KEY );
             }
         } catch( IOException e ) {
-            System.out.println( e.getMessage() );
-            e.printStackTrace();
+            LOG.severe( String.format( CONFIG_ERR_MESSAGE, e.getMessage() ) );
         }
 
         if( fis != null ) {
