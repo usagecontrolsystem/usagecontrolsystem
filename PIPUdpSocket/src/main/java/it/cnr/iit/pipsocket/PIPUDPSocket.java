@@ -30,7 +30,7 @@ import oasis.names.tc.xacml.core.schema.wd_17.RequestType;
  */
 public class PIPUDPSocket extends PIPBase {
 
-    private static Logger LOGGER = Logger.getLogger( PIPUDPSocket.class.getName() );
+    private static Logger log = Logger.getLogger( PIPUDPSocket.class.getName() );
 
     /**
      * Whenever a PIP has to retrieve some informations related to an attribute
@@ -71,7 +71,7 @@ public class PIPUDPSocket extends PIPBase {
             initialized = true;
             subscriberTimer = new PRSubscriberTimer( contextHandlerInterface,
                 subscriptions, clientSocket, destinationIPAddress, destinationPort );
-            timer.scheduleAtFixedRate( subscriberTimer, 0, 3 * 1000 );
+            timer.scheduleAtFixedRate( subscriberTimer, 0, 3L * 1000 );
         } else {
             return;
         }
@@ -89,17 +89,17 @@ public class PIPUDPSocket extends PIPBase {
             Map<String, String> arguments = properties.getAttributes().get( 0 ).getArgs();
             Attribute attribute = new Attribute();
             if( !attribute.createAttributeId( arguments.get( ATTRIBUTE_ID ) ) ) {
-                LOGGER.severe( "[PIPReader] wrong set Attribute" );
+                log.severe( "[PIPReader] wrong set Attribute" );
                 return false;
             }
             if( !attribute
                 .setCategory( Category.toCATEGORY( arguments.get( CATEGORY ) ) ) ) {
-                LOGGER.severe( "[PIPReader] wrong set category " + arguments.get( CATEGORY ) );
+                log.severe( "[PIPReader] wrong set category " + arguments.get( CATEGORY ) );
                 return false;
             }
             if( !attribute.setAttributeDataType(
                 DataType.toDATATYPE( arguments.get( DATA_TYPE ) ) ) ) {
-                LOGGER.severe( "[PIPReader] wrong set datatype" );
+                log.severe( "[PIPReader] wrong set datatype" );
                 return false;
             }
             if( attribute.getCategory() != Category.ENVIRONMENT ) {
@@ -122,7 +122,7 @@ public class PIPUDPSocket extends PIPBase {
     public void subscribe( RequestType accessRequest ) throws PIPException {
         // BEGIN parameter checking
         if( accessRequest == null || !initialized || !isInitialized() ) {
-            LOGGER.severe( "[PIPREader] wrong initialization" + initialized
+            log.severe( "[PIPREader] wrong initialization" + initialized
                     + "\t" + isInitialized() );
             return;
         }
@@ -132,7 +132,7 @@ public class PIPUDPSocket extends PIPBase {
 
         if( subscriberTimer.getContextHandler() == null
                 || contextHandlerInterface == null ) {
-            LOGGER.severe( "Context handler not set" );
+            log.severe( "Context handler not set" );
             return;
         }
 
@@ -166,7 +166,7 @@ public class PIPUDPSocket extends PIPBase {
     public void retrieve( RequestType accessRequest ) throws PIPException {
         // BEGIN parameter checking
         if( accessRequest == null || !initialized || !isInitialized() ) {
-            LOGGER.severe( "[PIPREader] wrong initialization" + initialized
+            log.severe( "[PIPREader] wrong initialization" + initialized
                     + "\t" + isInitialized() );
             return;
         }
@@ -191,7 +191,7 @@ public class PIPUDPSocket extends PIPBase {
     public boolean unsubscribe( List<Attribute> attributes ) throws PIPException {
         // BEGIN parameter checking
         if( attributes == null || !initialized || !isInitialized() ) {
-            LOGGER.severe( "[PIPREader] wrong initialization" + initialized
+            log.severe( "[PIPREader] wrong initialization" + initialized
                     + "\t" + isInitialized() );
             return false;
         }
@@ -203,7 +203,7 @@ public class PIPUDPSocket extends PIPBase {
                     if( attributeS.getAdditionalInformations()
                         .equals( attribute.getAdditionalInformations() ) ) {
                         subscriptions.remove( attributeS );
-                        LOGGER.info( "UNSUB " + subscriptions.size() );
+                        log.info( "UNSUB " + subscriptions.size() );
                         return true;
                     }
                 }
@@ -231,7 +231,7 @@ public class PIPUDPSocket extends PIPBase {
 
         if( subscriberTimer.getContextHandler() == null
                 || contextHandlerInterface == null ) {
-            LOGGER.severe( "Context handler not set" );
+            log.severe( "Context handler not set" );
             return null;
         }
 
@@ -323,7 +323,7 @@ public class PIPUDPSocket extends PIPBase {
             clientSocket.receive( receivePacket );
             String line = new String( receivePacket.getData() );
             line = line.trim();
-            LOGGER.info( "RESULT10: " + line );
+            log.info( "RESULT10: " + line );
             receive = null;
             return line;
         } catch( Exception e ) {
@@ -345,7 +345,7 @@ public class PIPUDPSocket extends PIPBase {
             clientSocket.receive( receivePacket );
             String line = new String( receivePacket.getData() );
             line = line.trim();
-            LOGGER.info( line );
+            log.info( line );
             receive = null;
             return line;
         } catch( Exception e ) {

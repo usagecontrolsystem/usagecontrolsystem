@@ -51,7 +51,7 @@ import oasis.names.tc.xacml.core.schema.wd_17.RequestType;
  */
 final public class PIPReader extends PIPBase {
 
-    private static Logger LOGGER = Logger.getLogger( PIPReader.class.getName() );
+    private static Logger log = Logger.getLogger( PIPReader.class.getName() );
 
     /**
      * Whenever a PIP has to retrieve some informations related to an attribute
@@ -87,18 +87,18 @@ final public class PIPReader extends PIPBase {
     public PIPReader( PipProperties properties ) {
         super( properties );
         if( !isInitialized() ) {
-            LOGGER.info( "base classe not initialised" );
+            log.info( "base classe not initialised" );
             return;
         }
 
         if( initialize( properties ) ) {
-            LOGGER.info( "initialising" );
+            log.info( "initialising" );
             initialized = true;
             subscriberTimer = new PRSubscriberTimer( contextHandlerInterface,
                 subscriptions, filePath );
-            timer.scheduleAtFixedRate( subscriberTimer, 0, 10 * 1000 );
+            timer.scheduleAtFixedRate( subscriberTimer, 0, 10L * 1000 );
         } else {
-            LOGGER.info( "error initialising" );
+            log.info( "error initialising" );
         }
     }
 
@@ -114,17 +114,17 @@ final public class PIPReader extends PIPBase {
             Map<String, String> arguments = properties.getAttributes().get( 0 ).getArgs();
             Attribute attribute = new Attribute();
             if( !attribute.createAttributeId( arguments.get( ATTRIBUTE_ID ) ) ) {
-                LOGGER.severe( "wrong set Attribute" );
+                log.severe( "wrong set Attribute" );
                 return false;
             }
             if( !attribute
                 .setCategory( Category.toCATEGORY( arguments.get( CATEGORY ) ) ) ) {
-                LOGGER.severe( "wrong set category " + arguments.get( CATEGORY ) );
+                log.severe( "wrong set category " + arguments.get( CATEGORY ) );
                 return false;
             }
             if( !attribute.setAttributeDataType(
                 DataType.toDATATYPE( arguments.get( DATA_TYPE ) ) ) ) {
-                LOGGER.severe( "wrong set datatype" );
+                log.severe( "wrong set datatype" );
                 return false;
             }
             if( attribute.getCategory() != Category.ENVIRONMENT ) {
@@ -134,7 +134,7 @@ final public class PIPReader extends PIPBase {
             }
             addAttribute( attribute );
             if( !setFilePath( arguments.get( FILE_PATH ) ) ) {
-                LOGGER.severe( "wrong set file" );
+                log.severe( "wrong set file" );
                 return false;
             }
             return true;
@@ -159,7 +159,7 @@ final public class PIPReader extends PIPBase {
     public void retrieve( RequestType accessRequest ) throws PIPException {
         // BEGIN parameter checking
         if( accessRequest == null || !initialized || !isInitialized() ) {
-            LOGGER.severe( "wrong initialization" + initialized
+            log.severe( "wrong initialization" + initialized
                     + "\t" + isInitialized() );
             return;
         }
@@ -193,7 +193,7 @@ final public class PIPReader extends PIPBase {
     public void subscribe( RequestType accessRequest ) throws PIPException {
         // BEGIN parameter checking
         if( accessRequest == null || !initialized || !isInitialized() ) {
-            LOGGER.severe( "wrong initialization" + initialized
+            log.severe( "wrong initialization" + initialized
                     + "\t" + isInitialized() );
             return;
         }
@@ -203,7 +203,7 @@ final public class PIPReader extends PIPBase {
 
         if( subscriberTimer.getContextHandler() == null
                 || contextHandlerInterface == null ) {
-            LOGGER.severe( "Context handler not set" );
+            log.severe( "Context handler not set" );
             return;
         }
 
@@ -250,7 +250,7 @@ final public class PIPReader extends PIPBase {
     public boolean unsubscribe( List<Attribute> attributes ) throws PIPException {
         // BEGIN parameter checking
         if( attributes == null || !initialized || !isInitialized() ) {
-            LOGGER.severe( "wrong initialization" + initialized
+            log.severe( "wrong initialization" + initialized
                     + "\t" + isInitialized() );
             return false;
         }
@@ -262,7 +262,7 @@ final public class PIPReader extends PIPBase {
                     if( attributeS.getAdditionalInformations()
                         .equals( attribute.getAdditionalInformations() ) ) {
                         subscriptions.remove( attributeS );
-                        LOGGER.info( "UNSUB " + subscriptions.size() );
+                        log.info( "UNSUB " + subscriptions.size() );
                         return true;
                     }
                 }
@@ -298,7 +298,7 @@ final public class PIPReader extends PIPBase {
 
         if( subscriberTimer.getContextHandler() == null
                 || contextHandlerInterface == null ) {
-            LOGGER.severe( "Context handler not set" );
+            log.severe( "Context handler not set" );
             return null;
         }
 
@@ -321,7 +321,7 @@ final public class PIPReader extends PIPBase {
     @Override
     public void retrieve( RequestType request,
             List<Attribute> attributeRetrievals ) {
-        LOGGER.severe( "Wrong method called" );
+        log.severe( "Wrong method called" );
         return;
 
     }
@@ -329,7 +329,7 @@ final public class PIPReader extends PIPBase {
     @Override
     public void subscribe( RequestType request,
             List<Attribute> attributeRetrieval ) {
-        LOGGER.severe( "Wrong method called" );
+        log.severe( "Wrong method called" );
         return;
 
     }
@@ -407,7 +407,7 @@ final public class PIPReader extends PIPBase {
     final private boolean setFilePath( String filePath ) {
         // BEGIN parameter checking
         if( !isInitialized() || filePath == null || filePath.isEmpty() ) {
-            LOGGER.severe( "Wrong initialisation > filepath :" + filePath + "\t initialized : " + initialized );
+            log.severe( "Wrong initialisation > filepath :" + filePath + "\t initialized : " + initialized );
             initialized = false;
 
             return false;
@@ -420,7 +420,7 @@ final public class PIPReader extends PIPBase {
             this.filePath = filePath;
 
         }
-        LOGGER.info( "FilePath: " + this.filePath );
+        log.info( "FilePath: " + this.filePath );
         return true;
     }
 

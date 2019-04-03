@@ -32,6 +32,8 @@ import oasis.names.tc.xacml.core.schema.wd_17.RequestType;
  */
 public class PIPLocation extends PIPBase {
 
+    private static final Logger log = Logger.getLogger( PIPLocation.class.getName() );
+
     /**
      * Whenever a PIP has to retrieve some informations related to an attribute
      * that is stored inside the request, it has to know in advance all the
@@ -42,19 +44,11 @@ public class PIPLocation extends PIPBase {
      * would not be able to communicate with the AM properly
      */
     private Category expectedCategory;
-
     private boolean initialized = false;
-
     private SQLMiddlewarePIPInterface sqlMiddlewarePIPInterface;
-
-    private static final Logger LOGGER = Logger
-        .getLogger( PIPLocation.class.getName() );
-
     private PSQLSubscriberTimer subscriberTimer;
-
     // timer to be used to instantiate the subscriber timer
     private Timer timer = new Timer();
-
     // list that stores the attributes on which a subscribe has been performed
     protected final BlockingQueue<Attribute> subscriptions = new LinkedBlockingQueue<>();
 
@@ -66,7 +60,7 @@ public class PIPLocation extends PIPBase {
         if( initialize( properties ) ) {
             subscriberTimer = new PSQLSubscriberTimer( contextHandlerInterface,
                 subscriptions, sqlMiddlewarePIPInterface );
-            timer.scheduleAtFixedRate( subscriberTimer, 0, 10 * 1000 );
+            timer.scheduleAtFixedRate( subscriberTimer, 0, 10L * 1000 );
         }
     }
 
@@ -82,18 +76,18 @@ public class PIPLocation extends PIPBase {
             Map<String, String> arguments = properties.getAttributes().get( 0 ).getArgs();
             Attribute attribute = new Attribute();
             if( !attribute.createAttributeId( arguments.get( ATTRIBUTE_ID ) ) ) {
-                LOGGER.log( Level.SEVERE, "[PIPReader] wrong set Attribute" );
+                log.log( Level.SEVERE, "[PIPReader] wrong set Attribute" );
                 return false;
             }
             if( !attribute
                 .setCategory( Category.toCATEGORY( arguments.get( CATEGORY ) ) ) ) {
-                LOGGER.log( Level.SEVERE,
+                log.log( Level.SEVERE,
                     "[PIPReader] wrong set category " + arguments.get( CATEGORY ) );
                 return false;
             }
             if( !attribute.setAttributeDataType(
                 DataType.toDATATYPE( arguments.get( DATA_TYPE ) ) ) ) {
-                LOGGER.log( Level.SEVERE, "[PIPReader] wrong set datatype" );
+                log.log( Level.SEVERE, "[PIPReader] wrong set datatype" );
                 return false;
             }
             if( attribute.getCategory() != Category.ENVIRONMENT ) {
@@ -125,7 +119,7 @@ public class PIPLocation extends PIPBase {
     public void subscribe( RequestType accessRequest ) throws PIPException {
         // BEGIN parameter checking
         if( accessRequest == null || !initialized || !isInitialized() ) {
-            LOGGER.log( Level.SEVERE, "[PIPREader] wrong initialization" + initialized
+            log.log( Level.SEVERE, "[PIPREader] wrong initialization" + initialized
                     + "\t" + isInitialized() );
             return;
         }
@@ -135,7 +129,7 @@ public class PIPLocation extends PIPBase {
 
         if( subscriberTimer.getContextHandler() == null
                 || contextHandlerInterface == null ) {
-            LOGGER.log( Level.SEVERE, "Context handler not set" );
+            log.log( Level.SEVERE, "Context handler not set" );
             return;
         }
 
@@ -170,7 +164,7 @@ public class PIPLocation extends PIPBase {
     public void retrieve( RequestType accessRequest ) throws PIPException {
         // BEGIN parameter checking
         if( accessRequest == null || !initialized || !isInitialized() ) {
-            LOGGER.log( Level.SEVERE, "[PIPREader] wrong initialization" + initialized
+            log.log( Level.SEVERE, "[PIPREader] wrong initialization" + initialized
                     + "\t" + isInitialized() );
             return;
         }
@@ -195,7 +189,7 @@ public class PIPLocation extends PIPBase {
     public boolean unsubscribe( List<Attribute> attributes ) throws PIPException {
         // BEGIN parameter checking
         if( attributes == null || !initialized || !isInitialized() ) {
-            LOGGER.log( Level.SEVERE, "[PIPREader] wrong initialization" + initialized
+            log.log( Level.SEVERE, "[PIPREader] wrong initialization" + initialized
                     + "\t" + isInitialized() );
             return false;
         }
@@ -235,7 +229,7 @@ public class PIPLocation extends PIPBase {
 
         if( subscriberTimer.getContextHandler() == null
                 || contextHandlerInterface == null ) {
-            LOGGER.log( Level.SEVERE, "Context handler not set" );
+            log.log( Level.SEVERE, "Context handler not set" );
             return null;
         }
 
