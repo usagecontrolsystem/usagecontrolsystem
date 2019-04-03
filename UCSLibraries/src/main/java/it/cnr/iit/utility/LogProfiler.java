@@ -13,13 +13,11 @@ import java.util.TimeZone;
 import java.util.logging.Logger;
 
 public class LogProfiler {
-    protected Logger LOG = Logger.getLogger( this.getClass().getName() );
 
-    private static LogProfiler instance;
-
+    protected Logger log = Logger.getLogger( this.getClass().getName() );
     private ArrayList<String> logList;
-
     private long timestamp;
+    private static LogProfiler instance;
 
     private LogProfiler() {
         logList = new ArrayList<>();
@@ -71,13 +69,9 @@ public class LogProfiler {
 
     }
 
-    public static LogProfiler getInstance() {
+    public synchronized static LogProfiler getInstance() {
         if( instance == null ) {
-            synchronized( LogProfiler.class ) {
-                if( instance == null ) {
-                    instance = new LogProfiler();
-                }
-            }
+            instance = new LogProfiler();
         }
         return instance;
     }
