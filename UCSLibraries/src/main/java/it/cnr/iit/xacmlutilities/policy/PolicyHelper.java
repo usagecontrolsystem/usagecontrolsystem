@@ -17,7 +17,6 @@ package it.cnr.iit.xacmlutilities.policy;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.xml.bind.JAXBElement;
@@ -76,7 +75,12 @@ import oasis.names.tc.xacml.core.schema.wd_17.RuleType;
  *
  */
 public class PolicyHelper implements PolicyHelperInterface {
-    private final static Logger LOGGER = Logger.getLogger( PolicyHelper.class.getName() );
+
+    private final static Logger LOG = Logger.getLogger( PolicyHelper.class.getName() );
+
+    private static final String MSG_ERR_UNMASHAL_POLICY = "Error unmarshalling policy : {0}";
+    private static final String MSG_ERR_MARSHAL_POLICY = "Error marshalling policy : {0}";
+    private static final String MSG_WARN_COND_NOT_FOUND = "Condition not found : {0}";
 
     // the policy type object
     private PolicyType policyType;
@@ -105,14 +109,8 @@ public class PolicyHelper implements PolicyHelperInterface {
         // END PARAMETER CHECKING
 
         PolicyHelper policyHelper = new PolicyHelper();
-        try {
-            policyHelper.policyType = JAXBUtility.unmarshalToObject( PolicyType.class,
-                string );
-            return policyHelper;
-        } catch( Exception exception ) {
-            exception.printStackTrace();
-            return null;
-        }
+        policyHelper.policyType = unmarshalPolicyType( string );
+        return policyHelper.policyType != null ? policyHelper : null;
     }
 
     @Override
@@ -147,7 +145,7 @@ public class PolicyHelper implements PolicyHelperInterface {
                 }
             }
         }
-        LOGGER.log( Level.WARNING, "Condition not found " + conditionName );
+        LOG.warning( String.format( MSG_WARN_COND_NOT_FOUND, conditionName ) );
         return null;
     }
 
@@ -293,11 +291,25 @@ public class PolicyHelper implements PolicyHelperInterface {
                     .add( obj );
             }
         }
+
+        return marshalPolicyType( tmp );
+    }
+
+    public static PolicyType unmarshalPolicyType( String policy ) {
         try {
-            return JAXBUtility.marshalToString( PolicyType.class, tmp, "Policy",
+            return JAXBUtility.unmarshalToObject( PolicyType.class, policy );
+        } catch( Exception e ) {
+            LOG.severe( String.format( MSG_ERR_UNMASHAL_POLICY, e.getMessage() ) );
+        }
+        return null;
+    }
+
+    public static String marshalPolicyType( PolicyType policy ) {
+        try {
+            return JAXBUtility.marshalToString( PolicyType.class, policy, "Policy",
                 JAXBUtility.SCHEMA );
-        } catch( JAXBException exception ) {
-            exception.printStackTrace();
+        } catch( JAXBException e ) {
+            LOG.severe( String.format( MSG_ERR_MARSHAL_POLICY, e.getMessage() ) );
             return null;
         }
     }
@@ -340,18 +352,18 @@ public class PolicyHelper implements PolicyHelperInterface {
      *         object
      */
     private PolicyType copyPolicy() {
-        PolicyType tmp = new PolicyType();
-        tmp.setDescription( policyType.getDescription() );
-        tmp.setPolicyId( policyType.getPolicyId() );
-        tmp.setPolicyIssuer( policyType.getPolicyIssuer() );
-        tmp.setAdviceExpressions( policyType.getAdviceExpressions() );
-        tmp.setMaxDelegationDepth( policyType.getMaxDelegationDepth() );
-        tmp.setPolicyDefaults( policyType.getPolicyDefaults() );
-        tmp.setRuleCombiningAlgId( policyType.getRuleCombiningAlgId() );
-        tmp.setTarget( policyType.getTarget() );
-        tmp.setVersion( policyType.getVersion() );
-        tmp.setObligationExpressions( policyType.getObligationExpressions() );
-        return tmp;
+        PolicyType tmpPolicyType = new PolicyType();
+        tmpPolicyType.setDescription( policyType.getDescription() );
+        tmpPolicyType.setPolicyId( policyType.getPolicyId() );
+        tmpPolicyType.setPolicyIssuer( policyType.getPolicyIssuer() );
+        tmpPolicyType.setAdviceExpressions( policyType.getAdviceExpressions() );
+        tmpPolicyType.setMaxDelegationDepth( policyType.getMaxDelegationDepth() );
+        tmpPolicyType.setPolicyDefaults( policyType.getPolicyDefaults() );
+        tmpPolicyType.setRuleCombiningAlgId( policyType.getRuleCombiningAlgId() );
+        tmpPolicyType.setTarget( policyType.getTarget() );
+        tmpPolicyType.setVersion( policyType.getVersion() );
+        tmpPolicyType.setObligationExpressions( policyType.getObligationExpressions() );
+        return tmpPolicyType;
     }
 
 }
