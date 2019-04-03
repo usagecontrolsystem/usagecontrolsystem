@@ -32,8 +32,6 @@ public class PAPBuilder {
     }
 
     public static Optional<PAPInterface> buildFromProperties( PapProperties properties ) {
-        Optional<PAPInterface> obj;
-
         try {
             Class<?> clazz = Class.forName( properties.getClassName() );
             Constructor<?> constructor = clazz.getConstructor( PipProperties.class );
