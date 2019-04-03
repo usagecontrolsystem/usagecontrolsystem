@@ -102,7 +102,7 @@ import oasis.names.tc.xacml.core.schema.wd_17.RequestType;
  */
 final public class ContextHandlerLC extends AbstractContextHandler {
 
-    private static final  Logger log = Logger.getLogger( ContextHandlerLC.class.getName() );
+    private static final Logger log = Logger.getLogger( ContextHandlerLC.class.getName() );
 
     private static final String TRYACCESS_POLICY = "pre";
     private static final String STARTACCESS_POLICY = "ongoing";
@@ -945,13 +945,13 @@ final public class ContextHandlerLC extends AbstractContextHandler {
 
             log.info( "[TIME] EndAccess evaluation ends at " + System.currentTimeMillis() );
 
-            if( pdpEvaluation.getResult().equalsIgnoreCase( "Permit" ) ) {
-                // PDP returns PERMIT obligation
-                getObligationManager().translateObligations( pdpEvaluation, sessionId, END_STATUS );
-            } else {
-                // PDP returns DENY, INDETERMINATE or NOT APPLICABLE obligation
-                getObligationManager().translateObligations( pdpEvaluation, sessionId, END_STATUS );
-            }
+            // if( pdpEvaluation.getResult().equalsIgnoreCase( "Permit" ) ) {
+            // PDP returns PERMIT obligation
+            // getObligationManager().translateObligations( pdpEvaluation, sessionId, END_STATUS );
+            // } else {
+            // PDP returns DENY, INDETERMINATE or NOT APPLICABLE obligation
+            // }
+            getObligationManager().translateObligations( pdpEvaluation, sessionId, END_STATUS );
 
             EndAccessResponse response = new EndAccessResponse( endAccessMessage.getDestination(),
                 endAccessMessage.getSource(), message.getID() );
