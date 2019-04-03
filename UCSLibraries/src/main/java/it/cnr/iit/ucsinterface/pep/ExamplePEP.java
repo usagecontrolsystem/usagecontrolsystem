@@ -74,16 +74,8 @@ public class ExamplePEP implements PEPInterface {
     }
 
     public String tryAccess() {
-        String request;
-        String policy;
-        int random = 0;
-        if( random % 2 == 0 ) {
-            request = Utility.readFileAbsPath( START_PATH + "/RequestAntonio.xml" );
-            policy = Utility.readFileAbsPath( START_PATH + "/Policy.xml" );
-        } else {
-            request = Utility.readFileAbsPath( START_PATH + "/RequestGiacomo.xml" );
-            policy = Utility.readFileAbsPath( START_PATH + "/PolicyGiacomo.xml" );
-        }
+        String request = Utility.readFileAbsPath( START_PATH + "/RequestAntonio.xml" );
+        String policy = Utility.readFileAbsPath( START_PATH + "/PolicyGiacomo.xml" );
         String pepUri = configuration.getIp();
 
         TryAccessMessageBuilder tryAccessBuilder = new TryAccessMessageBuilder(
