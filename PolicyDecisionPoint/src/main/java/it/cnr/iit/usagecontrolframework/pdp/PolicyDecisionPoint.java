@@ -15,6 +15,7 @@
  ******************************************************************************/
 package it.cnr.iit.usagecontrolframework.pdp;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -57,6 +58,9 @@ import it.cnr.iit.ucsinterface.pdp.PDPResponse;
 import it.cnr.iit.utility.JAXBUtility;
 import it.cnr.iit.xacmlutilities.policy.PolicyHelper;
 
+import journal.io.api.Journal;
+import journal.io.api.Journal.WriteType;
+import journal.io.api.JournalBuilder;
 import oasis.names.tc.xacml.core.schema.wd_17.PolicyType;
 import oasis.names.tc.xacml.core.schema.wd_17.RuleType;
 
@@ -82,9 +86,24 @@ public final class PolicyDecisionPoint extends AbstractPDP {
 
     // Configuration of the PDP
     private PDPConfig pdpConfig;
+    private Journal journal = null;
 
     public PolicyDecisionPoint( PdpProperties configuration ) {
         super( configuration );
+        configure( configuration.getJournalingDir() );
+
+    }
+
+    private void configure( String journalFolder ) {
+        try {
+            File file = new File( journalFolder );
+            if( !file.exists() ) {
+                file.mkdir();
+            }
+            journal = JournalBuilder.of( file ).open();
+        } catch( Exception e ) {
+            throw new RuntimeException( e.getMessage() );
+        }
     }
 
     private String extractFromStatus( STATUS status ) {
@@ -107,6 +126,51 @@ public final class PolicyDecisionPoint extends AbstractPDP {
      */
     @Override
     public PDPEvaluation evaluate( String request, StringBuilder stringPolicy,
+            STATUS status ) {
+        try {
+            String conditionName = extractFromStatus( status );
+            PolicyHelper policyHelper = PolicyHelper
+                .buildPolicyHelper( stringPolicy.toString() );
+            String policyToEvaluate = policyHelper
+                .getConditionForEvaluation( conditionName );
+
+            ArrayList<ResponseCtx> responses = new ArrayList<>();
+
+            PolicyFinder policyFinder = new PolicyFinder();
+            Set<PolicyFinderModule> policyFinderModules = new HashSet<>();
+            InputStreamBasedPolicyFinderModule dataUCONPolicyFinderModule = new InputStreamBasedPolicyFinderModule(
+                policyToEvaluate );
+            policyFinderModules.add( dataUCONPolicyFinderModule );
+            policyFinder.setModules( policyFinderModules );
+            policyFinder.init();
+            ResponseCtx response = evaluate( request, policyFinder );
+            LOGGER.info( response.encode() );
+            journal.write( policyToEvaluate.getBytes(), WriteType.ASYNC );
+            journal.write( request.getBytes(), WriteType.ASYNC );
+            journal.write( response.encode().getBytes(), WriteType.ASYNC );
+            journal.sync();
+            responses.add( response );
+            ArrayList<Integer> firingRules = new ArrayList<>();
+            PDPResponse pdpResponse = new PDPResponse( response.encode() );
+            if( response.getResults().iterator().next()
+                .getDecision() == AbstractResult.DECISION_PERMIT ) {
+                // stringPolicy.delete(0, stringPolicy.length());
+                mergeFiringRules( firingRules, stringPolicy );
+            }
+            return pdpResponse;
+        } catch(
+
+        Exception e ) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    /**
+     * This is the effective evaluation function.
+     */
+    @Deprecated
+    public PDPEvaluation evaluateSingleRules( String request, StringBuilder stringPolicy,
             STATUS status ) {
         try {
             String conditionName = extractFromStatus( status );
@@ -517,6 +581,32 @@ public final class PolicyDecisionPoint extends AbstractPDP {
 
     @Override
     public PDPEvaluation evaluate( String request, String policy ) {
+        try {
+            PolicyFinder policyFinder = new PolicyFinder();
+            Set<PolicyFinderModule> policyFinderModules = new HashSet<>();
+            InputStreamBasedPolicyFinderModule dataUCONPolicyFinderModule = new InputStreamBasedPolicyFinderModule(
+                policy );
+            policyFinderModules.add( dataUCONPolicyFinderModule );
+            policyFinder.setModules( policyFinderModules );
+            policyFinder.init();
+            ResponseCtx responseCtx = evaluate( request, policyFinder );
+            journal.write( policy.getBytes(), WriteType.ASYNC );
+            journal.write( request.getBytes(), WriteType.ASYNC );
+            journal.write( responseCtx.encode().getBytes(), WriteType.ASYNC );
+            journal.sync();
+            PDPResponse pdpResponse = new PDPResponse( responseCtx.encode() );
+            return pdpResponse;
+        } catch(
+
+        Exception e ) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
+    @Deprecated
+    public PDPEvaluation evaluateSingleRule( String request, String policy ) {
         try {
             PolicyType policyType = JAXBUtility.unmarshalToObject( PolicyType.class,
                 policy );
