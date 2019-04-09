@@ -158,10 +158,8 @@ public final class PolicyDecisionPoint extends AbstractPDP {
                 mergeFiringRules( firingRules, stringPolicy );
             }
             return pdpResponse;
-        } catch(
-
-        Exception e ) {
-            e.printStackTrace();
+        } catch( Exception e ) {
+            LOGGER.severe( e.getMessage() );
         }
         return null;
     }
@@ -633,7 +631,7 @@ public final class PolicyDecisionPoint extends AbstractPDP {
 
             return pdpResponse;
         } catch( Exception e ) {
-            e.printStackTrace();
+            LOGGER.severe( e.getMessage() );
         }
 
         return null;
