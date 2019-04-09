@@ -30,11 +30,11 @@ import it.cnr.iit.ucsinterface.obligationmanager.ObligationInterface;
 import it.cnr.iit.ucsinterface.pip.PIPBase;
 import it.cnr.iit.ucsinterface.pip.exception.PIPException;
 import it.cnr.iit.utility.Utility;
+import it.cnr.iit.utility.errorhandling.Reject;
 import it.cnr.iit.xacmlutilities.Attribute;
 import it.cnr.iit.xacmlutilities.Category;
 import it.cnr.iit.xacmlutilities.DataType;
 
-import journal.io.api.ClosedJournalException;
 import journal.io.api.Journal;
 import journal.io.api.Journal.WriteType;
 import journal.io.api.JournalBuilder;
@@ -144,9 +144,7 @@ final public class PIPReader extends PIPBase {
                 log.severe( "wrong set file" );
                 return false;
             }
-            if( properties.getJournalDir() != null && !configure( properties.getJournalDir() ) ) {
-                return false;
-            }
+            configure( properties.getJournalDir() );
             return true;
         } catch( Exception e ) {
             e.printStackTrace();
@@ -155,6 +153,7 @@ final public class PIPReader extends PIPBase {
     }
 
     private boolean configure( String journalDir ) {
+        Reject.ifBlank( journalDir );
         try {
             File file = new File( journalDir );
             if( !file.exists() ) {
@@ -389,8 +388,6 @@ final public class PIPReader extends PIPBase {
         logLineBuilder.append( "\t AT: " + System.currentTimeMillis() );
         try {
             journal.write( logLineBuilder.toString().getBytes(), WriteType.SYNC );
-        } catch( ClosedJournalException e ) {
-            log.severe( e.getMessage() );
         } catch( IOException e ) {
             log.severe( e.getMessage() );
         }
