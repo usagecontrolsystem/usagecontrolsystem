@@ -79,12 +79,12 @@ final public class ProxyPDP extends Proxy implements PDPInterface {
                 }
                 break;
             case SOCKET:
-                if( connectSocket( properties ) ) {
+                if( connectSocket( properties ) ) { // NOSONAR
                     initialized = true;
                 }
                 break;
             case REST_API:
-                if( connectRest( properties ) ) {
+                if( connectRest( properties ) ) { // NOSONAR
                     initialized = true;
                 }
                 break;
