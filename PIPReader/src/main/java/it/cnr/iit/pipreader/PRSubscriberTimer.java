@@ -32,6 +32,10 @@ import it.cnr.iit.utility.Utility;
 import it.cnr.iit.xacmlutilities.Attribute;
 import it.cnr.iit.xacmlutilities.Category;
 
+import journal.io.api.ClosedJournalException;
+import journal.io.api.Journal;
+import journal.io.api.Journal.WriteType;
+
 /**
  * Subscriber timer for the PIPReader.
  * <p>
@@ -62,6 +66,10 @@ final class PRSubscriberTimer extends TimerTask {
     // the interface to communicate with the context handler
     private ContextHandlerPIPInterface contextHandler;
 
+    private Logger log = Logger.getLogger( PRSubscriberTimer.class.getName() );
+
+    private Journal journal;
+
     /**
      * Constructor for a new Subscriber timer
      *
@@ -76,6 +84,10 @@ final class PRSubscriberTimer extends TimerTask {
             BlockingQueue<Attribute> map, String path ) {
         subscriptions = map;
         this.path = path;
+    }
+
+    public void setJournal( Journal journal ) {
+        this.journal = journal;
     }
 
     @Override
@@ -120,7 +132,9 @@ final class PRSubscriberTimer extends TimerTask {
      * @throws PIPException
      */
     private String read() {
-        return Utility.readFileAbsPath( path );
+        String valueString = Utility.readFileAbsPath( path );
+        journalLog( valueString );
+        return valueString;
     }
 
     /**
@@ -155,6 +169,7 @@ final class PRSubscriberTimer extends TimerTask {
             }
             // LOGGER.log(Level.INFO,
             // "[PIPReader] value read is " + line.split("\t")[1]);
+            journalLog( line.split( "\t" )[1], filter );
             return line.split( "\t" )[1];
         } catch( IOException ioException ) {
             ioException.printStackTrace();
@@ -180,6 +195,27 @@ final class PRSubscriberTimer extends TimerTask {
 
     public ContextHandlerPIPInterface getContextHandler() {
         return contextHandler;
+    }
+
+    private void journalLog( String... string ) {
+        if( string == null ) {
+            throw new IllegalArgumentException( "Passed value is null, nothing to be added in the journal" );
+        }
+        StringBuilder logLineBuilder = new StringBuilder();
+        logLineBuilder.append( "VALUE READ: " );
+        logLineBuilder.append( string[0] );
+
+        if( string.length > 1 ) {
+            logLineBuilder.append( " FOR FILTER: " + string[1] );
+        }
+        logLineBuilder.append( "\t AT: " + System.currentTimeMillis() );
+        try {
+            journal.write( logLineBuilder.toString().getBytes(), WriteType.SYNC );
+        } catch( ClosedJournalException e ) {
+            log.severe( e.getMessage() );
+        } catch( IOException e ) {
+            log.severe( e.getMessage() );
+        }
     }
 
 }

@@ -34,6 +34,7 @@ public final class PipProperties {
     private String connection;
     private boolean multiattribute = false;
     private ArrayList<Attribute> attributes = new ArrayList<>();
+    private String journalDir;
 
     public String getId() {
         return id;
@@ -79,4 +80,11 @@ public final class PipProperties {
         this.multiattribute = multiattribute;
     }
 
+    public String getJournalDir() {
+        return journalDir;
+    }
+
+    public void setJournalDir( String journalDir ) {
+        this.journalDir = journalDir;
+    }
 }

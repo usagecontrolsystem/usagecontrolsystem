@@ -34,6 +34,10 @@ import it.cnr.iit.xacmlutilities.Attribute;
 import it.cnr.iit.xacmlutilities.Category;
 import it.cnr.iit.xacmlutilities.DataType;
 
+import journal.io.api.ClosedJournalException;
+import journal.io.api.Journal;
+import journal.io.api.Journal.WriteType;
+import journal.io.api.JournalBuilder;
 import oasis.names.tc.xacml.core.schema.wd_17.RequestType;
 
 /**
@@ -52,6 +56,7 @@ import oasis.names.tc.xacml.core.schema.wd_17.RequestType;
 final public class PIPReader extends PIPBase {
 
     private static Logger log = Logger.getLogger( PIPReader.class.getName() );
+    private Journal journal;
 
     /**
      * Whenever a PIP has to retrieve some informations related to an attribute
@@ -96,6 +101,8 @@ final public class PIPReader extends PIPBase {
             initialized = true;
             subscriberTimer = new PRSubscriberTimer( contextHandlerInterface,
                 subscriptions, filePath );
+
+            subscriberTimer.setJournal( journal );
             timer.scheduleAtFixedRate( subscriberTimer, 0, 10L * 1000 );
         } else {
             log.info( "error initialising" );
@@ -137,10 +144,26 @@ final public class PIPReader extends PIPBase {
                 log.severe( "wrong set file" );
                 return false;
             }
+            if( properties.getJournalDir() != null && !configure( properties.getJournalDir() ) ) {
+                return false;
+            }
             return true;
         } catch( Exception e ) {
             e.printStackTrace();
             return false;
+        }
+    }
+
+    private boolean configure( String journalDir ) {
+        try {
+            File file = new File( journalDir );
+            if( !file.exists() ) {
+                file.mkdir();
+            }
+            journal = JournalBuilder.of( file ).open();
+            return true;
+        } catch( Exception e ) {
+            throw new RuntimeException( e.getMessage() );
         }
     }
 
@@ -347,7 +370,30 @@ final public class PIPReader extends PIPBase {
      * @throws PIPException
      */
     private String read() throws PIPException {
-        return Utility.readFileAbsPath( filePath );
+        String value = Utility.readFileAbsPath( filePath );
+        journalLog( value );
+        return value;
+    }
+
+    private void journalLog( String... string ) {
+        if( string == null ) {
+            throw new IllegalArgumentException( "Passed value is null, nothing to be added in the journal" );
+        }
+        StringBuilder logLineBuilder = new StringBuilder();
+        logLineBuilder.append( "VALUE READ: " );
+        logLineBuilder.append( string[0] );
+
+        if( string.length > 1 ) {
+            logLineBuilder.append( " FOR FILTER: " + string[1] );
+        }
+        logLineBuilder.append( "\t AT: " + System.currentTimeMillis() );
+        try {
+            journal.write( logLineBuilder.toString().getBytes(), WriteType.SYNC );
+        } catch( ClosedJournalException e ) {
+            log.severe( e.getMessage() );
+        } catch( IOException e ) {
+            log.severe( e.getMessage() );
+        }
     }
 
     /**
@@ -380,9 +426,11 @@ final public class PIPReader extends PIPBase {
                     break;
                 }
             }
+            String value = line.split( "\t" )[1];
+            journalLog( value, filter );
             // LOGGER.log(Level.INFO,
             // "value read is " + line.split("\t")[1]);
-            return line.split( "\t" )[1];
+            return value;
         } catch( IOException ioException ) {
             throw new PIPException( ioException.getMessage() );
         }
