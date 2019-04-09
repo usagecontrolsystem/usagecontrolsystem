@@ -594,10 +594,8 @@ public final class PolicyDecisionPoint extends AbstractPDP {
             journal.sync();
             PDPResponse pdpResponse = new PDPResponse( responseCtx.encode() );
             return pdpResponse;
-        } catch(
-
-        Exception e ) {
-            e.printStackTrace();
+        } catch( Exception e ) {
+            LOGGER.severe( e.getMessage() );
         }
 
         return null;
