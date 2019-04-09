@@ -51,7 +51,7 @@ import it.cnr.iit.ucsinterface.requestmanager.AsynchronousRequestManager;
  */
 public class RequestManagerLC extends AsynchronousRequestManager {
 
-    private static final  Logger log = Logger.getLogger( RequestManagerLC.class.getName() );
+    private static final Logger log = Logger.getLogger( RequestManagerLC.class.getName() );
 
     /*
      * This is the pool of thread in charge of polling the queue to retrieve
@@ -62,7 +62,7 @@ public class RequestManagerLC extends AsynchronousRequestManager {
     /*
      * This is the thread in charge of handling the operations requested from a
      * remote PIP except from reevaluation.
-
+    
     private ExecutorService attributeSupplier;
     */
 
@@ -93,7 +93,7 @@ public class RequestManagerLC extends AsynchronousRequestManager {
                 .newFixedThreadPool( 2 );
             inquirers.submit( new ContextHandlerInquirer() );
         } catch( Exception e ) {
-            e.printStackTrace();
+            LOGGER.severe( e.getMessage() );
             return false;
         }
         return true;
@@ -186,7 +186,7 @@ public class RequestManagerLC extends AsynchronousRequestManager {
                 }
             }
         } catch( NullPointerException | InterruptedException e ) {
-            e.printStackTrace();
+            LOGGER.severe( e.getMessage() );
         }
 
         return null;
@@ -232,7 +232,7 @@ public class RequestManagerLC extends AsynchronousRequestManager {
                     if( message instanceof EndAccessResponse ) {}
                     if( message instanceof ReevaluationResponse ) {}
                 } catch( Exception e ) {
-                    e.printStackTrace();
+                    LOGGER.severe( e.getMessage() );
                     return null;
                 }
             }
@@ -251,9 +251,9 @@ public class RequestManagerLC extends AsynchronousRequestManager {
      *
      * @author antonio
      *
-    
+
     private class AttributeSupplier implements Callable<Void> {
-    
+
     	@Override
     	public Void call() throws Exception {
     		while (true) {
@@ -300,7 +300,7 @@ public class RequestManagerLC extends AsynchronousRequestManager {
      * @param message
      *          the message returned by the context handler
      * @return the message to be used as response
-    
+
     private MessagePipCh createResponse(Message message) {
     	MessagePipCh chResponse = (MessagePipCh) message;
     	switch (chResponse.getAction()) {
