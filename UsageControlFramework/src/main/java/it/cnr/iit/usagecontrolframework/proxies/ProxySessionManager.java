@@ -494,11 +494,9 @@ public class ProxySessionManager extends Proxy implements SessionManagerInterfac
             case API:
                 return sessionManagerInterface.getSessionForId( sessionId );
             case SOCKET:
-                // TODO
-                return null;
+                return Optional.empty();
             case REST_API:
-                // TODO
-                return null;
+                return Optional.empty();
             default:
                 return sessionManagerInterface.getSessionForId( sessionId );
         }

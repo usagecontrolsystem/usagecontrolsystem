@@ -20,6 +20,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.logging.Logger;
 
+import com.google.common.base.Throwables;
+
 import it.cnr.iit.ucs.configuration.GeneralProperties;
 import it.cnr.iit.ucs.configuration.RequestManagerProperties;
 import it.cnr.iit.ucsinterface.message.Message;
@@ -62,7 +64,7 @@ public class RequestManagerLC extends AsynchronousRequestManager {
     /*
      * This is the thread in charge of handling the operations requested from a
      * remote PIP except from reevaluation.
-    
+
     private ExecutorService attributeSupplier;
     */
 
@@ -187,6 +189,7 @@ public class RequestManagerLC extends AsynchronousRequestManager {
             }
         } catch( NullPointerException | InterruptedException e ) {
             LOGGER.severe( e.getMessage() );
+            Throwables.propagate( e );
         }
 
         return null;
@@ -251,9 +254,9 @@ public class RequestManagerLC extends AsynchronousRequestManager {
      *
      * @author antonio
      *
-
+    
     private class AttributeSupplier implements Callable<Void> {
-
+    
     	@Override
     	public Void call() throws Exception {
     		while (true) {
@@ -300,7 +303,7 @@ public class RequestManagerLC extends AsynchronousRequestManager {
      * @param message
      *          the message returned by the context handler
      * @return the message to be used as response
-
+    
     private MessagePipCh createResponse(Message message) {
     	MessagePipCh chResponse = (MessagePipCh) message;
     	switch (chResponse.getAction()) {
