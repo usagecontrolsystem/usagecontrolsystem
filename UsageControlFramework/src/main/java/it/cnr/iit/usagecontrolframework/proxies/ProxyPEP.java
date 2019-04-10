@@ -20,6 +20,8 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.concurrent.ExecutionException;
 import java.util.logging.Logger;
 
+import com.google.common.base.Throwables;
+
 import it.cnr.iit.ucs.configuration.PepProperties;
 import it.cnr.iit.ucs.constants.CONNECTION;
 import it.cnr.iit.ucsinterface.message.Message;
@@ -97,7 +99,7 @@ public class ProxyPEP extends Proxy implements PEPInterface {
                 }
                 break;
             case SOCKET:
-                if( connectSocket( properties ) ) {
+                if( connectSocket( properties ) ) { // NOSONAR
                     initialized = true;
                 }
                 break;
@@ -278,7 +280,8 @@ public class ProxyPEP extends Proxy implements PEPInterface {
                 try {
                     abstractPEP.start();
                 } catch( InterruptedException | ExecutionException e ) {
-                    e.printStackTrace();
+                    log.severe( e.getMessage() );
+                    Throwables.propagate( e );
                 }
                 break;
             default:

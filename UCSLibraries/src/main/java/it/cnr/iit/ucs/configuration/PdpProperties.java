@@ -26,6 +26,15 @@ public class PdpProperties {
     private String className;
     private String thread;
     private String communication;
+    private String journalingDir;
+
+    public String getJournalingDir() {
+        return journalingDir;
+    }
+
+    public void setJournalingDir( String journalingDir ) {
+        this.journalingDir = journalingDir;
+    }
 
     public String getClassName() {
         return className;

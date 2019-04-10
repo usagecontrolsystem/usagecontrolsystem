@@ -81,12 +81,12 @@ public class ProxySessionManager extends Proxy implements SessionManagerInterfac
                 }
                 break;
             case SOCKET:
-                if( connectSocket( properties ) ) {
+                if( connectSocket( properties ) ) { // NOSONAR
                     initialized = true;
                 }
                 break;
             case REST_API:
-                if( connectRest( properties ) ) {
+                if( connectRest( properties ) ) { // NOSONAR
                     initialized = true;
                 }
                 break;
@@ -494,11 +494,9 @@ public class ProxySessionManager extends Proxy implements SessionManagerInterfac
             case API:
                 return sessionManagerInterface.getSessionForId( sessionId );
             case SOCKET:
-                // TODO
-                return null;
+                return Optional.empty();
             case REST_API:
-                // TODO
-                return null;
+                return Optional.empty();
             default:
                 return sessionManagerInterface.getSessionForId( sessionId );
         }

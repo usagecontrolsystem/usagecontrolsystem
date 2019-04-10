@@ -62,6 +62,11 @@ public final class AttributeId {
         return attributeId.equalsIgnoreCase( ( (AttributeId) o ).toString() );
     }
 
+    @Override
+    public int hashCode() {
+        return this.toString().hashCode();
+    }
+
     /**
      * Checks if the attribute ID is compliant to the LDAP RFC
      *

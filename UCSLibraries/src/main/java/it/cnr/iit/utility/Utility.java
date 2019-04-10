@@ -102,6 +102,18 @@ final public class Utility {
         }
     }
 
+    public static String findFolderPathUsingClassLoader( String path, Class<?> clazz ) {
+        if( !isValidPath( path ) ) {
+            return null;
+        }
+        try {
+            String pathString = clazz.getResource( path ).getPath();
+            return pathString;
+        } catch( NullPointerException e ) {
+            return null;
+        }
+    }
+
     /**
      * Secure reading of the file from the absolute path TODO
      */

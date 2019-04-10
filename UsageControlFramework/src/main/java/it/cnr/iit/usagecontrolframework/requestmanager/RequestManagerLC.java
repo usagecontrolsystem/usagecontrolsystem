@@ -20,6 +20,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.logging.Logger;
 
+import com.google.common.base.Throwables;
+
 import it.cnr.iit.ucs.configuration.GeneralProperties;
 import it.cnr.iit.ucs.configuration.RequestManagerProperties;
 import it.cnr.iit.ucsinterface.message.Message;
@@ -51,7 +53,7 @@ import it.cnr.iit.ucsinterface.requestmanager.AsynchronousRequestManager;
  */
 public class RequestManagerLC extends AsynchronousRequestManager {
 
-    private static final  Logger log = Logger.getLogger( RequestManagerLC.class.getName() );
+    private static final Logger log = Logger.getLogger( RequestManagerLC.class.getName() );
 
     /*
      * This is the pool of thread in charge of polling the queue to retrieve
@@ -93,7 +95,7 @@ public class RequestManagerLC extends AsynchronousRequestManager {
                 .newFixedThreadPool( 2 );
             inquirers.submit( new ContextHandlerInquirer() );
         } catch( Exception e ) {
-            e.printStackTrace();
+            LOGGER.severe( e.getMessage() );
             return false;
         }
         return true;
@@ -186,7 +188,8 @@ public class RequestManagerLC extends AsynchronousRequestManager {
                 }
             }
         } catch( NullPointerException | InterruptedException e ) {
-            e.printStackTrace();
+            LOGGER.severe( e.getMessage() );
+            Throwables.propagate( e );
         }
 
         return null;
@@ -232,7 +235,7 @@ public class RequestManagerLC extends AsynchronousRequestManager {
                     if( message instanceof EndAccessResponse ) {}
                     if( message instanceof ReevaluationResponse ) {}
                 } catch( Exception e ) {
-                    e.printStackTrace();
+                    LOGGER.severe( e.getMessage() );
                     return null;
                 }
             }

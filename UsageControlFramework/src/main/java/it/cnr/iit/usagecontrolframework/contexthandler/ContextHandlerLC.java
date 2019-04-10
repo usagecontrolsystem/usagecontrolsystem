@@ -29,6 +29,8 @@ import java.util.logging.Logger;
 
 import javax.xml.bind.JAXBException;
 
+import com.google.common.base.Throwables;
+
 import it.cnr.iit.ucs.configuration.ContextHandlerProperties;
 import it.cnr.iit.ucs.configuration.GeneralProperties;
 import it.cnr.iit.ucs.constants.STATUS;
@@ -1116,6 +1118,7 @@ final public class ContextHandlerLC extends AbstractContextHandler {
                     }
                 } catch( InterruptedException e ) {
                     e.printStackTrace();
+                    Throwables.propagate( e );
                 }
             }
         }

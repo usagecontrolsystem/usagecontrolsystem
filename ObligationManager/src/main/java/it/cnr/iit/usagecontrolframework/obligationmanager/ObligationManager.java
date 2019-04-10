@@ -137,18 +137,20 @@ final public class ObligationManager implements ObligationManagerInterface {
             String obligation = obligationsString.get( index );
 
             Object obl = createObjectFromString( obligation, pipName );
+            if( obl != null ) {
 
-            ObligationInterface obligationInterface = (ObligationInterface) obl;
-            obligationInterface.setSessionId( sessionId );
-            obligationInterface.setStep( status );
-            // checks if the obligation is meant to be used by the PIP or by the PEP
-            if( obligationInterface.getAttributeId() != null ) {
-                obligationMap.put( obligationInterface.getAttributeId(),
-                    obligationInterface );
-                obligationsString.remove( index );
-            } else {
-                obligationMap.put( pipName.toString(), obligationInterface );
-                index++;
+                ObligationInterface obligationInterface = (ObligationInterface) obl;
+                obligationInterface.setSessionId( sessionId );
+                obligationInterface.setStep( status );
+                // checks if the obligation is meant to be used by the PIP or by the PEP
+                if( obligationInterface.getAttributeId() != null ) {
+                    obligationMap.put( obligationInterface.getAttributeId(),
+                        obligationInterface );
+                    obligationsString.remove( index );
+                } else {
+                    obligationMap.put( pipName.toString(), obligationInterface );
+                    index++;
+                }
             }
 
         }
