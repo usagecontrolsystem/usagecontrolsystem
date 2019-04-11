@@ -50,7 +50,7 @@ import oasis.names.tc.xacml.core.schema.wd_17.RequestType;
  * @author antonio
  *
  */
-final public class PIPReadResources extends PIPBase {
+public final class PIPReadResources extends PIPBase {
 	
 	// ---------------------------------------------------------------------------
 	// Class attributes

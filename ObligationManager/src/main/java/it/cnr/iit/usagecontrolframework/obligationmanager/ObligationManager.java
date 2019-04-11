@@ -94,7 +94,7 @@ public final class ObligationManager implements ObligationManagerInterface {
      * Sets the PIPs with which
      */
     @Override
-    final public boolean setPIPs( List<PIPOMInterface> pips, PIPOMInterface pipRetrieval ) {
+    public final boolean setPIPs( List<PIPOMInterface> pips, PIPOMInterface pipRetrieval ) {
         // BEGIN parameter checking
         if( ( ( pips == null || pips.size() == 0 ) && pipRetrieval == null )
                 || !isInitialized() ) {

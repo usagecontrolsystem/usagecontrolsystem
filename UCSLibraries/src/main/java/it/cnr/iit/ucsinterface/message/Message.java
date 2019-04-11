@@ -170,14 +170,14 @@ public class Message implements Comparable<Message>, Serializable {
 
     /* Getters */
 
-    final public String getSource() {
+    public final String getSource() {
         if( !initialized ) {
             return null;
         }
         return sourceAddress;
     }
 
-    final public String getDestination() {
+    public final String getDestination() {
         if( !initialized ) {
             return null;
         }

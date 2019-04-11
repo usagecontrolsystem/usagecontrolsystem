@@ -24,7 +24,7 @@ import it.cnr.iit.ucsinterface.sessionmanager.SessionInterface;
  * @author Fabio Bindi, Filippo Lauria and Antonio La Marra
  */
 @DatabaseTable( tableName = "sessions" )
-final public class Session implements SessionInterface {
+public final class Session implements SessionInterface {
 
     public static final String ID_FIELD_NAME = "id";
     public static final String POLICYSET_FIELD_NAME = "policy_set";

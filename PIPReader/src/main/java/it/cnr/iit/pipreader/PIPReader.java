@@ -53,7 +53,7 @@ import oasis.names.tc.xacml.core.schema.wd_17.RequestType;
  * @author antonio
  *
  */
-final public class PIPReader extends PIPBase {
+public final class PIPReader extends PIPBase {
 
     private static Logger log = Logger.getLogger( PIPReader.class.getName() );
     private Journal journal;

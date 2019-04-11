@@ -26,7 +26,7 @@ package it.cnr.iit.ucsinterface.message.tryaccess;
  * @author antonio
  *
  */
-final public class TryAccessMessageBuilder {
+public final class TryAccessMessageBuilder {
     // instance of the tryaccessmessage that will be built
     private TryAccessMessage tryAccessMessage;
 

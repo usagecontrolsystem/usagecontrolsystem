@@ -37,7 +37,7 @@ import reactor.core.publisher.Mono;
  *
  */
 
-final public class RESTUtils {
+public final class RESTUtils {
     private static final Logger log = Logger.getLogger( RESTUtils.class.getName() );
 
     private RESTUtils() {

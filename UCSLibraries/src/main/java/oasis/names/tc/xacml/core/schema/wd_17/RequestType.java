@@ -65,7 +65,7 @@ import it.cnr.iit.xacmlutilities.Category;
 @XmlAccessorType( XmlAccessType.FIELD )
 @XmlType( name = "RequestType",
     propOrder = { "requestDefaults", "attributes", "multiRequests" } )
-final public class RequestType {
+public final class RequestType {
 
     @XmlElement( name = "RequestDefaults" )
     protected RequestDefaultsType requestDefaults;
