@@ -31,6 +31,7 @@ import it.cnr.iit.ucs.configuration.ContextHandlerProperties;
 import it.cnr.iit.ucs.configuration.GeneralProperties;
 import it.cnr.iit.ucs.constants.STATUS;
 import it.cnr.iit.ucsinterface.contexthandler.AbstractContextHandler;
+import it.cnr.iit.ucsinterface.contexthandler.ContextHandlerConstants;
 import it.cnr.iit.ucsinterface.contexthandler.exceptions.RevokeException;
 import it.cnr.iit.ucsinterface.contexthandler.exceptions.SessionManagerException;
 import it.cnr.iit.ucsinterface.contexthandler.exceptions.WrongOrderException;
@@ -196,7 +197,7 @@ public final class ContextHandlerLC extends AbstractContextHandler {
         policy = policyBuilder.toString();
 
         // status of the incoming request
-        String status = TRY_STATUS;
+        String status = ContextHandlerConstants.TRY_STATUS;
 
         String pdpResponse = pdpEvaluation.getResult();
         log.log( Level.INFO, "[TIME] tryaccess evaluated at {0} response: {1}", new Object[] { System.currentTimeMillis(), pdpResponse } );
@@ -217,7 +218,7 @@ public final class ContextHandlerLC extends AbstractContextHandler {
 
         }
         // obligation
-        getObligationManager().translateObligations( pdpEvaluation, sessionId, TRY_STATUS );
+        getObligationManager().translateObligations( pdpEvaluation, sessionId, ContextHandlerConstants.TRY_STATUS );
 
         TryAccessResponse tryAccessResponse = new TryAccessResponse( getIp(), tryAccess.getSource(), message.getID() );
         TryAccessResponseContent tryAccessResponseContent = new TryAccessResponseContent();
@@ -516,7 +517,7 @@ public final class ContextHandlerLC extends AbstractContextHandler {
 
         // check if there actually is a request to reevaluate for the received
         // session id
-        if( !sessionToReevaluate.getStatus().equals( TRY_STATUS ) ) {
+        if( !sessionToReevaluate.getStatus().equals( ContextHandlerConstants.TRY_STATUS ) ) {
             // no request to reevaluate(some problem occurred during request and
             // policy retrieving)
             log.log( Level.SEVERE, "startaccess: tryaccess must be performed for session {0}", sessionId );
@@ -544,16 +545,16 @@ public final class ContextHandlerLC extends AbstractContextHandler {
         if( pdpEvaluation.getResult().equalsIgnoreCase( DecisionType.PERMIT.value() ) ) {
 
             // obligation
-            getObligationManager().translateObligations( pdpEvaluation, sessionId, START_STATUS );
+            getObligationManager().translateObligations( pdpEvaluation, sessionId, ContextHandlerConstants.START_STATUS );
 
             // update session status
-            if( !getSessionManagerInterface().updateEntry( sessionId, START_STATUS ) ) {
+            if( !getSessionManagerInterface().updateEntry( sessionId, ContextHandlerConstants.START_STATUS ) ) {
                 log.log( Level.WARNING, "[TIME] startaccess session {0} status not updated", sessionId );
             }
             log.log( Level.INFO, "[TIME] PERMIT startaccess ends at {0}", new Object[] { System.currentTimeMillis() } );
             response.setStatus( pdpEvaluation.getResult() );
         } else {
-            getObligationManager().translateObligations( pdpEvaluation, sessionId, START_STATUS );
+            getObligationManager().translateObligations( pdpEvaluation, sessionId, ContextHandlerConstants.START_STATUS );
 
             if( revoke( sessionToReevaluate, attributes ) ) {
                 log.log( Level.INFO, "[TIME] access revocation for session {0}", sessionId );
@@ -775,8 +776,8 @@ public final class ContextHandlerLC extends AbstractContextHandler {
             }
             SessionInterface sessionToReevaluate = optional.get();
 
-            if( ( !sessionToReevaluate.getStatus().equals( START_STATUS )
-                    && !sessionToReevaluate.getStatus().equals( REVOKE_STATUS ) ) ) {
+            if( ( !sessionToReevaluate.getStatus().equals( ContextHandlerConstants.START_STATUS )
+                    && !sessionToReevaluate.getStatus().equals( ContextHandlerConstants.REVOKE_STATUS ) ) ) {
                 // no entry exists for the actual session
                 log.log( Level.INFO,
                     "[Context Handler] Endaccess: a tryaccess or startaccess must be performed yet for session {0}"
@@ -803,7 +804,7 @@ public final class ContextHandlerLC extends AbstractContextHandler {
 
             log.log( Level.INFO, "[TIME] EndAccess evaluation ends at {0}", System.currentTimeMillis() );
 
-            getObligationManager().translateObligations( pdpEvaluation, sessionId, END_STATUS );
+            getObligationManager().translateObligations( pdpEvaluation, sessionId, ContextHandlerConstants.END_STATUS );
 
             EndAccessResponse response = new EndAccessResponse( endAccessMessage.getDestination(),
                 endAccessMessage.getSource(), message.getID() );
@@ -1161,7 +1162,7 @@ public final class ContextHandlerLC extends AbstractContextHandler {
 
         // obligation
         getObligationManager().translateObligations( pdpEvaluation, reevaluationMessage.getSession().getId(),
-            START_STATUS );
+            ContextHandlerConstants.START_STATUS );
 
         log.log( Level.INFO, "[TIME] decision {0} taken at {1}", new Object[] { pdpEvaluation.getResult(), System.currentTimeMillis() } );
         String destination;
@@ -1173,16 +1174,16 @@ public final class ContextHandlerLC extends AbstractContextHandler {
         chPepMessage.setPDPEvaluation( pdpEvaluation );
         chPepMessage.setPepID( uriSplitted[uriSplitted.length - 1] );
         getSessionManagerInterface().stopSession( session );
-        if( ( session.getStatus().equals( START_STATUS ) || session.getStatus().equals( TRY_STATUS ) )
+        if( ( session.getStatus().equals( ContextHandlerConstants.START_STATUS ) || session.getStatus().equals( ContextHandlerConstants.TRY_STATUS ) )
                 && pdpEvaluation.getResult().contains( DecisionType.DENY.value() ) ) {
             log.log( Level.INFO, "[TIME] Sending revoke {0}", System.currentTimeMillis() );
-            getSessionManagerInterface().updateEntry( session.getId(), REVOKE_STATUS );
+            getSessionManagerInterface().updateEntry( session.getId(), ContextHandlerConstants.REVOKE_STATUS );
             getRequestManagerToChInterface().sendMessageToOutside( chPepMessage );
         }
 
-        if( session.getStatus().equals( REVOKE_STATUS ) && pdpEvaluation.getResult().contains( DecisionType.PERMIT.value() ) ) {
+        if( session.getStatus().equals( ContextHandlerConstants.REVOKE_STATUS ) && pdpEvaluation.getResult().contains( DecisionType.PERMIT.value() ) ) {
             log.log( Level.INFO, "[TIME] Sending resume {0}", System.currentTimeMillis() );
-            getSessionManagerInterface().updateEntry( session.getId(), START_STATUS );
+            getSessionManagerInterface().updateEntry( session.getId(), ContextHandlerConstants.START_STATUS );
             getRequestManagerToChInterface().sendMessageToOutside( chPepMessage );
         }
     }

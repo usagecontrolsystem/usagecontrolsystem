@@ -17,7 +17,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import it.cnr.iit.ucs.configuration.UCSConfiguration;
-import it.cnr.iit.ucsinterface.contexthandler.ContextHandlerInterface;
+import it.cnr.iit.ucsinterface.contexthandler.ContextHandlerConstants;
 import it.cnr.iit.ucsinterface.message.endaccess.EndAccessMessage;
 import it.cnr.iit.ucsinterface.message.reevaluation.ReevaluationMessage;
 import it.cnr.iit.ucsinterface.message.remoteretrieval.MessagePipCh;
@@ -84,7 +84,7 @@ public class ContextHandlerCoverageTests extends UCFBaseTests {
 
         /* startAccess */
         contextHandler.setSessionManagerInterface(
-            getSessionManagerForStatus( conf.getSessionId(), policy, request, ContextHandlerInterface.TRY_STATUS ) );
+            getSessionManagerForStatus( conf.getSessionId(), policy, request, ContextHandlerConstants.TRY_STATUS ) );
         // this line makes the start access to take the deny path
         contextHandler.setPdpInterface( getMockedPDP( getMockedPDPEvaluation( DecisionType.DENY ) ) );
         StartAccessMessage startAccessMessage = buildStartAccessMessage( conf.getSessionId(), "", "" );
@@ -103,13 +103,13 @@ public class ContextHandlerCoverageTests extends UCFBaseTests {
 
         /* startAccess */
         contextHandler.setSessionManagerInterface(
-            getSessionManagerForStatus( conf.getSessionId(), policy, request, ContextHandlerInterface.TRY_STATUS ) );
+            getSessionManagerForStatus( conf.getSessionId(), policy, request, ContextHandlerConstants.TRY_STATUS ) );
         StartAccessMessage startAccessMessage = buildStartAccessMessage( conf.getSessionId(), "", "" );
         contextHandler.startAccess( startAccessMessage );
 
         /* endAccess */
         contextHandler.setSessionManagerInterface(
-            getSessionManagerForStatus( conf.getSessionId(), policy, request, ContextHandlerInterface.START_STATUS ) );
+            getSessionManagerForStatus( conf.getSessionId(), policy, request, ContextHandlerConstants.START_STATUS ) );
         contextHandler.setPdpInterface( getMockedPDP( getMockedPDPEvaluation( DecisionType.DENY ) ) );
         EndAccessMessage endAccessMessage = buildEndAccessMessage( conf.getSessionId(), "", "" );
         contextHandler.endAccess( endAccessMessage );
@@ -127,13 +127,13 @@ public class ContextHandlerCoverageTests extends UCFBaseTests {
 
         /* startAccess */
         contextHandler.setSessionManagerInterface(
-            getSessionManagerForStatus( conf.getSessionId(), policy, request, ContextHandlerInterface.TRY_STATUS ) );
+            getSessionManagerForStatus( conf.getSessionId(), policy, request, ContextHandlerConstants.TRY_STATUS ) );
         StartAccessMessage startAccessMessage = buildStartAccessMessage( conf.getSessionId(), "", "" );
         contextHandler.startAccess( startAccessMessage );
 
         /* reevaluate */
         ReevaluationMessage reevaluationMessage = buildReevaluationMessage( conf.getSessionId(), "", "" );
-        reevaluationMessage.setSession( getMockedSessionInterface( policy, request, ContextHandlerInterface.START_STATUS ) );
+        reevaluationMessage.setSession( getMockedSessionInterface( policy, request, ContextHandlerConstants.START_STATUS ) );
         contextHandler.reevaluate( reevaluationMessage );
 
         MessagePipCh messagePipCh = buildPipChMessage( conf.getSessionId(), "", "" );
@@ -142,7 +142,7 @@ public class ContextHandlerCoverageTests extends UCFBaseTests {
 
         /* endAccess */
         contextHandler.setSessionManagerInterface(
-            getSessionManagerForStatus( conf.getSessionId(), policy, request, ContextHandlerInterface.START_STATUS ) );
+            getSessionManagerForStatus( conf.getSessionId(), policy, request, ContextHandlerConstants.START_STATUS ) );
         EndAccessMessage endAccessMessage = buildEndAccessMessage( conf.getSessionId(), "", "" );
         contextHandler.endAccess( endAccessMessage );
 

@@ -28,6 +28,7 @@ import it.cnr.iit.ucs.builders.PIPBuilder;
 import it.cnr.iit.ucs.configuration.UCSConfiguration;
 import it.cnr.iit.ucs.configuration.pip.PipProperties;
 import it.cnr.iit.ucs.constants.STATUS;
+import it.cnr.iit.ucsinterface.contexthandler.ContextHandlerConstants;
 import it.cnr.iit.ucsinterface.contexthandler.ContextHandlerInterface;
 import it.cnr.iit.ucsinterface.forwardingqueue.ForwardingQueueToCHInterface;
 import it.cnr.iit.ucsinterface.forwardingqueue.ForwardingQueueToRMInterface;
@@ -92,7 +93,7 @@ public class UCFBaseTests {
         contextHandler.setPdpInterface( getMockedPDP( getMockedPDPEvaluation( DecisionType.PERMIT ) ) );
         contextHandler.setPapInterface( getMockedPAP( null ) );
         contextHandler.setRequestManagerToChInterface( getMockedRequestManagerToChInterface() );
-        contextHandler.setSessionManagerInterface( getSessionManagerForStatus( "", "", "", ContextHandlerInterface.TRY_STATUS ) );
+        contextHandler.setSessionManagerInterface( getSessionManagerForStatus( "", "", "", ContextHandlerConstants.TRY_STATUS ) );
         contextHandler.setForwardingQueue( getMockedForwardingQueueToCHInterface() );
         contextHandler.setObligationManager( getMockedObligationManager() );
         contextHandler.setPIPRetrieval( getMockedPipRetrieval() );
@@ -103,7 +104,7 @@ public class UCFBaseTests {
         ContextHandlerLC contextHandler = getContextHandler( ucsConfiguration );
         initContextHandler( contextHandler );
         contextHandler.setSessionManagerInterface(
-            getSessionManagerForStatus( "", policy, request, ContextHandlerInterface.TRY_STATUS ) );
+            getSessionManagerForStatus( "", policy, request, ContextHandlerConstants.TRY_STATUS ) );
 
         contextHandler.verify();
         /* must be called after initialisation */
