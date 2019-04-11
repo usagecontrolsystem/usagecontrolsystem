@@ -16,6 +16,7 @@
 package it.cnr.iit.ucs.configuration.pip;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import it.cnr.iit.ucs.configuration.session_manager.Table;
 
@@ -56,12 +57,18 @@ public final class PipProperties {
         return retrieval;
     }
 
-    public ArrayList<Attribute> getAttributes() {
+    public List<Attribute> getAttributes() {
         return attributes;
     }
 
-    public void setAttributes( ArrayList<Attribute> attributes ) {
-        this.attributes = attributes;
+    public void setAttributes( List<Attribute> attributes ) {
+        if( attributes == null ) {
+            throw new IllegalArgumentException( "List of passed attributes is null" );
+        }
+        if( this.attributes == null ) {
+            this.attributes = new ArrayList<>();
+        }
+        this.attributes.addAll( attributes );
     }
 
     public Table getTable() {
