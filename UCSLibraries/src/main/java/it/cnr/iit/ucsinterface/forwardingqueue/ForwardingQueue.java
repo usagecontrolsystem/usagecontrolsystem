@@ -16,6 +16,7 @@
 package it.cnr.iit.ucsinterface.forwardingqueue;
 
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import it.cnr.iit.ucsinterface.message.Message;
@@ -48,7 +49,7 @@ public class ForwardingQueue
     public Message getOriginalSource( String messageID ) {
         // BEGIN parameter checking
         if( messageID == null || messageID.isEmpty() ) {
-            LOGGER.severe( "MessageID" + messageID + " is not valid" );
+            LOGGER.log( Level.SEVERE, "MessageID {0} is not valid", messageID );
             return null;
         }
         // END parameter checking
@@ -59,10 +60,10 @@ public class ForwardingQueue
     public void addSwappedMessage( String messageID, Message originalMessage ) {
         // BEGIN parameter checking
         if( messageID == null || messageID.isEmpty() ) {
-            LOGGER.severe( "MessageID" + messageID + " is not valid" );
+            LOGGER.log( Level.SEVERE, "MessageID {0} is not valid", messageID );
         }
         if( originalMessage == null ) {
-            LOGGER.severe( "Source" + originalMessage + " is not valid" );
+            LOGGER.log( Level.SEVERE, "Source {0} is not valid", originalMessage );
         }
         // END parameter checking
         forwardingMap.put( messageID, originalMessage );
