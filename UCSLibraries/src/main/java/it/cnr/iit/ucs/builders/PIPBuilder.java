@@ -31,7 +31,6 @@ public class PIPBuilder {
     }
 
     public static Optional<PIPBase> buildFromProperties( PipProperties properties ) {
-        Optional<PIPBase> obj;
 
         try {
             Class<?> clazz = Class.forName( properties.getClassName() );
