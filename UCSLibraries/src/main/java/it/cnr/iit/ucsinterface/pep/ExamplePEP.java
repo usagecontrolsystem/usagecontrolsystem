@@ -46,7 +46,10 @@ import it.cnr.iit.utility.Utility;
  *
  */
 public class ExamplePEP implements PEPInterface {
+
     protected static final Logger log = Logger.getLogger( ExamplePEP.class.getName() );
+
+    private static final String MSG_ERR_SEND_CH = "Error sending message to CH : {0}";
 
     private static final String START_PATH = "data";
 
@@ -97,12 +100,8 @@ public class ExamplePEP implements PEPInterface {
         unanswered.put( startAccessMessage.getID(), startAccessMessage );
         try {
             Message message = requestManager.sendMessageToCH( startAccessMessage );
-
-            // return (StartAccessResponse) contextHandler
-            // .startAccess(startAccessMessage);
         } catch( Exception e ) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            log.severe( String.format( MSG_ERR_SEND_CH, e.getMessage() ) );
             return null;
         }
         return startAccessMessage.getID();
@@ -116,12 +115,8 @@ public class ExamplePEP implements PEPInterface {
         unanswered.put( endAccessMessage.getID(), endAccessMessage );
         try {
             Message message = requestManager.sendMessageToCH( endAccessMessage );
-
-            // return (StartAccessResponse) contextHandler
-            // .startAccess(startAccessMessage);
         } catch( Exception e ) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            log.severe( String.format( MSG_ERR_SEND_CH, e.getMessage() ) );
             return null;
         }
         return endAccessMessage.getID();
