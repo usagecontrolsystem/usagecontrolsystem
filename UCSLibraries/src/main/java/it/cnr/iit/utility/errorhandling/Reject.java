@@ -3,6 +3,8 @@ package it.cnr.iit.utility.errorhandling;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.springframework.lang.NonNull;
 import org.springframework.util.StringUtils;
@@ -253,5 +255,19 @@ public class Reject {
             return formatString;
         }
         return String.format( formatString, formatArgs );
+    }
+
+    public static void ifInvalidObjectState( boolean initialized, String objectName, Logger log ) {
+        if( !initialized ) {
+            log.log( Level.SEVERE, "Object {0} not initialized", objectName );
+            throw new IllegalStateException( "Object " + objectName + " not initialized" );
+        }
+    }
+
+    public static void ifNull( Object... objects ) {
+        ifNull( objects );
+        for( Object object : objects ) {
+            ifNull( object );
+        }
     }
 }

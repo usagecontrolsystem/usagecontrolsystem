@@ -16,6 +16,7 @@
 package it.cnr.iit.ucsinterface.requestmanager;
 
 import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.logging.Logger;
@@ -29,6 +30,7 @@ import it.cnr.iit.ucsinterface.message.remoteretrieval.MessagePipCh;
 import it.cnr.iit.ucsinterface.node.NodeInterface;
 import it.cnr.iit.ucsinterface.node.NodeProxy;
 import it.cnr.iit.ucsinterface.pep.PEPInterface;
+import it.cnr.iit.utility.errorhandling.Reject;
 
 /**
  * This is the abstract class representing the request manager.
@@ -74,14 +76,12 @@ public abstract class AsynchronousRequestManager
      *          the object representing the configuration of the request manager
      */
     protected AsynchronousRequestManager( GeneralProperties generalProperties, RequestManagerProperties properties ) {
-        // BEGIN parameter checking
-        if( properties == null || generalProperties == null ) {
-            return;
-        }
-        // END parameter checking
+        Reject.ifNull( generalProperties );
+        Reject.ifNull( properties );
         initialized = true;
         this.properties = properties;
         this.generalProperties = generalProperties;
+        pep = new HashMap<>();
         nodeInterface = new NodeProxy( generalProperties );
     }
 
@@ -96,21 +96,12 @@ public abstract class AsynchronousRequestManager
      *          the interface privided by the nodes for a distributes system
      */
     public final void setInterfaces( ContextHandlerInterface contextHandler,
-            HashMap<String, PEPInterface> proxyPEPMap, NodeInterface nodeInterface,
+            Map<String, PEPInterface> proxyPEPMap, NodeInterface nodeInterface,
             ForwardingQueueToRMInterface forwardingQueue ) {
-        // BEGIN parameter checking
-        if( !initialized ) {
-            LOGGER.warning( "RequestManager not initialized correctly" );
-            return;
-        }
-        if( contextHandler == null || proxyPEPMap == null || forwardingQueue == null
-                || nodeInterface == null ) {
-            LOGGER.warning( "RequestManager passed interfaces are not valid" );
-            return;
-        }
-        // END parameter checking
+        Reject.ifInvalidObjectState( initialized, AsynchronousRequestManager.class.getName(), LOGGER );
+        Reject.ifNull( contextHandler, proxyPEPMap, forwardingQueue, nodeInterface );
         this.contextHandler = contextHandler;
-        pep = proxyPEPMap;
+        pep.putAll( proxyPEPMap );
         this.forwardingQueue = forwardingQueue;
         this.nodeInterface = nodeInterface;
     }
@@ -125,70 +116,41 @@ public abstract class AsynchronousRequestManager
     }
 
     protected ContextHandlerInterface getContextHandler() {
-        // BEGIN parameter checking
-        if( initialized == false ) {
-            return null;
-        }
-        // END parameter checking
+        Reject.ifInvalidObjectState( initialized, AsynchronousRequestManager.class.getName(), LOGGER );
         return contextHandler;
     }
 
     protected HashMap<String, PEPInterface> getPEPInterface() {
-        // BEGIN parameter checking
-        if( initialized == false ) {
-            return null;
-        }
-        // END parameter checking
+        Reject.ifInvalidObjectState( initialized, AsynchronousRequestManager.class.getName(), LOGGER );
         return pep;
     }
 
     protected BlockingQueue<Message> getQueueFromCH() {
-        // BEGIN parameter checking
-        if( initialized == false ) {
-            return null;
-        }
-        // END parameter checking
+        Reject.ifInvalidObjectState( initialized, AsynchronousRequestManager.class.getName(), LOGGER );
         return queueFromCH;
     }
 
     protected BlockingQueue<Message> getQueueToCH() {
-        // BEGIN parameter checking
-        if( initialized == false ) {
-            return null;
-        }
-        // END parameter checking
+        Reject.ifInvalidObjectState( initialized, AsynchronousRequestManager.class.getName(), LOGGER );
         return queueToCH;
     }
 
-    final protected RequestManagerProperties getConfiguration() {
+    protected final RequestManagerProperties getConfiguration() {
         return properties;
     }
 
-    final protected BlockingQueue<MessagePipCh> getRetrieveRequestsQueue() {
-        // BEGIN parameter checking
-        if( initialized == false ) {
-            return null;
-        }
-        // END parameter checking
+    protected final BlockingQueue<MessagePipCh> getRetrieveRequestsQueue() {
+        Reject.ifInvalidObjectState( initialized, AsynchronousRequestManager.class.getName(), LOGGER );
         return retrieveRequests;
     }
 
-    final protected NodeInterface getNodeInterface() {
-        // BEGIN parameter checking
-        if( initialized == false ) {
-            return null;
-        }
-        // END parameter checking
-
+    protected final NodeInterface getNodeInterface() {
+        Reject.ifInvalidObjectState( initialized, AsynchronousRequestManager.class.getName(), LOGGER );
         return nodeInterface;
     }
 
-    final protected ForwardingQueueToRMInterface getForwardingQueue() {
-        // BEGIN parameter checking
-        if( initialized == false ) {
-            return null;
-        }
-        // END parameter checking
+    protected final ForwardingQueueToRMInterface getForwardingQueue() {
+        Reject.ifInvalidObjectState( initialized, AsynchronousRequestManager.class.getName(), LOGGER );
         return forwardingQueue;
     }
 
