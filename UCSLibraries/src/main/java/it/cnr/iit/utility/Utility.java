@@ -137,15 +137,6 @@ final public class Utility {
         }
     }
 
-    // TODO replace this with a proper url builder
-    /*public static String buildUrl( String url, String port, String function ) {
-        StringBuilder sb = new StringBuilder();
-        sb.append( "http://" + url + ":" );
-        sb.append( port + "/" );
-        sb.append( function );
-        return sb.toString();
-    }*/
-
     // TODO avoid to do this fixing properties
     public static String buildBaseUri( String ip, String port ) {
         StringBuilder sb = new StringBuilder();
