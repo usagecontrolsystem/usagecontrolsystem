@@ -17,10 +17,8 @@ package it.cnr.iit.usagecontrolframework.contexthandler;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.LinkedTransferQueue;
@@ -586,8 +584,7 @@ public final class ContextHandlerLC extends AbstractContextHandler {
     // ---------------------------------------------------------------------------
     /**
      * This is the code for the revoke. A revoke is always triggered by and
-     * EndAccess, in this function, all the attributes are unsubscribed TODO:
-     * handle the case in which there were also remote attributes in the policy
+     * EndAccess, in this function, all the attributes are unsubscribed
      *
      * @param session
      *            the session for which the revoke has to occur
@@ -769,10 +766,6 @@ public final class ContextHandlerLC extends AbstractContextHandler {
 
             log.log( Level.INFO, "[TIME] endaccess begins at {0}", new Object[] { System.currentTimeMillis() } );
 
-            // LOGGER.log(Level.INFO,
-            // "[Context Handler] Endaccess is received for session ID: " +
-            // sId);
-
             // check if an entry actually exists in db
             Optional<SessionInterface> optional = getSessionManagerInterface().getSessionForId( endAccessMessage.getSessionId() );
 
@@ -798,14 +791,6 @@ public final class ContextHandlerLC extends AbstractContextHandler {
 
             log.log( Level.INFO, "[TIME] endaccess scheduler starts at {0}", new Object[] { System.currentTimeMillis() } );
             List<Attribute> attributes = policyHelper.getAttributesForCondition( ENDACCESS_POLICY );
-            /*
-             * if (!endAccessMessage.getScheduled()) { String ip =
-             * scheduler.getIp(attributesIP); if (!ip.equals(getIp()) &&
-             * !ip.equals("localhost")) { schedule(endAccessMessage, null, ip,
-             * STATUS.ENDACCESS);
-             * LOGGER.info("[TIME] endaccess scheduler ends at " +
-             * System.currentTimeMillis()); return; } }
-             */
 
             String request = sessionToReevaluate.getOriginalRequest();
 
@@ -873,7 +858,7 @@ public final class ContextHandlerLC extends AbstractContextHandler {
      */
     @Override
     public Message messageForPIP( Message message ) {
-        /*MessagePipCh messagePipCh = (MessagePipCh) message;
+        /*MessagePipCh messagePipCh = (MessagePipCh) message; //NOSONAR
         try {
             if( messagePipCh.getAction() == ACTION.RETRIEVE_RESPONSE
                     || messagePipCh.getAction() == ACTION.SUBSCRIBE_RESPONSE ) {
@@ -888,7 +873,7 @@ public final class ContextHandlerLC extends AbstractContextHandler {
                     // right action
                     LinkedList<String> searchList = new LinkedList<>( pip.getAttributeIds() );
                     if( searchList.contains( attribute.getAttributeId() ) ) {
-
+        
                         switch( messagePipCh.getAction() ) {
                             case RETRIEVE:
                                 attribute.setValue( pip.getAttributesCharacteristics().get( attribute.getAttributeId() )
@@ -995,16 +980,6 @@ public final class ContextHandlerLC extends AbstractContextHandler {
             }
         }
 
-        public int getSleepTime() {
-            return sleepTime;
-        }
-
-        public void setSleepTime( int sleepTime ) {
-            if( sleepTime >= 0 ) {
-                this.sleepTime = sleepTime;
-            }
-        }
-
         /**
          *
          * @param attributes
@@ -1056,24 +1031,12 @@ public final class ContextHandlerLC extends AbstractContextHandler {
                     log.info( "There are no sessions" );
                     return true;
                 }
-                if( isRemote ) {
-                    // split remote and local sessions
-                    HashMap<String, ArrayList<String>> remote = removeRemoteSessions( interestedSessions );
-                    // notify remote sessions
-                    if( !remote.isEmpty() ) {
-                        notifyRemote( remote );
-                    }
+                if( isRemote && interestedSessions.isEmpty() ) {
                     // if there aren't other sessions to be reevaluated, perform
                     // a notify
-                    if( interestedSessions.isEmpty() ) {
-                        log.info( "There are no other sessions" );
-                        return true;
-                    }
+                    log.info( "There are no other sessions" );
+                    return true;
                 }
-                // if (isRemote) {
-                // addAttributeToRequest(attribute, interestedSessions);
-                // }
-                // reevaluate local sessions and notify the PEP
                 for( SessionInterface session : interestedSessions ) {
                     reevaluateSession( session, attribute );
                 }
@@ -1125,67 +1088,6 @@ public final class ContextHandlerLC extends AbstractContextHandler {
         }
 
         /**
-         * Removes the remote sessions from the list of interested sessions
-         *
-         * @param interestedSessions
-         *            the list of sessions interested by the changing of that
-         *            attribute
-         * @return the list of remote sessions, or an empty list if there are no
-         *         remote sessions, with the corresponding IPs in charge of
-         *         handling the reevaluation
-         */
-        private HashMap<String, ArrayList<String>> removeRemoteSessions( List<SessionInterface> interestedSessions ) {
-            HashMap<String, ArrayList<String>> remoteSessions = new HashMap<>();
-            for( int i = 0; i < interestedSessions.size(); ) {
-                SessionInterface session = interestedSessions.get( i );
-                // LOGGER.info(session.getMyIP() + "\t" +
-                // properties.getMyIP());
-
-                /**
-                 * Calling scheduler to know which will be the node in charge of
-                 * handling this session
-                 */
-                PolicyHelper policyHelper = PolicyHelper.buildPolicyHelper( session.getPolicySet() );
-
-                List<Attribute> attributes = policyHelper.getAttributesForCondition( STARTACCESS_POLICY );
-                /*
-                 * String ip = scheduler.getIp(attributesIP); if
-                 * (!ip.equals(getIp()) && !ip.equals("localhost")) { if
-                 * (!remoteSessions.containsKey(ip)) { remoteSessions.put(ip,
-                 * new ArrayList<>()); }
-                 * remoteSessions.get(ip).add(interestedSessions.remove(i).getId
-                 * ()); } else { i++; }
-                 */
-            }
-
-            return remoteSessions;
-        }
-
-        /**
-         * Notifies the remote sessions interested by the remote attribute that
-         * that attribute has changed, hence it is necessary for them to
-         * re-evaluate the sessions. As parameter it will be passed only the
-         * number of the sessions related to the attribute that has changed
-         *
-         *
-         * @param remote
-         *            the remote sessions to be notified
-         */
-        private void notifyRemote( HashMap<String, ArrayList<String>> remote ) {
-            if( remote != null && remote.size() > 0 ) {
-
-                // way to send a single remote notify for each CH
-                for( Map.Entry<String, ArrayList<String>> entry : remote.entrySet() ) {
-                    String destination = entry.getKey();
-                    ReevaluationMessage reevaluationMessage = new ReevaluationMessage( getIp(), destination );
-                    reevaluationMessage.setSessionId( entry.getValue() );
-                    getRequestManagerToChInterface().sendMessageToOutside( reevaluationMessage );
-                }
-            }
-
-        }
-
-        /**
          * Reevaluates the request related to the session which attribute has
          * changed.
          * <p>
@@ -1205,7 +1107,7 @@ public final class ContextHandlerLC extends AbstractContextHandler {
          */
         private String reevaluateSession( SessionInterface session, Attribute attribute ) {
             try {
-                log.info( "[TIME] reevaluation begins at " + System.currentTimeMillis() );
+                log.log( Level.INFO, "[TIME] reevaluation begins at {0}", System.currentTimeMillis() );
 
                 PolicyHelper policyHelper = PolicyHelper.buildPolicyHelper( session.getPolicySet() );
                 if( getSessionManagerInterface().checkSession( session.getId(),
@@ -1216,17 +1118,16 @@ public final class ContextHandlerLC extends AbstractContextHandler {
                     return null;
                 }
 
-                List<Attribute> attributes = policyHelper.getAttributesForCondition( STARTACCESS_POLICY );
-                log.info( "[TIME] reevaluation scheduler starts at " + System.currentTimeMillis() );
+                policyHelper.getAttributesForCondition( STARTACCESS_POLICY );
+                log.log( Level.INFO, "[TIME] reevaluation scheduler starts at {0}", System.currentTimeMillis() );
                 ReevaluationMessage reevaluationMessage = new ReevaluationMessage(
                     generalProperties.getIp(),
                     generalProperties.getIp() );
                 reevaluationMessage.setSession( session );
-                log.info( "[TIME] reevaluation starts at " + System.currentTimeMillis() );
+                log.log( Level.INFO, "[TIME] reevaluation starts at {0}", System.currentTimeMillis() );
                 reevaluate( reevaluationMessage );
-                log.info( "[TIME] reevaluation ends at " + System.currentTimeMillis() );
+                log.log( Level.INFO, "[TIME] reevaluation ends at {0}", System.currentTimeMillis() );
                 getSessionManagerInterface().stopSession( session );
-                // }
 
             } catch( Exception e ) {
                 log.severe( "Error in PIP retrieve " + e.getMessage() );
@@ -1238,7 +1139,7 @@ public final class ContextHandlerLC extends AbstractContextHandler {
     @Override
     public synchronized void reevaluate( Message message ) {
         // BEGIN parameter checking
-        if( message == null || !( message instanceof ReevaluationMessage ) ) {
+        if( !( message instanceof ReevaluationMessage ) ) {
             log.severe( "Invalid message received for reevaluation" );
             return;
         }
@@ -1262,28 +1163,25 @@ public final class ContextHandlerLC extends AbstractContextHandler {
         getObligationManager().translateObligations( pdpEvaluation, reevaluationMessage.getSession().getId(),
             START_STATUS );
 
-        // UXACMLPolicySet policySet = evaluate(request, uxacmlPol,
-        // STARTACCESS_POLICY);
-
-        log.info( "[TIME] decision " + pdpEvaluation.getResult() + " taken at " + System.currentTimeMillis() );
+        log.log( Level.INFO, "[TIME] decision {0} taken at {1}", new Object[] { pdpEvaluation.getResult(), System.currentTimeMillis() } );
         String destination;
         String[] uriSplitted = session.getPEPUri().split( PEP_ID_SEPARATOR );
         destination = session.getPEPUri().split( PEP_ID_SEPARATOR )[0];
-        log.info( "DESTINATION: " + destination + "\t" + session.getStatus() );
+        log.log( Level.INFO, "DESTINATION: {0}\t{1}", new Object[] { destination, session.getStatus() } );
         ReevaluationResponse chPepMessage = new ReevaluationResponse( getIp(), destination );
         pdpEvaluation.setSessionId( session.getId() );
         chPepMessage.setPDPEvaluation( pdpEvaluation );
         chPepMessage.setPepID( uriSplitted[uriSplitted.length - 1] );
         getSessionManagerInterface().stopSession( session );
         if( ( session.getStatus().equals( START_STATUS ) || session.getStatus().equals( TRY_STATUS ) )
-                && pdpEvaluation.getResult().contains( "Deny" ) ) {
-            log.info( "[TIME] Sending revoke " + System.currentTimeMillis() );
+                && pdpEvaluation.getResult().contains( DecisionType.DENY.value() ) ) {
+            log.log( Level.INFO, "[TIME] Sending revoke {0}", System.currentTimeMillis() );
             getSessionManagerInterface().updateEntry( session.getId(), REVOKE_STATUS );
             getRequestManagerToChInterface().sendMessageToOutside( chPepMessage );
         }
 
-        if( session.getStatus().equals( REVOKE_STATUS ) && pdpEvaluation.getResult().contains( "Permit" ) ) {
-            log.info( "[TIME] Sending resume " + System.currentTimeMillis() );
+        if( session.getStatus().equals( REVOKE_STATUS ) && pdpEvaluation.getResult().contains( DecisionType.PERMIT.value() ) ) {
+            log.log( Level.INFO, "[TIME] Sending resume {0}", System.currentTimeMillis() );
             getSessionManagerInterface().updateEntry( session.getId(), START_STATUS );
             getRequestManagerToChInterface().sendMessageToOutside( chPepMessage );
         }

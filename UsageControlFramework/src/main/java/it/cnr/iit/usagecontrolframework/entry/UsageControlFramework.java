@@ -36,7 +36,6 @@ import it.cnr.iit.ucs.configuration.RequestManagerProperties;
 import it.cnr.iit.ucs.configuration.UCSConfiguration;
 import it.cnr.iit.ucs.configuration.pip.PipProperties;
 import it.cnr.iit.ucs.configuration.session_manager.SessionManagerProperties;
-import it.cnr.iit.ucs.constants.DISTRIBUTED_TYPE;
 import it.cnr.iit.ucsinterface.contexthandler.AbstractContextHandler;
 import it.cnr.iit.ucsinterface.forwardingqueue.ForwardingQueue;
 import it.cnr.iit.ucsinterface.message.Message;
@@ -168,10 +167,9 @@ public final class UsageControlFramework implements UCSInterface {
         }
 
         configuration = optConfiguration.get();
-        DISTRIBUTED_TYPE distributedType = DISTRIBUTED_TYPE.NONE;
 
         // build the context handler
-        if( !buildContextHandler( distributedType ) ) {
+        if( !buildContextHandler() ) {
             log.info( "Error in building the context handler" );
             return false;
         }
@@ -212,11 +210,6 @@ public final class UsageControlFramework implements UCSInterface {
         log.info( "*******************\nCC" );
         // checks if every component is ok
         return checkConnection();
-    }
-
-    private boolean buildContextHandler( DISTRIBUTED_TYPE distributedType ) {
-        // if( distributedType == null || distributedType == DISTRIBUTED_TYPE.NONE ) {
-        return buildContextHandler();
     }
 
     /**
@@ -364,7 +357,6 @@ public final class UsageControlFramework implements UCSInterface {
         requestManager.setInterfaces( contextHandler, proxyPEPMap, nodeInterface,
             forwardingQueue );
         proxyPDP.setInterfaces( proxyPAP );
-        // proxySessionManager.start();
 
         return true;
     }
@@ -384,7 +376,6 @@ public final class UsageControlFramework implements UCSInterface {
             }
             proxyPEPMap.put( pep.getId(), proxyPEP );
         }
-        // proxyPEP.setCHInterface(contextHandler);
         return true;
     }
 
@@ -447,9 +438,7 @@ public final class UsageControlFramework implements UCSInterface {
 
     @Override
     @Async
-    public void retrieveRemoteResponse( MessagePipCh messagePipCh ) {
-        getPIPRetrieval().messageArrived( messagePipCh );
-    }
+    public void retrieveRemoteResponse( MessagePipCh messagePipCh ) {} // NOSONAR
 
     /* Getters */
 
@@ -461,17 +450,11 @@ public final class UsageControlFramework implements UCSInterface {
         return requestManager;
     }
 
-    public PIPRetrieval getPIPRetrieval() {
-        return pipRetrieval;
-    }
-
-    @Override
-    public void register( Message message ) {
-
-    }
-
     public boolean getInitialized() {
         return initialized;
     }
+
+    @Override
+    public void register( Message message ) {} // NOSONAR
 
 }

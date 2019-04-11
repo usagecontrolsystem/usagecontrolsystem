@@ -15,6 +15,7 @@
  ******************************************************************************/
 package it.cnr.iit.usagecontrolframework.rest;
 
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.springframework.http.MediaType;
@@ -91,7 +92,7 @@ public class UCFRestController {
             throw new NotFoundException();
         }
         // END parameter checking
-        log.info( "[TIME] Startaccess received " + System.currentTimeMillis() );
+        log.log( Level.INFO, "[TIME] Startaccess received {0}", System.currentTimeMillis() );
         usageControlFramework.startAccess( message );
     }
 
@@ -106,7 +107,7 @@ public class UCFRestController {
             throw new NotFoundException();
         }
         // END parameter checking
-        log.info( "[TIME] Endaccess received " + System.currentTimeMillis() );
+        log.log( Level.INFO, "[TIME] Endaccess received {0}", System.currentTimeMillis() );
         usageControlFramework.endAccess( message );
     }
 
@@ -122,7 +123,7 @@ public class UCFRestController {
         }
         // END parameter checking
 
-        log.info( "[TIME] Reevaluation received " + System.currentTimeMillis() );
+        log.log( Level.INFO, "[TIME] Reevaluation received {0}", System.currentTimeMillis() );
         usageControlFramework.onGoingEvaluation( message );
     }
 
@@ -153,7 +154,6 @@ public class UCFRestController {
         // END parameter checking
 
         usageControlFramework.retrieveRemoteResponse( message );
-        // usageControlFramework.getRequestManager().sendMessageToCH(messagePipCh);
     }
 
     @ApiOperation( httpMethod = "POST", value = "Receives request from PEP for tryaccess operation" )

@@ -70,7 +70,6 @@ public class ProxyPEP extends Proxy implements PEPInterface {
     private String tryAccessResponse = "";
     private String startAccessResponse = "";
     private String endAccessResponse = "";
-    private String onGoingEvaluation = "";
 
     /**
      * Constructor for the proxy PEP
@@ -167,11 +166,6 @@ public class ProxyPEP extends Proxy implements PEPInterface {
 
         if( properties.getPort() == null ) {
             log.warning( "Missing port parameter in configuration file" );
-            return false;
-        }
-
-        if( ( onGoingEvaluation = properties.getOnGoingEvaluation() ) == null ) {
-            log.warning( "Missing onGoingEvaluation parameter in configuration file" );
             return false;
         }
 

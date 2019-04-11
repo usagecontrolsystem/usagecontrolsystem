@@ -18,9 +18,8 @@ package it.cnr.iit.usagecontrolframework.requestmanager;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import com.google.common.base.Throwables;
 
 import it.cnr.iit.ucs.configuration.GeneralProperties;
 import it.cnr.iit.ucs.configuration.RequestManagerProperties;
@@ -64,7 +63,7 @@ public class RequestManagerLC extends AsynchronousRequestManager {
     /*
      * This is the thread in charge of handling the operations requested from a
      * remote PIP except from reevaluation.
-    
+
     private ExecutorService attributeSupplier;
     */
 
@@ -106,14 +105,12 @@ public class RequestManagerLC extends AsynchronousRequestManager {
     public synchronized void sendMessageToOutside( Message message ) {
         // BEGIN parameter checking
         if( !isInitialized() ) {
-            // TODO throw exception
             log.warning( "Invalid state of the request manager" );
-            return;
+            throw new IllegalStateException( "RequestManager not initialized correctly" );
         }
         if( message == null ) {
-            // TODO throw exception
             log.warning( "Invalid message" );
-            return;
+            throw new IllegalArgumentException( "Invalid message" );
         }
         // END parameter checking
 
@@ -142,7 +139,6 @@ public class RequestManagerLC extends AsynchronousRequestManager {
         if( ( original = getForwardingQueue()
             .getOriginalSource( message.getID() ) ) != null ) {
             reswap( message, original );
-            // FIXME ?
             getPEPInterface().get( message.getDestination() )
                 .receiveResponse( message );
         } else {
@@ -162,8 +158,8 @@ public class RequestManagerLC extends AsynchronousRequestManager {
     }
 
     private void sendReevaluation( ReevaluationResponse reevaluation ) {
-        log.info( "[TIME] Effectively Sending on going evaluation "
-                + System.currentTimeMillis() );
+        log.log( Level.INFO, "[TIME] Effectively Sending on going evaluation {0}",
+            System.currentTimeMillis() );
         if( reevaluation.getDestination()
             .equals( generalProperties.getIp() ) ) {
             getPEPInterface().get( ( reevaluation ).getPepID() )
@@ -195,14 +191,12 @@ public class RequestManagerLC extends AsynchronousRequestManager {
                     getQueueToCH().put( message );
                 }
             }
-        } catch( NullPointerException | InterruptedException e ) {
+        } catch( NullPointerException e ) {
             LOGGER.severe( e.getMessage() );
-            if( e instanceof InterruptedException ) {
-                Thread.currentThread().interrupt();
-            }
-            Throwables.propagate( e );
+        } catch( InterruptedException e ) {
+            LOGGER.severe( e.getMessage() );
+            Thread.currentThread().interrupt();
         }
-
         return null;
     }
 
@@ -262,9 +256,9 @@ public class RequestManagerLC extends AsynchronousRequestManager {
      *
      * @author antonio
      *
-
+    
     private class AttributeSupplier implements Callable<Void> {
-
+    
     	@Override
     	public Void call() throws Exception {
     		while (true) {
@@ -311,7 +305,7 @@ public class RequestManagerLC extends AsynchronousRequestManager {
      * @param message
      *          the message returned by the context handler
      * @return the message to be used as response
-
+    
     private MessagePipCh createResponse(Message message) {
     	MessagePipCh chResponse = (MessagePipCh) message;
     	switch (chResponse.getAction()) {
