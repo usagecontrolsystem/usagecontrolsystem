@@ -44,6 +44,7 @@ import org.wso2.balana.finder.PolicyFinderResult;
  *
  */
 class InputStreamBasedPolicyFinderModule extends PolicyFinderModule {
+
     private static final Logger log = Logger.getLogger( InputStreamBasedPolicyFinderModule.class.getName() );
 
     private PolicyFinder finder = null;
@@ -58,9 +59,9 @@ class InputStreamBasedPolicyFinderModule extends PolicyFinderModule {
     private DocumentBuilderFactory documentBuilderFactory;
 
     public InputStreamBasedPolicyFinderModule( String policy ) {
-        this.dataUsagePolicy = new String( policy );
+        dataUsagePolicy = new String( policy );
 
-        this.documentBuilderFactory = DocumentBuilderFactory.newInstance();
+        documentBuilderFactory = DocumentBuilderFactory.newInstance();
         documentBuilderFactory.setIgnoringComments( true );
         documentBuilderFactory.setNamespaceAware( true );
         documentBuilderFactory.setValidating( false );
