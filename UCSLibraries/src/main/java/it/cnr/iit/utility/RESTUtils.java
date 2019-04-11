@@ -23,7 +23,6 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -44,11 +43,11 @@ public final class RESTUtils {
 
     }
 
-    public static Optional<ResponseEntity> post( String baseUri, String api, Object obj ) throws RestClientException {
+    public static Optional<ResponseEntity<Void>> post( String baseUri, String api, Object obj ) {
         return post( baseUri, api, obj, Void.class );
     }
 
-    public static <T, E> Optional<ResponseEntity> post( String baseUri, String api, E obj, Class<T> responseClass ) {
+    public static <T, E> Optional<ResponseEntity<T>> post( String baseUri, String api, E obj, Class<T> responseClass ) {
         // TODO fix this mess, use URI instead of string
         String url = baseUri + ( ( !api.endsWith( "/" ) && !baseUri.endsWith( "/" ) ) ? "/" : "" ) + api;
 
@@ -63,13 +62,13 @@ public final class RESTUtils {
         HttpEntity<String> entity = new HttpEntity<>( jsonString.get(), headers );
         RestTemplate restTemplate = new RestTemplate();
 
-        ResponseEntity responseEntity = restTemplate.postForEntity( url, entity, Void.class );
+        ResponseEntity<T> responseEntity = restTemplate.postForEntity( url, entity, responseClass );
 
         return Optional.of( responseEntity );
     }
 
-    public static <E> CompletableFuture<ResponseEntity> asyncPost( String baseUri, String api, E obj ) {
-        Mono<ResponseEntity> response = WebClient
+    public static <T, E> CompletableFuture<ResponseEntity<?>> asyncPost( String baseUri, String api, E obj ) {
+        Mono<ResponseEntity<?>> response = WebClient
             .create( baseUri )
             .post()
             .uri( api )
