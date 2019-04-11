@@ -15,6 +15,9 @@ import java.util.logging.Logger;
 public class LogProfiler {
 
     protected Logger log = Logger.getLogger( this.getClass().getName() );
+
+    private static final String MSG_ERR_WRITEFILE = "Error dumping file {0} : {1}";
+
     private ArrayList<String> logList;
     private long timestamp;
     private static LogProfiler instance;
@@ -39,7 +42,7 @@ public class LogProfiler {
         try {
             Files.write( out, logList, Charset.defaultCharset() );
         } catch( IOException e ) {
-            e.printStackTrace();
+            log.severe( String.format( MSG_ERR_WRITEFILE, path, e.getMessage() ) );
         }
     }
 
