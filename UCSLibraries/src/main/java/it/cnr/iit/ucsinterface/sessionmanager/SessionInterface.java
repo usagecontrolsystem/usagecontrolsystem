@@ -87,7 +87,6 @@ public interface SessionInterface {
      *
      * @return list of mutable attributes
      */
-    // public ForeignCollection<OnGoingAttribute> getOnGoingAttributesAsForeign();
 
     public void setRequest( String request );
 
