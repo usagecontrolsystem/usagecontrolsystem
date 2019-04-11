@@ -10,7 +10,7 @@ import it.cnr.iit.utility.JsonUtility;
 
 public class PIPBuilder {
 
-    private static Logger LOG = Logger.getLogger( PIPBuilder.class.getName() );
+    private static Logger log = Logger.getLogger( PIPBuilder.class.getName() );
 
     private static final String MSG_ERR_BUILD_PROP = "Error building PIPBase from properties : {0}";
     private static final String MSG_ERR_BUILD_STR = "Error building PIPBase from properties string";
@@ -18,14 +18,13 @@ public class PIPBuilder {
     private PIPBuilder() {}
 
     public static Optional<PipProperties> getPropertiesFromString( String properties ) {
-        Optional<PipProperties> obj = JsonUtility.loadObjectFromJsonString( properties, PipProperties.class );
-        return obj;
+        return JsonUtility.loadObjectFromJsonString( properties, PipProperties.class );
     }
 
     public static Optional<PIPBase> buildFromString( String strProperties ) {
         Optional<PipProperties> properties = getPropertiesFromString( strProperties );
         if( !properties.isPresent() ) {
-            LOG.severe( MSG_ERR_BUILD_STR );
+            log.severe( MSG_ERR_BUILD_STR );
             return Optional.empty();
         }
         return buildFromProperties( properties.get() );
@@ -40,7 +39,7 @@ public class PIPBuilder {
             PIPBase pip = (PIPBase) constructor.newInstance( properties );
             return Optional.of( pip );
         } catch( Exception e ) {
-            LOG.severe( String.format( MSG_ERR_BUILD_PROP, e.getMessage() ) );
+            log.severe( String.format( MSG_ERR_BUILD_PROP, e.getMessage() ) );
         }
         return Optional.empty();
     }
