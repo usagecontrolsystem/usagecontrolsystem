@@ -274,7 +274,7 @@ public class PIPLocation extends PIPBase {
 
     }
 
-    final private boolean setExpectedCategory( String category ) {
+    private final boolean setExpectedCategory( String category ) {
         // BEGIN parameter checking
         if( !isInitialized() || category == null || category.isEmpty() ) {
             initialized = false;

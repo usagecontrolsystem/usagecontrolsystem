@@ -428,7 +428,7 @@ public final class PIPReadResources extends PIPBase {
 	// SETTERS
 	// ---------------------------------------------------------------------------
 	
-	final private boolean setExpectedCategory(String category) {
+	private final boolean setExpectedCategory(String category) {
 		// BEGIN parameter checking
 		if (!isInitialized() || category == null || category.isEmpty()) {
 			initialized = false;
@@ -444,7 +444,7 @@ public final class PIPReadResources extends PIPBase {
 		return true;
 	}
 	
-	final private boolean setFilePath(String filePath) {
+	private final boolean setFilePath(String filePath) {
 		// BEGIN parameter checking
 		if (!isInitialized() || filePath == null || filePath.isEmpty()) {
 			LOGGER.log(Level.SEVERE, "Wrong init: " + filePath + "\t" + initialized);

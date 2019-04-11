@@ -433,7 +433,7 @@ public final class PIPReader extends PIPBase {
         }
     }
 
-    final private boolean setExpectedCategory( String category ) {
+    private final boolean setExpectedCategory( String category ) {
         // BEGIN parameter checking
         if( !isInitialized() || category == null || category.isEmpty() ) {
             initialized = false;
@@ -449,7 +449,7 @@ public final class PIPReader extends PIPBase {
         return true;
     }
 
-    final private boolean setFilePath( String filePath ) {
+    private final boolean setFilePath( String filePath ) {
         // BEGIN parameter checking
         if( !isInitialized() || filePath == null || filePath.isEmpty() ) {
             log.severe( "Wrong initialisation > filepath :" + filePath + "\t initialized : " + initialized );
