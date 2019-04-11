@@ -35,7 +35,7 @@ import it.cnr.iit.xacmlutilities.Attribute;
  *
  * @author Fabio Bindi and Filippo Lauria and Antonio La Marra
  */
-final public class SessionManagerDesktop implements SessionManagerInterface {
+public final class SessionManagerDesktop implements SessionManagerInterface {
 
     private static Logger log = Logger.getLogger( SessionManagerDesktop.class.getName() );
 
