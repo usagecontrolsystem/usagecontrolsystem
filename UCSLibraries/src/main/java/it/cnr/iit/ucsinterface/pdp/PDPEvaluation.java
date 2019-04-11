@@ -15,7 +15,6 @@
  ******************************************************************************/
 package it.cnr.iit.ucsinterface.pdp;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -77,7 +76,7 @@ public interface PDPEvaluation {
      *
      * @return the obligations in String format
      */
-    public ArrayList<String> getObligations();
+    public List<String> getObligations();
 
     public void setSessionId( String id );
 
@@ -85,5 +84,5 @@ public interface PDPEvaluation {
 
     public Object getResponseAsObject();
 
-    public ArrayList<Integer> getFiringRules();
+    public List<Integer> getFiringRules();
 }

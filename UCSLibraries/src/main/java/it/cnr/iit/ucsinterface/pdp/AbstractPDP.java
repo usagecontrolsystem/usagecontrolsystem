@@ -58,8 +58,8 @@ public abstract class AbstractPDP implements PDPInterface {
     // ---------------------------------------------------------------------------
     // GETTER and SETTERS
     // ---------------------------------------------------------------------------
-    final protected ObligationManagerInterface getObligationManager() {
-        if( initialized == true ) {
+    protected final ObligationManagerInterface getObligationManager() {
+        if( initialized ) {
             return obligationManagerInterface;
         }
         return null;
@@ -76,8 +76,8 @@ public abstract class AbstractPDP implements PDPInterface {
         verify();
     }
 
-    final protected PAPInterface getPAPInterface() {
-        if( initialized == true ) {
+    protected final PAPInterface getPAPInterface() {
+        if( initialized ) {
             return papInterface;
         }
         return null;
