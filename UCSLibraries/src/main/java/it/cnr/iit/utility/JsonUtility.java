@@ -3,7 +3,7 @@ package it.cnr.iit.utility;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Optional;
@@ -44,7 +44,7 @@ public class JsonUtility {
     public static <T> Optional<T> loadObjectFromJsonFile( File file, Class<T> clazz ) {
         String data = null;
         try {
-            data = new String( Files.readAllBytes( Paths.get( file.getAbsolutePath() ) ), Charset.forName( "UTF-8" ) );
+            data = new String( Files.readAllBytes( Paths.get( file.getAbsolutePath() ) ), StandardCharsets.UTF_8 );
         } catch( IOException e ) {
             LOGGER.severe( "Error reading file : " + file.getAbsolutePath() + ", " + e.getMessage() );
             return Optional.empty();
