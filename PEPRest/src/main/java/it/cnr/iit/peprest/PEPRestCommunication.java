@@ -24,6 +24,8 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -43,20 +45,20 @@ import io.swagger.annotations.ApiResponses;
 @EnableAutoConfiguration
 public class PEPRestCommunication {
 
-    protected static final Logger LOG = Logger.getLogger( PEPRestCommunication.class.getName() );
+    protected static final Logger log = Logger.getLogger( PEPRestCommunication.class.getName() );
 
     private PEPRest pepRest;
 
-    @RequestMapping( method = RequestMethod.GET, value = "/isAlive", consumes = MediaType.ALL_VALUE )
+    @GetMapping( value = "/isAlive", consumes = MediaType.ALL_VALUE )
     public void isAlive() {
-        System.out.println( "in isAlive():heath check OK" );
+        log.info( "in isAlive():heath check OK" );
     }
 
     @ApiOperation( httpMethod = "POST", value = "Starts the PEP" )
     @ApiResponses( value = {
         @ApiResponse( code = 500, message = "Invalid message received" ),
         @ApiResponse( code = 200, message = "OK" ) } )
-    @RequestMapping( method = RequestMethod.POST, value = "/startEvaluation" )
+    @PostMapping( value = "/startEvaluation" )
     public String startEvaluation() {
         return pepRest.tryAccess();
     }
@@ -72,7 +74,7 @@ public class PEPRestCommunication {
     @ApiResponses( value = {
         @ApiResponse( code = 500, message = "Invalid message received" ),
         @ApiResponse( code = 200, message = "OK" ) } )
-    @RequestMapping( method = RequestMethod.GET, value = "/flowStatus" )
+    @GetMapping( value = "/flowStatus" )
     public CallerResponse getMessageStatus( @RequestParam( value = "messageId" ) String messageId ) {
         // BEGIN parameter checking
         if( messageId == null || messageId.isEmpty() ) {
@@ -91,7 +93,7 @@ public class PEPRestCommunication {
     @ApiResponses( value = {
         @ApiResponse( code = 500, message = "Invalid message received" ),
         @ApiResponse( code = 200, message = "OK" ) } )
-    @RequestMapping( method = RequestMethod.POST, value = "/finish", consumes = MediaType.TEXT_PLAIN_VALUE )
+    @PostMapping( value = "/finish", consumes = MediaType.TEXT_PLAIN_VALUE )
     public void finish( @RequestBody( ) String sessionId ) {
         // BEGIN parameter checking
         if( sessionId == null || sessionId.isEmpty() ) {

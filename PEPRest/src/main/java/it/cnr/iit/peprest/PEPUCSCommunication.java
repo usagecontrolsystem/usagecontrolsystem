@@ -5,9 +5,9 @@ import java.util.logging.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import it.cnr.iit.ucsinterface.message.endaccess.EndAccessResponse;
@@ -34,7 +34,7 @@ public class PEPUCSCommunication {
     @ApiResponses( value = {
         @ApiResponse( code = 500, message = "Invalid message received" ),
         @ApiResponse( code = 200, message = "OK" ) } )
-    @RequestMapping( method = RequestMethod.POST, value = NodeInterface.ONGOINGRESPONSE_REST, consumes = MediaType.APPLICATION_JSON_VALUE )
+    @PostMapping( value = NodeInterface.ONGOINGRESPONSE_REST, consumes = MediaType.APPLICATION_JSON_VALUE )
     public void onGoingEvaluation( @RequestBody( ) ReevaluationResponse message ) {
         pepRest.onGoingEvaluation( message );
     }
@@ -43,7 +43,7 @@ public class PEPUCSCommunication {
     @ApiResponses( value = {
         @ApiResponse( code = 500, message = "Invalid message received" ),
         @ApiResponse( code = 200, message = "OK" ) } )
-    @RequestMapping( method = RequestMethod.POST, value = "/tryAccessResponse", consumes = MediaType.APPLICATION_JSON_VALUE )
+    @PostMapping( value = "/tryAccessResponse", consumes = MediaType.APPLICATION_JSON_VALUE )
     public void tryAccessResponse( @RequestBody( ) TryAccessResponse message ) {
         pepRest.receiveResponse( message );
     }
@@ -52,7 +52,7 @@ public class PEPUCSCommunication {
     @ApiResponses( value = {
         @ApiResponse( code = 500, message = "Invalid message received" ),
         @ApiResponse( code = 200, message = "OK" ) } )
-    @RequestMapping( method = RequestMethod.POST, value = "/startAccessResponse", consumes = MediaType.APPLICATION_JSON_VALUE )
+    @PostMapping( value = "/startAccessResponse", consumes = MediaType.APPLICATION_JSON_VALUE )
     public void startAccessResponse( @RequestBody( ) StartAccessResponse message ) {
         pepRest.receiveResponse( message );
     }
@@ -61,7 +61,7 @@ public class PEPUCSCommunication {
     @ApiResponses( value = {
         @ApiResponse( code = 500, message = "Invalid message received" ),
         @ApiResponse( code = 200, message = "OK" ) } )
-    @RequestMapping( method = RequestMethod.POST, value = "/endAccessResponse", consumes = MediaType.APPLICATION_JSON_VALUE )
+    @PostMapping( value = "/endAccessResponse", consumes = MediaType.APPLICATION_JSON_VALUE )
     public void endAccessResponse( @RequestBody( ) EndAccessResponse message ) {
         pepRest.receiveResponse( message );
     }
