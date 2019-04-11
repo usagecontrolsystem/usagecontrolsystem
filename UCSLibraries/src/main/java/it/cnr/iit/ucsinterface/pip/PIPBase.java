@@ -11,6 +11,7 @@ import java.util.logging.Logger;
 
 import it.cnr.iit.ucs.configuration.pip.PipProperties;
 import it.cnr.iit.ucsinterface.contexthandler.ContextHandlerPIPInterface;
+import it.cnr.iit.utility.errorhandling.Reject;
 import it.cnr.iit.xacmlutilities.Attribute;
 
 /**
@@ -79,36 +80,25 @@ public abstract class PIPBase implements PIPCHInterface, PIPOMInterface {
      *          the configuration of the PIP
      */
     public PIPBase( PipProperties properties ) {
-        // BEGIN parameter checking
-        if( properties == null ) {
-            log.severe( "properties are null" );
-            // TODO throw exception
-            return;
-        }
-        // END parameter checking
+        Reject.ifNull( properties );
         this.properties = properties;
         initialized = true;
     }
 
     @Override
     public final ArrayList<String> getAttributeIds() {
-        if( initialized ) {
-            ArrayList<String> arrayList = new ArrayList<>();
-            arrayList.addAll( attributes.keySet() );
-            return arrayList;
-        }
-        return null;
+        Reject.ifInvalidObjectState( initialized, PIPBase.class.getName(), log );
+        ArrayList<String> arrayList = new ArrayList<>();
+        arrayList.addAll( attributes.keySet() );
+        return arrayList;
     }
 
     @Override
     public final ArrayList<Attribute> getAttributes() {
-        if( initialized ) {
-            ArrayList<Attribute> arrayList = new ArrayList<>();
-            arrayList.addAll( attributes.values() );
-            return arrayList;
-        }
-        log.severe( "Cannot read attributes, PIP not initialised" );
-        return null;
+        Reject.ifInvalidObjectState( initialized, PIPBase.class.getName(), log );
+        ArrayList<Attribute> arrayList = new ArrayList<>();
+        arrayList.addAll( attributes.values() );
+        return arrayList;
     }
 
     @Override
@@ -116,33 +106,28 @@ public abstract class PIPBase implements PIPCHInterface, PIPOMInterface {
         return attributes;
     }
 
-    final protected PipProperties getProperties() {
+    protected final PipProperties getProperties() {
         return properties;
     }
 
-    final protected boolean isInitialized() {
+    protected final boolean isInitialized() {
         return initialized;
     }
 
     @Override
     public boolean setContextHandlerInterface(
             ContextHandlerPIPInterface contextHandlerInterface ) {
-        // BEGIN parameter checking
-        if( initialized == false || contextHandlerInterface == null ) {
-            return false;
-        }
-        // END parameter checking
+        Reject.ifNull( contextHandlerInterface );
+        Reject.ifInvalidObjectState( initialized, PIPBase.class.getName(), log );
         this.contextHandlerInterface = contextHandlerInterface;
         return true;
     }
 
-    final protected boolean addAttribute( Attribute attribute ) {
-        // BEGIN parameter checking
-        if( attribute == null
-                || attributes.containsKey( attribute.getAttributeId() ) ) {
+    protected final boolean addAttribute( Attribute attribute ) {
+        Reject.ifNull( attribute );
+        if( attributes.containsKey( attribute.getAttributeId() ) ) {
             return false;
         }
-        // END parameter checking
         attributes.put( attribute.getAttributeId(), attribute );
         return true;
     }
