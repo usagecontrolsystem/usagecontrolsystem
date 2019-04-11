@@ -27,6 +27,7 @@ import it.cnr.iit.ucs.builders.PIPBuilder;
 import it.cnr.iit.ucsinterface.contexthandler.AbstractContextHandler;
 import it.cnr.iit.utility.JAXBUtility;
 import it.cnr.iit.utility.JsonUtility;
+import it.cnr.iit.utility.errorhandling.exception.PreconditionException;
 import it.cnr.iit.xacmlutilities.Attribute;
 import it.cnr.iit.xacmlutilities.Category;
 import it.cnr.iit.xacmlutilities.DataType;
@@ -157,9 +158,6 @@ public class CoverageTest {
     }
 
     public void testInitialization() {
-        fault = new PIPReader( null );
-        assertEquals( fault.initialized, false );
-
         fault = new PIPReader( PIPBuilder.getPropertiesFromString( missingCategory ).get() );
         assertEquals( fault.initialized, false );
 
@@ -177,6 +175,12 @@ public class CoverageTest {
 
         // fault = new PIPReader( PIPBuilder.getPipPropertiesFromString(malformedInput).get() );
         // assertEquals( fault.initialized, false );
+    }
+
+    @Test( expected = PreconditionException.class )
+    public void testNullProperties() {
+        fault = new PIPReader( null );
+        assertEquals( fault.initialized, false );
     }
 
     public void testRetrieve() {
