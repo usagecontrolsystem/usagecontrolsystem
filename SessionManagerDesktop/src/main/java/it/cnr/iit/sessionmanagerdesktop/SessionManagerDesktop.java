@@ -11,15 +11,12 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.google.common.base.Throwables;
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.dao.DaoManager;
 import com.j256.ormlite.dao.ForeignCollection;
-import com.j256.ormlite.db.DatabaseType;
-import com.j256.ormlite.db.HsqldbDatabaseType;
 import com.j256.ormlite.jdbc.JdbcConnectionSource;
 import com.j256.ormlite.stmt.QueryBuilder;
 import com.j256.ormlite.support.ConnectionSource;
@@ -39,7 +36,10 @@ import it.cnr.iit.xacmlutilities.Attribute;
  * @author Fabio Bindi and Filippo Lauria and Antonio La Marra
  */
 final public class SessionManagerDesktop implements SessionManagerInterface {
-    private static Logger LOGGER = Logger.getLogger( SessionManagerDesktop.class.getName() );
+
+    private static Logger log = Logger.getLogger( SessionManagerDesktop.class.getName() );
+
+    private static final String MSG_ERR_SQL = "Error in SQL query : {0}";
 
     // url to connect to the database
     private String databaseURL;
@@ -63,12 +63,6 @@ final public class SessionManagerDesktop implements SessionManagerInterface {
         attributesDao = null;
     }
 
-    /**
-     * Constructor
-     *
-     * @param databaseURL_
-     *          URL of the database where data will be stored/retrieved
-     */
     public SessionManagerDesktop( SessionManagerProperties properties ) {
         // BEGIN parameter checking
         if( properties == null || properties.getDriver() == null ) {
@@ -99,31 +93,14 @@ final public class SessionManagerDesktop implements SessionManagerInterface {
             sessionDao = DaoManager.createDao( connection, Session.class );
             attributesDao = DaoManager.createDao( connection, OnGoingAttribute.class );
 
-            cleanDbForTestRun(); // FIXME: needs to check state i.e. if test mode etc..
-
             TableUtils.createTableIfNotExists( connection, Session.class );
             TableUtils.createTableIfNotExists( connection, OnGoingAttribute.class );
-        } catch( SQLException ex ) {
-            ex.printStackTrace();
+        } catch( SQLException e ) {
+            log.severe( String.format( MSG_ERR_SQL, e.getMessage() ) );
             initialized = false;
             throw new IllegalStateException( "SessionManager not in a valid state anymore" );
         }
         return true;
-    }
-
-    /**
-     * This is a work around because ormlite still thinks that
-     * hsqldb cannot handle keyword 'if exists' in create
-     * so drop the tables first
-     *
-     * @throws SQLException
-     */
-    private void cleanDbForTestRun() throws SQLException {
-        DatabaseType databaseType = connection.getDatabaseType();
-        if( databaseType instanceof HsqldbDatabaseType ) {
-            TableUtils.dropTable( connection, Session.class, true );
-            TableUtils.dropTable( connection, OnGoingAttribute.class, true );
-        }
     }
 
     /**
@@ -140,8 +117,8 @@ final public class SessionManagerDesktop implements SessionManagerInterface {
         // END parameter checking
         try {
             connection.close();
-        } catch( SQLException ex ) {
-            ex.printStackTrace();
+        } catch( SQLException e ) {
+            log.severe( String.format( MSG_ERR_SQL, e.getMessage() ) );
             initialized = false;
             throw new IllegalStateException( "SessionManager not in a valid state anymore" );
         }
@@ -167,8 +144,8 @@ final public class SessionManagerDesktop implements SessionManagerInterface {
             Session s = sessionDao.queryForId( sessionId );
             s.setStatus( status );
             sessionDao.update( s );
-        } catch( SQLException ex ) {
-            ex.printStackTrace();
+        } catch( SQLException e ) {
+            log.severe( String.format( MSG_ERR_SQL, e.getMessage() ) );
             return false;
         }
         return true;
@@ -372,12 +349,11 @@ final public class SessionManagerDesktop implements SessionManagerInterface {
             String pepURI, String myIP, String subjectName, String resourceName,
             String actionName ) {
         try {
-
             Session s = new Session( sessionId, policySet, originalRequest, status,
                 pepURI, myIP );
             // IMPORTANTE
             if( sessionDao.idExists( sessionId ) ) {
-                LOGGER.log( Level.SEVERE, "ID already exists" );
+                log.severe( "ID already exists" );
                 return false;
             }
             sessionDao.create( s );
@@ -415,8 +391,8 @@ final public class SessionManagerDesktop implements SessionManagerInterface {
                     attributes.add( a );
                 }
             }
-        } catch( SQLException ex ) {
-            ex.printStackTrace();
+        } catch( SQLException e ) {
+            log.severe( String.format( MSG_ERR_SQL, e.getMessage() ) );
             return false;
         }
         return true;
@@ -450,8 +426,8 @@ final public class SessionManagerDesktop implements SessionManagerInterface {
             }
             return sessions;
 
-        } catch( SQLException ex ) {
-            ex.printStackTrace();
+        } catch( SQLException e ) {
+            log.severe( String.format( MSG_ERR_SQL, e.getMessage() ) );
         }
         return new ArrayList<>();
     }
@@ -498,8 +474,8 @@ final public class SessionManagerDesktop implements SessionManagerInterface {
             }
             return sessions;
 
-        } catch( SQLException ex ) {
-            ex.printStackTrace();
+        } catch( SQLException e ) {
+            log.severe( String.format( MSG_ERR_SQL, e.getMessage() ) );
         }
         return new ArrayList<>();
     }
@@ -542,8 +518,8 @@ final public class SessionManagerDesktop implements SessionManagerInterface {
             }
             return sessions;
 
-        } catch( SQLException ex ) {
-            ex.printStackTrace();
+        } catch( SQLException e ) {
+            log.severe( String.format( MSG_ERR_SQL, e.getMessage() ) );
         }
         return new ArrayList<>();
     }
@@ -586,8 +562,8 @@ final public class SessionManagerDesktop implements SessionManagerInterface {
             }
             return sessions;
 
-        } catch( SQLException ex ) {
-            ex.printStackTrace();
+        } catch( SQLException e ) {
+            log.severe( String.format( MSG_ERR_SQL, e.getMessage() ) );
         }
         return new ArrayList<>();
     }
@@ -606,8 +582,8 @@ final public class SessionManagerDesktop implements SessionManagerInterface {
         // END parameter checking
         try {
             return Optional.ofNullable( sessionDao.queryForId( sessionId ) );
-        } catch( SQLException ex ) {
-            ex.printStackTrace();
+        } catch( SQLException e ) {
+            log.severe( String.format( MSG_ERR_SQL, e.getMessage() ) );
             return Optional.empty();
         }
     }
@@ -633,8 +609,8 @@ final public class SessionManagerDesktop implements SessionManagerInterface {
                 returnList.add( session );
             }
             return returnList;
-        } catch( SQLException ex ) {
-            ex.printStackTrace();
+        } catch( SQLException e ) {
+            log.severe( String.format( MSG_ERR_SQL, e.getMessage() ) );
             return new ArrayList<>();
         }
     }
@@ -672,8 +648,8 @@ final public class SessionManagerDesktop implements SessionManagerInterface {
             }
             return sessions;
 
-        } catch( SQLException ex ) {
-            ex.printStackTrace();
+        } catch( SQLException e ) {
+            log.severe( String.format( MSG_ERR_SQL, e.getMessage() ) );
         }
         return new ArrayList<>();
     }
@@ -687,8 +663,8 @@ final public class SessionManagerDesktop implements SessionManagerInterface {
             // select * from sessions where session_id == 'sessionId'
             Session session = sessionDao.queryForId( sessionId );
             return session.getOnGoingAttribute();
-        } catch( Exception ex ) {
-            ex.printStackTrace();
+        } catch( Exception e ) {
+            log.severe( String.format( MSG_ERR_SQL, e.getMessage() ) );
             return new ArrayList<>();
         }
     }

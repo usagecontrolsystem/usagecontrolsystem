@@ -54,7 +54,10 @@ import it.cnr.iit.utility.JsonUtility;
  */
 final public class ObligationManager implements ObligationManagerInterface {
 
-    private final Logger LOGGER = Logger.getLogger( ObligationManager.class.getName() );
+    private final Logger log = Logger.getLogger( ObligationManager.class.getName() );
+
+    private static final String MSG_ERR_UNMARSHAL = "Error unmarshalling json : {0}";
+    private static final String MSG_ERR_DECODE_OBLIGATION = "Error decoding obligation : {0}";
 
     // list of pips
     private List<PIPOMInterface> pipList;
@@ -95,7 +98,7 @@ final public class ObligationManager implements ObligationManagerInterface {
         // BEGIN parameter checking
         if( ( ( pips == null || pips.size() == 0 ) && pipRetrieval == null )
                 || !isInitialized() ) {
-            LOGGER.severe( "Invalid provided PIPS: " + ( pips == null ) + "\t" + ( ( pips != null ? pips.size() == 0 : 0 ) )
+            log.severe( "Invalid provided PIPS: " + ( pips == null ) + "\t" + ( ( pips != null ? pips.size() == 0 : 0 ) )
                     + "\t" + ( pipRetrieval == null ) + "\t" + ( properties == null ) );
             return false;
         }
@@ -180,8 +183,8 @@ final public class ObligationManager implements ObligationManagerInterface {
         try {
             clazz = Class.forName( className );
             classNameBuilder.append( className );
-        } catch( ClassNotFoundException exception ) {
-            exception.printStackTrace();
+        } catch( ClassNotFoundException e ) {
+            log.severe( String.format( MSG_ERR_UNMARSHAL, e.getMessage() ) );
             return null;
         }
         String json = getJson( obligation );
@@ -207,7 +210,7 @@ final public class ObligationManager implements ObligationManagerInterface {
         try {
             return URLDecoder.decode( obligation.split( "=" )[1], "UTF-8" );
         } catch( UnsupportedEncodingException e ) {
-            e.printStackTrace();
+            log.severe( String.format( MSG_ERR_DECODE_OBLIGATION, e.getMessage() ) );
             return null;
         }
     }
