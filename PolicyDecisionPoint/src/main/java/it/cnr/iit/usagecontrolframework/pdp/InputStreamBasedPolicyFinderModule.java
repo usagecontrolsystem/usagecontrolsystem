@@ -6,7 +6,6 @@
 package it.cnr.iit.usagecontrolframework.pdp;
 
 import java.io.ByteArrayInputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.util.ArrayList;
@@ -52,14 +51,14 @@ class InputStreamBasedPolicyFinderModule extends PolicyFinderModule {
     private Map<URI, AbstractPolicy> policies = new HashMap<>();
 
     // the policy is stored here
-    private String dataUsagePolicy = new String( "" );
+    private String dataUsagePolicy = "";
 
     private PolicyCombiningAlgorithm combiningAlg;
 
     private DocumentBuilderFactory documentBuilderFactory;
 
     public InputStreamBasedPolicyFinderModule( String policy ) {
-        dataUsagePolicy = new String( policy );
+        dataUsagePolicy = policy;
 
         documentBuilderFactory = DocumentBuilderFactory.newInstance();
         documentBuilderFactory.setIgnoringComments( true );
@@ -92,7 +91,7 @@ class InputStreamBasedPolicyFinderModule extends PolicyFinderModule {
             }
             // see if the target matched
             if( result == MatchResult.MATCH ) {
-                if( ( combiningAlg == null ) && ( selectedPolicies.size() > 0 ) ) {
+                if( ( combiningAlg == null ) && ( selectedPolicies.isEmpty() ) ) {
                     // we found a match before, so this is an error
                     ArrayList<String> code = new ArrayList<>();
                     code.add( Status.STATUS_PROCESSING_ERROR );
@@ -162,13 +161,12 @@ class InputStreamBasedPolicyFinderModule extends PolicyFinderModule {
 
     private AbstractPolicy loadPolicy( PolicyFinder finder ) {
         AbstractPolicy policy = null;
-        InputStream stream = null;
 
-        try {
-            // create a builder based on the factory & try to load the policy
+        try (InputStream stream = new ByteArrayInputStream( dataUsagePolicy.getBytes() )) {
             DocumentBuilder db = documentBuilderFactory.newDocumentBuilder();
+            // create a builder based on the factory & try to load the policy
             // convert UXACML policy to input stream
-            stream = new ByteArrayInputStream( dataUsagePolicy.getBytes() );
+
             Document doc = db.parse( stream );
 
             // handle the policy, if it's a known type
@@ -182,14 +180,6 @@ class InputStreamBasedPolicyFinderModule extends PolicyFinderModule {
             }
         } catch( Exception e ) {
             log.warning( "fail to load UXACML policy : " + e.getLocalizedMessage() );
-        } finally {
-            if( stream != null ) {
-                try {
-                    stream.close();
-                } catch( IOException e ) {
-                    log.warning( "error while closing input stream (UXACML policy)" );
-                }
-            }
         }
 
         if( policy != null ) {

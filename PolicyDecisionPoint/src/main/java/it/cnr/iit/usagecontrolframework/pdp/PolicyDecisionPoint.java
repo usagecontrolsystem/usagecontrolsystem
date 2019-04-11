@@ -172,7 +172,7 @@ public final class PolicyDecisionPoint extends AbstractPDP {
      * This is the effective evaluation function.
      */
     @Deprecated
-    public PDPEvaluation evaluateSingleRules( String request, StringBuilder stringPolicy,
+    public PDPEvaluation evaluateSingleRules( String request, StringBuilder stringPolicy, // NOSONAR
             STATUS status ) {
         try {
             String conditionName = extractFromStatus( status );
@@ -207,7 +207,6 @@ public final class PolicyDecisionPoint extends AbstractPDP {
             PDPResponse pdpResponse = new PDPResponse( firingRule.encode() );
             if( firingRule.getResults().iterator().next()
                 .getDecision() == AbstractResult.DECISION_PERMIT ) {
-                // stringPolicy.delete(0, stringPolicy.length());
                 mergeFiringRules( firingRules, stringPolicy );
             }
             return pdpResponse;
@@ -329,13 +328,11 @@ public final class PolicyDecisionPoint extends AbstractPDP {
             Object object = policyType
                 .getCombinerParametersOrRuleCombinerParametersOrVariableDefinition()
                 .get( i );
-            if( object instanceof RuleType ) {
-                if( !( (RuleType) object ).getRuleId()
-                    .equals( "urn:oasis:names:tc:xacml:3.0:defdeny" ) ) {
-                    rulesIndexes.add( i );
-                    policies.add(
-                        JAXBUtility.unmarshalToObject( PolicyType.class, stringPolicy ) );
-                }
+            if( object instanceof RuleType && !( (RuleType) object ).getRuleId()
+                .equals( "urn:oasis:names:tc:xacml:3.0:defdeny" ) ) {
+                rulesIndexes.add( i );
+                policies.add(
+                    JAXBUtility.unmarshalToObject( PolicyType.class, stringPolicy ) );
             }
         }
         int i = 0;
@@ -384,13 +381,6 @@ public final class PolicyDecisionPoint extends AbstractPDP {
             requestCtx = RequestCtxFactory.getFactory()
                 .getRequestCtx( request.replaceAll( ">\\s+<", "><" ) );
             responseCtx = evaluate( requestCtx, policyFinder );
-            /*
-             * Set<AbstractResult> aa = responseCtx.getResults();
-             *
-             * AbstractResult a = aa.iterator().next();
-             * a.getDecision()==AbstractResult.DECISION_DENY ; List<ObligationResult >
-             * l = a.getObligations(); l.get(0).
-             */
         } catch( ParsingException e ) {
             String error = "Invalid request  : " + e.getMessage();
             // there was something wrong with the request, so we return
@@ -562,7 +552,7 @@ public final class PolicyDecisionPoint extends AbstractPDP {
                 PolicyReference.POLICY_REFERENCE, null, null ) );
         } else if( policy instanceof PolicySet ) {
             List<CombinerElement> elements = policy.getChildElements();
-            if( elements != null && elements.size() > 0 ) {
+            if( elements != null && elements.isEmpty() ) {
                 for( CombinerElement element : elements ) {
                     PolicyTreeElement treeElement = element.getElement();
                     if( treeElement instanceof AbstractPolicy ) {
@@ -597,8 +587,7 @@ public final class PolicyDecisionPoint extends AbstractPDP {
             journal.write( request.getBytes(), WriteType.ASYNC );
             journal.write( responseCtx.encode().getBytes(), WriteType.ASYNC );
             journal.sync();
-            PDPResponse pdpResponse = new PDPResponse( responseCtx.encode() );
-            return pdpResponse;
+            return new PDPResponse( responseCtx.encode() );
         } catch( Exception e ) {
             log.severe( e.getMessage() );
         }
@@ -607,7 +596,7 @@ public final class PolicyDecisionPoint extends AbstractPDP {
     }
 
     @Deprecated
-    public PDPEvaluation evaluateSingleRule( String request, String policy ) {
+    public PDPEvaluation evaluateSingleRule( String request, String policy ) { // NOSONAR
         try {
             PolicyType policyType = JAXBUtility.unmarshalToObject( PolicyType.class,
                 policy );
@@ -630,9 +619,7 @@ public final class PolicyDecisionPoint extends AbstractPDP {
             ArrayList<Integer> firingRules = new ArrayList<>();
             ResponseCtx firingRule = checkFiringRule( responses,
                 policyType.getRuleCombiningAlgId(), firingRules );
-            PDPResponse pdpResponse = new PDPResponse( firingRule.encode() );
-
-            return pdpResponse;
+            return new PDPResponse( firingRule.encode() );
         } catch( Exception e ) {
             log.severe( e.getMessage() );
         }
