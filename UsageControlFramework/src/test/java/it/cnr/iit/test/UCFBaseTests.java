@@ -261,8 +261,8 @@ public class UCFBaseTests {
         PIPCHInterface pip = Mockito.mock( PIPCHInterface.class );
 
         Attribute attr = getNewAttribute( attrId, category, dataType, attrReturn );
-        ArrayList<Attribute> attributeList = new ArrayList<>( Arrays.asList( new Attribute[] { attr } ) );
-        ArrayList<String> attributeIdList = new ArrayList<>( Arrays.asList( new String[] { attrId } ) );
+        List<Attribute> attributeList = new ArrayList<>( Arrays.asList( new Attribute[] { attr } ) );
+        List<String> attributeIdList = new ArrayList<>( Arrays.asList( new String[] { attrId } ) );
 
         Mockito.when( pip.getAttributes() ).thenReturn( attributeList );
         Mockito.when( pip.getAttributeIds() ).thenReturn( attributeIdList );
