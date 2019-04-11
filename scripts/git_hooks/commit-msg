@@ -9,11 +9,11 @@ get_clean_message() {
   exit 1
 }
 
-get_clean_message "$1" | egrep -qi '\b[A-Z]{3,}-[1-9][0-9]*\b' || {
+get_clean_message "$1" | egrep -qi '\b[A-Z]{3,}-[1-9][0-9]*\s:\s*\b' || {
   echo >&2 Commit message requires JIRA code.
   exit 1
 }
 
-#testing
+### testing
 #echo "ok"
 #exit 1
