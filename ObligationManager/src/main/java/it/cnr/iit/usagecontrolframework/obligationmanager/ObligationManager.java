@@ -17,7 +17,6 @@ package it.cnr.iit.usagecontrolframework.obligationmanager;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.logging.Logger;
@@ -130,7 +129,7 @@ public final class ObligationManager implements ObligationManagerInterface {
             return null;
         }
         // END parameter checking
-        ArrayList<String> obligationsString = pdpEvaluation.getObligations();
+        List<String> obligationsString = pdpEvaluation.getObligations();
         if( obligationsString == null ) {
             return null;
         }

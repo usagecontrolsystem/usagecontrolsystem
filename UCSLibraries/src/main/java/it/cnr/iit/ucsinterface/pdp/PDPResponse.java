@@ -45,7 +45,7 @@ import oasis.names.tc.xacml.core.schema.wd_17.ResponseType;
 @JsonIgnoreProperties( ignoreUnknown = true )
 public final class PDPResponse implements PDPEvaluation {
 
-    private static Logger LOG = Logger.getLogger( PIPBuilder.class.getName() );
+    private static Logger log = Logger.getLogger( PIPBuilder.class.getName() );
 
     private static final String MSG_ERR_UNMARSHAL = "Error unmarshalling xml : {0}";
     private static final String MSG_ERR_MARSHAL = "Error marshalling to xml : {0}";
@@ -108,7 +108,7 @@ public final class PDPResponse implements PDPEvaluation {
         try {
             responseType = JAXBUtility.unmarshalToObject( ResponseType.class, string );
         } catch( Exception e ) {
-            LOG.severe( String.format( MSG_ERR_UNMARSHAL, e.getMessage() ) );
+            log.severe( String.format( MSG_ERR_UNMARSHAL, e.getMessage() ) );
         }
     }
 
@@ -127,7 +127,7 @@ public final class PDPResponse implements PDPEvaluation {
         try {
             return JAXBUtility.marshalToString( ResponseType.class, responseType, "Response", JAXBUtility.SCHEMA );
         } catch( JAXBException e ) {
-            LOG.severe( String.format( MSG_ERR_MARSHAL, e.getMessage() ) );
+            log.severe( String.format( MSG_ERR_MARSHAL, e.getMessage() ) );
         }
         return "";
     }
@@ -146,15 +146,13 @@ public final class PDPResponse implements PDPEvaluation {
     @Override
     @JsonIgnore
     public List<PDPObligationInterface> getPIPObligations() {
-        // TODO implement
-        return null;
+        return new ArrayList<>();
     }
 
     @Override
     @JsonIgnore
     public List<PDPObligationInterface> getPEPObligations() {
-        // TODO implement
-        return null;
+        return new ArrayList<>();
     }
 
     @Override
@@ -162,7 +160,7 @@ public final class PDPResponse implements PDPEvaluation {
     public ArrayList<String> getObligations() {
         ArrayList<String> obligations = new ArrayList<>();
         if( responseType.getResult().get( 0 ).getObligations() == null ) {
-            return null;
+            return new ArrayList<>();
         }
         for( ObligationType obligation : responseType.getResult().get( 0 )
             .getObligations().getObligation() ) {
@@ -178,7 +176,7 @@ public final class PDPResponse implements PDPEvaluation {
         return responseType;
     }
 
-    public void setFiringRules( ArrayList<Integer> firingRules ) {
+    public void setFiringRules( List<Integer> firingRules ) {
         this.firingRules = new ArrayList<>( firingRules );
     }
 
