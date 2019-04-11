@@ -66,13 +66,11 @@ public class LogProfiler {
         TimeZone tz = TimeZone.getTimeZone( "UTC" );
         SimpleDateFormat df = new SimpleDateFormat( "HH:mm:ss" );
         df.setTimeZone( tz );
-        String time = df.format( new Date( (long) ( secondtTime * 1000L ) ) );
-
-        return time;
+        return df.format( new Date( (long) ( secondtTime * 1000L ) ) );
 
     }
 
-    public synchronized static LogProfiler getInstance() {
+    public static synchronized LogProfiler getInstance() {
         if( instance == null ) {
             instance = new LogProfiler();
         }
