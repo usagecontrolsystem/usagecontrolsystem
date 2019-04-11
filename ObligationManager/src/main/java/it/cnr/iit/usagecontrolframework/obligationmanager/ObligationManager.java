@@ -52,7 +52,7 @@ import it.cnr.iit.utility.JsonUtility;
  * @author antonio
  *
  */
-final public class ObligationManager implements ObligationManagerInterface {
+public final class ObligationManager implements ObligationManagerInterface {
 
     private final Logger log = Logger.getLogger( ObligationManager.class.getName() );
 
