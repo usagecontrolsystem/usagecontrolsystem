@@ -265,7 +265,6 @@ public class Reject {
     }
 
     public static void ifNull( Object... objects ) {
-        ifNull( objects );
         for( Object object : objects ) {
             ifNull( object );
         }
