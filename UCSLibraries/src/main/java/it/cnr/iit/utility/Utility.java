@@ -30,7 +30,7 @@ import java.util.logging.Logger;
  * @author antonio
  *
  */
-final public class Utility {
+public final class Utility {
 
     private static final Logger log = Logger.getLogger( Utility.class.getName() );
 

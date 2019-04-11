@@ -193,7 +193,7 @@ public abstract class AsynchronousRequestManager
     }
 
     @Override
-    final public int getBackLogQueueLength() {
+    public final int getBackLogQueueLength() {
         return queueToCH.size();
     }
 

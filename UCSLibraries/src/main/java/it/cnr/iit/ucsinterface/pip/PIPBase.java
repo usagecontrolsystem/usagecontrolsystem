@@ -90,7 +90,7 @@ public abstract class PIPBase implements PIPCHInterface, PIPOMInterface {
     }
 
     @Override
-    final public ArrayList<String> getAttributeIds() {
+    public final ArrayList<String> getAttributeIds() {
         if( initialized ) {
             ArrayList<String> arrayList = new ArrayList<>();
             arrayList.addAll( attributes.keySet() );
@@ -100,7 +100,7 @@ public abstract class PIPBase implements PIPCHInterface, PIPOMInterface {
     }
 
     @Override
-    final public ArrayList<Attribute> getAttributes() {
+    public final ArrayList<Attribute> getAttributes() {
         if( initialized ) {
             ArrayList<Attribute> arrayList = new ArrayList<>();
             arrayList.addAll( attributes.values() );
@@ -111,7 +111,7 @@ public abstract class PIPBase implements PIPCHInterface, PIPOMInterface {
     }
 
     @Override
-    final public HashMap<String, Attribute> getAttributesCharacteristics() {
+    public final HashMap<String, Attribute> getAttributesCharacteristics() {
         return attributes;
     }
 

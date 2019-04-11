@@ -38,7 +38,7 @@ import oasis.names.tc.xacml.core.schema.wd_17.RequestType;
  * @author antonio
  *
  */
-final public class TryAccessMessageContent {
+public final class TryAccessMessageContent {
     private static final Logger LOGGER = Logger.getLogger( TryAccessMessageContent.class.getName() );
 
     // the uri of the pep

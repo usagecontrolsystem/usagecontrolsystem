@@ -39,7 +39,7 @@ import it.cnr.iit.ucsinterface.message.PURPOSE;
  * @author antonio
  *
  */
-final public class TryAccessMessage extends Message {
+public final class TryAccessMessage extends Message {
     private static final Logger LOGGER = Logger.getLogger( TryAccessMessage.class.getName() );
 
     private static final long serialVersionUID = 1L;

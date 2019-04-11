@@ -65,7 +65,7 @@ public abstract class AbstractPDP implements PDPInterface {
         return null;
     }
 
-    final public void setObligationManagerInterface(
+    public final void setObligationManagerInterface(
             ObligationManagerInterface obligationManagerInterface ) {
         // BEGIN parameter checking
         if( obligationManagerInterface == null ) {
@@ -83,7 +83,7 @@ public abstract class AbstractPDP implements PDPInterface {
         return null;
     }
 
-    final public void setPAPInterface( PAPInterface papInterface ) {
+    public final void setPAPInterface( PAPInterface papInterface ) {
         // BEGIN parameter checking
         if( papInterface == null ) {
             return;
@@ -109,7 +109,7 @@ public abstract class AbstractPDP implements PDPInterface {
      *
      * @return true if the object has been correctly initialized, false otherwise
      */
-    final public boolean isInitialized() {
+    public final boolean isInitialized() {
         return initialized;
     }
 

@@ -15,7 +15,7 @@
  ******************************************************************************/
 package it.cnr.iit.peprest.configuration;
 
-final public class PEPRestConfiguration {
+public final class PEPRestConfiguration {
 
     private PEPProperties pep;
     private RequestManagerProperties requestManager;

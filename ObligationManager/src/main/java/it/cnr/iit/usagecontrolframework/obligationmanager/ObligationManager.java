@@ -52,7 +52,7 @@ import it.cnr.iit.utility.JsonUtility;
  * @author antonio
  *
  */
-final public class ObligationManager implements ObligationManagerInterface {
+public final class ObligationManager implements ObligationManagerInterface {
 
     private final Logger log = Logger.getLogger( ObligationManager.class.getName() );
 
@@ -94,7 +94,7 @@ final public class ObligationManager implements ObligationManagerInterface {
      * Sets the PIPs with which
      */
     @Override
-    final public boolean setPIPs( List<PIPOMInterface> pips, PIPOMInterface pipRetrieval ) {
+    public final boolean setPIPs( List<PIPOMInterface> pips, PIPOMInterface pipRetrieval ) {
         // BEGIN parameter checking
         if( ( ( pips == null || pips.size() == 0 ) && pipRetrieval == null )
                 || !isInitialized() ) {

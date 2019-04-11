@@ -245,7 +245,7 @@ public abstract class AbstractContextHandler implements ContextHandlerInterface 
      * @param obligationManager
      *          the interface to the obligation manager
      */
-    final public void setInterfaces( SessionManagerInterface proxySessionManager,
+    public final void setInterfaces( SessionManagerInterface proxySessionManager,
             RequestManagerToCHInterface proxyRequestManager, PDPInterface proxyPDP,
             PAPInterface proxyPAP, List<PIPCHInterface> pipList,
             PIPRMInterface pipRetrieval, ObligationManagerInterface obligationManager,

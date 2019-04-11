@@ -23,7 +23,7 @@ import org.w3c.dom.Node;
  * 
  * @author Fabio Bindi and Filippo Lauria and Antonio La Marra
  */
-final public class Attribute implements Cloneable {
+public final class Attribute implements Cloneable {
     private final Logger LOGGER = Logger.getLogger( Attribute.class.getName() );
 
     private String attributeId;
