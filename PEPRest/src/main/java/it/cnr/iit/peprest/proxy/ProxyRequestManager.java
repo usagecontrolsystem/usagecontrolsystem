@@ -48,7 +48,7 @@ public class ProxyRequestManager implements RequestManagerToExternalInterface {
     @Override
     public Message sendMessageToCH( Message message ) {
         try {
-            Optional<ResponseEntity> response = RESTUtils.post(
+            Optional<ResponseEntity<Void>> response = RESTUtils.post(
                 Utility.buildBaseUri( url, port ),
                 getApiNameFromPurpose( message.getPurpose() ),
                 message );
