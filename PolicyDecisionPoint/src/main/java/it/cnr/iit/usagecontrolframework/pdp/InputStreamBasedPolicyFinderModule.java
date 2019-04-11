@@ -44,7 +44,7 @@ import org.wso2.balana.finder.PolicyFinderResult;
  *
  */
 class InputStreamBasedPolicyFinderModule extends PolicyFinderModule {
-    private static final Logger LOGGER = Logger.getLogger( InputStreamBasedPolicyFinderModule.class.getName() );
+    private static final Logger log = Logger.getLogger( InputStreamBasedPolicyFinderModule.class.getName() );
 
     private PolicyFinder finder = null;
 
@@ -180,13 +180,13 @@ class InputStreamBasedPolicyFinderModule extends PolicyFinderModule {
                 policy = PolicySet.getInstance( root, finder );
             }
         } catch( Exception e ) {
-            LOGGER.warning( "fail to load UXACML policy : " + e.getLocalizedMessage() );
+            log.warning( "fail to load UXACML policy : " + e.getLocalizedMessage() );
         } finally {
             if( stream != null ) {
                 try {
                     stream.close();
                 } catch( IOException e ) {
-                    LOGGER.warning( "error while closing input stream (UXACML policy)" );
+                    log.warning( "error while closing input stream (UXACML policy)" );
                 }
             }
         }
