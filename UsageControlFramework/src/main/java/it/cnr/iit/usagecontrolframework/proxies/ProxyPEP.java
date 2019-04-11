@@ -20,6 +20,8 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.concurrent.ExecutionException;
 import java.util.logging.Logger;
 
+import com.google.common.base.Throwables;
+
 import it.cnr.iit.ucs.configuration.PepProperties;
 import it.cnr.iit.ucs.constants.CONNECTION;
 import it.cnr.iit.ucsinterface.message.Message;
@@ -53,15 +55,21 @@ public class ProxyPEP extends Proxy implements PEPInterface {
 
     PepProperties properties;
 
-    // local PEP
+    // --------------------
+    // case of a local PEP
     private ExamplePEP abstractPEP;
+    // case of remote PEP
+    // --------------------
 
+    // url of the PEP
+    private String url = "";
+    // Port on which the PEP is attached to
+    private String port = "";
     // interfaces provided by the PEP to allow the proxy to call it when a
     // response is available
     private String tryAccessResponse = "";
     private String startAccessResponse = "";
     private String endAccessResponse = "";
-    private String onGoingEvaluation = "";
 
     /**
      * Constructor for the proxy PEP
@@ -126,7 +134,7 @@ public class ProxyPEP extends Proxy implements PEPInterface {
         } catch( InstantiationException | IllegalAccessException
                 | ClassNotFoundException | NoSuchMethodException | SecurityException
                 | IllegalArgumentException | InvocationTargetException e ) {
-            e.printStackTrace();
+            log.severe( e.getMessage() );
         }
         return false;
     }
@@ -161,11 +169,6 @@ public class ProxyPEP extends Proxy implements PEPInterface {
             return false;
         }
 
-        if( ( onGoingEvaluation = properties.getOnGoingEvaluation() ) == null ) {
-            log.warning( "Missing onGoingEvaluation parameter in configuration file" );
-            return false;
-        }
-
         if( ( tryAccessResponse = properties.getTryAccessResponse() ) == null ) {
             log.warning( "Missing tryAccessResponse parameter in configuration file" );
             return false;
@@ -197,6 +200,8 @@ public class ProxyPEP extends Proxy implements PEPInterface {
             case API:
                 abstractPEP.setRequestManagerInterface( requestManager );
                 break;
+            case REST_API:
+            case SOCKET:
             default:
                 break;
         }
@@ -270,12 +275,32 @@ public class ProxyPEP extends Proxy implements PEPInterface {
                 try {
                     abstractPEP.start();
                 } catch( InterruptedException | ExecutionException e ) {
-                    e.printStackTrace();
+                    log.severe( e.getMessage() );
+                    Thread.currentThread().interrupt();
+                    Throwables.propagate( e );
                 }
                 break;
+            case REST_API:
+            case SOCKET:
             default:
                 break;
         }
+    }
+
+    /**
+     * Provided the name of the rest API to call, it builds up the complete url to
+     * be used to call that interface
+     *
+     * @param function
+     *          the name of the function
+     * @return the complete url to be used in the rest call
+     */
+    public String getURL() {
+        return url;
+    }
+
+    public String getPort() {
+        return port;
     }
 
     @Override

@@ -15,12 +15,13 @@
  ******************************************************************************/
 package it.cnr.iit.usagecontrolframework.rest;
 
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import it.cnr.iit.ucs.exceptions.NotFoundException;
@@ -67,7 +68,7 @@ public class UCFRestController {
     @ApiResponses( value = {
         @ApiResponse( code = 500, message = "Invalid message received" ),
         @ApiResponse( code = 200, message = "OK" ) } )
-    @RequestMapping( method = RequestMethod.POST, value = NodeInterface.TRYACCESS_REST, consumes = MediaType.APPLICATION_JSON_VALUE )
+    @PostMapping( value = NodeInterface.TRYACCESS_REST, consumes = MediaType.APPLICATION_JSON_VALUE )
     public void sendMessage( @RequestBody( ) TryAccessMessage message ) {
         // BEGIN parameter checking
         if( message == null ) {
@@ -84,14 +85,14 @@ public class UCFRestController {
     @ApiResponses( value = {
         @ApiResponse( code = 500, message = "Invalid message received" ),
         @ApiResponse( code = 200, message = "OK" ) } )
-    @RequestMapping( method = RequestMethod.POST, value = NodeInterface.STARTACCESS_REST, consumes = MediaType.APPLICATION_JSON_VALUE )
+    @PostMapping( value = NodeInterface.STARTACCESS_REST, consumes = MediaType.APPLICATION_JSON_VALUE )
     public void sendMessage( @RequestBody( ) StartAccessMessage message ) {
         // BEGIN parameter checking
         if( message == null ) {
             throw new NotFoundException();
         }
         // END parameter checking
-        log.info( "[TIME] Startaccess received " + System.currentTimeMillis() );
+        log.log( Level.INFO, "[TIME] Startaccess received {0}", System.currentTimeMillis() );
         usageControlFramework.startAccess( message );
     }
 
@@ -99,14 +100,14 @@ public class UCFRestController {
     @ApiResponses( value = {
         @ApiResponse( code = 500, message = "Invalid message received" ),
         @ApiResponse( code = 200, message = "OK" ) } )
-    @RequestMapping( method = RequestMethod.POST, value = NodeInterface.ENDACCESS_REST, consumes = MediaType.APPLICATION_JSON_VALUE )
+    @PostMapping( value = NodeInterface.ENDACCESS_REST, consumes = MediaType.APPLICATION_JSON_VALUE )
     public void sendMessage( @RequestBody( ) EndAccessMessage message ) {
         // BEGIN parameter checking
         if( message == null ) {
             throw new NotFoundException();
         }
         // END parameter checking
-        log.info( "[TIME] Endaccess received " + System.currentTimeMillis() );
+        log.log( Level.INFO, "[TIME] Endaccess received {0}", System.currentTimeMillis() );
         usageControlFramework.endAccess( message );
     }
 
@@ -114,7 +115,7 @@ public class UCFRestController {
     @ApiResponses( value = {
         @ApiResponse( code = 500, message = "Invalid message received" ),
         @ApiResponse( code = 200, message = "OK" ) } )
-    @RequestMapping( method = RequestMethod.POST, value = NodeInterface.ONGOING_REST, consumes = MediaType.TEXT_PLAIN_VALUE )
+    @PostMapping( value = NodeInterface.ONGOING_REST, consumes = MediaType.TEXT_PLAIN_VALUE )
     public void sendMessage( @RequestBody( ) ReevaluationMessage message ) {
         // BEGIN parameter checking
         if( message == null ) {
@@ -122,7 +123,7 @@ public class UCFRestController {
         }
         // END parameter checking
 
-        log.info( "[TIME] Reevaluation received " + System.currentTimeMillis() );
+        log.log( Level.INFO, "[TIME] Reevaluation received {0}", System.currentTimeMillis() );
         usageControlFramework.onGoingEvaluation( message );
     }
 
@@ -130,7 +131,7 @@ public class UCFRestController {
     @ApiResponses( value = {
         @ApiResponse( code = 500, message = "Invalid message received" ),
         @ApiResponse( code = 200, message = "OK" ) } )
-    @RequestMapping( method = RequestMethod.POST, value = "/retrieveRemote", consumes = MediaType.TEXT_PLAIN_VALUE )
+    @PostMapping( value = "/retrieveRemote", consumes = MediaType.TEXT_PLAIN_VALUE )
     public void retrieveRemote( @RequestBody( ) MessagePipCh message ) {
         // BEGIN parameter checking
         if( message == null ) {
@@ -144,7 +145,7 @@ public class UCFRestController {
     @ApiResponses( value = {
         @ApiResponse( code = 500, message = "Invalid message received" ),
         @ApiResponse( code = 200, message = "OK" ) } )
-    @RequestMapping( method = RequestMethod.POST, value = "/retrieveRemoteResponse", consumes = MediaType.TEXT_PLAIN_VALUE )
+    @PostMapping( value = "/retrieveRemoteResponse", consumes = MediaType.TEXT_PLAIN_VALUE )
     public void retrieveRemoteResponse( @RequestBody( ) MessagePipCh message ) {
         // BEGIN parameter checking
         if( message == null ) {
@@ -153,14 +154,13 @@ public class UCFRestController {
         // END parameter checking
 
         usageControlFramework.retrieveRemoteResponse( message );
-        // usageControlFramework.getRequestManager().sendMessageToCH(messagePipCh);
     }
 
     @ApiOperation( httpMethod = "POST", value = "Receives request from PEP for tryaccess operation" )
     @ApiResponses( value = {
         @ApiResponse( code = 500, message = "Invalid message received" ),
         @ApiResponse( code = 200, message = "OK" ) } )
-    @RequestMapping( method = RequestMethod.POST, value = NodeInterface.TRYACCESSRESPONSE_REST, consumes = MediaType.TEXT_PLAIN_VALUE )
+    @PostMapping( value = NodeInterface.TRYACCESSRESPONSE_REST, consumes = MediaType.TEXT_PLAIN_VALUE )
     public void tryAccessResponse( @RequestBody( ) TryAccessResponse message ) {
         // BEGIN parameter checking
         if( message == null ) {
@@ -174,7 +174,7 @@ public class UCFRestController {
     @ApiResponses( value = {
         @ApiResponse( code = 500, message = "Invalid message received" ),
         @ApiResponse( code = 200, message = "OK" ) } )
-    @RequestMapping( method = RequestMethod.POST, value = NodeInterface.STARTACCESSRESPONSE_REST, consumes = MediaType.TEXT_PLAIN_VALUE )
+    @PostMapping( value = NodeInterface.STARTACCESSRESPONSE_REST, consumes = MediaType.TEXT_PLAIN_VALUE )
     public void startAccessResponse( @RequestBody( ) StartAccessResponse message ) {
         // BEGIN parameter checking
         if( message == null ) {
@@ -189,7 +189,7 @@ public class UCFRestController {
     @ApiResponses( value = {
         @ApiResponse( code = 500, message = "Invalid message received" ),
         @ApiResponse( code = 200, message = "OK" ) } )
-    @RequestMapping( method = RequestMethod.POST, value = NodeInterface.ENDACCESSRESPONSE_REST, consumes = MediaType.TEXT_PLAIN_VALUE )
+    @PostMapping( value = NodeInterface.ENDACCESSRESPONSE_REST, consumes = MediaType.TEXT_PLAIN_VALUE )
     public void endAccessResponse( @RequestBody( ) EndAccessResponse message ) {
         // BEGIN parameter checking
         if( message == null ) {
@@ -204,7 +204,7 @@ public class UCFRestController {
     @ApiResponses( value = {
         @ApiResponse( code = 500, message = "Invalid message received" ),
         @ApiResponse( code = 200, message = "OK" ) } )
-    @RequestMapping( method = RequestMethod.POST, value = NodeInterface.ONGOINGRESPONSE_REST, consumes = MediaType.TEXT_PLAIN_VALUE )
+    @PostMapping( value = NodeInterface.ONGOINGRESPONSE_REST, consumes = MediaType.TEXT_PLAIN_VALUE )
     public void reevaluationResponse( @RequestBody( ) ReevaluationResponse message ) {
         // BEGIN parameter checking
         if( message == null ) {

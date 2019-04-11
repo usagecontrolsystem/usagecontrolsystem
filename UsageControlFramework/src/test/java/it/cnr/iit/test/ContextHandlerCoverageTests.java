@@ -59,7 +59,7 @@ public class ContextHandlerCoverageTests extends UCFBaseTests {
         contextHandler.stopMonitoringThread();
     }
 
-    @Test
+    @Test( expected = IllegalStateException.class )
     public void contextHandlerTryAccessShouldFail() throws JAXBException, URISyntaxException, IOException {
         ContextHandlerLC contextHandler = getContextHandler( ucsConfiguration );
         initContextHandler( contextHandler );

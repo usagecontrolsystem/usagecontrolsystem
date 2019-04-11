@@ -19,6 +19,7 @@ import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.logging.Logger;
 
@@ -35,7 +36,6 @@ import it.cnr.iit.ucs.configuration.RequestManagerProperties;
 import it.cnr.iit.ucs.configuration.UCSConfiguration;
 import it.cnr.iit.ucs.configuration.pip.PipProperties;
 import it.cnr.iit.ucs.configuration.session_manager.SessionManagerProperties;
-import it.cnr.iit.ucs.constants.DISTRIBUTED_TYPE;
 import it.cnr.iit.ucsinterface.contexthandler.AbstractContextHandler;
 import it.cnr.iit.ucsinterface.forwardingqueue.ForwardingQueue;
 import it.cnr.iit.ucsinterface.message.Message;
@@ -167,10 +167,9 @@ public final class UsageControlFramework implements UCSInterface {
         }
 
         configuration = optConfiguration.get();
-        DISTRIBUTED_TYPE distributedType = DISTRIBUTED_TYPE.NONE;
 
         // build the context handler
-        if( !buildContextHandler( distributedType ) ) {
+        if( !buildContextHandler() ) {
             log.info( "Error in building the context handler" );
             return false;
         }
@@ -208,18 +207,9 @@ public final class UsageControlFramework implements UCSInterface {
 
         forwardingQueue = new ForwardingQueue();
         nodeInterface = new NodeProxy( configuration.getGeneral() );
-        System.out.println( "*******************\nCC" );
+        log.info( "*******************\nCC" );
         // checks if every component is ok
-        if( !checkConnection() ) {
-            return false;
-        }
-        return true;
-
-    }
-
-    private boolean buildContextHandler( DISTRIBUTED_TYPE distributedType ) {
-        // if( distributedType == null || distributedType == DISTRIBUTED_TYPE.NONE ) {
-        return buildContextHandler();
+        return checkConnection();
     }
 
     /**
@@ -239,8 +229,7 @@ public final class UsageControlFramework implements UCSInterface {
                 .newInstance( configuration.getGeneral(), properties );
             return true;
         } catch( Exception exception ) {
-            exception.printStackTrace();
-            log.severe( "build ContextHandler failed" );
+            log.severe( "build ContextHandler failed" + exception.getMessage() );
             return false;
         }
     }
@@ -265,7 +254,7 @@ public final class UsageControlFramework implements UCSInterface {
                 .newInstance( configuration.getGeneral(), properties );
             return true;
         } catch( Exception exception ) {
-            log.severe( "build RequestManager failed" );
+            log.severe( "build RequestManager failed" + exception.getMessage() );
             return false;
         }
     }
@@ -361,14 +350,13 @@ public final class UsageControlFramework implements UCSInterface {
         try {
             contextHandler.startMonitoringThread();
         } catch( Exception e ) {
-            e.printStackTrace();
+            log.severe( e.getMessage() );
             return false;
         }
 
         requestManager.setInterfaces( contextHandler, proxyPEPMap, nodeInterface,
             forwardingQueue );
         proxyPDP.setInterfaces( proxyPAP );
-        // proxySessionManager.start();
 
         return true;
     }
@@ -388,7 +376,6 @@ public final class UsageControlFramework implements UCSInterface {
             }
             proxyPEPMap.put( pep.getId(), proxyPEP );
         }
-        // proxyPEP.setCHInterface(contextHandler);
         return true;
     }
 
@@ -404,7 +391,6 @@ public final class UsageControlFramework implements UCSInterface {
     @Async
     public void tryAccessResponse( TryAccessResponse tryAccessResponse ) {
         getRequestManager().sendMessageToCH( tryAccessResponse );
-        return;
     }
 
     @Override
@@ -417,7 +403,6 @@ public final class UsageControlFramework implements UCSInterface {
     @Async
     public void startAccessResponse( StartAccessResponse startAccessResponse ) {
         getRequestManager().sendMessageToCH( startAccessResponse );
-        return;
     }
 
     @Override
@@ -453,13 +438,11 @@ public final class UsageControlFramework implements UCSInterface {
 
     @Override
     @Async
-    public void retrieveRemoteResponse( MessagePipCh messagePipCh ) {
-        getPIPRetrieval().messageArrived( messagePipCh );
-    }
+    public void retrieveRemoteResponse( MessagePipCh messagePipCh ) {} // NOSONAR
 
     /* Getters */
 
-    public HashMap<String, PEPInterface> getPEPProxy() {
+    public Map<String, PEPInterface> getPEPProxy() {
         return proxyPEPMap;
     }
 
@@ -467,17 +450,11 @@ public final class UsageControlFramework implements UCSInterface {
         return requestManager;
     }
 
-    public PIPRetrieval getPIPRetrieval() {
-        return pipRetrieval;
-    }
-
-    @Override
-    public void register( Message message ) {
-
-    }
-
     public boolean getInitialized() {
         return initialized;
     }
+
+    @Override
+    public void register( Message message ) {} // NOSONAR
 
 }

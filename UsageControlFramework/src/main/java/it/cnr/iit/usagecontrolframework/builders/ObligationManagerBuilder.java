@@ -17,6 +17,7 @@ package it.cnr.iit.usagecontrolframework.builders;
 
 import java.lang.reflect.Constructor;
 import java.util.List;
+import java.util.logging.Logger;
 
 import it.cnr.iit.ucs.configuration.ObligationManagerProperties;
 import it.cnr.iit.ucsinterface.obligationmanager.ObligationManagerInterface;
@@ -31,7 +32,9 @@ import it.cnr.iit.ucsinterface.pip.PIPOMInterface;
  * @author antonio
  *
  */
-final public class ObligationManagerBuilder {
+public final class ObligationManagerBuilder {
+
+    private static final Logger log = Logger.getLogger( ObligationManagerBuilder.class.getName() );
 
     /**
      * Private constructor to avoid instantiation
@@ -41,17 +44,17 @@ final public class ObligationManagerBuilder {
     }
 
     /**
-     * TODO comments
+     * Builds the interface for the obligation manager
      *
      * @param properties
      * @param pips
      * @param pipRetrieval
      * @return
      */
-    final public static ObligationManagerInterface build( ObligationManagerProperties properties,
+    public static final ObligationManagerInterface build( ObligationManagerProperties properties,
             List<PIPOMInterface> pips, PIPOMInterface pipRetrieval ) {
         // BEGIN parameter checking
-        if( properties == null || ( pips.size() == 0 && pipRetrieval == null ) ) {
+        if( properties == null || ( pips.isEmpty() && pipRetrieval == null ) ) {
             return null;
         }
         // END parameter checking
@@ -66,7 +69,7 @@ final public class ObligationManagerBuilder {
                 return obligationManagerInterface;
             }
         } catch( Exception exception ) {
-            exception.printStackTrace();
+            log.severe( exception.getMessage() );
         }
 
         return null;

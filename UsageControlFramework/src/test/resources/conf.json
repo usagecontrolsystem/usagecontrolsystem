@@ -5,7 +5,6 @@
     "rest" : null,
     "schedulerEnabled" : false
   },
-  "distributed" : null,
   "pipList" : [ {
     "id" : "PIPReaderEnv",
     "className" : "it.cnr.iit.pipreader.PIPReader",
@@ -16,7 +15,8 @@
         "ATTRIBUTE_ID" : "urn:oasis:names:tc:xacml:1.0:subject:role",
         "EXPECTED_CATEGORY" : "urn:oasis:names:tc:xacml:1.0:subject-category:access-subject",
         "FILE_PATH" : "resources/subject.txt",
-        "DATA_TYPE" : "http://www.w3.org/2001/XMLSchema#string"
+        "DATA_TYPE" : "http://www.w3.org/2001/XMLSchema#string",
+        "journalingDir" : "/tmp/journal"
       }
     } ],
     "connection" : null,
@@ -31,7 +31,8 @@
         "CATEGORY" : "urn:oasis:names:tc:xacml:3.0:attribute-category:environment",
         "ATTRIBUTE_ID" : "urn:oasis:names:tc:xacml:3.0:environment:light",
         "FILE_PATH" : "resources/light.txt",
-        "DATA_TYPE" : "http://www.w3.org/2001/XMLSchema#integer"
+        "DATA_TYPE" : "http://www.w3.org/2001/XMLSchema#integer",
+        "journalingDir" : "/tmp/journal"
       }
     } ],
     "connection" : null,
@@ -46,7 +47,8 @@
         "CATEGORY" : "urn:oasis:names:tc:xacml:3.0:attribute-category:environment",
         "ATTRIBUTE_ID" : "urn:oasis:names:tc:xacml:3.0:environment:camera",
         "FILE_PATH" : "resources/camera.txt",
-        "DATA_TYPE" : "http://www.w3.org/2001/XMLSchema#integer"
+        "DATA_TYPE" : "http://www.w3.org/2001/XMLSchema#integer",
+        "journalingDir" : "/tmp/journal"
       }
     } ],
     "connection" : null,
@@ -134,7 +136,8 @@
   "policyDecisionPoint" : {
     "className" : "ii.cnr.iit.usagecontrolframework.pdp.PolicyDecisionPoint",
     "thread" : "tbd",
-    "communication" : "API"
+    "communication" : "API",
+    "journalingDir" : "/tmp/journal"
   },
   "policyAdministrationPoint" : {
     "className" : "it.cnr.iit.usagecontrolframework.pap.PolicyAdministrationPoint",

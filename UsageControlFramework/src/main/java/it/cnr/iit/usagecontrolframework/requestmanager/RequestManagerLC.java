@@ -18,9 +18,8 @@ package it.cnr.iit.usagecontrolframework.requestmanager;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import com.google.common.base.Throwables;
 
 import it.cnr.iit.ucs.configuration.GeneralProperties;
 import it.cnr.iit.ucs.configuration.RequestManagerProperties;
@@ -106,14 +105,12 @@ public class RequestManagerLC extends AsynchronousRequestManager {
     public synchronized void sendMessageToOutside( Message message ) {
         // BEGIN parameter checking
         if( !isInitialized() ) {
-            // TODO throw exception
             log.warning( "Invalid state of the request manager" );
-            return;
+            throw new IllegalStateException( "RequestManager not initialized correctly" );
         }
         if( message == null ) {
-            // TODO throw exception
             log.warning( "Invalid message" );
-            return;
+            throw new IllegalArgumentException( "Invalid message" );
         }
         // END parameter checking
 
@@ -128,33 +125,28 @@ public class RequestManagerLC extends AsynchronousRequestManager {
         if( message instanceof TryAccessResponse
                 || message instanceof StartAccessResponse
                 || message instanceof EndAccessResponse ) {
-            Message original;
+            sendResponse( message );
 
-            // Case in which we have to forward a response to a remote node
-            if( ( original = getForwardingQueue()
-                .getOriginalSource( message.getID() ) ) != null ) {
-                reswap( message, original );
-                // FIXME ?
+        } else if( message instanceof ReevaluationResponse ) {
+            sendReevaluation( (ReevaluationResponse) message );
+        }
+    }
+
+    private void sendResponse( Message message ) {
+        Message original;
+
+        // Case in which we have to forward a response to a remote node
+        if( ( original = getForwardingQueue()
+            .getOriginalSource( message.getID() ) ) != null ) {
+            reswap( message, original );
+            getPEPInterface().get( message.getDestination() )
+                .receiveResponse( message );
+        } else {
+            if( message.getDestinationType() ) {
+                getNodeInterface().sendMessage( message );
+            } else {
                 getPEPInterface().get( message.getDestination() )
                     .receiveResponse( message );
-            } else {
-                if( message.getDestinationType() ) {
-                    getNodeInterface().sendMessage( message );
-                } else {
-                    String string = getPEPInterface().get( message.getDestination() )
-                        .receiveResponse( message );
-                }
-            }
-        } else if( message instanceof ReevaluationResponse ) {
-            ReevaluationResponse reevaluation = (ReevaluationResponse) message;
-            log.info( "[TIME] Effectively Sending on going evaluation "
-                    + System.currentTimeMillis() );
-            if( message.getDestination()
-                .equals( generalProperties.getIp() ) ) {
-                getPEPInterface().get( ( (ReevaluationResponse) message ).getPepID() )
-                    .onGoingEvaluation( message );
-            } else {
-                getNodeInterface().sendMessage( reevaluation );
             }
         }
     }
@@ -163,6 +155,18 @@ public class RequestManagerLC extends AsynchronousRequestManager {
         message.setDestination( original.getSource() );
         message.setSourcePort( original.getSourcePort() );
         message.setSource( original.getDestination() );
+    }
+
+    private void sendReevaluation( ReevaluationResponse reevaluation ) {
+        log.log( Level.INFO, "[TIME] Effectively Sending on going evaluation {0}",
+            System.currentTimeMillis() );
+        if( reevaluation.getDestination()
+            .equals( generalProperties.getIp() ) ) {
+            getPEPInterface().get( ( reevaluation ).getPepID() )
+                .onGoingEvaluation( reevaluation );
+        } else {
+            getNodeInterface().sendMessage( reevaluation );
+        }
     }
 
     /**
@@ -187,11 +191,12 @@ public class RequestManagerLC extends AsynchronousRequestManager {
                     getQueueToCH().put( message );
                 }
             }
-        } catch( NullPointerException | InterruptedException e ) {
+        } catch( NullPointerException e ) {
             LOGGER.severe( e.getMessage() );
-            Throwables.propagate( e );
+        } catch( InterruptedException e ) {
+            LOGGER.severe( e.getMessage() );
+            Thread.currentThread().interrupt();
         }
-
         return null;
     }
 
@@ -230,10 +235,7 @@ public class RequestManagerLC extends AsynchronousRequestManager {
                     if( message instanceof ReevaluationMessage ) {
                         getContextHandler().reevaluate( message );
                     }
-                    if( message instanceof TryAccessResponse ) {}
-                    if( message instanceof StartAccessResponse ) {}
-                    if( message instanceof EndAccessResponse ) {}
-                    if( message instanceof ReevaluationResponse ) {}
+                    return message;
                 } catch( Exception e ) {
                     LOGGER.severe( e.getMessage() );
                     return null;
