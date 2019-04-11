@@ -59,7 +59,7 @@ class InputStreamBasedPolicyFinderModule extends PolicyFinderModule {
     private DocumentBuilderFactory documentBuilderFactory;
 
     public InputStreamBasedPolicyFinderModule( String policy ) {
-        dataUsagePolicy = new String( policy );
+        dataUsagePolicy = policy;
 
         documentBuilderFactory = DocumentBuilderFactory.newInstance();
         documentBuilderFactory.setIgnoringComments( true );
