@@ -17,7 +17,6 @@ package it.cnr.iit.utility;
 
 import java.io.ByteArrayInputStream;
 import java.io.StringWriter;
-import java.util.logging.Logger;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
@@ -51,7 +50,10 @@ import javax.xml.transform.stream.StreamSource;
  *
  */
 public final class JAXBUtility {
-    private static final Logger LOGGER = Logger.getLogger( JAXBUtility.class.getName() );
+
+    private JAXBUtility() {
+
+    }
 
     // constant that represents the schema we're using
     public static final String SCHEMA = "urn:oasis:names:tc:xacml:3.0:core:schema:wd-17";
