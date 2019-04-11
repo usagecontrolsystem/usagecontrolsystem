@@ -82,7 +82,11 @@ import oasis.names.tc.xacml.core.schema.wd_17.RuleType;
  *
  */
 public final class PolicyDecisionPoint extends AbstractPDP {
-    private static Logger LOGGER = Logger.getLogger( PolicyDecisionPoint.class.getName() );
+
+    private static Logger log = Logger.getLogger( PolicyDecisionPoint.class.getName() );
+
+    private static final String MSG_ERR_EVAL_RULES = "Error evaluating single rules : {0}";
+    private static final String MSG_ERR_MARSHAL_POLICY = "Error marshalling to string : {0}";
 
     // Configuration of the PDP
     private PDPConfig pdpConfig;
@@ -144,7 +148,7 @@ public final class PolicyDecisionPoint extends AbstractPDP {
             policyFinder.setModules( policyFinderModules );
             policyFinder.init();
             ResponseCtx response = evaluate( request, policyFinder );
-            LOGGER.info( response.encode() );
+            log.info( response.encode() );
             journal.write( policyToEvaluate.getBytes(), WriteType.ASYNC );
             journal.write( request.getBytes(), WriteType.ASYNC );
             journal.write( response.encode().getBytes(), WriteType.ASYNC );
@@ -159,7 +163,7 @@ public final class PolicyDecisionPoint extends AbstractPDP {
             }
             return pdpResponse;
         } catch( Exception e ) {
-            LOGGER.severe( e.getMessage() );
+            log.severe( e.getMessage() );
         }
         return null;
     }
@@ -194,7 +198,7 @@ public final class PolicyDecisionPoint extends AbstractPDP {
                 policyFinder.setModules( policyFinderModules );
                 policyFinder.init();
                 ResponseCtx response = evaluate( request, policyFinder );
-                LOGGER.info( response.encode() );
+                log.info( response.encode() );
                 responses.add( response );
             }
             ArrayList<Integer> firingRules = new ArrayList<>();
@@ -208,7 +212,7 @@ public final class PolicyDecisionPoint extends AbstractPDP {
             }
             return pdpResponse;
         } catch( Exception e ) {
-            e.printStackTrace();
+            log.severe( String.format( MSG_ERR_EVAL_RULES, e.getMessage() ) );
         }
         return null;
     }
@@ -240,11 +244,12 @@ public final class PolicyDecisionPoint extends AbstractPDP {
         if( stringPolicy.length() > 0 ) {
             stringPolicy.delete( 0, stringPolicy.length() );
         }
+
         try {
             stringPolicy.append( JAXBUtility.marshalToString( PolicyType.class,
                 policyType, "PolicyType", JAXBUtility.SCHEMA ) );
         } catch( Exception e ) {
-            e.printStackTrace();
+            log.severe( String.format( MSG_ERR_MARSHAL_POLICY, e.getMessage() ) );
         }
     }
 
@@ -573,7 +578,7 @@ public final class PolicyDecisionPoint extends AbstractPDP {
 
     @Override
     public PDPEvaluation evaluate( String request ) {
-        LOGGER.info( "evaluate( String request ) not implemented" );
+        log.info( "evaluate( String request ) not implemented" );
         return null;
     }
 
@@ -595,7 +600,7 @@ public final class PolicyDecisionPoint extends AbstractPDP {
             PDPResponse pdpResponse = new PDPResponse( responseCtx.encode() );
             return pdpResponse;
         } catch( Exception e ) {
-            LOGGER.severe( e.getMessage() );
+            log.severe( e.getMessage() );
         }
 
         return null;
@@ -629,7 +634,7 @@ public final class PolicyDecisionPoint extends AbstractPDP {
 
             return pdpResponse;
         } catch( Exception e ) {
-            LOGGER.severe( e.getMessage() );
+            log.severe( e.getMessage() );
         }
 
         return null;
