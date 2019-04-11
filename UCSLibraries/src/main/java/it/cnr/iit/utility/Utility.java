@@ -64,7 +64,6 @@ public final class Utility {
                 stringB.append( scanner.nextLine() );
             }
             return stringB.toString();
-            // return new String( Files.readAllBytes( Paths.get( filePath ) ), Charset.forName( "UTF-8" ) );
         } catch( IOException exception ) {
             log.severe( "Unable to read file due to error: " + exception.getLocalizedMessage() );
             return null;
@@ -107,15 +106,14 @@ public final class Utility {
             return null;
         }
         try {
-            String pathString = clazz.getResource( path ).getPath();
-            return pathString;
+            return clazz.getResource( path ).getPath();
         } catch( NullPointerException e ) {
             return null;
         }
     }
 
     /**
-     * Secure reading of the file from the absolute path TODO
+     * Secure reading of the file from the absolute path
      */
     public static String secureReadFileAbsPath( String string ) {
         return null;
