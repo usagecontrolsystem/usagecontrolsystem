@@ -54,7 +54,7 @@ import it.cnr.iit.utility.JsonUtility;
  */
 final public class ObligationManager implements ObligationManagerInterface {
 
-    private final Logger LOGGER = Logger.getLogger( ObligationManager.class.getName() );
+    private final Logger log = Logger.getLogger( ObligationManager.class.getName() );
 
     // list of pips
     private List<PIPOMInterface> pipList;
@@ -95,7 +95,7 @@ final public class ObligationManager implements ObligationManagerInterface {
         // BEGIN parameter checking
         if( ( ( pips == null || pips.size() == 0 ) && pipRetrieval == null )
                 || !isInitialized() ) {
-            LOGGER.severe( "Invalid provided PIPS: " + ( pips == null ) + "\t" + ( ( pips != null ? pips.size() == 0 : 0 ) )
+            log.severe( "Invalid provided PIPS: " + ( pips == null ) + "\t" + ( ( pips != null ? pips.size() == 0 : 0 ) )
                     + "\t" + ( pipRetrieval == null ) + "\t" + ( properties == null ) );
             return false;
         }
