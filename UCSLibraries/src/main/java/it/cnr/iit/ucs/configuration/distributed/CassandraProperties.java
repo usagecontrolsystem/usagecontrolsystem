@@ -16,6 +16,7 @@
 package it.cnr.iit.ucs.configuration.distributed;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class CassandraProperties {
 
@@ -32,7 +33,7 @@ public class CassandraProperties {
         return cluster;
     }
 
-    public ArrayList<String> getKeyspaces() {
+    public List<String> getKeyspaces() {
         return keyspaces;
     }
 
