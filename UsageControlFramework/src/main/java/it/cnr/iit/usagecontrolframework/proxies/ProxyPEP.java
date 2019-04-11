@@ -162,33 +162,33 @@ public class ProxyPEP extends Proxy implements PEPInterface {
      * @return true if everything goes ok, false otherwise
      */
     private boolean connectRest( PepProperties properties ) {
-        if( ( url = properties.getIp() ) == null ) {
-            log.warning( "Missing parameter in configuration file: " + url );
+        if( properties.getIp() == null ) {
+            log.warning( "Missing url parameter in configuration file" );
             return false;
         }
 
-        if( ( port = properties.getPort() ) == null ) {
-            log.warning( "Missing parameter in configuration file: " + url );
+        if( properties.getPort() == null ) {
+            log.warning( "Missing port parameter in configuration file" );
             return false;
         }
 
         if( ( onGoingEvaluation = properties.getOnGoingEvaluation() ) == null ) {
-            log.warning( "Missing parameter in configuration file: " + url );
+            log.warning( "Missing onGoingEvaluation parameter in configuration file" );
             return false;
         }
 
         if( ( tryAccessResponse = properties.getTryAccessResponse() ) == null ) {
-            log.warning( "Missing parameter in configuration file: " + url );
+            log.warning( "Missing tryAccessResponse parameter in configuration file" );
             return false;
         }
 
         if( ( startAccessResponse = properties.getStartAccessResponse() ) == null ) {
-            log.warning( "Missing parameter in configuration file: " + url );
+            log.warning( "Missing startAccessResponse parameter in configuration file" );
             return false;
         }
 
         if( ( endAccessResponse = properties.getEndAccessResponse() ) == null ) {
-            log.warning( "Missing parameter in configuration file: " + url );
+            log.warning( "Missing endAccessResponse parameter in configuration file" );
             return false;
         }
         return true;
@@ -222,9 +222,10 @@ public class ProxyPEP extends Proxy implements PEPInterface {
             case API:
                 return abstractPEP.onGoingEvaluation( message );
             case REST_API:
-                RESTUtils.asyncPostResponse(
-                    Utility.buildUrl( url, port, NodeInterface.ONGOINGRESPONSE_REST ),
-                    (ReevaluationResponse) message );
+                RESTUtils.asyncPost(
+                    Utility.buildBaseUri( properties.getIp(), properties.getPort() ),
+                    NodeInterface.ONGOINGRESPONSE_REST,
+                    message );
                 break;
             default:
                 break;
@@ -248,21 +249,22 @@ public class ProxyPEP extends Proxy implements PEPInterface {
              * </p>
              */
             case REST_API:
-                RESTAsynchPostStatus postStatus = RESTAsynchPostStatus.PENDING;
+                String api = "";
                 if( message instanceof TryAccessResponse ) {
-                    postStatus = RESTUtils.asyncPostResponse( Utility.buildUrl( url, port, tryAccessResponse ),
-                        (TryAccessResponse) message );
+                    api = tryAccessResponse;
+                } else if( message instanceof StartAccessResponse ) {
+                    api = startAccessResponse;
+                } else if( message instanceof EndAccessResponse ) {
+                    api = endAccessResponse;
                 }
-                if( message instanceof StartAccessResponse ) {
-                    postStatus = RESTUtils.asyncPostResponse( Utility.buildUrl( url, port, startAccessResponse ),
-                        (StartAccessResponse) message );
-                }
-                if( message instanceof EndAccessResponse ) {
-                    postStatus = RESTUtils.asyncPostResponse( Utility.buildUrl( url, port, endAccessResponse ),
-                        (EndAccessResponse) message );
-                }
-                if( postStatus == RESTAsynchPostStatus.SUCCESS ) {
-                    return "OK";
+                try {
+                    RESTUtils.asyncPost(
+                        Utility.buildBaseUri( properties.getIp(), properties.getPort() ),
+                        api,
+                        message );
+                } catch( Exception e ) {
+                    log.severe( "Error posting message : " + api );
+                    return "KO";
                 }
                 break;
             default:
@@ -270,7 +272,6 @@ public class ProxyPEP extends Proxy implements PEPInterface {
                 break;
         }
         return "OK";
-
     }
 
     /**

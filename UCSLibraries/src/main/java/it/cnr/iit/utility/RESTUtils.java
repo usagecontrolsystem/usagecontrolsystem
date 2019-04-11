@@ -16,255 +16,70 @@
 package it.cnr.iit.utility;
 
 import java.util.Optional;
-import java.util.logging.Level;
+import java.util.concurrent.CompletableFuture;
 import java.util.logging.Logger;
 
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.util.concurrent.ListenableFuture;
-import org.springframework.web.client.AsyncRestTemplate;
-import org.springframework.web.client.HttpServerErrorException;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.reactive.function.BodyInserters;
+import org.springframework.web.reactive.function.client.WebClient;
+
+import reactor.core.publisher.Mono;
 
 /**
  * This class provides some static methods to perform a rest request
  *
- * @author antonio
+ * @author Antonio La Marra, Alessandro Rosetti
  *
  */
+
 final public class RESTUtils {
-    private static final Logger LOGGER = Logger
-        .getLogger( RESTUtils.class.getName() );
+    private static final Logger log = Logger.getLogger( RESTUtils.class.getName() );
 
     private RESTUtils() {
 
     }
 
-    /**
-     * Post an object to the host specified by the url parameter, expecting no
-     * returning object.
-     *
-     * @param url
-     *          the complete url of the host
-     * @param obj
-     *          the object to send using the post http method
-     */
-    public static void post( String url, Object obj ) {
-        RestTemplate restTemplate = new RestTemplate();
-        ResponseEntity<Void> response = restTemplate.postForEntity( url, obj,
-            Void.class );
-        if( response == null || !response.getStatusCode().is2xxSuccessful() ) {
-            LOGGER.log( Level.INFO, "FAIL: " + url );
-        }
+    public static Optional<ResponseEntity> post( String baseUri, String api, Object obj ) throws RestClientException {
+        return post( baseUri, api, obj, Void.class );
     }
 
-    /**
-     * Post an object to the host specified by the url parameter, expecting a
-     * returning object of the class specified by the parameter responseType.
-     *
-     * @param url
-     *          url the complete url of the host
-     * @param obj
-     *          obj the object to send using the post http method
-     * @param responseType
-     *          the type of the object expected to retrieve.
-     * @return an instance of the class specified by the parameter responseType if
-     *         successful, null otherwise.
-     */
-    public static <T, E> T post( String url, E obj, Class<T> responseType ) {
-        RestTemplate restTemplate = new RestTemplate();
-        ResponseEntity<T> response = restTemplate.postForEntity( url, obj,
-            responseType );
-        if( response == null || !response.getStatusCode().is2xxSuccessful() ) {
-            LOGGER.log( Level.INFO, "FAIL: " + url );
-            return null;
-        }
-        return response.getBody();
-    }
+    public static <T, E> Optional<ResponseEntity> post( String baseUri, String api, E obj, Class<T> responseClass ) {
+        // TODO fix this mess, use URI instead of string
+        String url = baseUri + ( ( !api.endsWith( "/" ) && !baseUri.endsWith( "/" ) ) ? "/" : "" ) + api;
 
-    /**
-     * Post an object to the host specified by the url parameter, expecting a
-     * returning object of the class specified by the parameter responseType.
-     *
-     * @param url
-     *          url the complete url of the host
-     * @param obj
-     *          obj the object to send using the post http method
-     * @param responseType
-     *          the type of the object expected to retrieve.
-     * @return an instance of the class specified by the parameter responseType if
-     *         successful, null otherwise.
-     */
-    public static <T, E> T postAsString( String url, E obj,
-            Class<T> responseType ) {
-        RestTemplate restTemplate = new RestTemplate();
-
-        Optional<String> strObj = JsonUtility.getJsonStringFromObject( obj, false );
-        String string = strObj.isPresent() ? strObj.get() : "";
-
-        ResponseEntity<T> response = restTemplate.postForEntity( url, string,
-            responseType );
-        if( response == null || !response.getStatusCode().is2xxSuccessful() ) {
-            LOGGER.log( Level.INFO, "FAIL: " + url );
-            return null;
-        }
-        return response.getBody();
-    }
-
-    /**
-     * Post an object to the host specified by the url parameter, expecting no
-     * returning object.
-     *
-     * @param url
-     *          the complete url of the host
-     * @param obj
-     *          the object to send using the post http method
-     */
-    public static <E> RESTAsynchPostStatus asyncPost( String url, E obj ) {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType( MediaType.APPLICATION_JSON );
-        HttpEntity<E> entity = new HttpEntity<>( obj, headers );
-        AsyncRestTemplate restTemplate = new AsyncRestTemplate();
-        // restTemplate.postForEntity( url, entity, Void.class );
-        try {
-            ListenableFuture<ResponseEntity<Void>> future = restTemplate.postForEntity( url, entity, Void.class );
 
-            if( future == null || !future.get().getStatusCode().is2xxSuccessful() ) {
-                return RESTAsynchPostStatus.FAILURE;
-            }
-            return RESTAsynchPostStatus.SUCCESS;
-        } catch( Exception e ) {
-            if( e.getCause() instanceof HttpServerErrorException ) {
-                return RESTAsynchPostStatus.SERVER_ERROR;
-            }
-            return RESTAsynchPostStatus.FAILURE;
-        }
-    }
-
-    /**
-     * Post an object to the host specified by the url parameter, expecting no
-     * returning object.
-     *
-     * @param url
-     *          the complete url of the host
-     * @param obj
-     *          the object to send using the post http method
-     */
-    public static <E> RESTAsynchPostStatus asyncPostResponse( String url, E obj ) {
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType( MediaType.APPLICATION_JSON );
-        HttpEntity<E> entity = new HttpEntity<>( obj, headers );
-        AsyncRestTemplate restTemplate = new AsyncRestTemplate();
-        // restTemplate.postForEntity( url, entity, Void.class );
-
-        ListenableFuture<ResponseEntity<Void>> future = restTemplate.postForEntity( url, entity, Void.class );
-        try {
-            return RESTAsynchPostStatus.SUCCESS;
-        } catch( Exception e ) {
-            if( e.getCause() instanceof HttpServerErrorException ) {
-                return RESTAsynchPostStatus.SERVER_ERROR;
-            }
-            return RESTAsynchPostStatus.FAILURE;
-        }
-    }
-
-    /**
-     * Post an object to the host specified by the url parameter, expecting a
-     * returning object of the class specified by the parameter responseType.
-     *
-     * @param url
-     *          url the complete url of the host
-     * @param obj
-     *          obj the object to send using the post http method
-     * @param responseType
-     *          the type of the object expected to retrieve.
-     * @return an instance of the class specified by the parameter responseType if
-     *         successful, null otherwise.
-     */
-    public static <T, E> T asyncPost( String url, E obj, Class<T> responseType ) {
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType( MediaType.APPLICATION_JSON );
-        HttpEntity<E> entity = new HttpEntity<>( obj, headers );
-        AsyncRestTemplate restTemplate = new AsyncRestTemplate();
-        try {
-            ListenableFuture<ResponseEntity<T>> response = restTemplate
-                .postForEntity( url, entity, responseType );
-            if( response == null
-                    || !response.get().getStatusCode().is2xxSuccessful() ) {
-                LOGGER.log( Level.INFO, "FAIL: " + url );
-                return null;
-            }
-            return response.get().getBody();
-        } catch( Exception e ) {
-            e.printStackTrace();
-            return null;
+        Optional<String> jsonString = JsonUtility.getJsonStringFromObject( obj, false );
+        if( !jsonString.isPresent() ) {
+            return Optional.empty();
         }
 
+        HttpEntity<String> entity = new HttpEntity<>( jsonString.get(), headers );
+        RestTemplate restTemplate = new RestTemplate();
+
+        ResponseEntity responseEntity = restTemplate.postForEntity( url, entity, Void.class );
+
+        return Optional.of( responseEntity );
     }
 
-    /**
-     * Post an object to the host specified by the url parameter, expecting a
-     * returning object of the class specified by the parameter responseType.
-     *
-     * @param url
-     *          url the complete url of the host
-     * @param obj
-     *          obj the object to send using the post http method
-     * @param responseType
-     *          the type of the object expected to retrieve.
-     * @return an instance of the class specified by the parameter responseType if
-     *         successful, null otherwise.
-     */
-    public static <T, E> T asyncPostAsString( String url, E obj,
-            Class<T> responseType ) {
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType( MediaType.TEXT_PLAIN );
-        AsyncRestTemplate restTemplate = new AsyncRestTemplate();
+    public static <E> CompletableFuture<ResponseEntity> asyncPost( String baseUri, String api, E obj ) {
+        Mono<ResponseEntity> response = WebClient
+            .create( baseUri )
+            .post()
+            .uri( api )
+            .contentType( MediaType.APPLICATION_JSON )
+            .body( BodyInserters.fromObject( obj ) )
+            .exchange()
+            .flatMap( r -> r.toEntity( String.class ) );
 
-        Optional<String> strObj = JsonUtility.getJsonStringFromObject( obj, false );
-        String string = strObj.isPresent() ? strObj.get() : "";
-
-        HttpEntity<String> entity = new HttpEntity<>( string, headers );
-        try {
-            ListenableFuture<ResponseEntity<T>> response = restTemplate
-                .postForEntity( url, entity, responseType );
-            if( response == null
-                    || !response.get().getStatusCode().is2xxSuccessful() ) {
-                LOGGER.info( "FAIL: " + url + "\t" + string );
-                return null;
-            }
-            return response.get().getBody();
-        } catch( Exception e ) {
-            e.printStackTrace();
-            return null;
-        }
-    }
-
-    /**
-     * Post an object to the host specified by the url parameter, expecting a
-     * returning object of the class specified by the parameter responseType.
-     *
-     * @param url
-     *          url the complete url of the host
-     * @param obj
-     *          obj the object to send using the post http method
-     * @param responseType
-     *          the type of the object expected to retrieve.
-     * @return an instance of the class specified by the parameter responseType if
-     *         successful, null otherwise.
-     */
-    public static <E> void asyncPostAsString( String url, E obj ) {
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType( MediaType.TEXT_PLAIN );
-        AsyncRestTemplate restTemplate = new AsyncRestTemplate();
-
-        Optional<String> strObj = JsonUtility.getJsonStringFromObject( obj, false );
-        String string = strObj.isPresent() ? strObj.get() : "";
-
-        HttpEntity<String> entity = new HttpEntity<>( string, headers );
-        restTemplate.postForEntity( url, entity, Void.class );
+        // TODO maybe log errors here?
+        return CompletableFuture.supplyAsync( () -> response.block() );
     }
 
 }

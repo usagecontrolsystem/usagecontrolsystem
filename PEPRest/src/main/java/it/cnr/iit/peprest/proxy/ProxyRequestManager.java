@@ -15,15 +15,21 @@
  ******************************************************************************/
 package it.cnr.iit.peprest.proxy;
 
+import java.util.Optional;
+import java.util.logging.Logger;
+
+import org.springframework.http.ResponseEntity;
+
 import it.cnr.iit.peprest.configuration.RequestManagerProperties;
 import it.cnr.iit.ucsinterface.message.Message;
 import it.cnr.iit.ucsinterface.message.PURPOSE;
 import it.cnr.iit.ucsinterface.requestmanager.RequestManagerToExternalInterface;
-import it.cnr.iit.utility.RESTAsynchPostStatus;
 import it.cnr.iit.utility.RESTUtils;
 import it.cnr.iit.utility.Utility;
 
 public class ProxyRequestManager implements RequestManagerToExternalInterface {
+
+    private static final Logger log = Logger.getLogger( ProxyRequestManager.class.getName() );
 
     private String port;
     private String url;
@@ -41,14 +47,18 @@ public class ProxyRequestManager implements RequestManagerToExternalInterface {
 
     @Override
     public Message sendMessageToCH( Message message ) {
-        RESTAsynchPostStatus postStatus = RESTAsynchPostStatus.PENDING;
-        String api = getApiNameFromPurpose( message.getPurpose() );
-
-        postStatus = RESTUtils.asyncPost( Utility.buildUrl( url, port, api ), message );
-
-        if( postStatus == RESTAsynchPostStatus.SUCCESS ) {
-            message.setDeliveredToDestination( true );
+        try {
+            Optional<ResponseEntity> response = RESTUtils.post(
+                Utility.buildBaseUri( url, port ),
+                getApiNameFromPurpose( message.getPurpose() ),
+                message );
+            if( response.isPresent() && response.get().getStatusCode().is2xxSuccessful() ) {
+                message.setDeliveredToDestination( true );
+            }
+        } catch( Exception e ) {
+            log.severe( "Error posting message : " + e.getMessage() );
         }
+
         return message;
     }
 
