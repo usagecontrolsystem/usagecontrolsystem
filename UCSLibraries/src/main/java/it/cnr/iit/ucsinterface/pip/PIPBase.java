@@ -22,7 +22,8 @@ import it.cnr.iit.xacmlutilities.Attribute;
  * @author Fabio Bindi and Filippo Lauria and Antonio La Marra
  */
 public abstract class PIPBase implements PIPCHInterface, PIPOMInterface {
-    private static final Logger LOGGER = Logger.getLogger( PIPBase.class.getName() );
+
+    private static final Logger log = Logger.getLogger( PIPBase.class.getName() );
 
     /**
      * Whenever a PIP has to retrieve some informations related to an attribute
@@ -80,7 +81,7 @@ public abstract class PIPBase implements PIPCHInterface, PIPOMInterface {
     public PIPBase( PipProperties properties ) {
         // BEGIN parameter checking
         if( properties == null ) {
-            LOGGER.severe( "properties are null" );
+            log.severe( "properties are null" );
             // TODO throw exception
             return;
         }
@@ -106,7 +107,7 @@ public abstract class PIPBase implements PIPCHInterface, PIPOMInterface {
             arrayList.addAll( attributes.values() );
             return arrayList;
         }
-        LOGGER.severe( "Cannot read attributes, PIP not initialised" );
+        log.severe( "Cannot read attributes, PIP not initialised" );
         return null;
     }
 
