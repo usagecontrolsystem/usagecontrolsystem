@@ -35,7 +35,7 @@ import it.cnr.iit.ucsinterface.pdp.PDPInterface;
  * @author antonio
  *
  */
-final public class ProxyPDP extends Proxy implements PDPInterface {
+public final class ProxyPDP extends Proxy implements PDPInterface {
 
     private static final Logger log = Logger.getLogger( ProxyPDP.class.getName() );
 
@@ -125,7 +125,7 @@ final public class ProxyPDP extends Proxy implements PDPInterface {
         } catch( InstantiationException | IllegalAccessException
                 | ClassNotFoundException | NoSuchMethodException | SecurityException
                 | IllegalArgumentException | InvocationTargetException e ) {
-            e.printStackTrace();
+            log.severe( e.getMessage() );
         }
         return false;
     }

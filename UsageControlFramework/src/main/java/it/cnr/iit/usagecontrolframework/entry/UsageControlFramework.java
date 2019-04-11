@@ -19,6 +19,7 @@ import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.logging.Logger;
 
@@ -208,13 +209,9 @@ public final class UsageControlFramework implements UCSInterface {
 
         forwardingQueue = new ForwardingQueue();
         nodeInterface = new NodeProxy( configuration.getGeneral() );
-        System.out.println( "*******************\nCC" );
+        log.info( "*******************\nCC" );
         // checks if every component is ok
-        if( !checkConnection() ) {
-            return false;
-        }
-        return true;
-
+        return checkConnection();
     }
 
     private boolean buildContextHandler( DISTRIBUTED_TYPE distributedType ) {
@@ -239,8 +236,7 @@ public final class UsageControlFramework implements UCSInterface {
                 .newInstance( configuration.getGeneral(), properties );
             return true;
         } catch( Exception exception ) {
-            exception.printStackTrace();
-            log.severe( "build ContextHandler failed" );
+            log.severe( "build ContextHandler failed" + exception.getMessage() );
             return false;
         }
     }
@@ -265,7 +261,7 @@ public final class UsageControlFramework implements UCSInterface {
                 .newInstance( configuration.getGeneral(), properties );
             return true;
         } catch( Exception exception ) {
-            log.severe( "build RequestManager failed" );
+            log.severe( "build RequestManager failed" + exception.getMessage() );
             return false;
         }
     }
@@ -361,7 +357,7 @@ public final class UsageControlFramework implements UCSInterface {
         try {
             contextHandler.startMonitoringThread();
         } catch( Exception e ) {
-            e.printStackTrace();
+            log.severe( e.getMessage() );
             return false;
         }
 
@@ -404,7 +400,6 @@ public final class UsageControlFramework implements UCSInterface {
     @Async
     public void tryAccessResponse( TryAccessResponse tryAccessResponse ) {
         getRequestManager().sendMessageToCH( tryAccessResponse );
-        return;
     }
 
     @Override
@@ -417,7 +412,6 @@ public final class UsageControlFramework implements UCSInterface {
     @Async
     public void startAccessResponse( StartAccessResponse startAccessResponse ) {
         getRequestManager().sendMessageToCH( startAccessResponse );
-        return;
     }
 
     @Override
@@ -459,7 +453,7 @@ public final class UsageControlFramework implements UCSInterface {
 
     /* Getters */
 
-    public HashMap<String, PEPInterface> getPEPProxy() {
+    public Map<String, PEPInterface> getPEPProxy() {
         return proxyPEPMap;
     }
 

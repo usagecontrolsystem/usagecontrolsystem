@@ -15,6 +15,7 @@
  ******************************************************************************/
 package it.cnr.iit.usagecontrolframework.proxies;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.logging.Logger;
@@ -39,7 +40,7 @@ import it.cnr.iit.ucsinterface.pap.PAPInterface;
  * @author antonio
  *
  */
-final public class ProxyPAP extends Proxy implements PAPInterface {
+public final class ProxyPAP extends Proxy implements PAPInterface {
 
     private static final Logger log = Logger.getLogger( ProxyPAP.class.getName() );
 
@@ -148,7 +149,7 @@ final public class ProxyPAP extends Proxy implements PAPInterface {
     @Override
     public boolean addPolicy( String policy ) {
         // BEGIN parameter checking
-        if( initialized != true ) {
+        if( !initialized ) {
             return false;
         }
         if( policy == null || policy.equals( "" ) ) {
@@ -169,19 +170,19 @@ final public class ProxyPAP extends Proxy implements PAPInterface {
     @Override
     public List<String> listPolicies() {
         // BEGIN parameter checking
-        if( initialized != true ) {
-            return null;
+        if( !initialized ) {
+            return new ArrayList<>();
         }
         // END parameter checking
         switch( getConnection() ) {
             case API:
                 return papInterface.listPolicies();
             case SOCKET:
-                return null;
+                return new ArrayList<>();
             case REST_API:
-                return null;
+                return new ArrayList<>();
         }
-        return null;
+        return new ArrayList<>();
     }
 
     @Override

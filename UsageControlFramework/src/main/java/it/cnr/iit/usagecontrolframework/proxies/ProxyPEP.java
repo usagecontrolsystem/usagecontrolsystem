@@ -137,7 +137,7 @@ public class ProxyPEP extends Proxy implements PEPInterface {
         } catch( InstantiationException | IllegalAccessException
                 | ClassNotFoundException | NoSuchMethodException | SecurityException
                 | IllegalArgumentException | InvocationTargetException e ) {
-            e.printStackTrace();
+            log.severe( e.getMessage() );
         }
         return false;
     }
@@ -208,6 +208,8 @@ public class ProxyPEP extends Proxy implements PEPInterface {
             case API:
                 abstractPEP.setRequestManagerInterface( requestManager );
                 break;
+            case REST_API:
+            case SOCKET:
             default:
                 break;
         }
@@ -281,9 +283,12 @@ public class ProxyPEP extends Proxy implements PEPInterface {
                     abstractPEP.start();
                 } catch( InterruptedException | ExecutionException e ) {
                     log.severe( e.getMessage() );
+                    Thread.currentThread().interrupt();
                     Throwables.propagate( e );
                 }
                 break;
+            case REST_API:
+            case SOCKET:
             default:
                 break;
         }
