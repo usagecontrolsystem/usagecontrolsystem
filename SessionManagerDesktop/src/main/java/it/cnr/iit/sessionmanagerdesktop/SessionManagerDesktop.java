@@ -39,7 +39,8 @@ import it.cnr.iit.xacmlutilities.Attribute;
  * @author Fabio Bindi and Filippo Lauria and Antonio La Marra
  */
 final public class SessionManagerDesktop implements SessionManagerInterface {
-    private static Logger LOGGER = Logger.getLogger( SessionManagerDesktop.class.getName() );
+
+    private static Logger log = Logger.getLogger( SessionManagerDesktop.class.getName() );
 
     // url to connect to the database
     private String databaseURL;
@@ -377,7 +378,7 @@ final public class SessionManagerDesktop implements SessionManagerInterface {
                 pepURI, myIP );
             // IMPORTANTE
             if( sessionDao.idExists( sessionId ) ) {
-                LOGGER.log( Level.SEVERE, "ID already exists" );
+                log.log( Level.SEVERE, "ID already exists" );
                 return false;
             }
             sessionDao.create( s );
