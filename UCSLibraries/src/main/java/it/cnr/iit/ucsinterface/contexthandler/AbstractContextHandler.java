@@ -17,6 +17,7 @@ package it.cnr.iit.ucsinterface.contexthandler;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import it.cnr.iit.ucs.configuration.ContextHandlerProperties;
@@ -96,7 +97,7 @@ public abstract class AbstractContextHandler implements ContextHandlerInterface 
         port = properties.getPort();
     }
 
-    final protected boolean isInitialized() {
+    protected final boolean isInitialized() {
         return initialized;
     }
 
@@ -126,13 +127,13 @@ public abstract class AbstractContextHandler implements ContextHandlerInterface 
             LOGGER.info( "ContextHandler correctly initialized" );
         } else {
             LOGGER.severe( "ContextHandler incorrectly initialized" );
-            LOGGER.severe( "The offending components are : " + sb.toString() );
+            LOGGER.log( Level.SEVERE, "The offending components are : {0}", sb );
         }
     }
 
-    abstract public boolean startMonitoringThread() throws Exception;
+    public abstract boolean startMonitoringThread() throws Exception;
 
-    final protected SessionManagerInterface getSessionManagerInterface() {
+    protected final SessionManagerInterface getSessionManagerInterface() {
         if( !initialized ) {
             return null;
         }
@@ -147,9 +148,9 @@ public abstract class AbstractContextHandler implements ContextHandlerInterface 
         this.sessionManagerInterface = sessionManagerInterface;
     }
 
-    final protected List<PIPCHInterface> getPipList() {
+    protected final List<PIPCHInterface> getPipList() {
         if( !initialized ) {
-            return null;
+            return new ArrayList<>();
         }
         return pipList;
     }
@@ -161,7 +162,7 @@ public abstract class AbstractContextHandler implements ContextHandlerInterface 
         this.pipRetrieval = pipRetrieval;
     }
 
-    final protected PIPRMInterface getPipRetrieval() {
+    protected final PIPRMInterface getPipRetrieval() {
         if( !initialized ) {
             return null;
         }
@@ -175,7 +176,7 @@ public abstract class AbstractContextHandler implements ContextHandlerInterface 
         pipList.add( pipInterface );
     }
 
-    final protected PDPInterface getPdpInterface() {
+    protected final PDPInterface getPdpInterface() {
         if( !initialized ) {
             return null;
         }
@@ -189,7 +190,7 @@ public abstract class AbstractContextHandler implements ContextHandlerInterface 
         this.pdpInterface = pdpInterface;
     }
 
-    final protected PAPInterface getPapInterface() {
+    protected final PAPInterface getPapInterface() {
         if( !initialized ) {
             return null;
         }
@@ -203,7 +204,7 @@ public abstract class AbstractContextHandler implements ContextHandlerInterface 
         this.papInterface = papInterface;
     }
 
-    final protected RequestManagerToCHInterface getRequestManagerToChInterface() {
+    protected final RequestManagerToCHInterface getRequestManagerToChInterface() {
         if( !initialized ) {
             return null;
         }
@@ -218,11 +219,11 @@ public abstract class AbstractContextHandler implements ContextHandlerInterface 
         this.requestManagerToChInterface = requestManagerToChInterface;
     }
 
-    final protected String getIp() {
+    protected final String getIp() {
         return ip;
     }
 
-    final protected String getPort() {
+    protected final String getPort() {
         return port;
     }
 
@@ -282,8 +283,8 @@ public abstract class AbstractContextHandler implements ContextHandlerInterface 
         }
     }
 
-    final protected ObligationManagerInterface getObligationManager() {
-        if( initialized == false ) {
+    protected final ObligationManagerInterface getObligationManager() {
+        if( !initialized ) {
             return null;
         }
         return obligationManager;
@@ -300,7 +301,7 @@ public abstract class AbstractContextHandler implements ContextHandlerInterface 
      *
      * @return the ForwardingQueueToCHInterface
      */
-    final protected ForwardingQueueToCHInterface getForwardingQueue() {
+    protected final ForwardingQueueToCHInterface getForwardingQueue() {
         return forwardingQueue;
     }
 
