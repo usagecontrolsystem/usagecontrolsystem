@@ -486,7 +486,7 @@ public class ProxySessionManager extends Proxy implements SessionManagerInterfac
     public Optional<SessionInterface> getSessionForId( String sessionId ) {
         // BEGIN parameter checking
         if( initialized == false || started == false ) {
-            return null;
+            return Optional.empty();
         }
         // END parameter checking
 
@@ -494,8 +494,10 @@ public class ProxySessionManager extends Proxy implements SessionManagerInterfac
             case API:
                 return sessionManagerInterface.getSessionForId( sessionId );
             case SOCKET:
+                // TODO
                 return Optional.empty();
             case REST_API:
+                // TODO
                 return Optional.empty();
             default:
                 return sessionManagerInterface.getSessionForId( sessionId );

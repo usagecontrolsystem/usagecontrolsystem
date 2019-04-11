@@ -15,6 +15,9 @@
  ******************************************************************************/
 package it.cnr.iit.ucsinterface.node;
 
+import java.util.Optional;
+import java.util.logging.Logger;
+
 import it.cnr.iit.ucs.configuration.GeneralProperties;
 import it.cnr.iit.ucs.constants.CONNECTION;
 import it.cnr.iit.ucsinterface.message.Message;
@@ -26,7 +29,9 @@ import it.cnr.iit.ucsinterface.message.startaccess.StartAccessMessage;
 import it.cnr.iit.ucsinterface.message.startaccess.StartAccessResponse;
 import it.cnr.iit.ucsinterface.message.tryaccess.TryAccessMessage;
 import it.cnr.iit.ucsinterface.message.tryaccess.TryAccessResponse;
+import it.cnr.iit.utility.JsonUtility;
 import it.cnr.iit.utility.RESTUtils;
+import it.cnr.iit.utility.Utility;
 
 /**
  * This is the class effectively implementing the proxy to communicate with
@@ -44,11 +49,13 @@ import it.cnr.iit.utility.RESTUtils;
  */
 public class NodeProxy implements NodeInterface {
 
-    private GeneralProperties generalProperties;
+    private static final Logger log = Logger.getLogger( NodeProxy.class.getName() );
+
+    private GeneralProperties properties;
     private CONNECTION connection = CONNECTION.REST_API;
 
     public NodeProxy( GeneralProperties generalProperties ) {
-        this.generalProperties = generalProperties;
+        properties = generalProperties;
     }
 
     @Override
@@ -67,43 +74,52 @@ public class NodeProxy implements NodeInterface {
 
     }
 
-    private void sendMessageViaREST( Message message ) {
+    private Optional<String> getApi( Message message ) {
         if( message instanceof TryAccessMessage ) {
-            RESTUtils.asyncPost( buildUrl( NodeInterface.TRYACCESS_REST, message ),
-                (TryAccessMessage) message );
+            return Optional.of( NodeInterface.TRYACCESS_REST );
+        } else if( message instanceof StartAccessMessage ) {
+            return Optional.of( NodeInterface.STARTACCESS_REST );
+        } else if( message instanceof EndAccessMessage ) {
+            return Optional.of( NodeInterface.ENDACCESS_REST );
+        } else if( message instanceof TryAccessResponse ) {
+            return Optional.of( NodeInterface.TRYACCESSRESPONSE_REST );
+        } else if( message instanceof StartAccessResponse ) {
+            return Optional.of( NodeInterface.STARTACCESSRESPONSE_REST );
+        } else if( message instanceof EndAccessResponse ) {
+            return Optional.of( NodeInterface.ENDACCESSRESPONSE_REST );
+        } else if( message instanceof ReevaluationMessage ) {
+            return Optional.of( NodeInterface.ONGOING_REST );
+        } else if( message instanceof ReevaluationResponse ) {
+            return Optional.of( NodeInterface.ONGOINGRESPONSE_REST );
         }
-        if( message instanceof StartAccessMessage ) {
-            RESTUtils.asyncPost( buildUrl( NodeInterface.STARTACCESS_REST, message ),
-                (StartAccessMessage) message );
+
+        return Optional.empty();
+    }
+
+    private void sendMessageViaREST( Message message ) {
+        Optional<String> api = getApi( message );
+
+        if( !api.isPresent() ) {
+            log.severe( "Error posting message : could not determine api" );
+            return;
         }
-        if( message instanceof EndAccessMessage ) {
-            RESTUtils.asyncPost( buildUrl( NodeInterface.ENDACCESS_REST, message ),
-                (EndAccessMessage) message );
+
+        Optional<String> data = JsonUtility.getJsonStringFromObject( message, false );
+
+        if( !data.isPresent() ) {
+            log.severe( "Error posting message : could not marshal message" );
+            return;
         }
-        if( message instanceof TryAccessResponse ) {
-            RESTUtils.asyncPostAsString(
-                buildUrl( NodeInterface.TRYACCESSRESPONSE_REST, message ),
-                (TryAccessResponse) message );
+
+        try {
+            RESTUtils.asyncPost(
+                Utility.buildBaseUri( properties.getIp(), properties.getPort() ),
+                api.get(),
+                data.get() );
+        } catch( Exception e ) {
+            log.severe( "Error posting message : " + api.get() );
         }
-        if( message instanceof StartAccessResponse ) {
-            RESTUtils.asyncPostAsString(
-                buildUrl( NodeInterface.STARTACCESSRESPONSE_REST, message ),
-                (StartAccessResponse) message );
-        }
-        if( message instanceof EndAccessResponse ) {
-            RESTUtils.asyncPostAsString(
-                buildUrl( NodeInterface.ENDACCESSRESPONSE_REST, message ),
-                (EndAccessResponse) message );
-        }
-        if( message instanceof ReevaluationMessage ) {
-            RESTUtils.asyncPostAsString( buildUrl( NodeInterface.ONGOING_REST, message ),
-                (ReevaluationMessage) message );
-        }
-        if( message instanceof ReevaluationResponse ) {
-            RESTUtils.asyncPostAsString(
-                buildUrl( NodeInterface.ONGOINGRESPONSE_REST, message ),
-                (ReevaluationResponse) message );
-        }
+
     }
 
     private void sendMessageViaSocket( Message message ) {
@@ -112,23 +128,6 @@ public class NodeProxy implements NodeInterface {
 
     private void useApi( Message message ) {
         // TODO Auto-generated method stub
-    }
-
-    /**
-     * Provided the name of the rest API to call, it builds up the complete url to
-     * be used to call that interface
-     *
-     * @param function
-     *          the name of the function
-     * @return the complete url to be used in the rest call
-     */
-    private String buildUrl( String function, Message message ) {
-        // TODO fix this
-        StringBuilder url = new StringBuilder();
-        url.append( "http://" + message.getDestination() + ":" );
-        url.append( generalProperties.getPort() );
-        url.append( function );
-        return url.toString();
     }
 
 }
