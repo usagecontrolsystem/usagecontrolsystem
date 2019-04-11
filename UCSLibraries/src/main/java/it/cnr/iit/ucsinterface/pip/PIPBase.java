@@ -45,7 +45,7 @@ public abstract class PIPBase implements PIPCHInterface, PIPOMInterface {
     public static final String FILE_PATH = "FILE_PATH";
 
     protected ContextHandlerPIPInterface contextHandlerInterface;
-    public HashMap<String, Attribute> attributes = new HashMap<>();
+    private HashMap<String, Attribute> attributes = new HashMap<>();
     private PipProperties properties;
 
     private volatile boolean initialized = false;
