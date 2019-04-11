@@ -15,7 +15,7 @@
  ******************************************************************************/
 package it.cnr.iit.ucsinterface.contexthandler.scheduler;
 
-import java.util.HashMap;
+import java.util.Map;
 
 /**
  * This is the interface provided by the scheduler.
@@ -45,5 +45,5 @@ public interface SchedulerInterface {
      * @return a string representing the IP of the node in charge of handling the
      *         request
      */
-    public String getIp( HashMap<String, Integer> attributesIP );
+    public String getIp( Map<String, Integer> attributesIP );
 }
