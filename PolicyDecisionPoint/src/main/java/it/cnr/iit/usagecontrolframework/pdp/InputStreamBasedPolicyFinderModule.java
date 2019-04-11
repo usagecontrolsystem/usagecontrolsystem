@@ -52,7 +52,7 @@ class InputStreamBasedPolicyFinderModule extends PolicyFinderModule {
     private Map<URI, AbstractPolicy> policies = new HashMap<>();
 
     // the policy is stored here
-    private String dataUsagePolicy = new String( "" );
+    private String dataUsagePolicy = "";
 
     private PolicyCombiningAlgorithm combiningAlg;
 
