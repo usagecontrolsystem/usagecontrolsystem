@@ -1,5 +1,6 @@
 package it.cnr.iit.peprest.messagetrack;
 
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import it.cnr.iit.ucsinterface.message.endaccess.EndAccessMessage;
@@ -83,7 +84,7 @@ public class MessageInformations {
             throw new IllegalArgumentException( "Wrong flow of messages!! \n status is: " + callerResponse.getStatus() );
         }
         evaluation = message.getPDPEvaluation();
-        log.severe( evaluation.getResult() + "\t" + DecisionType.PERMIT.toString() );
+        log.log( Level.INFO, "{0}\t{1}", new Object[] { evaluation.getResult(), DecisionType.PERMIT.value() } );
         if( evaluation.getResult().equals( DecisionType.PERMIT.value() ) ) {
             callerResponse.setStatus( STATUS.TRYACCESS_PERMIT );
             callerResponse.setSessionId( message.getSessionId() );

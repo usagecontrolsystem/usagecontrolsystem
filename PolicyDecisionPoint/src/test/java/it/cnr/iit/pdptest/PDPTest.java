@@ -1,6 +1,7 @@
 package it.cnr.iit.pdptest;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.util.logging.Logger;
@@ -83,8 +84,8 @@ public class PDPTest {
         assertThat( testEvaluation( requestDeny, policy, STATUS.ENDACCESS ) ).contains( "deny" );
         assertThat( testEvaluation( requestPermit, policy, STATUS.ENDACCESS ) ).contains( "permit" );
         assertThat( testEvaluation( requestIndeterminate, policy, STATUS.ENDACCESS ) ).contains( "indeterminate" );
-        assertThat( testEvaluation( requestIndeterminate, null, STATUS.ENDACCESS ) == null );
-        assertThat( testEvaluation( null, policy, STATUS.ENDACCESS ) == null );
+        assertTrue( testEvaluation( requestIndeterminate, null, STATUS.ENDACCESS ) == null );
+        assertTrue( testEvaluation( null, policy, STATUS.ENDACCESS ) == null );
         assertThat( testEvaluation( requestPermit, policyDup, STATUS.TRYACCESS ) ).contains( "permit" );
     }
 
