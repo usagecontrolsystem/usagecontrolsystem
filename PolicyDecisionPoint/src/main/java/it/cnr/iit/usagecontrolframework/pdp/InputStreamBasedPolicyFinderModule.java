@@ -14,6 +14,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.logging.Logger;
 
+import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
@@ -58,12 +59,18 @@ class InputStreamBasedPolicyFinderModule extends PolicyFinderModule {
     private DocumentBuilderFactory documentBuilderFactory;
 
     public InputStreamBasedPolicyFinderModule( String policy ) {
-        dataUsagePolicy = policy;
+        try {
+            dataUsagePolicy = policy;
 
-        documentBuilderFactory = DocumentBuilderFactory.newInstance();
-        documentBuilderFactory.setIgnoringComments( true );
-        documentBuilderFactory.setNamespaceAware( true );
-        documentBuilderFactory.setValidating( false );
+            documentBuilderFactory = DocumentBuilderFactory.newInstance();
+            documentBuilderFactory.setFeature( XMLConstants.FEATURE_SECURE_PROCESSING, true );
+            documentBuilderFactory.setIgnoringComments( true );
+            documentBuilderFactory.setNamespaceAware( true );
+            documentBuilderFactory.setValidating( false );
+        } catch( Exception e ) {
+            log.severe( e.getMessage() );
+            throw new IllegalStateException( "Unable to protect against XXE" );
+        }
     }
 
     @Override
