@@ -67,15 +67,29 @@ public final class RESTUtils {
         return Optional.of( responseEntity );
     }
 
-    public static <T, E> CompletableFuture<ResponseEntity<?>> asyncPost( String baseUri, String api, E obj ) {
-        Mono<ResponseEntity<?>> response = WebClient
+    public static <T, E> CompletableFuture<ResponseEntity<T>> asyncPost( String baseUri, String api, E obj, Class<T> clazz ) {
+        Mono<ResponseEntity<T>> response = WebClient
             .create( baseUri )
             .post()
             .uri( api )
             .contentType( MediaType.APPLICATION_JSON )
             .body( BodyInserters.fromObject( obj ) )
             .exchange()
-            .flatMap( r -> r.toEntity( String.class ) );
+            .flatMap( r -> r.toEntity( clazz ) );
+
+        // TODO maybe log errors here?
+        return CompletableFuture.supplyAsync( () -> response.block() );
+    }
+
+    public static <E> CompletableFuture<ResponseEntity<Void>> asyncPost( String baseUri, String api, E obj ) {
+        Mono<ResponseEntity<Void>> response = WebClient
+            .create( baseUri )
+            .post()
+            .uri( api )
+            .contentType( MediaType.APPLICATION_JSON )
+            .body( BodyInserters.fromObject( obj ) )
+            .exchange()
+            .flatMap( r -> r.toEntity( Void.class ) );
 
         // TODO maybe log errors here?
         return CompletableFuture.supplyAsync( () -> response.block() );
