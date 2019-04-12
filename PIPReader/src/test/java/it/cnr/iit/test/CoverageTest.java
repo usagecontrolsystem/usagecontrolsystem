@@ -104,7 +104,7 @@ public class CoverageTest {
             resourceAttributePip = new PIPReader( PIPBuilder.getPropertiesFromString( resourcePip ).get() );
             actionAttributePip = new PIPReader( PIPBuilder.getPropertiesFromString( actionPip ).get() );
             environmentAttributePip = new PIPReader( PIPBuilder.getPropertiesFromString( environmentPip ).get() );
-            assertTrue( subjectAttributePip.initialized );
+            assertTrue( subjectAttributePip.isPIPInitialized() );
             initAttributes();
             subjectAttributePip.setContextHandlerInterface( abstractContextHandler );
             resourceAttributePip.setContextHandlerInterface( abstractContextHandler );
@@ -148,9 +148,9 @@ public class CoverageTest {
         testRetrieve();
         testSubscribe();
         try {
-            Thread.sleep( 30000 );
+            Thread.sleep( 11000 ); // NOSONAR
             changeAttributeValue();
-            Thread.sleep( 20000 );
+            Thread.sleep( 10000 ); // NOSONAR
             resetAttributeValue();
             testUnsubscribe();
         } catch( InterruptedException e ) {
@@ -159,20 +159,26 @@ public class CoverageTest {
     }
 
     public void testInitialization() {
-        fault = new PIPReader( PIPBuilder.getPropertiesFromString( missingCategory ).get() );
-        assertEquals( fault.initialized, false );
-
-        fault = new PIPReader( PIPBuilder.getPropertiesFromString( missingAttributeId ).get() );
-        assertEquals( fault.initialized, false );
-
-        fault = new PIPReader( PIPBuilder.getPropertiesFromString( missingExpectedCategory ).get() );
-        assertEquals( fault.initialized, false );
-
-        fault = new PIPReader( PIPBuilder.getPropertiesFromString( missingDataType ).get() );
-        assertEquals( fault.initialized, false );
-
-        fault = new PIPReader( PIPBuilder.getPropertiesFromString( missingFilePath ).get() );
-        assertEquals( fault.initialized, false );
+        try {
+            fault = new PIPReader( PIPBuilder.getPropertiesFromString( missingCategory ).get() );
+        } catch( Exception e ) {}
+        assertFalse( fault != null && fault.isPIPInitialized() );
+        try {
+            fault = new PIPReader( PIPBuilder.getPropertiesFromString( missingAttributeId ).get() );
+        } catch( Exception e ) {}
+        assertFalse( fault != null && fault.isPIPInitialized() );
+        try {
+            fault = new PIPReader( PIPBuilder.getPropertiesFromString( missingExpectedCategory ).get() );
+        } catch( Exception e ) {}
+        assertFalse( fault != null && fault.isPIPInitialized() );
+        try {
+            fault = new PIPReader( PIPBuilder.getPropertiesFromString( missingDataType ).get() );
+        } catch( Exception e ) {}
+        assertFalse( fault != null && fault.isPIPInitialized() );
+        try {
+            fault = new PIPReader( PIPBuilder.getPropertiesFromString( missingFilePath ).get() );
+        } catch( Exception e ) {}
+        assertFalse( fault != null && fault.isPIPInitialized() );
 
         // fault = new PIPReader( PIPBuilder.getPipPropertiesFromString(malformedInput).get() );
         // assertEquals( fault.initialized, false );
@@ -181,7 +187,7 @@ public class CoverageTest {
     @Test( expected = PreconditionException.class )
     public void testNullProperties() {
         fault = new PIPReader( null );
-        assertEquals( fault.initialized, false );
+        assertFalse( fault.isPIPInitialized() );
     }
 
     public void testRetrieve() {
@@ -234,7 +240,7 @@ public class CoverageTest {
         dummySubjectAttribute.createAttributeId( "subjectId" );
         testRetrieveAndEnrichment( requestType, fault );
         testRetrieveAndEnrichment( null, fault );
-        assertEquals( verifyRequest( requestType, dummySubjectAttribute ), null );
+        assertEquals( null, verifyRequest( requestType, dummySubjectAttribute ) );
         assertFalse( verifyRequest( requestType, environmentAttribute ).equals( "40.0" ) );
         log.info( "-------END RETRIEVE TEST-------" );
     }
@@ -243,7 +249,7 @@ public class CoverageTest {
         try {
             pipReader.retrieve( requestType );
         } catch( Exception e ) {
-            e.printStackTrace();
+            // e.printStackTrace();
         }
     }
 
@@ -274,7 +280,7 @@ public class CoverageTest {
         dummySubjectAttribute.createAttributeId( "subjectId" );
         testSubscribeAndEnrichment( requestType, fault );
         testSubscribeAndEnrichment( null, fault );
-        assertEquals( verifyRequest( requestType, dummySubjectAttribute ), null );
+        assertEquals( null, verifyRequest( requestType, dummySubjectAttribute ) );
         assertFalse( verifyRequest( requestType, environmentAttribute ).equals( "40.0" ) );
         log.info( "-------END SUBSCRIBE TEST-------" );
     }
@@ -283,7 +289,8 @@ public class CoverageTest {
         try {
             pipReader.subscribe( requestType );
         } catch( Exception e ) {
-            e.printStackTrace();
+            log.severe( e.getMessage() );
+            // e.printStackTrace();
         }
     }
 
@@ -303,7 +310,7 @@ public class CoverageTest {
             String value = pipReader.subscribe( attribute );
             return value;
         } catch( Exception e ) {
-            e.printStackTrace();
+            log.severe( e.getMessage() );
         }
         return null;
     }
@@ -360,7 +367,7 @@ public class CoverageTest {
             boolean value = pipReader.unsubscribe( list );
             return value;
         } catch( Exception e ) {
-            e.printStackTrace();
+            log.severe( e.getMessage() );
         }
         return false;
     }
