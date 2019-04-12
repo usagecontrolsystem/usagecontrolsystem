@@ -165,8 +165,8 @@ public final class ContextHandlerLC extends AbstractContextHandler {
     public void tryAccess( Message message ) {
         if( !isInitialized() || message == null ) {
             log.log( Level.SEVERE, "{0} {1} \t {2}",
-                new Object[] { "INVALID tryAccess ", isInitialized(), ( message instanceof TryAccessMessage ) } );
-            throw new IllegalStateException( "Error in tryAccess: " + isInitialized() + "\t" + ( message instanceof TryAccessMessage ) );
+                new Object[] { "INVALID tryAccess ", isInitialized(), ( message == null ) } );
+            throw new IllegalStateException( "Error in tryAccess: " + isInitialized() + "\t" + ( message == null ) );
         }
 
         log.log( Level.INFO, "[TIME] tryaccess received at {0}", new Object[] { System.currentTimeMillis() } );
@@ -874,7 +874,7 @@ public final class ContextHandlerLC extends AbstractContextHandler {
                     // right action
                     LinkedList<String> searchList = new LinkedList<>( pip.getAttributeIds() );
                     if( searchList.contains( attribute.getAttributeId() ) ) {
-        
+
                         switch( messagePipCh.getAction() ) {
                             case RETRIEVE:
                                 attribute.setValue( pip.getAttributesCharacteristics().get( attribute.getAttributeId() )
