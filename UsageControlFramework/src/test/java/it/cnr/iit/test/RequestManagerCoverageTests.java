@@ -45,7 +45,7 @@ public class RequestManagerCoverageTests extends UCFBaseTests {
         requestManager.sendMessageToOutside( null );
     }
 
-    @Test
+    @Test( expected = NullPointerException.class )
     public void requestManagerCoverageTest()
             throws JAXBException, URISyntaxException, IOException, NoSuchMethodException, SecurityException,
             InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
@@ -77,15 +77,15 @@ public class RequestManagerCoverageTests extends UCFBaseTests {
 
     public void testRequestManager( RequestManagerLC requestManager ) throws URISyntaxException, IOException {
         Message[] messages = {
-            buildTryAccessResponse( "", "", "" ),
-            buildStartAccessResponse( "", "", "" ),
-            buildEndAccessResponse( "", "", "" ),
-            buildReevaluationResponse( "", "", "" ),
-            buildPipChMessage( "", "", "" ),
-            buildTryAccessMessage( "", "", "", "" ),
-            buildStartAccessMessage( "", "", "" ),
-            buildEndAccessMessage( "", "", "" ),
-            buildReevaluationMessage( "", "", "" )
+            buildTryAccessResponse( "a", "a", "a" ),
+            buildStartAccessResponse( "a", "a", "a" ),
+            buildEndAccessResponse( "a", "a", "a" ),
+            buildReevaluationResponse( "a", "a", "a" ),
+            buildPipChMessage( "a", "a", "a" ),
+            buildTryAccessMessage( "a", "a", "a", "a" ),
+            buildStartAccessMessage( "a", "a", "a" ),
+            buildEndAccessMessage( "a", "a", "a" ),
+            buildReevaluationMessage( "a", "a", "a" )
         };
 
         for( Message message : messages ) {
