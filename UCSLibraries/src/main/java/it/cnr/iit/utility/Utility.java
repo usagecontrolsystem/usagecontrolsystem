@@ -24,6 +24,8 @@ import java.net.URL;
 import java.util.Scanner;
 import java.util.logging.Logger;
 
+import javax.xml.bind.JAXBException;
+
 /**
  * This class contains all the utility function we need throughout this project.
  *
@@ -115,7 +117,7 @@ public final class Utility {
     /**
      * Secure reading of the file from the absolute path
      */
-    public static String secureReadFileAbsPath( String string ) {
+    public static String secureReadFileAbsPath( String string ) { // NOSONAR
         return null;
     }
 
@@ -123,14 +125,14 @@ public final class Utility {
         try (
                 InputStream stream = Thread.currentThread().getContextClassLoader().getResource( configFile ).openStream();
                 BufferedReader buffer = new BufferedReader( new InputStreamReader( stream ) );) {
-            String xml = "", line = "";
+            StringBuilder xml = new StringBuilder();
+            String line = "";
             while( ( line = buffer.readLine() ) != null ) {
-                xml += line;
+                xml.append( line );
             }
-            T configObj = JAXBUtility.unmarshalToObject( configClass, xml );
-            return configObj;
-        } catch( Exception e ) {
-            log.severe( "Unable to read config file due to error: " + e.getLocalizedMessage() );
+            return JAXBUtility.unmarshalToObject( configClass, xml.toString() );
+        } catch( IOException | JAXBException e ) { // NOSONAR
+            log.severe( "Unable to read config file due to error: " + e.getMessage() );
             throw new IllegalStateException( "Unable to read config file due to error: " + e.getLocalizedMessage() );
         }
     }
