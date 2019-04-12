@@ -251,7 +251,7 @@ public class PolicyHelper implements PolicyHelperInterface {
                 RuleType ruleType = (RuleType) obj;
                 // check if the ruletype contians any conditions
                 if( ruleType.getCondition() != null
-                        && ruleType.getCondition().isEmpty() ) {
+                        && !ruleType.getCondition().isEmpty() ) {
                     List<ConditionType> conditions = ruleType.getCondition();
                     for( ConditionType conditionType : conditions ) {
 
