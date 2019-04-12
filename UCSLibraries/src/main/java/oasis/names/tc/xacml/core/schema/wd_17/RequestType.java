@@ -27,6 +27,7 @@ package oasis.names.tc.xacml.core.schema.wd_17;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -77,6 +78,8 @@ public final class RequestType {
     protected boolean returnPolicyIdList;
     @XmlAttribute( name = "CombinedDecision", required = true )
     protected boolean combinedDecision;
+
+    private static final Logger log = Logger.getLogger( RequestType.class.getName() );
 
     /**
      * Recupera il valore della proprietà requestDefaults.
@@ -203,7 +206,9 @@ public final class RequestType {
                         .getContent().get( 0 ).toString();
                 }
             }
-        } catch( Exception e ) {}
+        } catch( Exception e ) {
+            log.severe( e.getMessage() );
+        }
 
         return null;
     }
@@ -231,8 +236,6 @@ public final class RequestType {
     public boolean addAttribute( String category, String dataType,
             String attributeId, String value ) {
 
-        // Logger LOGGER = Logger.getLogger(RequestType.class.getName());
-
         AttributeValueType attributeValueType = new AttributeValueType();
         attributeValueType.setDataType( dataType );
         attributeValueType.getContent().add( value );
@@ -254,14 +257,6 @@ public final class RequestType {
         if( !added ) {
             this.getAttributes().add( attributesType );
         }
-
-        // DEBUG PURPOSES
-        /*
-         * try { String string = JAXBUtility.marshalToString(RequestType.class,
-         * this, "Request", JAXBUtility.SCHEMA); LOGGER.log(Level.INFO,
-         * "Updated Request: " + string); } catch (JAXBException e) { // TODO
-         * Auto-generated catch block e.printStackTrace(); }
-         */
 
         return true;
     }
@@ -289,14 +284,6 @@ public final class RequestType {
         if( !added ) {
             this.getAttributes().add( attributesType );
         }
-
-        // DEBUG PURPOSES
-        /*
-         * try { String string = JAXBUtility.marshalToString(RequestType.class,
-         * this, "Request", JAXBUtility.SCHEMA); LOGGER.log(Level.INFO,
-         * "Updated Request: " + string); } catch (JAXBException e) { // TODO
-         * Auto-generated catch block e.printStackTrace(); }
-         */
 
         return true;
     }

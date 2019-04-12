@@ -1,25 +1,24 @@
 /*******************************************************************************
  * Copyright 2018 IIT-CNR
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
- * use this file except in compliance with the License.  You may obtain a copy
+ * use this file except in compliance with the License. You may obtain a copy
  * of the License at
- * 
- *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
  ******************************************************************************/
 //
-// Questo file è stato generato dall'architettura JavaTM per XML Binding (JAXB) Reference Implementation, v2.2.8-b130911.1802 
-// Vedere <a href="http://java.sun.com/xml/jaxb">http://java.sun.com/xml/jaxb</a> 
-// Qualsiasi modifica a questo file andrà persa durante la ricompilazione dello schema di origine. 
-// Generato il: 2017.04.24 alle 12:34:54 PM CEST 
+// Questo file è stato generato dall'architettura JavaTM per XML Binding (JAXB) Reference Implementation, v2.2.8-b130911.1802
+// Vedere <a href="http://java.sun.com/xml/jaxb">http://java.sun.com/xml/jaxb</a>
+// Qualsiasi modifica a questo file andrà persa durante la ricompilazione dello schema di origine.
+// Generato il: 2017.04.24 alle 12:34:54 PM CEST
 //
-
 
 package oasis.names.tc.xacml.core.schema.wd_17;
 
@@ -30,12 +29,11 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElementRef;
 import javax.xml.bind.annotation.XmlType;
 
-
 /**
  * <p>Classe Java per VariableDefinitionType complex type.
- * 
+ *
  * <p>Il seguente frammento di schema specifica il contenuto previsto contenuto in questa classe.
- * 
+ *
  * <pre>
  * &lt;complexType name="VariableDefinitionType">
  *   &lt;complexContent>
@@ -48,23 +46,23 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;/complexContent>
  * &lt;/complexType>
  * </pre>
- * 
- * 
+ *
+ *
  */
-@XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "VariableDefinitionType", propOrder = {
+@XmlAccessorType( XmlAccessType.FIELD )
+@XmlType( name = "VariableDefinitionType", propOrder = {
     "expression"
-})
+} )
 public class VariableDefinitionType {
 
-    @XmlElementRef(name = "Expression", namespace = "urn:oasis:names:tc:xacml:3.0:core:schema:wd-17", type = JAXBElement.class)
+    @XmlElementRef( name = "Expression", namespace = "urn:oasis:names:tc:xacml:3.0:core:schema:wd-17", type = JAXBElement.class )
     protected JAXBElement<?> expression;
-    @XmlAttribute(name = "VariableId", required = true)
+    @XmlAttribute( name = "VariableId", required = true )
     protected String variableId;
 
     /**
      * Recupera il valore della proprietà expression.
-     * 
+     *
      * @return
      *     possible object is
      *     {@link JAXBElement }{@code <}{@link AttributeSelectorType }{@code >}
@@ -74,15 +72,15 @@ public class VariableDefinitionType {
      *     {@link JAXBElement }{@code <}{@link AttributeValueType }{@code >}
      *     {@link JAXBElement }{@code <}{@link ApplyType }{@code >}
      *     {@link JAXBElement }{@code <}{@link ExpressionType }{@code >}
-     *     
+     *
      */
-    public JAXBElement<?> getExpression() {
+    public JAXBElement<?> getExpression() { // NOSONAR
         return expression;
     }
 
     /**
      * Imposta il valore della proprietà expression.
-     * 
+     *
      * @param value
      *     allowed object is
      *     {@link JAXBElement }{@code <}{@link AttributeSelectorType }{@code >}
@@ -92,19 +90,19 @@ public class VariableDefinitionType {
      *     {@link JAXBElement }{@code <}{@link AttributeValueType }{@code >}
      *     {@link JAXBElement }{@code <}{@link ApplyType }{@code >}
      *     {@link JAXBElement }{@code <}{@link ExpressionType }{@code >}
-     *     
+     *
      */
-    public void setExpression(JAXBElement<?> value) {
+    public void setExpression( JAXBElement<?> value ) {
         this.expression = value;
     }
 
     /**
      * Recupera il valore della proprietà variableId.
-     * 
+     *
      * @return
      *     possible object is
      *     {@link String }
-     *     
+     *
      */
     public String getVariableId() {
         return variableId;
@@ -112,13 +110,13 @@ public class VariableDefinitionType {
 
     /**
      * Imposta il valore della proprietà variableId.
-     * 
+     *
      * @param value
      *     allowed object is
      *     {@link String }
-     *     
+     *
      */
-    public void setVariableId(String value) {
+    public void setVariableId( String value ) {
         this.variableId = value;
     }
 
