@@ -308,7 +308,7 @@ public final class UsageControlFramework implements UCSInterface {
         ObligationManagerProperties properties = configuration.getObligationManager();
         obligationManager = ObligationManagerBuilder.build( properties,
             new ArrayList<PIPOMInterface>( pipList ), pipRetrieval );
-        return obligationManager.isInitialized();
+        return true;
     }
 
     /**

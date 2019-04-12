@@ -28,6 +28,7 @@ import it.cnr.iit.ucsinterface.obligationmanager.ObligationManagerInterface;
 import it.cnr.iit.ucsinterface.pdp.PDPEvaluation;
 import it.cnr.iit.ucsinterface.pip.PIPOMInterface;
 import it.cnr.iit.utility.JsonUtility;
+import it.cnr.iit.utility.errorhandling.Reject;
 
 /**
  * This class represents a possible implementation of the ObligationManager
@@ -59,63 +60,33 @@ public final class ObligationManager implements ObligationManagerInterface {
     private static final String MSG_ERR_UNMARSHAL = "Error unmarshalling json : {0}";
     private static final String MSG_ERR_DECODE_OBLIGATION = "Error decoding obligation : {0}";
 
-    // list of pips
     private List<PIPOMInterface> pipList;
-    // pip retrieval
     private PIPOMInterface pipRetrieval;
-    // xml describing the obligation manager
     private ObligationManagerProperties properties;
-    // states if the obligation manager has been correctly initialized
-    private volatile boolean initialized = false;
 
-    /**
-     *
-     * @param properties
-     */
     public ObligationManager( ObligationManagerProperties properties ) {
-        // BEGIN parameter checking
-        if( properties == null ) {
-            return;
-        }
-        // END parameter checking
+        Reject.ifNull( properties );
         this.properties = properties;
-        initialized = true;
     }
 
-    /**
-     * Checks if the object is correctly initialized
-     */
-    @Override
-    public boolean isInitialized() {
-        return initialized;
-    }
-
-    /**
-     * Sets the PIPs with which
-     */
     @Override
     public final boolean setPIPs( List<PIPOMInterface> pips, PIPOMInterface pipRetrieval ) {
-        // BEGIN parameter checking
-        if( ( pips == null || pips.isEmpty() ) &&
-                pipRetrieval == null ||
-                !isInitialized() ) {
+        if( ( pips == null || pips.isEmpty() ) ||
+                pipRetrieval == null ) {
             log.log( Level.SEVERE,
-                "Invalid provided PIPS : pips_null{0}\t"
+                "Invalid provided PIPS : pips_null {0}\t"
                         + "pips_empty {1}\t"
-                        + "pipRetreival_null {2}\t"
-                        + "properties_null {3}",
+                        + "pipRetreival_null {2}\t",
                 new Object[] {
                     pips == null,
-                    pips != null ? pips.isEmpty() : false,
-                    pipRetrieval == null,
-                    properties == null
+                    pips != null ? pips.isEmpty() : Boolean.FALSE,
+                    pipRetrieval == null
                 } );
             return false;
         }
-        // END parameter checking
+
         pipList = pips;
         this.pipRetrieval = pipRetrieval;
-        initialized = true;
         return true;
     }
 
@@ -134,24 +105,22 @@ public final class ObligationManager implements ObligationManagerInterface {
     @Override
     public PDPEvaluation translateObligations( PDPEvaluation pdpEvaluation,
             String sessionId, String status ) {
-        // BEGIN parameter checking
-        if( !isInitialized() || pdpEvaluation == null || sessionId == null
-                || status == null ) {
-            return null;
-        }
-        // END parameter checking
+        Reject.ifTrue( pdpEvaluation == null );
+        Reject.ifTrue( sessionId == null );
+        Reject.ifTrue( status == null );
+        Reject.ifTrue( pipList == null || pipList.isEmpty() );
+
         List<String> obligationsString = pdpEvaluation.getObligations();
         if( obligationsString == null ) {
             return null;
         }
+
         StringBuilder pipName = new StringBuilder();
         HashMap<String, ObligationInterface> obligationMap = new HashMap<>();
         for( int index = 0; index < obligationsString.size(); ) {
             String obligation = obligationsString.get( index );
-
             Object obl = createObjectFromString( obligation, pipName );
             if( obl != null ) {
-
                 ObligationInterface obligationInterface = (ObligationInterface) obl;
                 obligationInterface.setSessionId( sessionId );
                 obligationInterface.setStep( status );
@@ -167,12 +136,15 @@ public final class ObligationManager implements ObligationManagerInterface {
             }
 
         }
+
         for( PIPOMInterface pip : pipList ) {
             pip.performObligation( obligationMap.get( pipName.toString() ) );
         }
+
         if( pipRetrieval != null ) {
             pipRetrieval.performObligation( obligationMap.get( "?" ) );
         }
+
         return null;
 
     }
@@ -200,9 +172,9 @@ public final class ObligationManager implements ObligationManagerInterface {
         return JsonUtility.loadObjectFromJsonString( json, clazz );
     }
 
+    // FIXME
     private String extractClassName( String obligation ) {
         String className = obligation.split( "=" )[0];
-        // FIXME
         return "it.cnr.iit.ucsinterface.obligationmanager.obligationobjects."
                 + className;
     }

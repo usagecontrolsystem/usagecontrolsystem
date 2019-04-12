@@ -65,9 +65,7 @@ public final class ObligationManagerBuilder {
             ObligationManagerInterface obligationManagerInterface = (ObligationManagerInterface) constructor
                 .newInstance( properties );
             obligationManagerInterface.setPIPs( pips, pipRetrieval );
-            if( obligationManagerInterface.isInitialized() ) {
-                return obligationManagerInterface;
-            }
+            return obligationManagerInterface;
         } catch( Exception exception ) {
             log.severe( exception.getMessage() );
         }
