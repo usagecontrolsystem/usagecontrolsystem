@@ -36,7 +36,7 @@ import it.cnr.iit.ucsinterface.requestmanager.InterfaceToPerformanceMonitor;
  *
  */
 public abstract class AbstractPerformanceMonitor implements PerformanceMonitorInterface {
-    protected static final Logger LOGGER = Logger
+    protected static final Logger log = Logger
         .getLogger( AbstractPerformanceMonitor.class.getName() );
 
     private InterfaceToPerformanceMonitor requestManager;

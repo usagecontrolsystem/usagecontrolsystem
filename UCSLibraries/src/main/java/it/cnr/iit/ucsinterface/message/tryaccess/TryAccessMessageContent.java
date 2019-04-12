@@ -39,7 +39,7 @@ import oasis.names.tc.xacml.core.schema.wd_17.RequestType;
  *
  */
 public final class TryAccessMessageContent {
-    private static final Logger LOGGER = Logger.getLogger( TryAccessMessageContent.class.getName() );
+    private static final Logger log = Logger.getLogger( TryAccessMessageContent.class.getName() );
 
     // the uri of the pep
     private String pepUri;
@@ -67,7 +67,7 @@ public final class TryAccessMessageContent {
     public boolean setPepUri( String pepUri ) {
         // BEGIN parameter checking
         if( pepUri == null || pepUri.isEmpty() ) {
-            LOGGER.warning( "pep uri is not valid " + pepUri );
+            log.warning( "pep uri is not valid " + pepUri );
             return false;
         }
         // END parameter checking
@@ -85,7 +85,7 @@ public final class TryAccessMessageContent {
     public boolean setPolicyId( String policyId ) {
         // BEGIN parameter checking
         if( pepUri == null || pepUri.isEmpty() ) {
-            LOGGER.warning( "policyId is not valid " + policyId );
+            log.warning( "policyId is not valid " + policyId );
             return false;
         }
         // END parameter checking
@@ -127,7 +127,7 @@ public final class TryAccessMessageContent {
     public boolean setRequest( String request ) {
         // BEGIN parameter checking
         if( request == null || request.isEmpty() ) {
-            LOGGER.warning( "Ivalid request " + request );
+            log.warning( "Ivalid request " + request );
             return false;
         }
         // END parameter checking

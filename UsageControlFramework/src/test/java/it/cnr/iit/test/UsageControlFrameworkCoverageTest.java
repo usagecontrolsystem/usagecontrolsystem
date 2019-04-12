@@ -20,12 +20,12 @@ import org.springframework.test.context.junit4.SpringRunner;
 public class UsageControlFrameworkCoverageTest extends UCFBaseTests {
     @PostConstruct
     private void init() throws JAXBException, URISyntaxException, IOException {
-        LOGGER.info( "Init tests" );
+        log.info( "Init tests" );
     }
 
     @Before
     public void setUp() {
-        LOGGER.info( "setUp >>>>>>>>>>>>>>>>>>" );
+        log.info( "setUp >>>>>>>>>>>>>>>>>>" );
         // nothing to do for now
     }
 

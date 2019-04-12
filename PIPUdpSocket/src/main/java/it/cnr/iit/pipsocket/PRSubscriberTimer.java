@@ -34,7 +34,7 @@ import it.cnr.iit.xacmlutilities.Category;
 final class PRSubscriberTimer extends TimerTask {
 	
 	// logger to be used to log the actions
-	private Logger													LOGGER	= Logger
+	private Logger													log	= Logger
 	    .getLogger(PRSubscriberTimer.class.getName());
 	
 	// the path of the file to be read
@@ -87,7 +87,7 @@ final class PRSubscriberTimer extends TimerTask {
 			
 			// if the value of the attribute has changed notify the context handler
 			else {
-				LOGGER.log(Level.INFO,
+				log.log(Level.INFO,
 				    "[TIME] value of the attribute changed at "
 				        + System.currentTimeMillis() + "\t" + newValue + "\t"
 				        + entry.getAdditionalInformations());
@@ -171,7 +171,7 @@ final class PRSubscriberTimer extends TimerTask {
 	    ContextHandlerPIPInterface contextHandler) {
 		// BEGIN parameter checking
 		if (contextHandler == null) {
-			LOGGER.log(Level.SEVERE, "Context handler is null");
+			log.log(Level.SEVERE, "Context handler is null");
 			return;
 		}
 		// END parameter checking

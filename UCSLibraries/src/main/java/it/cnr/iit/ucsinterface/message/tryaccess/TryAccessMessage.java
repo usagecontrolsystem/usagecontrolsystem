@@ -40,7 +40,7 @@ import it.cnr.iit.ucsinterface.message.PURPOSE;
  *
  */
 public final class TryAccessMessage extends Message {
-    private static final Logger LOGGER = Logger.getLogger( TryAccessMessage.class.getName() );
+    private static final Logger log = Logger.getLogger( TryAccessMessage.class.getName() );
 
     private static final long serialVersionUID = 1L;
 
@@ -64,7 +64,7 @@ public final class TryAccessMessage extends Message {
             purpose = PURPOSE.TRYACCESS;
             motivation = null;
         } else {
-            LOGGER.severe( "ERROR IN MESSAGE creation" );
+            log.severe( "ERROR IN MESSAGE creation" );
         }
     }
 
@@ -79,7 +79,7 @@ public final class TryAccessMessage extends Message {
             purpose = PURPOSE.TRYACCESS;
             motivation = null;
         } else {
-            LOGGER.severe( "ERROR IN MESSAGE creation" );
+            log.severe( "ERROR IN MESSAGE creation" );
         }
     }
 
@@ -100,7 +100,7 @@ public final class TryAccessMessage extends Message {
         if( isInitialized ) {
             return content.getPolicy();
         }
-        LOGGER.severe( "MESSAGE NOT INITIALIZED" );
+        log.severe( "MESSAGE NOT INITIALIZED" );
         return null;
     }
 

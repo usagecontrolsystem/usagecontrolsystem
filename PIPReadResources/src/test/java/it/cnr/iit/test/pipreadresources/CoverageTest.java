@@ -38,7 +38,7 @@ public class CoverageTest {
 	private Attribute actionAttribute = new Attribute();
 	private Attribute environmentAttribute = new Attribute();
 	private Properties properties;
-	private Logger LOGGER = Logger.getLogger(CoverageTest.class.getName());
+	private Logger log = Logger.getLogger(CoverageTest.class.getName());
 
 	public CoverageTest() {
 		try {
@@ -69,14 +69,14 @@ public class CoverageTest {
 		fault = new PIPReadResources(properties.get("missingAttributeId").toString());
 		assertEquals(fault.initialized, false);
 		fault = null;
-		LOGGER.info("---------BEGIN FAILURE TESTS----------");
+		log.info("---------BEGIN FAILURE TESTS----------");
 		fault = new PIPReadResources(properties.get("missingExpectedCategory").toString());
 		assertEquals(fault.initialized, false);
 		fault = new PIPReadResources(properties.get("missingDataType").toString());
 		assertEquals(fault.initialized, false);
 		fault = new PIPReadResources(properties.get("missingFilePath").toString());
 		assertEquals(fault.initialized, false);
-		LOGGER.info("---------END FAILURE TESTS----------");
+		log.info("---------END FAILURE TESTS----------");
 	}
 
 	@Test
@@ -115,12 +115,12 @@ public class CoverageTest {
 		assertTrue(verifyRequest(requestType, environmentAttribute).equals("[30.0]"));
 		Attribute dummySubjectAttribute = new Attribute();
 		dummySubjectAttribute.createAttributeId("subjectId");
-		LOGGER.info("---------BEGIN FAILURE TESTS----------");
+		log.info("---------BEGIN FAILURE TESTS----------");
 		testRetrieveAndEnrichment(requestType, fault);
 		testRetrieveAndEnrichment(null, fault);
 		assertEquals(verifyRequest(requestType, dummySubjectAttribute), null);
 		assertFalse(verifyRequest(requestType, environmentAttribute).equals("40.0"));
-		LOGGER.info("---------END FAILURE TESTS----------");
+		log.info("---------END FAILURE TESTS----------");
 	}
 
 	private void testRetrieveAndEnrichment(RequestType requestType, PIPReadResources pipReader) {

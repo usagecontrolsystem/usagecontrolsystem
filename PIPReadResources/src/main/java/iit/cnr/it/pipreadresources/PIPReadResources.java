@@ -76,7 +76,7 @@ public final class PIPReadResources extends PIPBase {
 	protected final BlockingQueue<Attribute>	subscriptions	= new LinkedBlockingQueue<>();
 	
 	// logger
-	private Logger														LOGGER				= Logger
+	private Logger														log				= Logger
 	    .getLogger(PIPReadResources.class.getName());
 	
 	// the subscriber timer in charge of performing the polling of the values
@@ -121,18 +121,18 @@ public final class PIPReadResources extends PIPBase {
 			Map<String, String> arguments = xmlPip.getAttributes().get(0).getArgs();
 			Attribute attribute = new Attribute();
 			if (!attribute.createAttributeId(arguments.get(ATTRIBUTE_ID))) {
-				LOGGER.log(Level.SEVERE, "[PIPReadResources] wrong set Attribute");
+				log.log(Level.SEVERE, "[PIPReadResources] wrong set Attribute");
 				return false;
 			}
 			if (!attribute
 			    .setCategory(Category.toCATEGORY(arguments.get(CATEGORY)))) {
-				LOGGER.log(Level.SEVERE,
+				log.log(Level.SEVERE,
 				    "[PIPReadResources] wrong set category " + arguments.get(CATEGORY));
 				return false;
 			}
 			if (!attribute.setAttributeDataType(
 			    DataType.toDATATYPE(arguments.get(DATA_TYPE)))) {
-				LOGGER.log(Level.SEVERE, "[PIPReadResources] wrong set datatype");
+				log.log(Level.SEVERE, "[PIPReadResources] wrong set datatype");
 				return false;
 			}
 			if (attribute.getCategory() != Category.ENVIRONMENT) {
@@ -142,7 +142,7 @@ public final class PIPReadResources extends PIPBase {
 			}
 			addAttribute(attribute);
 			if (!setFilePath(arguments.get(FILE_PATH))) {
-				LOGGER.log(Level.SEVERE, "[PIPReadResources] wrong set file");
+				log.log(Level.SEVERE, "[PIPReadResources] wrong set file");
 				return false;
 			}
 			return true;
@@ -171,7 +171,7 @@ public final class PIPReadResources extends PIPBase {
 		
 		// BEGIN parameter checking
 		if (accessRequest == null || !initialized || !isInitialized()) {
-			LOGGER.log(Level.SEVERE, "[PIPREader] wrong initialization" + initialized
+			log.log(Level.SEVERE, "[PIPREader] wrong initialization" + initialized
 			    + "\t" + isInitialized());
 			return;
 		}
@@ -205,7 +205,7 @@ public final class PIPReadResources extends PIPBase {
 	public void subscribe(RequestType accessRequest) throws PIPException {
 		// BEGIN parameter checking
 		if (accessRequest == null || !initialized || !isInitialized()) {
-			LOGGER.log(Level.SEVERE, "[PIPReadResources] wrong initialization" + initialized
+			log.log(Level.SEVERE, "[PIPReadResources] wrong initialization" + initialized
 			    + "\t" + isInitialized());
 			return;
 		}
@@ -215,7 +215,7 @@ public final class PIPReadResources extends PIPBase {
 		
 		if (subscriberTimer.getContextHandler() == null
 		    || contextHandlerInterface == null) {
-			LOGGER.log(Level.SEVERE, "Context handler not set");
+			log.log(Level.SEVERE, "Context handler not set");
 			return;
 		}
 		
@@ -263,7 +263,7 @@ public final class PIPReadResources extends PIPBase {
 	public boolean unsubscribe(List<Attribute> attributes) throws PIPException {
 		// BEGIN parameter checking
 		if (attributes == null || !initialized || !isInitialized()) {
-			LOGGER.log(Level.SEVERE, "[PIPReadResources] wrong initialization" + initialized
+			log.log(Level.SEVERE, "[PIPReadResources] wrong initialization" + initialized
 			    + "\t" + isInitialized());
 			return false;
 		}
@@ -275,7 +275,7 @@ public final class PIPReadResources extends PIPBase {
 					if (attributeS.getAdditionalInformations()
 					    .equals(attribute.getAdditionalInformations())) {
 						subscriptions.remove(attributeS);
-						LOGGER.info("UNSUB " + subscriptions.size());
+						log.info("UNSUB " + subscriptions.size());
 						return true;
 					}
 				}
@@ -312,7 +312,7 @@ public final class PIPReadResources extends PIPBase {
 		
 		if (subscriberTimer.getContextHandler() == null
 		    || contextHandlerInterface == null) {
-			LOGGER.log(Level.SEVERE, "Context handler not set");
+			log.log(Level.SEVERE, "Context handler not set");
 			return null;
 		}
 		
@@ -335,7 +335,7 @@ public final class PIPReadResources extends PIPBase {
 	@Override
 	public void retrieve(RequestType request,
 	    List<Attribute> attributeRetrievals) {
-		LOGGER.log(Level.SEVERE, "Wrong method called");
+		log.log(Level.SEVERE, "Wrong method called");
 		return;
 		
 	}
@@ -343,7 +343,7 @@ public final class PIPReadResources extends PIPBase {
 	@Override
 	public void subscribe(RequestType request,
 	    List<Attribute> attributeRetrieval) {
-		LOGGER.log(Level.SEVERE, "Wrong method called");
+		log.log(Level.SEVERE, "Wrong method called");
 		return;
 		
 	}
@@ -373,7 +373,7 @@ public final class PIPReadResources extends PIPBase {
 				output += (char) content;
 			}
 			output = output.trim();
-			// LOGGER.log(Level.INFO, "[PIPReader] value read is " + output);
+			// log.log(Level.INFO, "[PIPReader] value read is " + output);
 			return output;
 		} catch (IOException ioException) {
 			throw new PIPException(ioException.getMessage());
@@ -402,7 +402,7 @@ public final class PIPReadResources extends PIPBase {
 			InputStream inputStream = getClass().getClassLoader().getResourceAsStream(fileName);
 		){
 			if(inputStream == null) {
-				LOGGER.info("Stream null " + fileName);
+				log.info("Stream null " + fileName);
 			}
 			Scanner fileInputStream = new Scanner(inputStream);
 			// BufferedInputStream fileInputStream = new BufferedInputStream(
@@ -415,7 +415,7 @@ public final class PIPReadResources extends PIPBase {
 					break;
 				}
 			}
-			// LOGGER.log(Level.INFO,
+			// log.log(Level.INFO,
 			// "[PIPReader] value read is " + line.split("\t")[1]);
 			return line.split("\t")[1];
 		} catch (Exception ioException) {
@@ -447,7 +447,7 @@ public final class PIPReadResources extends PIPBase {
 	private final boolean setFilePath(String filePath) {
 		// BEGIN parameter checking
 		if (!isInitialized() || filePath == null || filePath.isEmpty()) {
-			LOGGER.log(Level.SEVERE, "Wrong init: " + filePath + "\t" + initialized);
+			log.log(Level.SEVERE, "Wrong init: " + filePath + "\t" + initialized);
 			initialized = false;
 			
 			return false;

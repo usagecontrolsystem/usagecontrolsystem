@@ -879,7 +879,7 @@ public final class ContextHandlerLC extends AbstractContextHandler {
                             case RETRIEVE:
                                 attribute.setValue( pip.getAttributesCharacteristics().get( attribute.getAttributeId() )
                                     .getAttributeDataType(), pip.retrieve( attribute ) );
-                                // LOGGER.info("Attribute" + new
+                                // log.info("Attribute" + new
                                 // Gson().toJson(attribute));
                                 break;
                             case SUBSCRIBE:

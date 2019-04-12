@@ -53,21 +53,14 @@ import journal.io.api.Journal.WriteType;
  */
 final class PRSubscriberTimer extends TimerTask {
 
-    // logger to be used to log the actions
-    private Logger LOGGER = Logger
-        .getLogger( PRSubscriberTimer.class.getName() );
+    private static Logger log = Logger.getLogger( PRSubscriberTimer.class.getName() );
 
     // the path of the file to be read
     private String path = "";
-
     // the queue of attributes that have been subscribed
     private final BlockingQueue<Attribute> subscriptions;
-
     // the interface to communicate with the context handler
     private ContextHandlerPIPInterface contextHandler;
-
-    private Logger log = Logger.getLogger( PRSubscriberTimer.class.getName() );
-
     private Journal journal;
 
     /**
@@ -96,7 +89,7 @@ final class PRSubscriberTimer extends TimerTask {
             // System.out.println("[PipFile] Subscribe iteration");
             Category category = entry.getCategory();
             String newValue = "";
-            LOGGER.log( Level.INFO, "[TIME] polling on value of the attribute for change." );
+            log.log( Level.INFO, "[TIME] polling on value of the attribute for change." );
             if( category == Category.ENVIRONMENT ) {
                 newValue = read();
             } else {
@@ -108,7 +101,7 @@ final class PRSubscriberTimer extends TimerTask {
                 .equals( newValue ) ) {
                 ;
             } else {
-                LOGGER.log( Level.INFO,
+                log.log( Level.INFO,
                     "[TIME] value of the attribute changed at "
                             + System.currentTimeMillis() + "\t" + newValue + "\t"
                             + entry.getAdditionalInformations() );
@@ -167,7 +160,7 @@ final class PRSubscriberTimer extends TimerTask {
                     break;
                 }
             }
-            // LOGGER.log(Level.INFO,
+            // log.log(Level.INFO,
             // "[PIPReader] value read is " + line.split("\t")[1]);
             journalLog( line.split( "\t" )[1], filter );
             return line.split( "\t" )[1];
@@ -186,7 +179,7 @@ final class PRSubscriberTimer extends TimerTask {
             ContextHandlerPIPInterface contextHandler ) {
         // BEGIN parameter checking
         if( contextHandler == null ) {
-            LOGGER.log( Level.SEVERE, "Context handler is null" );
+            log.log( Level.SEVERE, "Context handler is null" );
             return;
         }
         // END parameter checking

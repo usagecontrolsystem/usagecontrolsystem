@@ -15,7 +15,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 
 public class JsonUtility {
-    protected static final Logger LOGGER = Logger.getLogger( JsonUtility.class.getName() );
+    protected static final Logger log = Logger.getLogger( JsonUtility.class.getName() );
 
     private JsonUtility() {}
 
@@ -26,7 +26,7 @@ public class JsonUtility {
         try {
             return Optional.of( writer.writeValueAsString( obj ) );
         } catch( JsonProcessingException e ) {
-            LOGGER.severe( "Error marshalling object of class : " + obj.getClass().getName() + ", " + e.getMessage() );
+            log.severe( "Error marshalling object of class : " + obj.getClass().getName() + ", " + e.getMessage() );
             return Optional.empty();
         }
     }
@@ -36,7 +36,7 @@ public class JsonUtility {
         try {
             return Optional.of( obj.readValue( jsonString, clazz ) );
         } catch( IOException e ) {
-            LOGGER.severe( "Error unmarshalling object of class : " + clazz.getName() + ", " + e.getMessage() );
+            log.severe( "Error unmarshalling object of class : " + clazz.getName() + ", " + e.getMessage() );
             return Optional.empty();
         }
     }
@@ -46,7 +46,7 @@ public class JsonUtility {
         try {
             data = new String( Files.readAllBytes( Paths.get( file.getAbsolutePath() ) ), StandardCharsets.UTF_8 );
         } catch( IOException e ) {
-            LOGGER.severe( "Error reading file : " + file.getAbsolutePath() + ", " + e.getMessage() );
+            log.severe( "Error reading file : " + file.getAbsolutePath() + ", " + e.getMessage() );
             return Optional.empty();
         }
 
@@ -60,7 +60,7 @@ public class JsonUtility {
                 stream.write( data.get().getBytes() );
             }
         } catch( IOException e ) {
-            LOGGER.severe( "Error writing file : " + path + ", " + e.getMessage() );
+            log.severe( "Error writing file : " + path + ", " + e.getMessage() );
         }
     }
 

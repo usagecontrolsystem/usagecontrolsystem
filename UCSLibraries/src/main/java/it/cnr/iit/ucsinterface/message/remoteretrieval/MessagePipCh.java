@@ -36,7 +36,7 @@ import it.cnr.iit.xacmlutilities.Attribute;
  *
  */
 public final class MessagePipCh extends Message {
-    private static final Logger LOGGER = Logger.getLogger( MessagePipCh.class.getName() );
+    private static final Logger log = Logger.getLogger( MessagePipCh.class.getName() );
 
     private static final long serialVersionUID = 1L;
 
@@ -98,7 +98,7 @@ public final class MessagePipCh extends Message {
             this.content = content;
             isInitialized = true;
         } else {
-            LOGGER.severe( "NULL content" );
+            log.severe( "NULL content" );
             return;
         }
     }
@@ -119,7 +119,7 @@ public final class MessagePipCh extends Message {
 
     public List<Attribute> getAttributes() {
         if( !isInitialized ) {
-            LOGGER.severe( "Message not initialized" );
+            log.severe( "Message not initialized" );
             return null;
         }
         return content.getAttributes();

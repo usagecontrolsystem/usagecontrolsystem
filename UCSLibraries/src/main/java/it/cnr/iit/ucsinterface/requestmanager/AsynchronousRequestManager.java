@@ -47,7 +47,7 @@ import it.cnr.iit.utility.errorhandling.Reject;
 public abstract class AsynchronousRequestManager
         implements RequestManagerToCHInterface, RequestManagerToExternalInterface,
         InterfaceToPerformanceMonitor {
-    protected static final Logger LOGGER = Logger.getLogger( AsynchronousRequestManager.class.getName() );
+    protected static final Logger log = Logger.getLogger( AsynchronousRequestManager.class.getName() );
 
     // queue of messages received from the context handler
     private final BlockingQueue<Message> queueFromCH = new LinkedBlockingQueue<>();
@@ -98,7 +98,7 @@ public abstract class AsynchronousRequestManager
     public final void setInterfaces( ContextHandlerInterface contextHandler,
             Map<String, PEPInterface> proxyPEPMap, NodeInterface nodeInterface,
             ForwardingQueueToRMInterface forwardingQueue ) {
-        Reject.ifInvalidObjectState( initialized, AsynchronousRequestManager.class.getName(), LOGGER );
+        Reject.ifInvalidObjectState( initialized, AsynchronousRequestManager.class.getName(), log );
         Reject.ifNull( contextHandler, proxyPEPMap, forwardingQueue, nodeInterface );
         this.contextHandler = contextHandler;
         pep.putAll( proxyPEPMap );
@@ -116,22 +116,22 @@ public abstract class AsynchronousRequestManager
     }
 
     protected ContextHandlerInterface getContextHandler() {
-        Reject.ifInvalidObjectState( initialized, AsynchronousRequestManager.class.getName(), LOGGER );
+        Reject.ifInvalidObjectState( initialized, AsynchronousRequestManager.class.getName(), log );
         return contextHandler;
     }
 
     protected HashMap<String, PEPInterface> getPEPInterface() {
-        Reject.ifInvalidObjectState( initialized, AsynchronousRequestManager.class.getName(), LOGGER );
+        Reject.ifInvalidObjectState( initialized, AsynchronousRequestManager.class.getName(), log );
         return pep;
     }
 
     protected BlockingQueue<Message> getQueueFromCH() {
-        Reject.ifInvalidObjectState( initialized, AsynchronousRequestManager.class.getName(), LOGGER );
+        Reject.ifInvalidObjectState( initialized, AsynchronousRequestManager.class.getName(), log );
         return queueFromCH;
     }
 
     protected BlockingQueue<Message> getQueueToCH() {
-        Reject.ifInvalidObjectState( initialized, AsynchronousRequestManager.class.getName(), LOGGER );
+        Reject.ifInvalidObjectState( initialized, AsynchronousRequestManager.class.getName(), log );
         return queueToCH;
     }
 
@@ -140,17 +140,17 @@ public abstract class AsynchronousRequestManager
     }
 
     protected final BlockingQueue<MessagePipCh> getRetrieveRequestsQueue() {
-        Reject.ifInvalidObjectState( initialized, AsynchronousRequestManager.class.getName(), LOGGER );
+        Reject.ifInvalidObjectState( initialized, AsynchronousRequestManager.class.getName(), log );
         return retrieveRequests;
     }
 
     protected final NodeInterface getNodeInterface() {
-        Reject.ifInvalidObjectState( initialized, AsynchronousRequestManager.class.getName(), LOGGER );
+        Reject.ifInvalidObjectState( initialized, AsynchronousRequestManager.class.getName(), log );
         return nodeInterface;
     }
 
     protected final ForwardingQueueToRMInterface getForwardingQueue() {
-        Reject.ifInvalidObjectState( initialized, AsynchronousRequestManager.class.getName(), LOGGER );
+        Reject.ifInvalidObjectState( initialized, AsynchronousRequestManager.class.getName(), log );
         return forwardingQueue;
     }
 

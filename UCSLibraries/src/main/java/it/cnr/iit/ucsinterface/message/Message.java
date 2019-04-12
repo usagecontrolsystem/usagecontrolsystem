@@ -58,7 +58,7 @@ import it.cnr.iit.utility.JsonUtility;
 
 @JsonIgnoreProperties( ignoreUnknown = true )
 public class Message implements Comparable<Message>, Serializable {
-    private static final Logger LOGGER = Logger.getLogger( Message.class.getName() );
+    private static final Logger log = Logger.getLogger( Message.class.getName() );
 
     private static final long serialVersionUID = 1L;
 
@@ -101,7 +101,7 @@ public class Message implements Comparable<Message>, Serializable {
         id = "ID:" + UUID.randomUUID();
         // BEGIN parameter checking
         if( ( source == null ) || ( destination == null ) ) {
-            LOGGER.info( "[Message]" + source + "\t" + destination );
+            log.info( "[Message]" + source + "\t" + destination );
             return;
         }
         // END parameter checking
@@ -124,7 +124,7 @@ public class Message implements Comparable<Message>, Serializable {
         this.id = id;
         // BEGIN parameter checking
         if( ( source == null ) || ( destination == null ) ) {
-            LOGGER.severe( "[Message]" + source + "\t" + destination );
+            log.severe( "[Message]" + source + "\t" + destination );
             // TODO handle error
             return;
         }
@@ -155,7 +155,7 @@ public class Message implements Comparable<Message>, Serializable {
         id = "ID:" + UUID.randomUUID();
         // BEGIN parameter checking
         if( ( source == null ) || ( destination == null ) ) {
-            LOGGER.severe( "[Message]" + source + "\t" + destination );
+            log.severe( "[Message]" + source + "\t" + destination );
             return;
         }
         // END parameter checking

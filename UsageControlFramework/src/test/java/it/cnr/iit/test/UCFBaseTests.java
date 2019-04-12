@@ -70,7 +70,7 @@ import oasis.names.tc.xacml.core.schema.wd_17.PolicyType;
 import oasis.names.tc.xacml.core.schema.wd_17.RequestType;
 
 public class UCFBaseTests {
-    protected Logger LOGGER = Logger.getLogger( UCFBaseTests.class.getName() );
+    protected Logger log = Logger.getLogger( UCFBaseTests.class.getName() );
 
     @Autowired
     TestConfiguration conf;
@@ -245,7 +245,7 @@ public class UCFBaseTests {
         Mockito.doAnswer( a -> {
             RequestType requestType = a.getArgument( 0 );
             // List<Attribute> attributeRetrievals = a.getArgument(1);
-            LOGGER.info( "pip retrieve!" );
+            log.info( "pip retrieve!" );
             requestType.addAttribute( Category.ENVIRONMENT.toString(), DataType.INTEGER.toString(), "virus", "1" );
             requestType.addAttribute( Category.ENVIRONMENT.toString(), DataType.INTEGER.toString(), "telephone", "1" );
             requestType.addAttribute( Category.ENVIRONMENT.toString(), DataType.STRING.toString(), "position", "Pisa" );
@@ -305,7 +305,7 @@ public class UCFBaseTests {
         ArrayList<PIPCHInterface> pips = new ArrayList<>();
 
         for( PipProperties pipProp : ucsConfiguration.getPipList() ) {
-            LOGGER.info( "Loading pip" );
+            log.info( "Loading pip" );
             PIPCHInterface pip = PIPBuilder.buildFromProperties( pipProp ).get();
             assertNotNull( pip );
             pips.add( pip );
@@ -412,7 +412,7 @@ public class UCFBaseTests {
     protected UCSConfiguration getUCSConfiguration( String ucsConfigFile )
             throws JAXBException, URISyntaxException, IOException {
         ClassLoader classLoader = UCFBaseTests.class.getClassLoader();
-        LOGGER.info( "loading : " + ucsConfigFile );
+        log.info( "loading : " + ucsConfigFile );
         File file = new File( classLoader.getResource( ucsConfigFile ).getFile() );
 
         return JsonUtility.loadObjectFromJsonFile( file, UCSConfiguration.class ).get();
@@ -427,7 +427,7 @@ public class UCFBaseTests {
     protected String readResourceFileAsString( String resource ) throws URISyntaxException, IOException {
         ClassLoader classLoader = this.getClass().getClassLoader();
 
-        LOGGER.info( "Loading resource file : " + resource );
+        log.info( "Loading resource file : " + resource );
         Path path = Paths.get( classLoader.getResource( resource ).toURI() );
         byte[] data = Files.readAllBytes( path );
         return new String( data );

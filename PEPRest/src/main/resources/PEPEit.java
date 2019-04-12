@@ -46,7 +46,7 @@ public class PEPEit implements PEPInterface {
 	private String onGoingEvaluationInterface;
 	private String serverPort;
 
-	protected static final Logger LOGGER = Logger.getLogger(OldPEPEit.class.getName());
+	protected static final Logger log = Logger.getLogger(OldPEPEit.class.getName());
 
 	private RequestManagerToExternalInterface requestManager;
 	// private ContextHandlerInterface contextHandler;
@@ -199,11 +199,11 @@ public class PEPEit implements PEPInterface {
 			} else {
 				if (chPepMessage.getPDPEvaluation().getResponse().contains("Permit")) {
 					sendMessage(ipAddress, port, "PERMIT");
-					LOGGER.log(Level.INFO, "RESUME EXECUTION");
+					log.log(Level.INFO, "RESUME EXECUTION");
 				}
 				if (chPepMessage.getPDPEvaluation().getResponse().contains("Deny")) {
 					sendMessage(ipAddress, port, "DENY");
-					LOGGER.log(Level.INFO, "STOP EXECUTION");
+					log.log(Level.INFO, "STOP EXECUTION");
 				}
 			}
 			return chPepMessage;
@@ -346,10 +346,10 @@ public class PEPEit implements PEPInterface {
 	}
 
 	public void end(String sessionId) throws InterruptedException, ExecutionException {
-		LOGGER.log(Level.INFO, "[TIME] Sending endAccess " + System.currentTimeMillis());
+		log.log(Level.INFO, "[TIME] Sending endAccess " + System.currentTimeMillis());
 		String id = endAccess(sessionId);
 		EndAccessResponse endAccessResponse = (EndAccessResponse) waitForResponse(id);
-		LOGGER.log(Level.INFO, "[TIME] END ACCESS RESPONSE: " + System.currentTimeMillis());
+		log.log(Level.INFO, "[TIME] END ACCESS RESPONSE: " + System.currentTimeMillis());
 	}
 
 	private class TaskBody implements Callable<Message> {

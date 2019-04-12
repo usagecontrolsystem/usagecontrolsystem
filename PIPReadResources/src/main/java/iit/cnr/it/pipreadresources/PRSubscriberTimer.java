@@ -50,7 +50,7 @@ import it.cnr.iit.xacmlutilities.Category;
 final class PRSubscriberTimer extends TimerTask {
 	
 	// logger to be used to log the actions
-	private Logger													LOGGER	= Logger
+	private Logger													log	= Logger
 	    .getLogger(PRSubscriberTimer.class.getName());
 	
 	// the path of the file to be read
@@ -97,7 +97,7 @@ final class PRSubscriberTimer extends TimerTask {
 			
 			// if the value of the attribute has changed notify the context handler
 			else {
-				LOGGER.log(Level.INFO,
+				log.log(Level.INFO,
 				    "[TIME] value of the attribute changed at "
 				        + System.currentTimeMillis() + "\t" + newValue + "\t"
 				        + entry.getAdditionalInformations());
@@ -135,7 +135,7 @@ final class PRSubscriberTimer extends TimerTask {
 				InputStream inputStream = getClass().getClassLoader().getResourceAsStream(path);
 			){
 				if(inputStream == null) {
-					LOGGER.info("Stream null " + path);
+					log.info("Stream null " + path);
 				}
 				Scanner fileInputStream = new Scanner(inputStream);
 				// BufferedInputStream fileInputStream = new BufferedInputStream(
@@ -148,7 +148,7 @@ final class PRSubscriberTimer extends TimerTask {
 						break;
 					}
 				}
-				// LOGGER.log(Level.INFO,
+				// log.log(Level.INFO,
 				// "[PIPReader] value read is " + line.split("\t")[1]);
 				return line.split("\t")[1];
 			} catch (Exception ioException) {
@@ -176,7 +176,7 @@ final class PRSubscriberTimer extends TimerTask {
 				output += (char) content;
 			}
 			output = output.trim();
-			// LOGGER.log(Level.INFO, "[PIPReader] value read is " + output);
+			// log.log(Level.INFO, "[PIPReader] value read is " + output);
 			return output;
 		} catch (IOException ioException) {
 		}
@@ -192,7 +192,7 @@ final class PRSubscriberTimer extends TimerTask {
 	    ContextHandlerPIPInterface contextHandler) {
 		// BEGIN parameter checking
 		if (contextHandler == null) {
-			LOGGER.log(Level.SEVERE, "Context handler is null");
+			log.log(Level.SEVERE, "Context handler is null");
 			return;
 		}
 		// END parameter checking

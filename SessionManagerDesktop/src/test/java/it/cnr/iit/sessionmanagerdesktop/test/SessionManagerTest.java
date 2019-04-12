@@ -40,7 +40,7 @@ import it.cnr.iit.utility.JsonUtility;
 @SpringBootConfiguration
 public class SessionManagerTest {
 
-    private static final Logger LOGGER = Logger.getLogger( SessionManagerTest.class.getName() );
+    private static final Logger log = Logger.getLogger( SessionManagerTest.class.getName() );
 
     @Value( "${conf}" )
     private String conf;
@@ -98,7 +98,7 @@ public class SessionManagerTest {
 
     @Before
     public void init() {
-        LOGGER.info( conf );
+        log.info( conf );
         try {
             SessionManagerProperties properties = JsonUtility.loadObjectFromJsonString( conf, SessionManagerProperties.class ).get();
             sessionManagerDesktop = new SessionManagerDesktop( properties );
@@ -129,7 +129,7 @@ public class SessionManagerTest {
         // Mockito.verify(mockConnection.createStatement(), Mockito.times(1));
         SessionInterface sessionInterface = sessionManagerDesktop.getSessionForId( sessionId ).get();
         Assert.assertNotNull( sessionInterface );
-        LOGGER.info( sessionInterface.toString() );
+        log.info( sessionInterface.toString() );
     }
 
     @Test
@@ -148,7 +148,7 @@ public class SessionManagerTest {
 
     @Test
     public void testOnGoingAttributesPerSubject() throws Exception {
-        LOGGER.info( "*******TESTING OGA PER SUBJECT: " + subject + "****" );
+        log.info( "*******TESTING OGA PER SUBJECT: " + subject + "****" );
         String[] attributesPerSubject = new String[] { "role" };
         boolean status = sessionManagerDesktop.createEntryForSubject( sessionId, policy, request,
             Arrays.asList( attributesPerSubject ), tryStatus, pepuri, myip, subject );
@@ -162,12 +162,12 @@ public class SessionManagerTest {
         assertTrue( sessionInterface.getId().equals( sessionId ) );
         sessionInterface = sessionManagerDesktop.getSessionsForAttribute( "role" ).get( 0 );
         assertTrue( sessionInterface.getId().equals( sessionId ) );
-        LOGGER.info( "*******END TESTING OGA PER SUBJECT****" );
+        log.info( "*******END TESTING OGA PER SUBJECT****" );
     }
 
     @Test
     public void testOnGoingAttributesPerAction() throws Exception {
-        LOGGER.info( "*******TESTING OGA PER ACTION: " + action + "****" );
+        log.info( "*******TESTING OGA PER ACTION: " + action + "****" );
         String[] attributesPerAction = new String[] { "action" };
         boolean status = sessionManagerDesktop.createEntryForAction( sessionId, policy, request,
             Arrays.asList( attributesPerAction ), tryStatus, pepuri, myip, action );
@@ -179,12 +179,12 @@ public class SessionManagerTest {
         Assert.assertEquals( sessionInterface.getStatus(), startStatus );
         sessionInterface = sessionManagerDesktop.getSessionsForActionAttributes( action, "action" ).get( 0 );
         assertTrue( sessionInterface.getId().equals( sessionId ) );
-        LOGGER.info( "*******END TESTING OGA PER ACTION****" );
+        log.info( "*******END TESTING OGA PER ACTION****" );
     }
 
     @Test
     public void testOnGoingAttributesPerResource() throws Exception {
-        LOGGER.info( "*******TESTING OGA PER RESOURCE: " + resource + "****" );
+        log.info( "*******TESTING OGA PER RESOURCE: " + resource + "****" );
         String[] attributesPerResource = new String[] { "resource" };
         boolean status = sessionManagerDesktop.createEntryForResource( sessionId, policy, request,
             Arrays.asList( attributesPerResource ), tryStatus, pepuri, myip, resource );
@@ -196,12 +196,12 @@ public class SessionManagerTest {
         Assert.assertEquals( sessionInterface.getStatus(), startStatus );
         sessionInterface = sessionManagerDesktop.getSessionsForResourceAttributes( resource, "resource" ).get( 0 );
         assertTrue( sessionInterface.getId().equals( sessionId ) );
-        LOGGER.info( "*******END TESTING OGA PER RESOURCE****" );
+        log.info( "*******END TESTING OGA PER RESOURCE****" );
     }
 
     @Test
     public void testOnGoingAttributesPerEnvironment() throws Exception {
-        LOGGER.info( "*******TESTING OGA PER ENVIRONMENT****" );
+        log.info( "*******TESTING OGA PER ENVIRONMENT****" );
         String[] attributesPerEnvironment = new String[] { "temperature" };
         boolean status = sessionManagerDesktop.createEntryForEnvironment( sessionId, policy, request,
             Arrays.asList( attributesPerEnvironment ), tryStatus, pepuri, myip );
@@ -213,12 +213,12 @@ public class SessionManagerTest {
         Assert.assertEquals( sessionInterface.getStatus(), startStatus );
         sessionInterface = sessionManagerDesktop.getSessionsForEnvironmentAttributes( "temperature" ).get( 0 );
         assertTrue( sessionInterface.getId().equals( sessionId ) );
-        LOGGER.info( "*******END TESTING OGA PER SUBJECT****" );
+        log.info( "*******END TESTING OGA PER SUBJECT****" );
     }
 
     @Test
     public void testGetSession() throws Exception {
-        LOGGER.info( "*******TESTING GET SESSIOn****" );
+        log.info( "*******TESTING GET SESSIOn****" );
         String[] attributesPerEnvironment = new String[] { "temperature" };
         boolean status = sessionManagerDesktop.createEntryForEnvironment( sessionId, policy, request,
             Arrays.asList( attributesPerEnvironment ), tryStatus, pepuri, myip );
@@ -227,12 +227,12 @@ public class SessionManagerTest {
         Assert.assertTrue( sessions.size() > 0 );
         sessions = sessionManagerDesktop.getSessionsForStatus( startStatus );
         Assert.assertTrue( sessions == null || sessions.size() == 0 );
-        LOGGER.info( "*******END TESTING GET SESSION****" );
+        log.info( "*******END TESTING GET SESSION****" );
     }
 
     @Test
     public void testDeleteSession() throws Exception {
-        LOGGER.info( "*******TESTING DELETE SESSIOn****" );
+        log.info( "*******TESTING DELETE SESSIOn****" );
         String[] attributesPerEnvironment = new String[] { "temperature" };
         boolean status = sessionManagerDesktop.createEntryForEnvironment( sessionId, policy, request,
             Arrays.asList( attributesPerEnvironment ), tryStatus, pepuri, myip );
@@ -240,12 +240,12 @@ public class SessionManagerTest {
         status = sessionManagerDesktop.deleteEntry( sessionId );
         Assert.assertTrue( status );
         sessionManagerDesktop.stop();
-        LOGGER.info( "*******END TESTING DELETE SESSION****" );
+        log.info( "*******END TESTING DELETE SESSION****" );
     }
 
     @Test
     public void testGetOnGoingAttributes() throws Exception {
-        LOGGER.info( "*******TESTING GET On going Attributes****" );
+        log.info( "*******TESTING GET On going Attributes****" );
         String[] attributesPerEnvironment = new String[] { "temperature" };
         boolean status = sessionManagerDesktop.createEntryForEnvironment( sessionId, policy, request,
             Arrays.asList( attributesPerEnvironment ), tryStatus, pepuri, myip );
@@ -254,12 +254,12 @@ public class SessionManagerTest {
         Assert.assertTrue( attributes.size() > 0 );
         attributes = sessionManagerDesktop.getOnGoingAttributes( startStatus );
         Assert.assertTrue( attributes == null || attributes.size() == 0 );
-        LOGGER.info( "*******END TESTING GET On going Attributes****" );
+        log.info( "*******END TESTING GET On going Attributes****" );
     }
 
     @Test
     public void failureTestOnGoingAttributesPerSubject() throws Exception {
-        LOGGER.info( "*******TESTING OGA PER SUBJECT: " + subject + "****" );
+        log.info( "*******TESTING OGA PER SUBJECT: " + subject + "****" );
         String[] attributesPerSubject = new String[] { "role" };
         boolean status = sessionManagerDesktop.createEntryForSubject( sessionId, policy, request,
             Arrays.asList( attributesPerSubject ), tryStatus, pepuri, myip, subject );
@@ -275,7 +275,7 @@ public class SessionManagerTest {
         Assert.assertEquals( list.size(), 0 );
         Optional<SessionInterface> sessionInterface = sessionManagerDesktop.getSessionForId( "dasdsa" );
         Assert.assertFalse( sessionInterface.isPresent() );
-        LOGGER.info( "*******END TESTING OGA PER SUBJECT****" );
+        log.info( "*******END TESTING OGA PER SUBJECT****" );
     }
 
 }

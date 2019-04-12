@@ -94,7 +94,7 @@ public class RequestManagerLC extends AsynchronousRequestManager {
                 .newFixedThreadPool( 2 );
             inquirers.submit( new ContextHandlerInquirer() );
         } catch( Exception e ) {
-            LOGGER.severe( e.getMessage() );
+            log.severe( e.getMessage() );
             return false;
         }
         return true;
@@ -192,9 +192,9 @@ public class RequestManagerLC extends AsynchronousRequestManager {
                 }
             }
         } catch( NullPointerException e ) {
-            LOGGER.severe( e.getMessage() );
+            log.severe( e.getMessage() );
         } catch( InterruptedException e ) {
-            LOGGER.severe( e.getMessage() );
+            log.severe( e.getMessage() );
             Thread.currentThread().interrupt();
         }
         return null;
@@ -237,7 +237,7 @@ public class RequestManagerLC extends AsynchronousRequestManager {
                     }
                     return message;
                 } catch( Exception e ) {
-                    LOGGER.severe( e.getMessage() );
+                    log.severe( e.getMessage() );
                     return null;
                 }
             }
@@ -264,7 +264,7 @@ public class RequestManagerLC extends AsynchronousRequestManager {
     		while (true) {
     			// BEGIN parameter checking
     			if (!initialize) {
-    				LOGGER.log(Level.SEVERE, "Request Manager not initialized correctly");
+    				log.log(Level.SEVERE, "Request Manager not initialized correctly");
     				return null;
     			}
     			// END parameter checking

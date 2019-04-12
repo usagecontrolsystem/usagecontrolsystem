@@ -33,7 +33,7 @@ import it.cnr.iit.xacmlutilities.Category;
 final class PSQLSubscriberTimer extends TimerTask {
 	
 	// logger to be used to log the actions
-	private Logger													LOGGER	= Logger
+	private Logger													log	= Logger
 	    .getLogger(PSQLSubscriberTimer.class.getName());
 	
 	// the queue of attributes that have been subscribed
@@ -79,7 +79,7 @@ final class PSQLSubscriberTimer extends TimerTask {
 			
 			// if the value of the attribute has changed notify the context handler
 			else {
-				LOGGER.log(Level.INFO,
+				log.log(Level.INFO,
 				    "[TIME] value of the attribute changed at "
 				        + System.currentTimeMillis() + "\t" + newValue + "\t"
 				        + entry.getAdditionalInformations());
@@ -144,7 +144,7 @@ final class PSQLSubscriberTimer extends TimerTask {
 	    ContextHandlerPIPInterface contextHandler) {
 		// BEGIN parameter checking
 		if (contextHandler == null) {
-			LOGGER.log(Level.SEVERE, "Context handler is null");
+			log.log(Level.SEVERE, "Context handler is null");
 			return;
 		}
 		// END parameter checking

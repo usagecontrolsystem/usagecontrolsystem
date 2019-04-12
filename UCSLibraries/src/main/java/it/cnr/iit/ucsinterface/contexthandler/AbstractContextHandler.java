@@ -54,7 +54,7 @@ import it.cnr.iit.ucsinterface.sessionmanager.SessionManagerInterface;
  */
 public abstract class AbstractContextHandler implements ContextHandlerInterface {
 
-    private static final Logger LOGGER = Logger.getLogger( AbstractContextHandler.class.getName() );
+    private static final Logger log = Logger.getLogger( AbstractContextHandler.class.getName() );
 
     // interface to the session manager
     private SessionManagerInterface sessionManagerInterface;
@@ -124,10 +124,10 @@ public abstract class AbstractContextHandler implements ContextHandlerInterface 
         initialized = sb.length() == 0;
 
         if( initialized ) {
-            LOGGER.info( "ContextHandler correctly initialized" );
+            log.info( "ContextHandler correctly initialized" );
         } else {
-            LOGGER.severe( "ContextHandler incorrectly initialized" );
-            LOGGER.log( Level.SEVERE, "The offending components are : {0}", sb );
+            log.severe( "ContextHandler incorrectly initialized" );
+            log.log( Level.SEVERE, "The offending components are : {0}", sb );
         }
     }
 

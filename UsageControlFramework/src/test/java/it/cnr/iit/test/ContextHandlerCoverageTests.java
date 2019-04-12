@@ -39,7 +39,7 @@ public class ContextHandlerCoverageTests extends UCFBaseTests {
 
     @PostConstruct
     private void init() throws URISyntaxException, IOException, JAXBException {
-        LOGGER.info( "Init tests " );
+        log.info( "Init tests " );
         ucsConfiguration = getUCSConfiguration( conf.getUcsConfigFile() );
         policy = readResourceFileAsString( conf.getPolicyFile() );
         request = readResourceFileAsString( conf.getPolicyFile() );
@@ -47,7 +47,7 @@ public class ContextHandlerCoverageTests extends UCFBaseTests {
 
     @Before
     public void setUp() {
-        LOGGER.info( "setUp >>>>>>>>>>>>>>>>>>" );
+        log.info( "setUp >>>>>>>>>>>>>>>>>>" );
         // nothing to do for now
     }
 

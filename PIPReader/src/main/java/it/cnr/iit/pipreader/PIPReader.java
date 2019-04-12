@@ -425,7 +425,7 @@ public final class PIPReader extends PIPBase {
             }
             String value = line.split( "\t" )[1];
             journalLog( value, filter );
-            // LOGGER.log(Level.INFO,
+            // log.log(Level.INFO,
             // "value read is " + line.split("\t")[1]);
             return value;
         } catch( IOException ioException ) {

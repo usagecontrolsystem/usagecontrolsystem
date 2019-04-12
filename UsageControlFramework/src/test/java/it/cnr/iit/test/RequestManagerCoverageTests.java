@@ -26,13 +26,13 @@ public class RequestManagerCoverageTests extends UCFBaseTests {
 
     @PostConstruct
     private void init() throws URISyntaxException, IOException, JAXBException {
-        LOGGER.info( "Init tests" );
+        log.info( "Init tests" );
         ucsConfiguration = getUCSConfiguration( conf.getUcsConfigFile() );
     }
 
     @Before
     public void setUp() {
-        LOGGER.info( "setUp >>>>>>>>>>>>>>>>>>" );
+        log.info( "setUp >>>>>>>>>>>>>>>>>>" );
         // nothing to do for now
     }
 
