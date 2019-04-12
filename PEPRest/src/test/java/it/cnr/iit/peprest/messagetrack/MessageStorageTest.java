@@ -9,10 +9,6 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 
-import it.cnr.iit.peprest.messagetrack.CallerResponse;
-import it.cnr.iit.peprest.messagetrack.MessageStorage;
-import it.cnr.iit.peprest.messagetrack.MessageStorageInterface;
-import it.cnr.iit.peprest.messagetrack.STATUS;
 import it.cnr.iit.ucsinterface.message.Message;
 import it.cnr.iit.ucsinterface.message.endaccess.EndAccessMessage;
 import it.cnr.iit.ucsinterface.message.endaccess.EndAccessResponse;
@@ -33,7 +29,6 @@ public class MessageStorageTest {
     private String sessionId = "sid:01234567890987654321";
 
     private TryAccessMessage tryAccessMessage;
-    private TryAccessMessage tryAccessMessageDeny;
     private TryAccessResponse tryAccessResponsePermit;
     private TryAccessResponse tryAccessResponseDeny;
     private StartAccessMessage startAccessMessage;
