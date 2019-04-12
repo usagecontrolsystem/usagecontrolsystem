@@ -305,10 +305,15 @@ public final class UsageControlFramework implements UCSInterface {
      * @return true if everything goes fine, false otherwise
      */
     private boolean buildObligationManager() {
-        ObligationManagerProperties properties = configuration.getObligationManager();
-        obligationManager = ObligationManagerBuilder.build( properties,
-            new ArrayList<PIPOMInterface>( pipList ), pipRetrieval );
-        return true;
+        try {
+            ObligationManagerProperties properties = configuration.getObligationManager();
+            obligationManager = ObligationManagerBuilder.build( properties,
+                new ArrayList<PIPOMInterface>( pipList ), pipRetrieval );
+            return true;
+        } catch( Exception e ) {
+            log.severe( e.getMessage() );
+            return false;
+        }
     }
 
     /**
