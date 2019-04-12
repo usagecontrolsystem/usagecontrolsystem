@@ -29,6 +29,7 @@ import java.util.stream.Collectors;
 import it.cnr.iit.ucs.configuration.PapProperties;
 import it.cnr.iit.ucsinterface.pap.PAPInterface;
 import it.cnr.iit.utility.JAXBUtility;
+import it.cnr.iit.utility.errorhandling.Reject;
 
 import oasis.names.tc.xacml.core.schema.wd_17.PolicyType;
 
@@ -70,12 +71,7 @@ public class PolicyAdministrationPoint implements PAPInterface {
      *          the properties that describes this PAP
      */
     public PolicyAdministrationPoint( PapProperties properties ) {
-        // BEGIN parameter checking
-        if( properties == null ) {
-            // TODO throw exception
-            return;
-        }
-        // END parameter checking
+        Reject.ifNull( properties );
         this.properties = properties;
         if( properties.getPath() != null &&
                 Paths.get( properties.getPath() ).toFile().isDirectory() ) {
@@ -92,19 +88,13 @@ public class PolicyAdministrationPoint implements PAPInterface {
      */
     @Override
     public String retrievePolicy( String policyId ) {
-        // BEGIN parameter checking
-        if( initialized == false ||
-                policyId == null || policyId.equals( "" ) ) {
-            return null;
-        }
-        // END parameter checking
-
+        Reject.ifFalse( initialized );
+        Reject.ifBlank( policyId );
         Path path = getPolicyPath( policyId );
         try {
             return new String( Files.readAllBytes( path ) );
         } catch( Exception e ) {
             log.severe( String.format( MSG_ERR_POLICY_READ, path, e.getMessage() ) );
-            // TODO throw exception
         }
 
         return null;
@@ -119,10 +109,8 @@ public class PolicyAdministrationPoint implements PAPInterface {
      */
     @Override
     public boolean addPolicy( String policy ) {
-        // BEGIN parameter checking
-        if( !initialized ) {
-            throw new IllegalStateException( MSG_EX_NOT_INITIALISED );
-        }
+        Reject.ifFalse( initialized );
+        Reject.ifNull( policy );
 
         Optional<PolicyType> optPolicyType = getXACMLPolicyFromString( policy );
         if( !optPolicyType.isPresent() ) {
@@ -176,7 +164,7 @@ public class PolicyAdministrationPoint implements PAPInterface {
         File directory = new File( properties.getPath() );
         File[] files = directory.listFiles( ( dir, name ) -> name.toLowerCase().endsWith( POLICY_FILE_EXTENSION ) );
         return Arrays.asList( files ).parallelStream()
-            .map( file -> file.getName() ).collect( Collectors.toList() );
+            .map( File::getName ).collect( Collectors.toList() );
     }
 
 }
