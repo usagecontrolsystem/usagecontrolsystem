@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2018 IIT-CNR
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy
  * of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
@@ -15,6 +15,8 @@
  ******************************************************************************/
 package it.cnr.iit.ucsinterface.message.tryaccess;
 
+import java.util.logging.Logger;
+
 /**
  * Builder for a tryAccessMessage
  * <p>
@@ -22,17 +24,20 @@ package it.cnr.iit.ucsinterface.message.tryaccess;
  * be used in the tryAccess. The builder pattern has been taken from
  * <a href="https://en.wikipedia.org/wiki/Builder_pattern">here</a>
  * </p>
- * 
+ *
  * @author antonio
  *
  */
 public final class TryAccessMessageBuilder {
+
+    private static final Logger log = Logger.getLogger( TryAccessMessageBuilder.class.getName() );
+
     // instance of the tryaccessmessage that will be built
     private TryAccessMessage tryAccessMessage;
 
     /**
      * Constructor for the instance of the TryAccessMessage
-     * 
+     *
      * @param source
      *          the source that sent the message
      * @param dest
@@ -51,7 +56,7 @@ public final class TryAccessMessageBuilder {
 
     /**
      * Sets the pep uri
-     * 
+     *
      * @param pepUri
      *          the pepuri
      * @return the builder itself or null if something goes wrong
@@ -60,13 +65,13 @@ public final class TryAccessMessageBuilder {
         if( tryAccessMessage.getContent().setPepUri( pepUri ) ) {
             return this;
         }
-        System.out.println( "SET URI FAILED" );
+        log.info( "SET URI FAILED" );
         return null;
     }
 
     /**
      * Sets the policy to be used
-     * 
+     *
      * @param policy
      *          the policy to be used
      * @return the builder itself or null
@@ -80,7 +85,7 @@ public final class TryAccessMessageBuilder {
 
     /**
      * Sets the policy id of the policy to be used
-     * 
+     *
      * @param policyId
      *          the policy id
      * @return the builder itself or null if something goes wrong
@@ -94,7 +99,7 @@ public final class TryAccessMessageBuilder {
 
     /**
      * Sets the request to be used in the message
-     * 
+     *
      * @param request
      *          the request to be used
      * @return the builder itself or null
@@ -108,7 +113,7 @@ public final class TryAccessMessageBuilder {
 
     /**
      * Builds the TryAccessMessage
-     * 
+     *
      * @return the tryAccessMessage instance
      */
     public TryAccessMessage build() {

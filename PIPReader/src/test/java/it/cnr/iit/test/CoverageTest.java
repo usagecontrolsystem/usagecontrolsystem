@@ -44,7 +44,8 @@ import oasis.names.tc.xacml.core.schema.wd_17.RequestType;
 @SpringBootTest
 @SpringBootConfiguration
 public class CoverageTest {
-    private static Logger LOGGER = Logger.getLogger( CoverageTest.class.getName() );
+
+    private static Logger log = Logger.getLogger( CoverageTest.class.getName() );
 
     @Value( "${environment.filepath}" )
     private String environmentFilePath;
@@ -185,12 +186,12 @@ public class CoverageTest {
 
     public void testRetrieve() {
         try {
-            LOGGER.info( "*****************BEGIN RETIREVE TEST*******************" );
+            log.info( "*****************BEGIN RETIREVE TEST*******************" );
             remoteRetrievalTest();
             localTest();
-            LOGGER.info( "*****************END RETRIEVE TEST*******************" );
+            log.info( "*****************END RETRIEVE TEST*******************" );
         } catch( Exception e ) {
-            LOGGER.severe( e.getMessage() );
+            log.severe( e.getMessage() );
         }
     }
 
@@ -199,8 +200,8 @@ public class CoverageTest {
         assertTrue( value.equals( "IIT" ) );
         value = testRetrieveAttribute( resourceAttribute, resourceAttributePip );
         assertTrue( value.equals( "SECRET" ) );
-        System.out.println( JsonUtility.getJsonStringFromObject( environmentAttributePip, true ).get() );
-        System.out.println( JsonUtility.getJsonStringFromObject( actionAttributePip, true ).get() );
+        log.info( JsonUtility.getJsonStringFromObject( environmentAttributePip, true ).get() );
+        log.info( JsonUtility.getJsonStringFromObject( actionAttributePip, true ).get() );
         value = testRetrieveAttribute( actionAttribute, actionAttributePip );
         assertTrue( value.equals( "ANALYZE" ) );
         value = testRetrieveAttribute( environmentAttribute, environmentAttributePip );
@@ -218,7 +219,7 @@ public class CoverageTest {
     }
 
     public void localTest() throws Exception {
-        LOGGER.info( "-------BEGIN RETRIEVE TEST-------" );
+        log.info( "-------BEGIN RETRIEVE TEST-------" );
         testRetrieveAndEnrichment( requestType, subjectAttributePip );
         assertTrue( verifyRequest( requestType, subjectAttribute ).equals( "[IIT]" ) );
         testRetrieveAndEnrichment( requestType, resourceAttributePip );
@@ -235,7 +236,7 @@ public class CoverageTest {
         testRetrieveAndEnrichment( null, fault );
         assertEquals( verifyRequest( requestType, dummySubjectAttribute ), null );
         assertFalse( verifyRequest( requestType, environmentAttribute ).equals( "40.0" ) );
-        LOGGER.info( "-------END RETRIEVE TEST-------" );
+        log.info( "-------END RETRIEVE TEST-------" );
     }
 
     private void testRetrieveAndEnrichment( RequestType requestType, PIPReader pipReader ) {
@@ -248,17 +249,17 @@ public class CoverageTest {
 
     public void testSubscribe() {
         try {
-            LOGGER.info( "*****************BEGIN SUBSCRIBE TEST*******************" );
+            log.info( "*****************BEGIN SUBSCRIBE TEST*******************" );
             remoteSubscribeTest();
             localSubscribeTest();
-            LOGGER.info( "*****************END SUBSCRIBE TEST*******************" );
+            log.info( "*****************END SUBSCRIBE TEST*******************" );
         } catch( Exception e ) {
-            LOGGER.severe( e.getMessage() );
+            log.severe( e.getMessage() );
         }
     }
 
     public void localSubscribeTest() throws Exception {
-        LOGGER.info( "-------BEGIN SUBSCRIBE TEST-------" );
+        log.info( "-------BEGIN SUBSCRIBE TEST-------" );
         testSubscribeAndEnrichment( requestType, subjectAttributePip );
         assertTrue( verifyRequest( requestType, subjectAttribute ).equals( "[IIT]" ) );
         testSubscribeAndEnrichment( requestType, resourceAttributePip );
@@ -275,7 +276,7 @@ public class CoverageTest {
         testSubscribeAndEnrichment( null, fault );
         assertEquals( verifyRequest( requestType, dummySubjectAttribute ), null );
         assertFalse( verifyRequest( requestType, environmentAttribute ).equals( "40.0" ) );
-        LOGGER.info( "-------END SUBSCRIBE TEST-------" );
+        log.info( "-------END SUBSCRIBE TEST-------" );
     }
 
     private void testSubscribeAndEnrichment( RequestType requestType, PIPReader pipReader ) {
@@ -326,11 +327,11 @@ public class CoverageTest {
 
     public void testUnsubscribe() {
         try {
-            LOGGER.info( "*****************BEGIN UNSUBSCRIBE TEST*******************" );
+            log.info( "*****************BEGIN UNSUBSCRIBE TEST*******************" );
             unsubscribeTest();
-            LOGGER.info( "*****************END UNSUBSCRIBE TEST*******************" );
+            log.info( "*****************END UNSUBSCRIBE TEST*******************" );
         } catch( Exception e ) {
-            LOGGER.severe( e.getMessage() );
+            log.severe( e.getMessage() );
         }
     }
 
@@ -369,7 +370,7 @@ public class CoverageTest {
             for( AttributeType attributeType : attributeTypes.getAttribute() ) {
                 if( attributeType.getAttributeId().equals( attribute.getAttributeId().toString() ) ) {
                     for( AttributeValueType attributeValue : attributeType.getAttributeValue() ) {
-                        LOGGER.info( attributeValue.getContent().toString() );
+                        log.info( attributeValue.getContent().toString() );
                         return attributeValue.getContent().toString();
                     }
                 }

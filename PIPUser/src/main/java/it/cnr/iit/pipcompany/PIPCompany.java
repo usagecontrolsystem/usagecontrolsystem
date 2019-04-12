@@ -105,12 +105,12 @@ public class PIPCompany extends PIPBase {
             sqlMiddlewarePIPInterface = SQLMiddleware
                 .createMiddleware( configurationInterface );
             if( sqlMiddlewarePIPInterface != null ) {
-                System.out.println( "CORRECT INIT" );
+                log.info( "CORRECT INIT" );
                 addAttribute( attribute );
                 initialized = true;
                 return true;
             } else {
-                System.out.println( "WRONG INIT" );
+                log.info( "WRONG INIT" );
                 return false;
             }
         } catch( Exception e ) {
@@ -299,7 +299,7 @@ public class PIPCompany extends PIPBase {
         UserTable userTable = sqlMiddlewarePIPInterface
             .performQuerySingleRecord( "UserTable", condition, UserTable.class );
         String company = userTable.getCompany();
-        System.out.println( "RETRIEVED: " + company );
+        log.info( "RETRIEVED: " + company );
         return company;
     }
 

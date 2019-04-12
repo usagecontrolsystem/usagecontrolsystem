@@ -101,12 +101,12 @@ public class PIPLocation extends PIPBase {
             sqlMiddlewarePIPInterface = SQLMiddleware
                 .createMiddleware( configurationInterface );
             if( sqlMiddlewarePIPInterface != null ) {
-                System.out.println( "CORRECT INIT" );
+                log.info( "CORRECT INIT" );
                 addAttribute( attribute );
                 initialized = true;
                 return true;
             } else {
-                System.out.println( "WRONG INIT" );
+                log.info( "WRONG INIT" );
                 return false;
             }
         } catch( Exception e ) {
@@ -201,7 +201,7 @@ public class PIPLocation extends PIPBase {
                     if( attributeS.getAdditionalInformations()
                         .equals( attribute.getAdditionalInformations() ) ) {
                         subscriptions.remove( attributeS );
-                        System.out.println( "UNSUB " + subscriptions.size() );
+                        log.info( "UNSUB " + subscriptions.size() );
                         return true;
                     }
                 }

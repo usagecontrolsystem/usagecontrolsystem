@@ -46,7 +46,8 @@ import it.cnr.iit.sqlmiddlewareinterface.SQLMiddlewarePIPInterface;
  *
  */
 public final class SQLMiddleware implements SQLMiddlewarePIPInterface {
-    private static final Logger LOGGER = Logger.getLogger( SQLMiddleware.class.getName() );
+
+    private static final Logger log = Logger.getLogger( SQLMiddleware.class.getName() );
 
     // storage of all the configuration along with all the required middleware.
     private static final ConcurrentHashMap<String, SQLMiddleware> configuration = new ConcurrentHashMap<>();
@@ -135,7 +136,7 @@ public final class SQLMiddleware implements SQLMiddlewarePIPInterface {
         sqlMiddleware.hibernateConfiguration
             .setProperty( HIBERNATE_CONFIGURATIONS.DIALECT.getString(), sqlMiddleware
                 .getDialectFromDriver( sqlMiddlewarePIPInterface.getDriver() ) );
-        LOGGER.info(
+        log.info(
             sqlMiddleware.hibernateConfiguration.getProperty( "hibernate.dialect" ) );
         sqlMiddleware.hibernateConfiguration
             .addAnnotatedClass( sqlMiddlewarePIPInterface.getClassForTable() );
@@ -163,7 +164,7 @@ public final class SQLMiddleware implements SQLMiddlewarePIPInterface {
             Class<T> returnedClass ) {
         // BEGIN PARAMETER CHECKING
         if( tableName == null || tableName.length() == 0 || condition == null ) {
-            LOGGER.warning( "error performin query on a single record" );
+            log.warning( "error performin query on a single record" );
             // TODO throw exception
             return null;
         }
@@ -173,7 +174,7 @@ public final class SQLMiddleware implements SQLMiddlewarePIPInterface {
         // END PARAMETER CHECKING
 
         String query = String.format( select, tableName, condition );
-        System.out.println( query );
+        log.info( query );
         /*
          * if (cache.containsKey(query)) { if (System.currentTimeMillis() -
          * cache.get(query).getTime() < (10 * 1000)) { CacheEntry cacheEntry =
@@ -212,7 +213,7 @@ public final class SQLMiddleware implements SQLMiddlewarePIPInterface {
             String condition, Class<T> returnedClass ) {
         // BEGIN PARAMETER CHECKING
         if( tableName == null || tableName.length() == 0 || condition == null ) {
-            LOGGER.warning( "error performin query on a multiple records" );
+            log.warning( "error performin query on a multiple records" );
             // TODO throw exception
             return null;
         }

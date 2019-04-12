@@ -3,6 +3,7 @@ package it.cnr.iit.pdptest;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.IOException;
+import java.util.logging.Logger;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -31,6 +32,8 @@ import it.cnr.iit.usagecontrolframework.pdp.PolicyDecisionPoint;
 @SpringBootTest
 @SpringBootConfiguration
 public class PDPTest {
+
+    private static final Logger log = Logger.getLogger( PDPTest.class.getName() );
 
     @Value( "${request.deny}" )
     private String requestDeny;
@@ -65,7 +68,7 @@ public class PDPTest {
 
     @Test
     public void testPDP() {
-        System.out.println( "HELLO\n" + requestDeny + "\n" + policy );
+        log.info( "HELLO\n" + requestDeny + "\n" + policy );
         assertThat( testEvaluation( requestDeny, policy ) ).contains( "deny" );
         assertThat( testEvaluation( requestIndeterminate, policy ) ).contains( "indeterminate" );
         assertThat( testEvaluation( requestPermit, policy ) ).contains( "permit" );
@@ -89,7 +92,7 @@ public class PDPTest {
         PDPEvaluation response = policyDecisionpoint.evaluate( request, policy );
         if( response != null ) {
             String result = response.getResult().toLowerCase();
-            System.out.println( result );
+            log.info( result );
             return result;
         }
         return null;
@@ -100,7 +103,7 @@ public class PDPTest {
             PDPEvaluation response = policyDecisionpoint.evaluate( request, new StringBuilder( policy ), status );
             if( response != null ) {
                 String result = response.getResult().toLowerCase();
-                System.out.println( result );
+                log.info( result );
                 return result;
             } else {
                 return null;

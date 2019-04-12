@@ -15,6 +15,8 @@
  ******************************************************************************/
 package it.cnr.iit.ucsinterface.message.reevaluation;
 
+import java.util.logging.Logger;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import it.cnr.iit.ucsinterface.message.Message;
@@ -29,6 +31,8 @@ import it.cnr.iit.ucsinterface.pdp.PDPEvaluation;
  *
  */
 public class ReevaluationResponse extends Message {
+
+    private static final Logger log = Logger.getLogger( ReevaluationResponse.class.getName() );
 
     private static final long serialVersionUID = 1L;
     // flag that states the status of this class
@@ -94,9 +98,6 @@ public class ReevaluationResponse extends Message {
         }
     }
 
-    // ---------------------------------------------------------------------------
-    // GETTERS and SETTERS
-    // ---------------------------------------------------------------------------
     @Override
     public int compareTo( Message o ) {
         return 0;
@@ -104,7 +105,7 @@ public class ReevaluationResponse extends Message {
 
     public void setPDPEvaluation( PDPEvaluation pdpEvaluation ) {
         if( !chPepInitialized || pdpEvaluation == null ) {
-            System.err.println( "Impossible to set the evaluation " + chPepInitialized + "\t" + ( pdpEvaluation == null ) );
+            log.severe( "Impossible to set the evaluation " + chPepInitialized + "\t" + ( pdpEvaluation == null ) );
             return;
         }
         this.pdpEvaluation = pdpEvaluation;
@@ -118,10 +119,10 @@ public class ReevaluationResponse extends Message {
     }
 
     public void setPepID( String pepId ) {
-        this.pepID = pepId;
+        pepID = pepId;
     }
 
     public String getPepID() {
-        return this.pepID;
+        return pepID;
     }
 }

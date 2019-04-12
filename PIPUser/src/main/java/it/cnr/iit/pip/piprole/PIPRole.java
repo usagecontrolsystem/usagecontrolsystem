@@ -107,12 +107,12 @@ public class PIPRole extends PIPBase {
             sqlMiddlewarePIPInterface = SQLMiddleware
                 .createMiddleware( configurationInterface );
             if( sqlMiddlewarePIPInterface != null ) {
-                System.out.println( "CORRECT INIT" );
+                log.info( "CORRECT INIT" );
                 addAttribute( attribute );
                 initialized = true;
                 return true;
             } else {
-                System.out.println( "WRONG INIT" );
+                log.info( "WRONG INIT" );
                 return false;
             }
         } catch( Exception e ) {
@@ -308,7 +308,7 @@ public class PIPRole extends PIPBase {
             return "";
         }
         String role = userTable.getRole();
-        System.out.println( "RETRIEVED: " + role );
+        log.info( "RETRIEVED: " + role );
         return role;
     }
 

@@ -112,7 +112,7 @@ public class SessionManagerTest {
 
     public SessionManagerTest() {
         /*
-         * System.out.println(conf); try { //sessionManagerDesktop = new
+         * log.info(conf); try { //sessionManagerDesktop = new
          * SessionManagerDesktop(JAXBUtility.unmarshalToObject(XMLSessionManager.class, conf)); } catch (JAXBException
          * e) { // TODO Auto-generated catch block e.printStackTrace(); }
          */

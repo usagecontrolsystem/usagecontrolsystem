@@ -1,5 +1,7 @@
 package it.cnr.iit.peprest.messagetrack;
 
+import java.util.logging.Logger;
+
 import it.cnr.iit.ucsinterface.message.endaccess.EndAccessMessage;
 import it.cnr.iit.ucsinterface.message.endaccess.EndAccessResponse;
 import it.cnr.iit.ucsinterface.message.reevaluation.ReevaluationResponse;
@@ -20,6 +22,8 @@ import oasis.names.tc.xacml.core.schema.wd_17.DecisionType;
  *
  */
 public class MessageInformations {
+
+    private static Logger log = Logger.getLogger( MessageInformations.class.getName() );
 
     private CallerResponse callerResponse;
     private String messageId;
@@ -79,7 +83,7 @@ public class MessageInformations {
             throw new IllegalArgumentException( "Wrong flow of messages!! \n status is: " + callerResponse.getStatus() );
         }
         evaluation = message.getPDPEvaluation();
-        System.err.println( evaluation.getResult() + "\t" + DecisionType.PERMIT.toString() );
+        log.severe( evaluation.getResult() + "\t" + DecisionType.PERMIT.toString() );
         if( evaluation.getResult().equals( DecisionType.PERMIT.value() ) ) {
             callerResponse.setStatus( STATUS.TRYACCESS_PERMIT );
             callerResponse.setSessionId( message.getSessionId() );

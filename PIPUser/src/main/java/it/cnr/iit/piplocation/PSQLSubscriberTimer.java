@@ -63,7 +63,7 @@ final class PSQLSubscriberTimer extends TimerTask {
 	@Override
 	public void run() {
 		for (Attribute entry : subscriptions) {
-			// System.out.println("[PipFile] Subscribe iteration");
+			// log.info("[PipFile] Subscribe iteration");
 			Category category = entry.getCategory();
 			String newValue = "";
 			if (category == Category.ENVIRONMENT) {
