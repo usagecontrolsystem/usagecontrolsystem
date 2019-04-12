@@ -15,21 +15,26 @@
  ******************************************************************************/
 package it.cnr.iit.xacmlutilities.policy;
 
+import java.util.logging.Logger;
+
 import it.cnr.iit.utility.JAXBUtility;
 
 import oasis.names.tc.xacml.core.schema.wd_17.RuleType;
 
 public class DefaultPermitRule {
 
-    // TODO add obligation in the rule
-    private static final String defaultPermit = "<Rule Effect=\"Permit\" RuleId=\"def-permit\"></Rule>";
+    private static final Logger log = Logger.getLogger( DefaultPermitRule.class.getName() );
+
+    private DefaultPermitRule() {}
+
+    private static final String DEFAULT_PERMIT = "<Rule Effect=\"Permit\" RuleId=\"def-permit\"></Rule>";
 
     public static final RuleType getInstance() {
         try {
-            RuleType ruleType = JAXBUtility.unmarshalToObject( RuleType.class,
-                defaultPermit );
-            return ruleType;
+            return JAXBUtility.unmarshalToObject( RuleType.class,
+                DEFAULT_PERMIT );
         } catch( Exception exception ) {
+            log.severe( exception.getMessage() );
             return null;
         }
     }

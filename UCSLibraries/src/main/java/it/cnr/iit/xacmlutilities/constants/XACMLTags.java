@@ -23,7 +23,7 @@ package it.cnr.iit.xacmlutilities.constants;
  */
 public final class XACMLTags {
 
-    private XACMLTags() {}; // NOSONAR
+    private XACMLTags() {}
 
     public static final String ATTRIBUTE_ID = "AttributeId";
     public static final String RESOURCE = "resource";

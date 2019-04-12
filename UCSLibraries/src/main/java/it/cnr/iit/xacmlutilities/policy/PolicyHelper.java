@@ -23,6 +23,7 @@ import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 
 import it.cnr.iit.utility.JAXBUtility;
+import it.cnr.iit.utility.errorhandling.Reject;
 import it.cnr.iit.xacmlutilities.Attribute;
 import it.cnr.iit.xacmlutilities.Category;
 import it.cnr.iit.xacmlutilities.DataType;
@@ -115,12 +116,7 @@ public class PolicyHelper implements PolicyHelperInterface {
 
     @Override
     public List<Attribute> getAttributesForCondition( String conditionName ) {
-        // BEGIN PARAMETER CHECKING
-        if( conditionName == null || conditionName.isEmpty() ) {
-            throw new NullPointerException(
-                "PolicyHelper.buildPolicyHelper string parameter is null or empty" );
-        }
-        // END PARAMETER CHECKING
+        Reject.ifBlank( conditionName );
 
         List<Object> list = policyType
             .getCombinerParametersOrRuleCombinerParametersOrVariableDefinition();
@@ -147,7 +143,7 @@ public class PolicyHelper implements PolicyHelperInterface {
         }
 
         log.warning( String.format( MSG_WARN_COND_NOT_FOUND, conditionName ) );
-        return null;
+        return new ArrayList<>();
     }
 
     /**
@@ -188,10 +184,6 @@ public class PolicyHelper implements PolicyHelperInterface {
             } else if( element.getValue().getClass().toString()
                 .contains( "AttributeValue" ) ) {
                 AttributeValueType ad = (AttributeValueType) element.getValue();
-                /*
-                 * System.out.println( "1AV: " + ad.getDataType() + "\t" +
-                 * ad.getContent().toString());
-                 */
                 for( Object obj : ad.getContent() ) {
                     attribute.createAttributeValues( ad.getDataType(), obj.toString() );
                 }
@@ -204,7 +196,6 @@ public class PolicyHelper implements PolicyHelperInterface {
 
     @Override
     public String retrieveObligations() {
-        // TODO Auto-generated method stub
         return null;
     }
 
@@ -260,7 +251,7 @@ public class PolicyHelper implements PolicyHelperInterface {
                 RuleType ruleType = (RuleType) obj;
                 // check if the ruletype contians any conditions
                 if( ruleType.getCondition() != null
-                        && ruleType.getCondition().size() != 0 ) {
+                        && ruleType.getCondition().isEmpty() ) {
                     List<ConditionType> conditions = ruleType.getCondition();
                     for( ConditionType conditionType : conditions ) {
 

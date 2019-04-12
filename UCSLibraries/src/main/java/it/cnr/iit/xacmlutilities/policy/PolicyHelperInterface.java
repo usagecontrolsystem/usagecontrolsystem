@@ -53,7 +53,7 @@ public interface PolicyHelperInterface {
     public List<Attribute> getAttributesForCondition( String conditionName );
 
     /**
-     * Retrieves the list of obligations TODO
+     * Retrieves the list of obligations
      */
     public String retrieveObligations();
 
