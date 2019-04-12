@@ -91,14 +91,8 @@ public final class StartAccessResponse extends Message {
         return 0;
     }
 
-    public boolean setResponse( PDPEvaluation pdpEvaluation ) {
-        // BEGIN parameter checking
-        if( pdpEvaluation == null ) {
-            return false;
-        }
-        // END parameter checking
+    public void setResponse( PDPEvaluation pdpEvaluation ) {
         this.pdpEvaluation = pdpEvaluation;
-        return false;
     }
 
 }
