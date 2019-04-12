@@ -269,4 +269,10 @@ public class Reject {
             ifNull( object );
         }
     }
+
+    public static void ifNull( String... objects ) {
+        for( String object : objects ) {
+            ifNull( object );
+        }
+    }
 }

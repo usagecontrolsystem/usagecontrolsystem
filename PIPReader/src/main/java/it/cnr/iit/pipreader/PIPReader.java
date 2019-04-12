@@ -95,10 +95,7 @@ public final class PIPReader extends PIPBase {
      */
     public PIPReader( PipProperties properties ) {
         super( properties );
-        if( !isInitialized() ) {
-            log.info( "base classe not initialised" );
-            throw new IllegalStateException( "base classe not initialised" );
-        }
+        Reject.ifInvalidObjectState( isInitialized(), PIPReader.class.getName(), log );
 
         if( initialize( properties ) ) {
             log.info( "initialising" );
@@ -179,8 +176,8 @@ public final class PIPReader extends PIPBase {
      */
     @Override
     public void retrieve( RequestType accessRequest ) throws PIPException {
-        Reject.ifFalse( initialized );
-        Reject.ifFalse( isInitialized() );
+        Reject.ifInvalidObjectState( isInitialized(), PIPReader.class.getName(), log );
+        Reject.ifInvalidObjectState( initialized, PIPReader.class.getName(), log );
         Reject.ifNull( accessRequest );
 
         String value;
@@ -209,8 +206,8 @@ public final class PIPReader extends PIPBase {
      */
     @Override
     public void subscribe( RequestType accessRequest ) throws PIPException {
-        Reject.ifFalse( initialized );
-        Reject.ifFalse( isInitialized() );
+        Reject.ifInvalidObjectState( isInitialized(), PIPReader.class.getName(), log );
+        Reject.ifInvalidObjectState( initialized, PIPReader.class.getName(), log );
         Reject.ifNull( accessRequest );
         Reject.ifNull( contextHandlerInterface );
 
@@ -257,8 +254,8 @@ public final class PIPReader extends PIPBase {
      */
     @Override
     public boolean unsubscribe( List<Attribute> attributes ) throws PIPException {
-        Reject.ifFalse( initialized );
-        Reject.ifFalse( isInitialized() );
+        Reject.ifInvalidObjectState( isInitialized(), PIPReader.class.getName(), log );
+        Reject.ifInvalidObjectState( initialized, PIPReader.class.getName(), log );
         Reject.ifEmpty( attributes );
 
         for( Attribute attribute : attributes ) {
@@ -300,13 +297,12 @@ public final class PIPReader extends PIPBase {
      */
     @Override
     public String subscribe( Attribute attributeRetrieval ) throws PIPException {
-        subscriberTimer.setContextHandlerInterface( contextHandlerInterface );
+        Reject.ifInvalidObjectState( isInitialized(), PIPReader.class.getName(), log );
+        Reject.ifInvalidObjectState( initialized, PIPReader.class.getName(), log );
+        Reject.ifNull( attributeRetrieval );
+        Reject.ifNull( contextHandlerInterface );
 
-        if( subscriberTimer.getContextHandler() == null
-                || contextHandlerInterface == null ) {
-            log.severe( "Context handler not set" );
-            return null;
-        }
+        subscriberTimer.setContextHandlerInterface( contextHandlerInterface );
 
         String value;
         if( getAttributes().get( 0 ).getCategory() == Category.ENVIRONMENT ) {
@@ -355,9 +351,7 @@ public final class PIPReader extends PIPBase {
     }
 
     private void journalLog( String... string ) {
-        if( string == null ) {
-            throw new IllegalArgumentException( "Passed value is null, nothing to be added in the journal" );
-        }
+        Reject.ifNull( string );
         StringBuilder logLineBuilder = new StringBuilder();
         logLineBuilder.append( "VALUE READ: " );
         logLineBuilder.append( string[0] );
@@ -421,9 +415,8 @@ public final class PIPReader extends PIPBase {
     }
 
     private final void setFilePath( String filePath ) {
-        Reject.ifFalse( isInitialized() );
+        Reject.ifInvalidObjectState( isInitialized(), PIPReader.class.getName(), log );
         Reject.ifBlank( filePath );
-
         String absFilePath = Utility.findFileAbsPathUsingClassLoader( filePath );
         if( absFilePath != null ) {
             this.filePath = absFilePath;
