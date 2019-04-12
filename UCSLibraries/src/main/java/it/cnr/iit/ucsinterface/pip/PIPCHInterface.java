@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2018 IIT-CNR
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy
  * of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
@@ -17,10 +17,9 @@ package it.cnr.iit.ucsinterface.pip;
 
 import java.util.List;
 
-import it.cnr.iit.xacmlutilities.Attribute;
-
 import it.cnr.iit.ucsinterface.contexthandler.ContextHandlerPIPInterface;
 import it.cnr.iit.ucsinterface.pip.exception.PIPException;
+import it.cnr.iit.xacmlutilities.Attribute;
 
 import oasis.names.tc.xacml.core.schema.wd_17.RequestType;
 
@@ -31,7 +30,7 @@ import oasis.names.tc.xacml.core.schema.wd_17.RequestType;
  * Interface offered by the various PIPs to the context handler. The PIPs offer
  * two different interfaces: one to the obligation manager that is described in
  * the PIPOMInterface, the other is this one.
- * 
+ *
  * @author antonio
  *
  */
@@ -40,7 +39,7 @@ public interface PIPCHInterface extends PIPBaseInterface {
      * Subscribes an user to monitor its mutable attributes by storing in a map
      * his search base (used to access his information in the LDAP server) and the
      * list of his mutable attributes (retrieved from the configuration file)
-     * 
+     *
      * @param accessRequest
      *          a XACML file where the user to subscribe will be retrieved
      * @throws PIPException
@@ -50,7 +49,7 @@ public interface PIPCHInterface extends PIPBaseInterface {
     /**
      * Retrieves the attribute values for a certain user from the LDAP server. It
      * needs autenthication to access to the LDAP server.
-     * 
+     *
      * @param accessRequest
      *          a XACML file where the user will be retrieved
      * @throws PIPException
@@ -60,7 +59,7 @@ public interface PIPCHInterface extends PIPBaseInterface {
     /**
      * Unsubscribes one or more attributes for a certain user from being monitored
      * by the PIP
-     * 
+     *
      * @param json
      *          a JSON string where the user and his attributes to unsubscribe
      *          will be retrieved
@@ -72,7 +71,7 @@ public interface PIPCHInterface extends PIPBaseInterface {
      * This retrieve function is called by the ContextHandler when it is queried
      * by a PIP to retrieve a remote attribute. Hence the context handler queries
      * the PIP passing to it the attribute id.
-     * 
+     *
      * @param attributeRetrieval
      *          the attribute the context handler is interested to
      * @return null if the PIP doesn't take care of this attribute id, otherwise a
@@ -93,7 +92,7 @@ public interface PIPCHInterface extends PIPBaseInterface {
      * get the address of the contexthandler it needs to retrieve the attribute
      * and perform a subscription to the PIP that handles that attribute</li>
      * </ul>
-     * 
+     *
      * @param attributeRetrieval
      *          the attributeRetrieval object that contains all the informations
      *          about the attribute the PIPRetrieval is interested into
@@ -106,7 +105,7 @@ public interface PIPCHInterface extends PIPBaseInterface {
      * Function to be used when we need to retrieve more than one attribute from a
      * contexthandler in a single step. This function behaves exactly like the
      * other retrieve, fattening the request we pass as parameter
-     * 
+     *
      * @param request
      *          the request the PEP has sent
      * @param attributeRetrievals
@@ -119,8 +118,8 @@ public interface PIPCHInterface extends PIPBaseInterface {
      * Function to be used when we need to subscribe to more than one attribute
      * from a contexthandler in a single step. This function behaves exactly like
      * the other subscribe, fattening the request we pass as parameter.
-     * 
-     * 
+     *
+     *
      * @param request
      *          the request the PEP has sent
      * @param attributeRetrievals
@@ -131,11 +130,17 @@ public interface PIPCHInterface extends PIPBaseInterface {
 
     /**
      * Sets the context handler to whcih the PIPs have to communicate
-     * 
+     *
      * @param contextHandler
      *          the context handler to which the pip have to communicate
      */
     public boolean setContextHandlerInterface(
             ContextHandlerPIPInterface contextHandler );
+
+    @Override
+    public List<String> getAttributeIds();
+
+    @Override
+    public List<Attribute> getAttributes();
 
 }
