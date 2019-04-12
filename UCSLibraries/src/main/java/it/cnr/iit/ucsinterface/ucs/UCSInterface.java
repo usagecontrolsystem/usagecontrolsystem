@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2018 IIT-CNR
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy
  * of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
@@ -61,10 +61,10 @@ import it.cnr.iit.ucsinterface.message.tryaccess.TryAccessResponse;
  * <li><i>retrieveRemoteResponse</i> in order to receive the value of the remote
  * attribute previously requested</li>
  * </ul>
- * 
+ *
  * </p>
- * 
- * 
+ *
+ *
  * @author antonio
  *
  */
@@ -80,7 +80,7 @@ public interface UCSInterface {
      * directly connected to this UCS, either by a Node that has scheduled the
      * execution of a tryAccess directed to it to this node.
      * </p>
-     * 
+     *
      * @param tryAccessMessage
      *          the tryAccessMessage object, it contains all the informations
      *          required for the recipient to call back the caller and all the
@@ -95,7 +95,7 @@ public interface UCSInterface {
      * asked the evaluation has finished and has provided a result, hence the
      * response has to be provided to the PEP
      * </p>
-     * 
+     *
      * @param tryAccessResponse
      *          the response provided by the UCS to which we have asked the
      *          evaluation
@@ -113,7 +113,7 @@ public interface UCSInterface {
      * policy in order to react if something changes. This operation might also be
      * asked from the scheduler of another UCS, exactly as it happens in tryAccess.
      * </p>
-     * 
+     *
      * @param startAccessMessage
      *          the startAccess message object. It contains all the informations
      *          required for the recipient to call back the caller, in general in
@@ -129,7 +129,7 @@ public interface UCSInterface {
      * asked the evaluation has finished and has provided a result, hence the
      * response has to be provided to the PEP.
      * </p>
-     * 
+     *
      * @param startAccessResponse
      *          the response provided by the UCS to which we have asked the
      *          evaluation
@@ -154,7 +154,7 @@ public interface UCSInterface {
      * assked from the scheduler of another UCS, exactly as it happens in tryAccess
      * and startAccess.
      * </p>
-     * 
+     *
      * @param endAccessMessage
      *          the message containing the infomrations required to perform the
      *          endAccess
@@ -168,7 +168,7 @@ public interface UCSInterface {
      * asked the evaluation has finished and has provided a result, hence the
      * response must be provided to the PEP
      * </p>
-     * 
+     *
      * @param endAccessResponse
      *          the response provided by the UCS to which we have asked the
      *          evaluation
@@ -184,7 +184,7 @@ public interface UCSInterface {
      * </p>
      * TODO update the structure of the message by considering also the attributes
      * that have changed
-     * 
+     *
      * @param onGoingEvaluation
      *          the message containing all the informations required for a
      *          reevaluation.
@@ -193,7 +193,7 @@ public interface UCSInterface {
 
     /**
      * Response to a reevaluation
-     * 
+     *
      * @param onGoingEvaluationResponse
      */
     public void onGoingEvaluationResponse( ReevaluationResponse onGoingEvaluationResponse );
@@ -202,7 +202,7 @@ public interface UCSInterface {
      * Allows a ContextHandler to retrieve an Attribute from an AttributeManager
      * that is not directly linked with its PIP but it's linked with one of the
      * nodes inside its DHT
-     * 
+     *
      * @param messagePipCh
      *          the message to be exchanged between PIP and CH
      */
@@ -210,15 +210,15 @@ public interface UCSInterface {
 
     /**
      * Response to a retrieveRemote
-     * 
+     *
      * @param messagePipCh
      *          the message to be exchanged between PIP and CH
      */
     public void retrieveRemoteResponse( MessagePipCh messagePipCh );
 
     /**
-     * Allows a PEP to register to this UCS. TODO
-     * 
+     * Allows a PEP to register to this UCS.
+     *
      * @param message
      */
     public void register( Message message );
