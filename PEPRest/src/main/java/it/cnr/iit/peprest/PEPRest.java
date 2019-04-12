@@ -207,7 +207,7 @@ public class PEPRest implements PEPInterface {
         }
     }
 
-    private String handleResponse( Message message ) throws Exception {
+    private String handleResponse( Message message ) {
         if( message instanceof TryAccessResponse ) {
             return handleTryAccessResponse( (TryAccessResponse) message );
         } else if( message instanceof StartAccessResponse ) {
