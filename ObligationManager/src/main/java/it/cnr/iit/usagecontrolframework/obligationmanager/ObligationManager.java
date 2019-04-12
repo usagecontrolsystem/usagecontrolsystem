@@ -95,8 +95,9 @@ public final class ObligationManager implements ObligationManagerInterface {
     @Override
     public final boolean setPIPs( List<PIPOMInterface> pips, PIPOMInterface pipRetrieval ) {
         // BEGIN parameter checking
-        if( ( ( pips == null || pips.isEmpty() ) && pipRetrieval == null )
-                || !isInitialized() ) {
+        if( ( pips == null || pips.isEmpty() ) &&
+                pipRetrieval == null ||
+                !isInitialized() ) {
             log.severe( "Invalid provided PIPS: " + ( pips == null ) + "\t" + ( ( pips != null ? pips.isEmpty() : 0 ) )
                     + "\t" + ( pipRetrieval == null ) + "\t" + ( properties == null ) );
             return false;
@@ -157,7 +158,6 @@ public final class ObligationManager implements ObligationManagerInterface {
 
         }
         for( PIPOMInterface pip : pipList ) {
-            // pip.performObligation(obligationMap.get(pip.getAttributeId()));
             pip.performObligation( obligationMap.get( pipName.toString() ) );
         }
         if( pipRetrieval != null ) {
