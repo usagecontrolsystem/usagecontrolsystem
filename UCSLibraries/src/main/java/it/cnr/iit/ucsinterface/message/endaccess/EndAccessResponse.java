@@ -94,7 +94,7 @@ public class EndAccessResponse extends Message {
         }
         // END parameter checking
         this.pdpEvaluation = pdpEvaluation;
-        return false;
+        return true;
     }
 
 }

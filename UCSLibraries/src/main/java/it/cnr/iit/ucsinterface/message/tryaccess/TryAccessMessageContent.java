@@ -18,6 +18,7 @@ package it.cnr.iit.ucsinterface.message.tryaccess;
 import java.util.logging.Logger;
 
 import it.cnr.iit.utility.JAXBUtility;
+import it.cnr.iit.utility.errorhandling.Reject;
 
 import oasis.names.tc.xacml.core.schema.wd_17.PolicyType;
 import oasis.names.tc.xacml.core.schema.wd_17.RequestType;
@@ -53,10 +54,6 @@ public final class TryAccessMessageContent {
     // the request of the policy
     private String request;
 
-    public TryAccessMessageContent() {
-
-    }
-
     /**
      * Set the uri of the pep
      *
@@ -65,12 +62,7 @@ public final class TryAccessMessageContent {
      * @return true if everything goes fine, false otherwise
      */
     public boolean setPepUri( String pepUri ) {
-        // BEGIN parameter checking
-        if( pepUri == null || pepUri.isEmpty() ) {
-            log.warning( "pep uri is not valid " + pepUri );
-            return false;
-        }
-        // END parameter checking
+        Reject.ifBlank( pepUri );
         this.pepUri = pepUri;
         return true;
     }
@@ -83,12 +75,7 @@ public final class TryAccessMessageContent {
      * @return true if everything goes fine, false otherwise
      */
     public boolean setPolicyId( String policyId ) {
-        // BEGIN parameter checking
-        if( pepUri == null || pepUri.isEmpty() ) {
-            log.warning( "policyId is not valid " + policyId );
-            return false;
-        }
-        // END parameter checking
+        Reject.ifBlank( policyId );
         this.policyId = policyId;
         return true;
     }
@@ -102,17 +89,13 @@ public final class TryAccessMessageContent {
      * @return true if everything goes fine, false otherwise
      */
     public boolean setPolicy( String policy ) {
-        // BEGIN parameter checking
-        if( policy == null || policy.equals( "" ) ) {
-            return false;
-        }
-        // END parameter checking
+        Reject.ifBlank( policy );
         try {
             JAXBUtility.unmarshalToObject( PolicyType.class, policy );
             this.policy = policy;
             return true;
         } catch( Exception exception ) {
-            exception.printStackTrace();
+            log.severe( exception.getMessage() );
             return false;
         }
     }
@@ -125,18 +108,13 @@ public final class TryAccessMessageContent {
      * @return true if everything goes fine, false otherwise
      */
     public boolean setRequest( String request ) {
-        // BEGIN parameter checking
-        if( request == null || request.isEmpty() ) {
-            log.warning( "Ivalid request " + request );
-            return false;
-        }
-        // END parameter checking
+        Reject.ifBlank( request );
         try {
             JAXBUtility.unmarshalToObject( RequestType.class, request );
             this.request = request;
             return true;
         } catch( Exception exception ) {
-            exception.printStackTrace();
+            log.severe( exception.getMessage() );
             return false;
         }
     }
