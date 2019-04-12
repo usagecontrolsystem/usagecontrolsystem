@@ -1,7 +1,6 @@
 package it.cnr.iit.peprest.messagetrack;
 
 /**
- * FIXME find a better naming This is the respons eht ePEP provides to the caller after the calling of the send API.
  * <p>
  * This object holds many useful informations:
  * <ol>
