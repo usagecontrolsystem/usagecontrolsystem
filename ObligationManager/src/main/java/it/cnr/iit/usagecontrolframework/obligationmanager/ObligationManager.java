@@ -19,6 +19,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.HashMap;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import it.cnr.iit.ucs.configuration.ObligationManagerProperties;
@@ -98,8 +99,17 @@ public final class ObligationManager implements ObligationManagerInterface {
         if( ( pips == null || pips.isEmpty() ) &&
                 pipRetrieval == null ||
                 !isInitialized() ) {
-            log.severe( "Invalid provided PIPS: " + ( pips == null ) + "\t" + ( ( pips != null ? pips.isEmpty() : 0 ) )
-                    + "\t" + ( pipRetrieval == null ) + "\t" + ( properties == null ) );
+            log.log( Level.SEVERE,
+                "Invalid provided PIPS : pips_null{0}\t"
+                        + "pips_empty {1}\t"
+                        + "pipRetreival_null {2}\t"
+                        + "properties_null {3}",
+                new Object[] {
+                    pips == null,
+                    pips != null ? pips.isEmpty() : false,
+                    pipRetrieval == null,
+                    properties == null
+                } );
             return false;
         }
         // END parameter checking
