@@ -73,7 +73,11 @@ public final class PIPReader extends PIPBase {
     private String filePath;
 
     // states if the pip has been correctly initialized
-    public volatile boolean initialized = false;
+    private volatile boolean initialized = false;
+
+    public boolean isPIPInitialized() {
+        return initialized;
+    }
 
     // list that stores the attributes on which a subscribe has been performed
     protected final BlockingQueue<Attribute> subscriptions = new LinkedBlockingQueue<>();
@@ -93,7 +97,7 @@ public final class PIPReader extends PIPBase {
         super( properties );
         if( !isInitialized() ) {
             log.info( "base classe not initialised" );
-            return;
+            throw new IllegalStateException( "base classe not initialised" );
         }
 
         if( initialize( properties ) ) {
@@ -106,6 +110,7 @@ public final class PIPReader extends PIPBase {
             timer.scheduleAtFixedRate( subscriberTimer, 0, 10L * 1000 );
         } else {
             log.info( "error initialising" );
+            throw new IllegalStateException( "PIPReader not initialised correctly" );
         }
     }
 
@@ -134,20 +139,15 @@ public final class PIPReader extends PIPBase {
                 log.severe( "wrong set datatype" );
                 return false;
             }
-            if( attribute.getCategory() != Category.ENVIRONMENT ) {
-                if( !setExpectedCategory( arguments.get( EXPECTED_CATEGORY ) ) ) {
-                    return false;
-                }
-            }
-            addAttribute( attribute );
-            if( !setFilePath( arguments.get( FILE_PATH ) ) ) {
-                log.severe( "wrong set file" );
+            if( attribute.getCategory() != Category.ENVIRONMENT && !setExpectedCategory( arguments.get( EXPECTED_CATEGORY ) ) ) {
                 return false;
             }
+            addAttribute( attribute );
+            setFilePath( arguments.get( FILE_PATH ) );
             configure( properties.getJournalDir() );
             return true;
         } catch( Exception e ) {
-            e.printStackTrace();
+            log.severe( e.getMessage() );
             return false;
         }
     }
@@ -162,7 +162,7 @@ public final class PIPReader extends PIPBase {
             journal = JournalBuilder.of( file ).open();
             return true;
         } catch( Exception e ) {
-            throw new RuntimeException( e.getMessage() );
+            throw new IllegalStateException( "Error while initializing the journaling dir" + e.getMessage() );
         }
     }
 
@@ -179,13 +179,9 @@ public final class PIPReader extends PIPBase {
      */
     @Override
     public void retrieve( RequestType accessRequest ) throws PIPException {
-        // BEGIN parameter checking
-        if( accessRequest == null || !initialized || !isInitialized() ) {
-            log.severe( "wrong initialization" + initialized
-                    + "\t" + isInitialized() );
-            return;
-        }
-        // END parameter checking
+        Reject.ifFalse( initialized );
+        Reject.ifFalse( isInitialized() );
+        Reject.ifNull( accessRequest );
 
         String value;
 
@@ -213,21 +209,12 @@ public final class PIPReader extends PIPBase {
      */
     @Override
     public void subscribe( RequestType accessRequest ) throws PIPException {
-        // BEGIN parameter checking
-        if( accessRequest == null || !initialized || !isInitialized() ) {
-            log.severe( "wrong initialization" + initialized
-                    + "\t" + isInitialized() );
-            return;
-        }
-        // END parameter checking
+        Reject.ifFalse( initialized );
+        Reject.ifFalse( isInitialized() );
+        Reject.ifNull( accessRequest );
+        Reject.ifNull( contextHandlerInterface );
 
         subscriberTimer.setContextHandlerInterface( contextHandlerInterface );
-
-        if( subscriberTimer.getContextHandler() == null
-                || contextHandlerInterface == null ) {
-            log.severe( "Context handler not set" );
-            return;
-        }
 
         // create the new attribute
         Attribute attribute = getAttributes().get( 0 );
@@ -258,7 +245,7 @@ public final class PIPReader extends PIPBase {
 
     @Override
     public void updateAttribute( String json ) throws PIPException {
-        // TODO Auto-generated method stub
+        // TODO Auto-generated method stub NOSONAR
     }
 
     /**
@@ -270,21 +257,18 @@ public final class PIPReader extends PIPBase {
      */
     @Override
     public boolean unsubscribe( List<Attribute> attributes ) throws PIPException {
-        // BEGIN parameter checking
-        if( attributes == null || !initialized || !isInitialized() ) {
-            log.severe( "wrong initialization" + initialized
-                    + "\t" + isInitialized() );
-            return false;
-        }
-        // END parameter checking
+        Reject.ifFalse( initialized );
+        Reject.ifFalse( isInitialized() );
+        Reject.ifEmpty( attributes );
 
         for( Attribute attribute : attributes ) {
             if( attribute.getAttributeId().equals( getAttributeIds().get( 0 ) ) ) {
                 for( Attribute attributeS : subscriptions ) {
                     if( attributeS.getAdditionalInformations()
                         .equals( attribute.getAdditionalInformations() ) ) {
-                        subscriptions.remove( attributeS );
-                        log.info( "UNSUB " + subscriptions.size() );
+                        if( !subscriptions.remove( attributeS ) ) {
+                            throw new IllegalStateException( "Unable to remove attribute from list" );
+                        }
                         return true;
                     }
                 }
@@ -344,21 +328,17 @@ public final class PIPReader extends PIPBase {
     public void retrieve( RequestType request,
             List<Attribute> attributeRetrievals ) {
         log.severe( "Wrong method called" );
-        return;
-
     }
 
     @Override
     public void subscribe( RequestType request,
             List<Attribute> attributeRetrieval ) {
         log.severe( "Wrong method called" );
-        return;
-
     }
 
     @Override
     public void performObligation( ObligationInterface obligation ) {
-        // TODO Auto-generated method stub
+        // TODO Auto-generated method stub NOSONAR
     }
 
     /**
@@ -368,7 +348,7 @@ public final class PIPReader extends PIPBase {
      * @return the requested string
      * @throws PIPException
      */
-    private String read() throws PIPException {
+    private String read() {
         String value = Utility.readFileAbsPath( filePath );
         journalLog( value );
         return value;
@@ -411,10 +391,7 @@ public final class PIPReader extends PIPBase {
      * @throws PIPException
      */
     private String read( String filter ) throws PIPException {
-        try (
-                Scanner fileInputStream = new Scanner( new File( filePath ) );) {
-            // BufferedInputStream fileInputStream = new BufferedInputStream(
-            // new FileInputStream(new File("/home/antonio/temperature.txt")));
+        try (Scanner fileInputStream = new Scanner( new File( filePath ) )) {
             String line = "";
             while( fileInputStream.hasNextLine() ) {
                 String tmp = fileInputStream.nextLine();
@@ -425,8 +402,6 @@ public final class PIPReader extends PIPBase {
             }
             String value = line.split( "\t" )[1];
             journalLog( value, filter );
-            // log.log(Level.INFO,
-            // "value read is " + line.split("\t")[1]);
             return value;
         } catch( IOException ioException ) {
             throw new PIPException( ioException.getMessage() );
@@ -434,12 +409,8 @@ public final class PIPReader extends PIPBase {
     }
 
     private final boolean setExpectedCategory( String category ) {
-        // BEGIN parameter checking
-        if( !isInitialized() || category == null || category.isEmpty() ) {
-            initialized = false;
-            return false;
-        }
-        // END parameter checking
+        Reject.ifFalse( isInitialized() );
+        Reject.ifBlank( category );
         Category categoryObj = Category.toCATEGORY( category );
         if( categoryObj == null ) {
             initialized = false;
@@ -449,24 +420,16 @@ public final class PIPReader extends PIPBase {
         return true;
     }
 
-    private final boolean setFilePath( String filePath ) {
-        // BEGIN parameter checking
-        if( !isInitialized() || filePath == null || filePath.isEmpty() ) {
-            log.severe( "Wrong initialisation > filepath :" + filePath + "\t initialized : " + initialized );
-            initialized = false;
+    private final void setFilePath( String filePath ) {
+        Reject.ifFalse( isInitialized() );
+        Reject.ifBlank( filePath );
 
-            return false;
-        }
-        // END parameter checking
         String absFilePath = Utility.findFileAbsPathUsingClassLoader( filePath );
         if( absFilePath != null ) {
             this.filePath = absFilePath;
         } else {
             this.filePath = filePath;
-
         }
-        log.info( "FilePath: " + this.filePath );
-        return true;
     }
 
 }

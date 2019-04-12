@@ -32,7 +32,6 @@ import it.cnr.iit.utility.Utility;
 import it.cnr.iit.xacmlutilities.Attribute;
 import it.cnr.iit.xacmlutilities.Category;
 
-import journal.io.api.ClosedJournalException;
 import journal.io.api.Journal;
 import journal.io.api.Journal.WriteType;
 
@@ -75,6 +74,7 @@ final class PRSubscriberTimer extends TimerTask {
      */
     PRSubscriberTimer( ContextHandlerPIPInterface contextHandler,
             BlockingQueue<Attribute> map, String path ) {
+        this.contextHandler = contextHandler;
         subscriptions = map;
         this.path = path;
     }
@@ -86,7 +86,6 @@ final class PRSubscriberTimer extends TimerTask {
     @Override
     public void run() {
         for( Attribute entry : subscriptions ) {
-            // System.out.println("[PipFile] Subscribe iteration");
             Category category = entry.getCategory();
             String newValue = "";
             log.log( Level.INFO, "[TIME] polling on value of the attribute for change." );
@@ -97,14 +96,11 @@ final class PRSubscriberTimer extends TimerTask {
             }
 
             // if the attribute has not changed
-            if( entry.getAttributeValues( entry.getAttributeDataType() ).get( 0 )
+            if( !entry.getAttributeValues( entry.getAttributeDataType() ).get( 0 )
                 .equals( newValue ) ) {
-                ;
-            } else {
                 log.log( Level.INFO,
-                    "[TIME] value of the attribute changed at "
-                            + System.currentTimeMillis() + "\t" + newValue + "\t"
-                            + entry.getAdditionalInformations() );
+                    "[TIME] value of the attribute changed at {0}\t{1}\t{2}",
+                    new Object[] { System.currentTimeMillis(), newValue, entry.getAdditionalInformations() } );
                 entry.setValue( entry.getAttributeDataType(), newValue );
                 PipChContent pipChContent = new PipChContent();
                 pipChContent.addAttribute( entry );
@@ -114,7 +110,6 @@ final class PRSubscriberTimer extends TimerTask {
                 contextHandler.attributeChanged( messagePipCh );
             }
         }
-        return;
     }
 
     /**
@@ -150,8 +145,6 @@ final class PRSubscriberTimer extends TimerTask {
     private String read( String filter ) {
         try (
                 Scanner fileInputStream = new Scanner( new File( path ) );) {
-            // BufferedInputStream fileInputStream = new BufferedInputStream(
-            // new FileInputStream(new File("/home/antonio/temperature.txt")));
             String line = "";
             while( fileInputStream.hasNextLine() ) {
                 String tmp = fileInputStream.nextLine();
@@ -160,12 +153,10 @@ final class PRSubscriberTimer extends TimerTask {
                     break;
                 }
             }
-            // log.log(Level.INFO,
-            // "[PIPReader] value read is " + line.split("\t")[1]);
             journalLog( line.split( "\t" )[1], filter );
             return line.split( "\t" )[1];
         } catch( IOException ioException ) {
-            ioException.printStackTrace();
+            log.severe( ioException.getMessage() );
             return "";
         }
     }
@@ -204,8 +195,6 @@ final class PRSubscriberTimer extends TimerTask {
         logLineBuilder.append( "\t AT: " + System.currentTimeMillis() );
         try {
             journal.write( logLineBuilder.toString().getBytes(), WriteType.SYNC );
-        } catch( ClosedJournalException e ) {
-            log.severe( e.getMessage() );
         } catch( IOException e ) {
             log.severe( e.getMessage() );
         }
