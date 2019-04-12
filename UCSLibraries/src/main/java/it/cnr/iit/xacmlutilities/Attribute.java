@@ -1,6 +1,6 @@
 /*
  * CNR - IIT (2015-2016)
- * 
+ *
  * @authors Fabio Bindi and Filippo Lauria and Antonio La Marra
  */
 package it.cnr.iit.xacmlutilities;
@@ -17,14 +17,16 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
+import it.cnr.iit.utility.errorhandling.Reject;
+
 /**
  * Creates an Attribute object compliant with the XACML standard Embeds
  * AttributeDesignator and AttributeValue.
- * 
+ *
  * @author Fabio Bindi and Filippo Lauria and Antonio La Marra
  */
 public final class Attribute implements Cloneable {
-    private final Logger LOGGER = Logger.getLogger( Attribute.class.getName() );
+    private final Logger log = Logger.getLogger( Attribute.class.getName() );
 
     private String attributeId;
 
@@ -49,7 +51,7 @@ public final class Attribute implements Cloneable {
 
     /**
      * Retrieves the Attribute ID of the attribute
-     * 
+     *
      * @return attribute ID
      */
     public String getAttributeId() {
@@ -58,23 +60,19 @@ public final class Attribute implements Cloneable {
 
     /**
      * Creates the attribute ID for an attribute
-     * 
+     *
      * @param attributeId_
      *          Attribute ID
      */
     public boolean createAttributeId( String attributeId ) {
-        // BEGIN parameter checking
-        if( attributeId == null || attributeId.isEmpty() ) {
-            return false;
-        }
-        // END parameter checking
+        Reject.ifBlank( attributeId );
         this.attributeId = attributeId;
         return true;
     }
 
     /**
      * Retrieves the value of the Issuer element of the attribute
-     * 
+     *
      * @return Issuer element value (true or false)
      */
     public String getIssuer() {
@@ -83,17 +81,17 @@ public final class Attribute implements Cloneable {
 
     /**
      * Creates the Issuer element of the attribute
-     * 
+     *
      * @param issuer_
      *          Issuer element value (true or false)
      */
-    public void createIssuer( String issuer_ ) {
-        issuer = issuer_;
+    public void createIssuer( String issuer ) {
+        this.issuer = issuer;
     }
 
     /**
      * Retrieves the value of the IncludeInResult element of the attribute
-     * 
+     *
      * @return Issuer element value (true or false)
      */
     public boolean isIncludeInResult() {
@@ -102,101 +100,105 @@ public final class Attribute implements Cloneable {
 
     /**
      * Creates the IncludeInResult element of the attribute
-     * 
+     *
      * @param includeInResult_
      *          Issuer element value (true or false)
      */
-    public void createIncludeInResult( boolean includeInResult_ ) {
-        includeInResult = includeInResult_;
+    public void createIncludeInResult( boolean includeInResult ) {
+        this.includeInResult = includeInResult;
     }
 
     /**
      * Retrieves attibute values of a certain type
-     * 
+     *
      * @param dataType_
      *          a string representing the attribute type
      * @return a list of attribute values
      */
-    public List<String> getAttributeValues( DataType dataType_ ) {
-        return attributeValueMap.get( dataType_.toString() );
+    public List<String> getAttributeValues( DataType dataType ) {
+        Reject.ifNull( dataType );
+        return attributeValueMap.get( dataType.toString() );
     }
 
     /**
      * Retrieves attibute values of a certain type
-     * 
+     *
      * @param dataType_
      *          a string representing the attribute type
      * @return a list of attribute values
      */
-    public List<String> getAttributeValues( String dataType_ ) {
-        return attributeValueMap.get( dataType_ );
+    public List<String> getAttributeValues( String dataType ) {
+        ifNotValidDataType( dataType );
+        return attributeValueMap.get( dataType );
     }
 
     /**
      * Retrieves the map of attributes of each type
-     * 
+     *
      * @return attribute values map
      */
-    public HashMap<String, List<String>> getAttributeValueMap() {
+    public Map<String, List<String>> getAttributeValueMap() {
         return attributeValueMap;
     }
 
     /**
      * Creates the values of an attribute given its type
-     * 
+     *
      * @param type
      *          a string representig the attribute type
      * @param value
      *          value to set
      */
     public void createAttributeValues( String type, String value ) {
-        DataType data = DataType.toDATATYPE( type );
-        if( data == null ) {
-            LOGGER.severe( "DATATYPE is null" );
-            return;
-        }
-        List<String> valueList = attributeValueMap.get( data );
+        ifNotValidDataType( type );
+        Reject.ifBlank( value );
+        List<String> valueList = attributeValueMap.get( type );
         if( valueList == null ) {
             valueList = new LinkedList<>();
         }
         for( int i = 0; i < valueList.size(); i++ ) {
             if( valueList.get( i ).isEmpty() ) {
                 valueList.set( i, value );
-                attributeValueMap.put( data.toString(), valueList );
+                attributeValueMap.put( type, valueList );
                 return;
             }
         }
         valueList.add( value );
-        attributeValueMap.put( data.toString(), valueList );
+        attributeValueMap.put( type, valueList );
+    }
+
+    private void ifNotValidDataType( String type ) {
+        Reject.ifBlank( type );
+        DataType tmpDataType = DataType.toDATATYPE( type );
+        Reject.ifNull( tmpDataType );
     }
 
     /**
      * Creates the values of an attribute given its type
-     * 
+     *
      * @param dataType_
      *          a DataType object representig the attribute type
      * @param value
      */
-    public void createAttributeValues( DataType dataType_, String value ) {
-        // dataType = dataType_;
-        List<String> valueList = attributeValueMap.get( dataType_ );
+    public void createAttributeValues( DataType dataType, String value ) {
+        List<String> valueList = attributeValueMap.get( dataType.toString() );
         if( valueList == null ) {
             valueList = new LinkedList<>();
         }
         for( int i = 0; i < valueList.size(); i++ ) {
             if( valueList.get( i ).isEmpty() ) {
                 valueList.set( i, value );
-                attributeValueMap.put( dataType_.toString(), valueList );
+                attributeValueMap.put( dataType.toString(), valueList );
                 return;
             }
         }
         valueList.add( value );
-        attributeValueMap.put( dataType_.toString(), valueList );
+        attributeValueMap.put( dataType.toString(), valueList );
     }
 
     /**
      * Retrieves the attribute type (i.e String, Integer, AnyURI, Date)
-     * 
+     *
      * @return
      */
     public DataType getAttributeDataType() {
@@ -214,37 +216,32 @@ public final class Attribute implements Cloneable {
 
     /**
      * Retrieves the attribute with its elements
-     * 
+     *
      * @return a string representing the attribute compliant with the XACML
      *         standard
      */
     @Override
     public String toString() {
-        String result = "\nAttributeID=" + attributeId;
-        result += ",Issuer=" + issuer;
-        result += ",IncludeInResult=" + String.valueOf( includeInResult ) + "\n";
+        StringBuilder resultBuilder = new StringBuilder();
+        resultBuilder.append( "\nAttributeID=" + attributeId );
+        resultBuilder.append( ",Issuer=" + issuer );
+        resultBuilder.append( ",IncludeInResult=" + includeInResult + "\n" );
 
-        for( String dataType : attributeValueMap.keySet() ) {
-            List<String> values = attributeValueMap.get( dataType );
-            result += "DataType=" + dataType + ": ";
+        for( Map.Entry<String, List<String>> entry : attributeValueMap.entrySet() ) {
+            List<String> values = entry.getValue();
+            resultBuilder.append( "DataType=" + entry.getKey() + ":" );
 
             if( values != null ) {
-                for( int j = 0; j < values.size(); j++ ) {
-                    result += "Value=" + values.get( j );
-                    if( j != values.size() - 1 ) {
-                        result += ",";
-                    }
-
-                }
+                resultBuilder.append( "Value=" + values.toString() );
             }
-            result += "\tAdditionalInfo: " + additionalInformations;
+            resultBuilder.append( "\tAdditionalInfo: " + additionalInformations );
         }
-        return result;
+        return resultBuilder.toString();
     }
 
     /**
      * Creating an Attribute node compliant with the XACML standard
-     * 
+     *
      * @param doc
      *          Document used to retrieve XACML elements to ser
      * @return a new Node containing the Attribute information
@@ -255,13 +252,13 @@ public final class Attribute implements Cloneable {
             elem.setAttribute( "Issuer", issuer );
         }
         elem.setAttribute( "IncludeInResult", String.valueOf( includeInResult ) );
-        elem.setAttribute( "AttributeId", attributeId.toString() );
-        for( String dataType : attributeValueMap.keySet() ) {
-            List<String> values = attributeValueMap.get( dataType );
+        elem.setAttribute( "AttributeId", attributeId );
+        for( Map.Entry<String, List<String>> entry : attributeValueMap.entrySet() ) {
+            List<String> values = entry.getValue();
             if( values != null ) {
                 for( String value : values ) {
                     Element attributeValue = doc.createElement( "AttributeValue" );
-                    attributeValue.setAttribute( "DataType", dataType.toString() );
+                    attributeValue.setAttribute( "DataType", entry.getKey() );
                     attributeValue.setAttribute( "Category", category.toString() );
                     attributeValue.setTextContent( value );
                     elem.appendChild( attributeValue );
@@ -297,7 +294,8 @@ public final class Attribute implements Cloneable {
     }
 
     @Override
-    public Attribute clone() throws CloneNotSupportedException {
+    public Attribute clone() throws CloneNotSupportedException { // NOSONAR
+        super.clone();
         Attribute clone = new Attribute();
         clone.createAttributeId( attributeId );
         for( Map.Entry<String, List<String>> entry : attributeValueMap.entrySet() ) {
@@ -342,19 +340,15 @@ public final class Attribute implements Cloneable {
         attributeValueMap.put( dataType.toString(), list );
     }
 
-    public void setAttributevalueMap( HashMap<String, ArrayList<String>> map ) {
+    public void setAttributevalueMap( Map<String, ArrayList<String>> map ) {
         for( Map.Entry<String, ArrayList<String>> entry : map.entrySet() ) {
             DataType datatype = DataType.toDATATYPE( entry.getKey() );
             if( datatype == null ) {
-                System.err.println( "ERROR in RETRIEVING DT" );
+                log.severe( "ERROR in RETRIEVING DT" );
                 return;
             }
             attributeValueMap.put( datatype.toString(), entry.getValue() );
         }
-    }
-
-    public HashMap<String, List<String>> getAttributeValuesMap() {
-        return attributeValueMap;
     }
 
 }

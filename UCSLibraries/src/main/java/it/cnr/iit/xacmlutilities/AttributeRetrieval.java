@@ -15,8 +15,6 @@
  ******************************************************************************/
 package it.cnr.iit.xacmlutilities;
 
-import org.json.JSONObject;
-
 /**
  * This is the AttributeRetrieval class.
  * <p>
@@ -157,10 +155,6 @@ public class AttributeRetrieval {
         this.category = Category.toCATEGORY( category );
     }
 
-    // public void setAttributeId(String attributeId) {
-    // this.attributeId = new AttributeId(attributeId);
-    // }
-
     public void setAttributeId( String attributeId ) {
         this.attributeId = attributeId;
     }
@@ -201,40 +195,4 @@ public class AttributeRetrieval {
                                 : additionalInformations );
     }
 
-    /**
-     * Given the JSON structure of the item put inside the list from the PIP,
-     * extract all the informations and put them inside an AttributeRetrieval
-     * object. Doing so all the informations become more usable.
-     *
-     * @param json
-     *          the json inserted by the PIP
-     * @return the AttributeRetrieval representation of the JSON
-     */
-    public static AttributeRetrieval extractFromJSON( JSONObject json ) {
-        AttributeRetrieval attributeRetrieval = new AttributeRetrieval();
-        JSONObject jsonObject = null;
-        if( json.has( "object" ) ) {
-            jsonObject = json.getJSONObject( "object" );
-            attributeRetrieval.additionalInformations = jsonObject
-                .getString( "additionalInfo" );
-            attributeRetrieval.attributeId = jsonObject.getString( "objectId" );
-        }
-        if( json.has( "subject" ) ) {
-            jsonObject = json.getJSONObject( "subject" );
-            attributeRetrieval.additionalInformations = jsonObject
-                .getString( "additionalInfo" );
-            attributeRetrieval.attributeId = jsonObject.getString( "subjectId" );
-        }
-        if( json.has( "action" ) ) {
-            jsonObject = json.getJSONObject( "action" );
-            attributeRetrieval.additionalInformations = jsonObject
-                .getString( "additionalInfo" );
-            attributeRetrieval.attributeId = jsonObject.getString( "actionId" );
-        }
-        if( json.has( "environment" ) ) {
-            jsonObject = json.getJSONObject( "environment" );
-            attributeRetrieval.attributeId = jsonObject.getString( "environmentId" );
-        }
-        return attributeRetrieval;
-    }
 }

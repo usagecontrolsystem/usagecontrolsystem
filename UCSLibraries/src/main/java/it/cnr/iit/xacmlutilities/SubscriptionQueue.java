@@ -17,6 +17,7 @@ package it.cnr.iit.xacmlutilities;
 
 import java.util.Iterator;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -87,7 +88,7 @@ public class SubscriptionQueue<T> {
         Iterator<T> it = linkedBlockingQueue.iterator();
         int i = 0;
         while( it.hasNext() ) {
-            log.info( "Queue[" + i + "] = " + it.next().toString() );
+            log.log( Level.INFO, "Queue[{0}] = {1}", new Object[] { i, it.next() } );
             i++;
         }
     }
