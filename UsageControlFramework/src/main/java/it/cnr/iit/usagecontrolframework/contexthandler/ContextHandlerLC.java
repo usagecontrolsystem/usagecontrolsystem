@@ -163,7 +163,7 @@ public final class ContextHandlerLC extends AbstractContextHandler {
     @Override
     // TODO use TryAccessMessage(review message classes family) directly as a parameter
     public void tryAccess( Message message ) {
-        if( !isInitialized() || message == null || !( message instanceof TryAccessMessage ) ) {
+        if( !isInitialized() || message == null ) {
             log.log( Level.SEVERE, "{0} {1} \t {2}",
                 new Object[] { "INVALID tryAccess ", isInitialized(), ( message instanceof TryAccessMessage ) } );
             throw new IllegalStateException( "Error in tryAccess: " + isInitialized() + "\t" + ( message instanceof TryAccessMessage ) );
@@ -1174,14 +1174,16 @@ public final class ContextHandlerLC extends AbstractContextHandler {
         chPepMessage.setPDPEvaluation( pdpEvaluation );
         chPepMessage.setPepID( uriSplitted[uriSplitted.length - 1] );
         getSessionManagerInterface().stopSession( session );
-        if( ( session.getStatus().equals( ContextHandlerConstants.START_STATUS ) || session.getStatus().equals( ContextHandlerConstants.TRY_STATUS ) )
+        if( ( session.getStatus().equals( ContextHandlerConstants.START_STATUS )
+                || session.getStatus().equals( ContextHandlerConstants.TRY_STATUS ) )
                 && pdpEvaluation.getResult().contains( DecisionType.DENY.value() ) ) {
             log.log( Level.INFO, "[TIME] Sending revoke {0}", System.currentTimeMillis() );
             getSessionManagerInterface().updateEntry( session.getId(), ContextHandlerConstants.REVOKE_STATUS );
             getRequestManagerToChInterface().sendMessageToOutside( chPepMessage );
         }
 
-        if( session.getStatus().equals( ContextHandlerConstants.REVOKE_STATUS ) && pdpEvaluation.getResult().contains( DecisionType.PERMIT.value() ) ) {
+        if( session.getStatus().equals( ContextHandlerConstants.REVOKE_STATUS )
+                && pdpEvaluation.getResult().contains( DecisionType.PERMIT.value() ) ) {
             log.log( Level.INFO, "[TIME] Sending resume {0}", System.currentTimeMillis() );
             getSessionManagerInterface().updateEntry( session.getId(), ContextHandlerConstants.START_STATUS );
             getRequestManagerToChInterface().sendMessageToOutside( chPepMessage );
