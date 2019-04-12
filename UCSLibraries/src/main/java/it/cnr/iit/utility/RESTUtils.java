@@ -17,6 +17,8 @@ package it.cnr.iit.utility;
 
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
+import java.util.function.Supplier;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.springframework.http.HttpEntity;
@@ -30,14 +32,17 @@ import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
 /**
- * This class provides some static methods to perform a rest request
+ * This class provides some static methods to perform synchronous or asynchronous
+ * rest operations.
  *
  * @author Antonio La Marra, Alessandro Rosetti
  *
  */
-
 public final class RESTUtils {
+
     private static final Logger log = Logger.getLogger( RESTUtils.class.getName() );
+
+    private static final String MSG_ERR_POST = "Error posting to : {0}";
 
     private RESTUtils() {
 
@@ -51,20 +56,24 @@ public final class RESTUtils {
         // TODO fix this mess, use URI instead of string
         String url = baseUri + ( ( !api.endsWith( "/" ) && !baseUri.endsWith( "/" ) ) ? "/" : "" ) + api;
 
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType( MediaType.APPLICATION_JSON );
-
         Optional<String> jsonString = JsonUtility.getJsonStringFromObject( obj, false );
         if( !jsonString.isPresent() ) {
             return Optional.empty();
         }
 
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType( MediaType.APPLICATION_JSON );
         HttpEntity<String> entity = new HttpEntity<>( jsonString.get(), headers );
         RestTemplate restTemplate = new RestTemplate();
-
         ResponseEntity<T> responseEntity = restTemplate.postForEntity( url, entity, responseClass );
 
+        checkResponesEntity( responseEntity );
+
         return Optional.of( responseEntity );
+    }
+
+    public static <E> CompletableFuture<ResponseEntity<Void>> asyncPost( String baseUri, String api, E obj ) {
+        return asyncPost( baseUri, api, obj, Void.class );
     }
 
     public static <T, E> CompletableFuture<ResponseEntity<T>> asyncPost( String baseUri, String api, E obj, Class<T> clazz ) {
@@ -77,22 +86,21 @@ public final class RESTUtils {
             .exchange()
             .flatMap( r -> r.toEntity( clazz ) );
 
-        // TODO maybe log errors here?
-        return CompletableFuture.supplyAsync( () -> response.block() );
+        return CompletableFuture.supplyAsync( getResponseEntity( response ) );
     }
 
-    public static <E> CompletableFuture<ResponseEntity<Void>> asyncPost( String baseUri, String api, E obj ) {
-        Mono<ResponseEntity<Void>> response = WebClient
-            .create( baseUri )
-            .post()
-            .uri( api )
-            .contentType( MediaType.APPLICATION_JSON )
-            .body( BodyInserters.fromObject( obj ) )
-            .exchange()
-            .flatMap( r -> r.toEntity( Void.class ) );
-
-        // TODO maybe log errors here?
-        return CompletableFuture.supplyAsync( () -> response.block() );
+    private static <T> Supplier<ResponseEntity<T>> getResponseEntity( Mono<ResponseEntity<T>> response ) {
+        return () -> {
+            ResponseEntity<T> responseEntity = response.block();
+            checkResponesEntity( responseEntity );
+            return responseEntity;
+        };
     }
 
+    private static <T> void checkResponesEntity( ResponseEntity<T> responseEntity ) {
+        if( !responseEntity.getStatusCode().is2xxSuccessful() ) {
+            String uri = responseEntity.getHeaders().getLocation().toString();
+            log.log( Level.SEVERE, MSG_ERR_POST, uri );
+        }
+    }
 }
