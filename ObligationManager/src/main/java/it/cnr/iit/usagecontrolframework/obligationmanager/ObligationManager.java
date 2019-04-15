@@ -99,7 +99,7 @@ public final class ObligationManager implements ObligationManagerInterface {
      * @param sessionId
      *          the id of the session
      * @param status
-     *          the status of the given session FIXME: find a better way to link
+     *          the status of the given session
      *          obligation to the PIP
      */
     @Override
@@ -155,6 +155,7 @@ public final class ObligationManager implements ObligationManagerInterface {
         String className = extractClassName( obligation );
         Class<?> clazz;
         try {
+            // TODO UCS-32 NOSONAR
             clazz = Class.forName( className );
             classNameBuilder.append( className );
             if( clazz.isInstance( ObligationInterface.class ) ) {

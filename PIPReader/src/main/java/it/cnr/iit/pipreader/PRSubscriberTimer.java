@@ -143,8 +143,12 @@ final class PRSubscriberTimer extends TimerTask {
      * @throws PIPException
      */
     private String read( String filter ) {
+        File file = new File( path );
+        if( !file.exists() || !file.canRead() ) {
+            throw new IllegalArgumentException( "Unable to access attribute" );
+        }
         try (
-                Scanner fileInputStream = new Scanner( new File( path ) );) {
+                Scanner fileInputStream = new Scanner( file )) {
             String line = "";
             while( fileInputStream.hasNextLine() ) {
                 String tmp = fileInputStream.nextLine();
