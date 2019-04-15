@@ -73,6 +73,7 @@ public class PolicyAdministrationPoint implements PAPInterface {
     public PolicyAdministrationPoint( PapProperties properties ) {
         Reject.ifNull( properties );
         this.properties = properties;
+        // TODO UCS-33 NOSONAR
         if( properties.getPath() != null &&
                 Paths.get( properties.getPath() ).toFile().isDirectory() ) {
             initialized = true;
@@ -129,7 +130,7 @@ public class PolicyAdministrationPoint implements PAPInterface {
 
     private boolean writePolicy( String policyId, String policy ) {
         String path = getPolicyPath( policyId ).toString();
-
+        // TODO UCS-33 NOSONAR
         try (FileOutputStream fos = new FileOutputStream( path )) {
             fos.write( policy.getBytes() );
         } catch( Exception e ) {
@@ -141,6 +142,7 @@ public class PolicyAdministrationPoint implements PAPInterface {
     }
 
     private Path getPolicyPath( String policyId ) {
+        // TODO UCS-33 NOSONAR
         return Paths.get( properties.getPath(), policyId, POLICY_FILE_EXTENSION );
     }
 
@@ -161,6 +163,7 @@ public class PolicyAdministrationPoint implements PAPInterface {
      */
     @Override
     public List<String> listPolicies() {
+        // TODO UCS-33 NOSONAR
         File directory = new File( properties.getPath() );
         File[] files = directory.listFiles( ( dir, name ) -> name.toLowerCase().endsWith( POLICY_FILE_EXTENSION ) );
         return Arrays.asList( files ).parallelStream()
