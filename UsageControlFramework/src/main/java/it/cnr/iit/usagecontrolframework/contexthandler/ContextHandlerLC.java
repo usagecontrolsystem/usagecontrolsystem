@@ -380,7 +380,7 @@ public final class ContextHandlerLC extends AbstractContextHandler {
             policy = getPapInterface().retrievePolicy( tryAccess.getPolicyId() );
             if( policy == null ) {
                 log.warning( "UNABLE to RETRIEVE the POLICY" );
-                return null;
+                throw new IllegalArgumentException( "No policy found with Id: " + tryAccess.getPolicyId() );
             }
         }
         return policy;
@@ -874,7 +874,7 @@ public final class ContextHandlerLC extends AbstractContextHandler {
                     // right action
                     LinkedList<String> searchList = new LinkedList<>( pip.getAttributeIds() );
                     if( searchList.contains( attribute.getAttributeId() ) ) {
-
+        
                         switch( messagePipCh.getAction() ) {
                             case RETRIEVE:
                                 attribute.setValue( pip.getAttributesCharacteristics().get( attribute.getAttributeId() )
