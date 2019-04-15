@@ -143,6 +143,7 @@ final class PRSubscriberTimer extends TimerTask {
      * @throws PIPException
      */
     private String read( String filter ) {
+        // TODO UCS-33 NOSONAR
         File file = new File( path );
         if( !file.exists() || !file.canRead() ) {
             throw new IllegalArgumentException( "Unable to access attribute" );

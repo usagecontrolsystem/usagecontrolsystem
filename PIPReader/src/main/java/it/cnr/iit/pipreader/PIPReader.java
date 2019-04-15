@@ -152,6 +152,7 @@ public final class PIPReader extends PIPBase {
     private boolean configure( String journalDir ) {
         Reject.ifBlank( journalDir );
         try {
+            // TODO UCS-33 NOSONAR
             File file = new File( journalDir );
             if( !file.exists() ) {
                 file.mkdir();
@@ -385,6 +386,7 @@ public final class PIPReader extends PIPBase {
      * @throws PIPException
      */
     private String read( String filter ) throws PIPException {
+        // TODO UCS-33 NOSONAR
         try (Scanner fileInputStream = new Scanner( new File( filePath ) )) {
             String line = "";
             while( fileInputStream.hasNextLine() ) {
