@@ -49,6 +49,7 @@ public class PEPRestCommunication {
     private PEPRest pepRest;
 
     @GetMapping( value = "/isAlive", consumes = MediaType.ALL_VALUE )
+    // TODO UCS-34 NOSONAR
     public void isAlive() {
         log.info( "in isAlive():heath check OK" );
     }
@@ -58,6 +59,7 @@ public class PEPRestCommunication {
         @ApiResponse( code = 500, message = "Invalid message received" ),
         @ApiResponse( code = 200, message = "OK" ) } )
     @PostMapping( value = "/startEvaluation" )
+    // TODO UCS-34 NOSONAR
     public String startEvaluation() {
         return pepRest.tryAccess();
     }
@@ -74,12 +76,11 @@ public class PEPRestCommunication {
         @ApiResponse( code = 500, message = "Invalid message received" ),
         @ApiResponse( code = 200, message = "OK" ) } )
     @GetMapping( value = "/flowStatus" )
+    // TODO UCS-34 NOSONAR
     public CallerResponse getMessageStatus( @RequestParam( value = "messageId" ) String messageId ) {
-        // BEGIN parameter checking
         if( messageId == null || messageId.isEmpty() ) {
             throw new HttpMessageNotReadableException( HttpStatus.NO_CONTENT + " : No message id" );
         }
-        // END parameter checking
         Optional<CallerResponse> callerResponse = pepRest.getMessageHistory().getMessageStatus( messageId );
         if( callerResponse.isPresent() ) {
             return callerResponse.get();
@@ -93,12 +94,11 @@ public class PEPRestCommunication {
         @ApiResponse( code = 500, message = "Invalid message received" ),
         @ApiResponse( code = 200, message = "OK" ) } )
     @PostMapping( value = "/finish", consumes = MediaType.TEXT_PLAIN_VALUE )
+    // TODO UCS-34 NOSONAR
     public void finish( @RequestBody( ) String sessionId ) {
-        // BEGIN parameter checking
         if( sessionId == null || sessionId.isEmpty() ) {
             throw new HttpMessageNotReadableException( HttpStatus.NO_CONTENT + " : No session id" );
         }
-        // END parameter checking
         pepRest.end( sessionId );
     }
 

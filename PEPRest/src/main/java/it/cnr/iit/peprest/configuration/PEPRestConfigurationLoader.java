@@ -37,6 +37,7 @@ public final class PEPRestConfigurationLoader {
     private PEPRestConfigurationLoader() {}
 
     public static Optional<PEPRestConfiguration> getConfiguration( String fileName ) {
+        // TODO UCS-33 NOSONAR
         File confFile = new File( PEPRestConfigurationLoader.class.getClassLoader().getResource( fileName ).getFile() );
 
         return JsonUtility.loadObjectFromJsonFile( confFile, PEPRestConfiguration.class );
@@ -51,6 +52,7 @@ public final class PEPRestConfigurationLoader {
 
         FileInputStream fis = null;
         try {
+            // TODO UCS-33 NOSONAR
             File confFile = new File( PEPRestConfigurationLoader.class.getClassLoader()
                 .getResource( PROPERTIES_FILE ).getFile() );
             fis = new FileInputStream( confFile );

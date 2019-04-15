@@ -85,8 +85,9 @@ public class PEPRestStarter extends SpringBootServletInitializer {
             .version( "1.0" ).contact( "antonio.lamarra@iit.cnr.it" ).build();
     }
 
+    // TODO UCS-35 NOSONAR
     public static void main( String[] args ) {
-        // TODO use spring beans and load the config only once
+        // TODO use spring beans and load the config only once NOSONAR
         Optional<PEPRestConfiguration> optConfiguration = PEPRestConfigurationLoader.getConfiguration();
 
         if( !optConfiguration.isPresent() ) {
