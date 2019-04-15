@@ -157,6 +157,9 @@ public final class ObligationManager implements ObligationManagerInterface {
         try {
             clazz = Class.forName( className );
             classNameBuilder.append( className );
+            if( clazz.isInstance( ObligationInterface.class ) ) {
+                throw new IllegalArgumentException( "Invalid class provided: " + className );
+            }
         } catch( ClassNotFoundException e ) {
             log.severe( String.format( MSG_ERR_UNMARSHAL, e.getMessage() ) );
             return null;
