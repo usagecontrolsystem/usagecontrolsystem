@@ -62,7 +62,7 @@ public final class ObligationManager implements ObligationManagerInterface {
 
     private List<PIPOMInterface> pipList;
     private PIPOMInterface pipRetrieval;
-    private ObligationManagerProperties properties;
+    private ObligationManagerProperties properties; // NOSONAR
 
     public ObligationManager( ObligationManagerProperties properties ) {
         Reject.ifNull( properties );
@@ -117,24 +117,18 @@ public final class ObligationManager implements ObligationManagerInterface {
 
         StringBuilder pipName = new StringBuilder();
         HashMap<String, ObligationInterface> obligationMap = new HashMap<>();
-        for( int index = 0; index < obligationsString.size(); ) {
-            String obligation = obligationsString.get( index );
-            Object obl = createObjectFromString( obligation, pipName );
-            if( obl != null ) {
-                ObligationInterface obligationInterface = (ObligationInterface) obl;
+        for( String obligationString : obligationsString ) {
+            ObligationInterface obligationInterface = (ObligationInterface) createObjectFromString( obligationString, pipName );
+            if( obligationInterface != null ) {
                 obligationInterface.setSessionId( sessionId );
                 obligationInterface.setStep( status );
-                // checks if the obligation is meant to be used by the PIP or by the PEP
                 if( obligationInterface.getAttributeId() != null ) {
                     obligationMap.put( obligationInterface.getAttributeId(),
                         obligationInterface );
-                    obligationsString.remove( index );
                 } else {
                     obligationMap.put( pipName.toString(), obligationInterface );
-                    index++;
                 }
             }
-
         }
 
         for( PIPOMInterface pip : pipList ) {
@@ -146,7 +140,6 @@ public final class ObligationManager implements ObligationManagerInterface {
         }
 
         return null;
-
     }
 
     /**
@@ -172,7 +165,6 @@ public final class ObligationManager implements ObligationManagerInterface {
         return JsonUtility.loadObjectFromJsonString( json, clazz );
     }
 
-    // FIXME
     private String extractClassName( String obligation ) {
         String className = obligation.split( "=" )[0];
         return "it.cnr.iit.ucsinterface.obligationmanager.obligationobjects."
