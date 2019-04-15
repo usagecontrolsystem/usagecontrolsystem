@@ -100,13 +100,14 @@ public final class PolicyDecisionPoint extends AbstractPDP {
 
     private void configure( String journalFolder ) {
         try {
+            // TODO UCS-33 NOSONAR
             File file = new File( journalFolder );
             if( !file.exists() ) {
                 file.mkdir();
             }
             journal = JournalBuilder.of( file ).open();
         } catch( Exception e ) {
-            throw new RuntimeException( e.getMessage() );
+            throw new IllegalArgumentException( e.getMessage() );
         }
     }
 
@@ -158,7 +159,6 @@ public final class PolicyDecisionPoint extends AbstractPDP {
             PDPResponse pdpResponse = new PDPResponse( response.encode() );
             if( response.getResults().iterator().next()
                 .getDecision() == AbstractResult.DECISION_PERMIT ) {
-                // stringPolicy.delete(0, stringPolicy.length());
                 mergeFiringRules( firingRules, stringPolicy );
             }
             return pdpResponse;
@@ -378,6 +378,7 @@ public final class PolicyDecisionPoint extends AbstractPDP {
         ResponseCtx responseCtx;
 
         try {
+            // TODO UCS-36 NOSONAR
             requestCtx = RequestCtxFactory.getFactory()
                 .getRequestCtx( request.replaceAll( ">\\s+<", "><" ) );
             responseCtx = evaluate( requestCtx, policyFinder );
