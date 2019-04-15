@@ -37,6 +37,7 @@ public class LogProfiler {
     }
 
     public void dumpToFile( String path ) {
+        // TODO UCS-33 NOSONAR
         Path out = Paths.get( path );
 
         try {

@@ -33,6 +33,7 @@ public class PIPBuilder {
     public static Optional<PIPBase> buildFromProperties( PipProperties properties ) {
 
         try {
+            // TODO UCS-32 NOSONAR
             Class<?> clazz = Class.forName( properties.getClassName() );
             Constructor<?> constructor = clazz.getConstructor( PipProperties.class );
             PIPBase pip = (PIPBase) constructor.newInstance( properties );

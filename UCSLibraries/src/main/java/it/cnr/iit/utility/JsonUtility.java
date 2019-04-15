@@ -44,6 +44,7 @@ public class JsonUtility {
     public static <T> Optional<T> loadObjectFromJsonFile( File file, Class<T> clazz ) {
         String data = null;
         try {
+            // TODO UCS-33 NOSONAR
             data = new String( Files.readAllBytes( Paths.get( file.getAbsolutePath() ) ), StandardCharsets.UTF_8 );
         } catch( IOException e ) {
             log.severe( "Error reading file : " + file.getAbsolutePath() + ", " + e.getMessage() );
@@ -54,6 +55,7 @@ public class JsonUtility {
     }
 
     public static void dumpObjectToJsonFile( Object obj, String path, boolean pretty ) {
+        // TODO UCS-33 NOSONAR
         try (FileOutputStream stream = new FileOutputStream( path )) {
             Optional<String> data = getJsonStringFromObject( obj, pretty );
             if( data.isPresent() ) {

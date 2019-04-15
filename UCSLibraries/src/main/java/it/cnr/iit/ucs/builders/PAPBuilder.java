@@ -32,6 +32,7 @@ public class PAPBuilder {
 
     public static Optional<PAPInterface> buildFromProperties( PapProperties properties ) {
         try {
+            // TODO UCS-32 NOSONAR
             Class<?> clazz = Class.forName( properties.getClassName() );
             Constructor<?> constructor = clazz.getConstructor( PipProperties.class );
             PAPInterface pap = (PAPInterface) constructor.newInstance( properties );

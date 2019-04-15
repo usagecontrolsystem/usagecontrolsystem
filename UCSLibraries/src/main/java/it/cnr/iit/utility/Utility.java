@@ -59,7 +59,7 @@ public final class Utility {
         } else {
             log.fine( "Attempting to read file using provided filePath." );
         }
-
+        // TODO UCS-33 NOSONAR
         try (Scanner scanner = new Scanner( new File( filePath ) )) {
             StringBuilder stringB = new StringBuilder();
             while( scanner.hasNext() ) {
