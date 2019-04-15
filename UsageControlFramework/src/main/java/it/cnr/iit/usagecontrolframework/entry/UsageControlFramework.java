@@ -223,6 +223,7 @@ public final class UsageControlFramework implements UCSInterface {
         ContextHandlerProperties properties = configuration.getContextHandler();
         try {
             String className = properties.getClassName();
+            // TODO UCS-32 NOSONAR
             Constructor<?> constructor = Class.forName( className )
                 .getConstructor( GeneralProperties.class, ContextHandlerProperties.class );
             contextHandler = (AbstractContextHandler) constructor
@@ -248,6 +249,7 @@ public final class UsageControlFramework implements UCSInterface {
 
         try {
             String className = properties.getClassName();
+            // TODO UCS-32 NOSONAR
             Constructor<?> constructor = Class.forName( className )
                 .getConstructor( GeneralProperties.class, RequestManagerProperties.class );
             requestManager = (AsynchronousRequestManager) constructor

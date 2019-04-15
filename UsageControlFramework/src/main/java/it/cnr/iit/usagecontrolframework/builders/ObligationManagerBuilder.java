@@ -60,6 +60,7 @@ public final class ObligationManagerBuilder {
         // END parameter checking
         try {
             String className = properties.getClassName();
+            // TODO UCS-32 NOSONAR
             Constructor<?> constructor = Class.forName( className )
                 .getConstructor( ObligationManagerProperties.class );
             ObligationManagerInterface obligationManagerInterface = (ObligationManagerInterface) constructor

@@ -127,6 +127,7 @@ public class ProxyPEP extends Proxy implements PEPInterface {
         // END parameter checking
 
         try {
+            // TODO UCS-32 NOSONAR
             Constructor<?> constructor = Class.forName( className )
                 .getConstructor( PepProperties.class );
             abstractPEP = (ExamplePEP) constructor.newInstance( properties );

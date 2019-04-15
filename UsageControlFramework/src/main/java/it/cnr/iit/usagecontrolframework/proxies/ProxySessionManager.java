@@ -114,6 +114,7 @@ public class ProxySessionManager extends Proxy implements SessionManagerInterfac
         }
         // END parameter checking
         try {
+            // TODO UCS-32 NOSONAR
             Constructor<?> constructor = Class.forName( className )
                 .getConstructor( SessionManagerProperties.class );
             sessionManagerInterface = (SessionManagerInterface) constructor

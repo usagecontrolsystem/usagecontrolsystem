@@ -69,6 +69,7 @@ public class UCFRestController {
         @ApiResponse( code = 500, message = "Invalid message received" ),
         @ApiResponse( code = 200, message = "OK" ) } )
     @PostMapping( value = NodeInterface.TRYACCESS_REST, consumes = MediaType.APPLICATION_JSON_VALUE )
+    // TODO UCS-34 NOSONAR
     public void sendMessage( @RequestBody( ) TryAccessMessage message ) {
         // BEGIN parameter checking
         if( message == null ) {
@@ -86,6 +87,7 @@ public class UCFRestController {
         @ApiResponse( code = 500, message = "Invalid message received" ),
         @ApiResponse( code = 200, message = "OK" ) } )
     @PostMapping( value = NodeInterface.STARTACCESS_REST, consumes = MediaType.APPLICATION_JSON_VALUE )
+    // TODO UCS-34 NOSONAR
     public void sendMessage( @RequestBody( ) StartAccessMessage message ) {
         // BEGIN parameter checking
         if( message == null ) {
@@ -101,6 +103,7 @@ public class UCFRestController {
         @ApiResponse( code = 500, message = "Invalid message received" ),
         @ApiResponse( code = 200, message = "OK" ) } )
     @PostMapping( value = NodeInterface.ENDACCESS_REST, consumes = MediaType.APPLICATION_JSON_VALUE )
+    // TODO UCS-34 NOSONAR
     public void sendMessage( @RequestBody( ) EndAccessMessage message ) {
         // BEGIN parameter checking
         if( message == null ) {
@@ -116,6 +119,7 @@ public class UCFRestController {
         @ApiResponse( code = 500, message = "Invalid message received" ),
         @ApiResponse( code = 200, message = "OK" ) } )
     @PostMapping( value = NodeInterface.ONGOING_REST, consumes = MediaType.TEXT_PLAIN_VALUE )
+    // TODO UCS-34 NOSONAR
     public void sendMessage( @RequestBody( ) ReevaluationMessage message ) {
         // BEGIN parameter checking
         if( message == null ) {
@@ -132,6 +136,7 @@ public class UCFRestController {
         @ApiResponse( code = 500, message = "Invalid message received" ),
         @ApiResponse( code = 200, message = "OK" ) } )
     @PostMapping( value = "/retrieveRemote", consumes = MediaType.TEXT_PLAIN_VALUE )
+    // TODO UCS-34 NOSONAR
     public void retrieveRemote( @RequestBody( ) MessagePipCh message ) {
         // BEGIN parameter checking
         if( message == null ) {
@@ -146,6 +151,7 @@ public class UCFRestController {
         @ApiResponse( code = 500, message = "Invalid message received" ),
         @ApiResponse( code = 200, message = "OK" ) } )
     @PostMapping( value = "/retrieveRemoteResponse", consumes = MediaType.TEXT_PLAIN_VALUE )
+    // TODO UCS-34 NOSONAR
     public void retrieveRemoteResponse( @RequestBody( ) MessagePipCh message ) {
         // BEGIN parameter checking
         if( message == null ) {
@@ -161,6 +167,7 @@ public class UCFRestController {
         @ApiResponse( code = 500, message = "Invalid message received" ),
         @ApiResponse( code = 200, message = "OK" ) } )
     @PostMapping( value = NodeInterface.TRYACCESSRESPONSE_REST, consumes = MediaType.TEXT_PLAIN_VALUE )
+    // TODO UCS-34 NOSONAR
     public void tryAccessResponse( @RequestBody( ) TryAccessResponse message ) {
         // BEGIN parameter checking
         if( message == null ) {
@@ -175,6 +182,7 @@ public class UCFRestController {
         @ApiResponse( code = 500, message = "Invalid message received" ),
         @ApiResponse( code = 200, message = "OK" ) } )
     @PostMapping( value = NodeInterface.STARTACCESSRESPONSE_REST, consumes = MediaType.TEXT_PLAIN_VALUE )
+    // TODO UCS-34 NOSONAR
     public void startAccessResponse( @RequestBody( ) StartAccessResponse message ) {
         // BEGIN parameter checking
         if( message == null ) {
@@ -190,6 +198,7 @@ public class UCFRestController {
         @ApiResponse( code = 500, message = "Invalid message received" ),
         @ApiResponse( code = 200, message = "OK" ) } )
     @PostMapping( value = NodeInterface.ENDACCESSRESPONSE_REST, consumes = MediaType.TEXT_PLAIN_VALUE )
+    // TODO UCS-34 NOSONAR
     public void endAccessResponse( @RequestBody( ) EndAccessResponse message ) {
         // BEGIN parameter checking
         if( message == null ) {
@@ -205,6 +214,7 @@ public class UCFRestController {
         @ApiResponse( code = 500, message = "Invalid message received" ),
         @ApiResponse( code = 200, message = "OK" ) } )
     @PostMapping( value = NodeInterface.ONGOINGRESPONSE_REST, consumes = MediaType.TEXT_PLAIN_VALUE )
+    // TODO UCS-34 NOSONAR
     public void reevaluationResponse( @RequestBody( ) ReevaluationResponse message ) {
         // BEGIN parameter checking
         if( message == null ) {

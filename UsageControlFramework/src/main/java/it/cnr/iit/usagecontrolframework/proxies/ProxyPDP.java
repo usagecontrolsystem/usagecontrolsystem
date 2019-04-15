@@ -118,6 +118,7 @@ public final class ProxyPDP extends Proxy implements PDPInterface {
         // END parameter checking
 
         try {
+            // TODO UCS-32 NOSONAR
             Constructor<?> constructor = Class.forName( className )
                 .getConstructor( PdpProperties.class );
             abstractPDP = (AbstractPDP) constructor.newInstance( properties );

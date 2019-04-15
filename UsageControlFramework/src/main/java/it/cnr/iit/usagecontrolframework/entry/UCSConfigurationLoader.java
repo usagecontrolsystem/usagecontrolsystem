@@ -38,6 +38,7 @@ public final class UCSConfigurationLoader {
     private UCSConfigurationLoader() {}
 
     public static Optional<UCSConfiguration> getConfiguration( String fileName ) {
+        // TODO UCS-33 NOSONAR
         File confFile = new File( UCSConfigurationLoader.class.getClassLoader().getResource( fileName ).getFile() );
 
         return JsonUtility.loadObjectFromJsonFile( confFile, UCSConfiguration.class );
@@ -53,6 +54,7 @@ public final class UCSConfigurationLoader {
 
         FileInputStream fis = null;
         try {
+            // TODO UCS-33 NOSONAR
             File confFile = new File( UCSConfigurationLoader.class.getClassLoader()
                 .getResource( PROPERTIES_FILE ).getFile() );
             fis = new FileInputStream( confFile );
