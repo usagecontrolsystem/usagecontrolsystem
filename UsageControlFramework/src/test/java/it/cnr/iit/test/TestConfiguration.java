@@ -6,7 +6,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.test.context.TestPropertySource;
 
 @EnableConfigurationProperties
-@TestPropertySource( properties = "application-test.properties" )
+@TestPropertySource( properties = "application.properties" )
 @SpringBootConfiguration
 public class TestConfiguration {
     @Value( "${ucs-config-file}" )

@@ -22,7 +22,7 @@ import it.cnr.iit.ucs.configuration.UCSConfiguration;
 import it.cnr.iit.ucsinterface.message.Message;
 import it.cnr.iit.ucsinterface.message.tryaccess.TryAccessMessage;
 import it.cnr.iit.ucsinterface.message.tryaccess.TryAccessMessageBuilder;
-import it.cnr.iit.usagecontrolframework.rest.CHConfiguration;
+import it.cnr.iit.usagecontrolframework.rest.UCFTestContext;
 import it.cnr.iit.utility.JsonUtility;
 
 @JGivenStage
@@ -35,7 +35,7 @@ public class GivenMessage extends Stage<GivenMessage> {
     UCSConfiguration ucsConfiguration;
 
     @Autowired
-    CHConfiguration conf;
+    UCFTestContext conf;
 
     @ProvidedScenarioState
     Message message;

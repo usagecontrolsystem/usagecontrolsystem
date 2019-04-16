@@ -8,7 +8,7 @@ import static it.cnr.iit.ucsinterface.node.NodeInterface.STARTACCESS_REST;
 import static it.cnr.iit.ucsinterface.node.NodeInterface.TRYACCESSRESPONSE_REST;
 import static it.cnr.iit.ucsinterface.node.NodeInterface.TRYACCESS_REST;
 
-public enum UCSRestOperation {
+public enum UCFRestOperation {
 
     TRY_ACCESS( TRYACCESS_REST ),
     START_ACCESS( STARTACCESS_REST ),
@@ -25,7 +25,7 @@ public enum UCSRestOperation {
 
     private String operationUri;
 
-    UCSRestOperation( String operationUri ) {
+    UCFRestOperation( String operationUri ) {
         this.operationUri = operationUri;
     }
 

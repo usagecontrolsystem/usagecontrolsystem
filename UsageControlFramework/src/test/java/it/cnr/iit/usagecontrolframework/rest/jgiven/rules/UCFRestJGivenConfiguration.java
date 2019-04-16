@@ -1,10 +1,10 @@
-package it.cnr.iit.usagecontrolframework.rest.jgiven;
+package it.cnr.iit.usagecontrolframework.rest.jgiven.rules;
 
 import org.springframework.http.HttpStatus;
 
 import com.tngtech.jgiven.config.AbstractJGivenConfiguration;
 
-public class CHRestJGivenConfiguration  extends AbstractJGivenConfiguration {
+public class UCFRestJGivenConfiguration  extends AbstractJGivenConfiguration {
 
     @Override
     public void configure() {

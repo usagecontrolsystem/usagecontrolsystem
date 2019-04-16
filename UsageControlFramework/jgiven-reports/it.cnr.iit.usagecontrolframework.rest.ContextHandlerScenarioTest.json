@@ -13,35 +13,85 @@
       "scenarioCases": [
         {
           "caseNr": 1,
-          "steps": [],
+          "steps": [
+            {
+              "name": "a TryAccess request",
+              "words": [
+                {
+                  "value": "Given",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "a TryAccess request"
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 446391515
+            },
+            {
+              "name": "context handler service $ is executed",
+              "words": [
+                {
+                  "value": "When",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "context handler service"
+                },
+                {
+                  "value": "TRY_ACCESS",
+                  "argumentInfo": {
+                    "argumentName": "restOperation",
+                    "formattedValue": "TRY_ACCESS"
+                  }
+                },
+                {
+                  "value": "is executed"
+                }
+              ],
+              "status": "FAILED",
+              "durationInNanos": 35855769213
+            },
+            {
+              "name": "the asynch post request for $ was received by context handler",
+              "words": [
+                {
+                  "value": "Then",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "the asynch post request for"
+                },
+                {
+                  "value": "/tryAccessResponse",
+                  "argumentInfo": {
+                    "argumentName": "operation",
+                    "formattedValue": "\"/tryAccessResponse\""
+                  }
+                },
+                {
+                  "value": "was received by context handler"
+                }
+              ],
+              "status": "SKIPPED",
+              "durationInNanos": 0
+            }
+          ],
           "explicitArguments": [],
           "derivedArguments": [],
           "status": "FAILED",
           "success": false,
-          "errorMessage": "java.util.NoSuchElementException: No value present",
+          "errorMessage": "java.lang.AssertionError: null",
           "stackTrace": [
-            "java.util.Optional.get(Optional.java:135)",
-            "it.cnr.iit.usagecontrolframework.rest.jgiven.stages.GivenMessage.getUCSConfiguration(GivenMessage.java:75)",
-            "it.cnr.iit.usagecontrolframework.rest.jgiven.stages.GivenMessage$ByteBuddy$rPQwsMvH.getUCSConfiguration$accessor$47UJ6VLV(Unknown Source)",
-            "it.cnr.iit.usagecontrolframework.rest.jgiven.stages.GivenMessage$ByteBuddy$rPQwsMvH$auxiliary$k9K23UcH.call(Unknown Source)",
-            "it.cnr.iit.usagecontrolframework.rest.jgiven.stages.GivenMessage$ByteBuddy$rPQwsMvH.getUCSConfiguration(Unknown Source)",
-            "it.cnr.iit.usagecontrolframework.rest.jgiven.stages.GivenMessage.init(GivenMessage.java:45)",
-            "it.cnr.iit.usagecontrolframework.rest.jgiven.stages.GivenMessage$ByteBuddy$rPQwsMvH.init$accessor$47UJ6VLV(Unknown Source)",
-            "it.cnr.iit.usagecontrolframework.rest.jgiven.stages.GivenMessage$ByteBuddy$rPQwsMvH$auxiliary$hPwPyD3A.call(Unknown Source)",
-            "it.cnr.iit.usagecontrolframework.rest.jgiven.stages.GivenMessage$ByteBuddy$rPQwsMvH.init(Unknown Source)",
-            "com.tngtech.jgiven.impl.util.ReflectionUtil.invokeMethod(ReflectionUtil.java:175)",
-            "com.tngtech.jgiven.impl.ScenarioExecutor$1.act(ScenarioExecutor.java:296)",
-            "com.tngtech.jgiven.impl.util.ReflectionUtil$2.act(ReflectionUtil.java:54)",
-            "com.tngtech.jgiven.impl.util.ReflectionUtil.forEachSuperClass(ReflectionUtil.java:67)",
-            "com.tngtech.jgiven.impl.util.ReflectionUtil.forEachSuperClass(ReflectionUtil.java:70)",
-            "com.tngtech.jgiven.impl.util.ReflectionUtil.forEachMethod(ReflectionUtil.java:49)",
-            "com.tngtech.jgiven.impl.ScenarioExecutor.executeAnnotatedMethods(ScenarioExecutor.java:293)",
-            "com.tngtech.jgiven.impl.ScenarioExecutor.executeBeforeScenarioMethods(ScenarioExecutor.java:330)",
-            "com.tngtech.jgiven.impl.ScenarioExecutor.ensureBeforeScenarioMethodsAreExecuted(ScenarioExecutor.java:273)",
-            "com.tngtech.jgiven.impl.ScenarioExecutor.access$200(ScenarioExecutor.java:48)",
-            "com.tngtech.jgiven.impl.ScenarioExecutor$StageTransitionHandlerImpl.enterStage(ScenarioExecutor.java:131)",
-            "it.cnr.iit.usagecontrolframework.rest.jgiven.stages.GivenMessage$ByteBuddy$rPQwsMvH.a_TryAccess_request(Unknown Source)",
-            "it.cnr.iit.usagecontrolframework.rest.ContextHandlerScenarioTest.a_tryAccess_request_is_replied_with_PERMIT(ContextHandlerScenarioTest.java:27)",
+            "org.junit.Assert.fail(Assert.java:86)",
+            "org.junit.Assert.assertTrue(Assert.java:41)",
+            "org.junit.Assert.assertNotNull(Assert.java:712)",
+            "org.junit.Assert.assertNotNull(Assert.java:722)",
+            "it.cnr.iit.usagecontrolframework.rest.jgiven.stages.WhenContextHandlerLCService.context_handler_service_$_is_executed(WhenContextHandlerLCService.java:32)",
+            "it.cnr.iit.usagecontrolframework.rest.jgiven.stages.WhenContextHandlerLCService$ByteBuddy$9ub8TmpO.context_handler_service_$_is_executed$accessor$MlRcqZQF(Unknown Source)",
+            "it.cnr.iit.usagecontrolframework.rest.jgiven.stages.WhenContextHandlerLCService$ByteBuddy$9ub8TmpO$auxiliary$qSkphSOe.call(Unknown Source)",
+            "it.cnr.iit.usagecontrolframework.rest.jgiven.stages.WhenContextHandlerLCService$ByteBuddy$9ub8TmpO.context_handler_service_$_is_executed(Unknown Source)",
+            "it.cnr.iit.usagecontrolframework.rest.ContextHandlerScenarioTest.a_tryAccess_request_is_replied_with_PERMIT(ContextHandlerScenarioTest.java:29)",
             "org.junit.runners.model.FrameworkMethod$1.runReflectiveCall(FrameworkMethod.java:50)",
             "org.junit.internal.runners.model.ReflectiveCallable.run(ReflectiveCallable.java:12)",
             "org.junit.runners.model.FrameworkMethod.invokeExplosively(FrameworkMethod.java:47)",
@@ -75,10 +125,10 @@
             "org.eclipse.jdt.internal.junit.runner.RemoteTestRunner.run(RemoteTestRunner.java:463)",
             "org.eclipse.jdt.internal.junit.runner.RemoteTestRunner.main(RemoteTestRunner.java:209)"
           ],
-          "durationInNanos": 14599244484
+          "durationInNanos": 39816354078
         }
       ],
-      "durationInNanos": 14599244484
+      "durationInNanos": 39816354078
     }
   ],
   "tagMap": {}

@@ -1,4 +1,4 @@
-package it.cnr.iit.usagecontrolframework.rest.jgiven;
+package it.cnr.iit.usagecontrolframework.rest.jgiven.rules;
 
 import java.lang.annotation.Annotation;
 

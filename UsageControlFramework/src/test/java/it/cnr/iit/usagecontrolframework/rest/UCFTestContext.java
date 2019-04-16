@@ -3,12 +3,20 @@ package it.cnr.iit.usagecontrolframework.rest;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.TestPropertySource;
 
+import com.tngtech.jgiven.integration.spring.EnableJGiven;
+
+@Configuration
+@EnableJGiven
+@ComponentScan( basePackages = { "it.cnr.iit.usagecontrolframework.rest" } )
+
 @EnableConfigurationProperties
-@TestPropertySource( properties = "application-test.properties" )
+@TestPropertySource( properties = "application.properties" )
 @SpringBootConfiguration
-public class CHConfiguration {
+public class UCFTestContext {
     @Value( "${ucs-config-file}" )
     private String ucsConfigFile;
 
