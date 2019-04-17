@@ -96,7 +96,7 @@ public final class SessionManagerDesktop implements SessionManagerInterface {
             TableUtils.createTableIfNotExists( connection, Session.class );
             TableUtils.createTableIfNotExists( connection, OnGoingAttribute.class );
         } catch( SQLException e ) {
-            log.severe( String.format( MSG_ERR_SQL, e.getMessage() ) );
+            log.severe( e.getMessage() );
             initialized = false;
             throw new IllegalStateException( "SessionManager not in a valid state anymore" );
         }

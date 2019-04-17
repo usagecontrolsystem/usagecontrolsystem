@@ -1,7 +1,7 @@
 package it.cnr.iit.usagecontrolframework.rest;
 
-import static it.cnr.iit.usagecontrolframework.rest.UCFRestOperation.TRY_ACCESS;
-import static it.cnr.iit.usagecontrolframework.rest.UCFRestOperation.TRY_ACCESS_RESPONSE;
+import static it.cnr.iit.ucs.configuration.RestOperation.TRY_ACCESS;
+import static it.cnr.iit.ucs.configuration.RestOperation.TRY_ACCESS_RESPONSE;
 
 import org.apache.http.HttpStatus;
 import org.junit.Test;
@@ -13,7 +13,7 @@ import com.tngtech.jgiven.annotation.JGivenConfiguration;
 import com.tngtech.jgiven.annotation.ScenarioStage;
 import com.tngtech.jgiven.integration.spring.SpringRuleScenarioTest;
 
-import it.cnr.iit.usagecontrolframework.rest.jgiven.rules.UCFRestJGivenConfiguration;
+import it.cnr.iit.usagecontrolframework.rest.jgiven.rules.UCSRestJGivenConfiguration;
 import it.cnr.iit.usagecontrolframework.rest.jgiven.stages.GivenMessage;
 import it.cnr.iit.usagecontrolframework.rest.jgiven.stages.GivenPEPRestSimulator;
 import it.cnr.iit.usagecontrolframework.rest.jgiven.stages.ThenMessage;
@@ -21,7 +21,7 @@ import it.cnr.iit.usagecontrolframework.rest.jgiven.stages.WhenUCFRestController
 
 @SpringBootTest( classes = { MockServletContext.class, UCFTestContext.class } )
 @WebAppConfiguration
-@JGivenConfiguration( UCFRestJGivenConfiguration.class )
+@JGivenConfiguration( UCSRestJGivenConfiguration.class )
 public class UsageControlFrameworkScenarioIntegrationTest
         extends SpringRuleScenarioTest<GivenMessage, WhenUCFRestController, ThenMessage> {
 

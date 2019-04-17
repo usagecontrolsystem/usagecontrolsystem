@@ -1,0 +1,131 @@
+{
+  "className": "it.cnr.iit.usagecontrolframework.rest.UsageControlFrameworkScenarioIntegrationTest",
+  "name": "Usage Control Framework Scenario Integration",
+  "scenarios": [
+    {
+      "className": "it.cnr.iit.usagecontrolframework.rest.UsageControlFrameworkScenarioIntegrationTest",
+      "testMethodName": "a_tryAccess_request_is_replied_with_PERMIT",
+      "description": "a tryAccess request is replied with PERMIT",
+      "tagIds": [],
+      "explicitParameters": [],
+      "derivedParameters": [],
+      "casesAsTable": false,
+      "scenarioCases": [
+        {
+          "caseNr": 1,
+          "steps": [
+            {
+              "name": "a TryAccess request",
+              "words": [
+                {
+                  "value": "Given",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "a TryAccess request"
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 2823687
+            },
+            {
+              "name": "a mocked PEPRest for $",
+              "words": [
+                {
+                  "value": "and",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "a mocked PEPRest for"
+                },
+                {
+                  "value": "/tryAccessResponse",
+                  "argumentInfo": {
+                    "argumentName": "operationUri",
+                    "formattedValue": "\"/tryAccessResponse\""
+                  }
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 34441
+            },
+            {
+              "name": "a success response status code of $",
+              "words": [
+                {
+                  "value": "and",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "a success response status code of"
+                },
+                {
+                  "value": "200",
+                  "argumentInfo": {
+                    "argumentName": "status",
+                    "formattedValue": "\"200\""
+                  }
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 253084024
+            },
+            {
+              "name": "the UCF is executed for $",
+              "words": [
+                {
+                  "value": "When",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "the UCF is executed for"
+                },
+                {
+                  "value": "/tryAccess",
+                  "argumentInfo": {
+                    "argumentName": "operationUri",
+                    "formattedValue": "\"/tryAccess\""
+                  }
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 97477441
+            },
+            {
+              "name": "the asynch post request for $ was received by PEPRest",
+              "words": [
+                {
+                  "value": "Then",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "the asynch post request for"
+                },
+                {
+                  "value": "/tryAccessResponse",
+                  "argumentInfo": {
+                    "argumentName": "operation",
+                    "formattedValue": "\"/tryAccessResponse\""
+                  }
+                },
+                {
+                  "value": "was received by PEPRest"
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 499388
+            }
+          ],
+          "explicitArguments": [],
+          "derivedArguments": [],
+          "status": "SUCCESS",
+          "success": true,
+          "durationInNanos": 1448696687
+        }
+      ],
+      "durationInNanos": 1448696687,
+      "executionStatus": "SUCCESS"
+    }
+  ],
+  "tagMap": {}
+}

@@ -5,7 +5,6 @@ import java.util.Optional;
 import java.util.logging.Logger;
 
 import it.cnr.iit.ucs.configuration.PapProperties;
-import it.cnr.iit.ucs.configuration.pip.PipProperties;
 import it.cnr.iit.ucsinterface.pap.PAPInterface;
 import it.cnr.iit.utility.JsonUtility;
 
@@ -34,7 +33,7 @@ public class PAPBuilder {
         try {
             // TODO UCS-32 NOSONAR
             Class<?> clazz = Class.forName( properties.getClassName() );
-            Constructor<?> constructor = clazz.getConstructor( PipProperties.class );
+            Constructor<?> constructor = clazz.getConstructor( PapProperties.class );
             PAPInterface pap = (PAPInterface) constructor.newInstance( properties );
             return Optional.of( pap );
         } catch( Exception e ) {

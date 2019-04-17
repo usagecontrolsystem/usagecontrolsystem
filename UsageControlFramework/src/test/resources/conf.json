@@ -5,56 +5,66 @@
     "rest" : null,
     "schedulerEnabled" : false
   },
-  "pipList" : [ {
-    "id" : "PIPReaderEnv",
-    "className" : "it.cnr.iit.pipreader.PIPReader",
-    "retrieval" : "false",
-    "attributes" : [ {
-      "args" : {
-        "CATEGORY" : "urn:oasis:names:tc:xacml:1.0:subject-category:access-subject",
-        "ATTRIBUTE_ID" : "urn:oasis:names:tc:xacml:1.0:subject:role",
-        "EXPECTED_CATEGORY" : "urn:oasis:names:tc:xacml:1.0:subject-category:access-subject",
-        "FILE_PATH" : "resources/subject.txt",
-        "DATA_TYPE" : "http://www.w3.org/2001/XMLSchema#string",
-        "journalingDir" : "/tmp/journal"
-      }
-    } ],
-    "connection" : null,
-    "multiattribute" : "false",
-    "table" : null
-  }, {
-    "id" : "PIPReaderEnv",
-    "className" : "it.cnr.iit.pipreader.PIPReader",
-    "retrieval" : "false",
-    "attributes" : [ {
-      "args" : {
-        "CATEGORY" : "urn:oasis:names:tc:xacml:3.0:attribute-category:environment",
-        "ATTRIBUTE_ID" : "urn:oasis:names:tc:xacml:3.0:environment:light",
-        "FILE_PATH" : "resources/light.txt",
-        "DATA_TYPE" : "http://www.w3.org/2001/XMLSchema#integer",
-        "journalingDir" : "/tmp/journal"
-      }
-    } ],
-    "connection" : null,
-    "multiattribute" : "false",
-    "table" : null
-  }, {
-    "id" : "PIPReaderEnv",
-    "className" : "it.cnr.iit.pipreader.PIPReader",
-    "retrieval" : "false",
-    "attributes" : [ {
-      "args" : {
-        "CATEGORY" : "urn:oasis:names:tc:xacml:3.0:attribute-category:environment",
-        "ATTRIBUTE_ID" : "urn:oasis:names:tc:xacml:3.0:environment:camera",
-        "FILE_PATH" : "resources/camera.txt",
-        "DATA_TYPE" : "http://www.w3.org/2001/XMLSchema#integer",
-        "journalingDir" : "/tmp/journal"
-      }
-    } ],
-    "connection" : null,
-    "multiattribute" : "false",
-    "table" : null
-  } ],
+"pipList": [
+        {
+            "id": "PIPReaderEnv",
+            "className": "it.cnr.iit.pipreader.PIPReader",
+            "retrieval": "false",
+            "attributes": [
+                {
+                    "args": {
+                        "CATEGORY": "urn:oasis:names:tc:xacml:1.0:subject-category:access-subject",
+                        "ATTRIBUTE_ID": "urn:oasis:names:tc:xacml:1.0:subject:role",
+                        "EXPECTED_CATEGORY": "urn:oasis:names:tc:xacml:1.0:subject-category:access-subject",
+                        "FILE_PATH": "resources/subject.txt",
+                        "DATA_TYPE": "http://www.w3.org/2001/XMLSchema#string"
+                    }
+                }
+            ],
+            "connection": null,
+            "multiattribute": "false",
+            "table": null,
+            "journalDir": "/tmp/journal"
+        },
+        {
+            "id": "PIPReaderEnv",
+            "className": "it.cnr.iit.pipreader.PIPReader",
+            "retrieval": "false",
+            "attributes": [
+                {
+                    "args": {
+                        "CATEGORY": "urn:oasis:names:tc:xacml:3.0:attribute-category:environment",
+                        "ATTRIBUTE_ID": "urn:oasis:names:tc:xacml:3.0:environment:light",
+                        "FILE_PATH": "resources/light.txt",
+                        "DATA_TYPE": "http://www.w3.org/2001/XMLSchema#integer"
+                    }
+                }
+            ],
+            "connection": null,
+            "multiattribute": "false",
+            "table": null,
+            "journalDir": "/tmp/journal"
+        },
+        {
+            "id": "PIPReaderEnv",
+            "className": "it.cnr.iit.pipreader.PIPReader",
+            "retrieval": "false",
+            "attributes": [
+                {
+                    "args": {
+                        "CATEGORY": "urn:oasis:names:tc:xacml:3.0:attribute-category:environment",
+                        "ATTRIBUTE_ID": "urn:oasis:names:tc:xacml:3.0:environment:camera",
+                        "FILE_PATH": "resources/camera.txt",
+                        "DATA_TYPE": "http://www.w3.org/2001/XMLSchema#integer"
+                    }
+                }
+            ],
+            "connection": null,
+            "multiattribute": "false",
+            "table": null,
+            "journalDir": "/tmp/journal"
+        }
+    ],
   "sessionManager" : {
     "type" : "Local",
     "ip" : "localhost",
@@ -66,7 +76,7 @@
     "className" : "it.cnr.iit.sessionmanagerdesktop.SessionManagerDesktop",
     "key" : null,
     "host" : "localhost",
-    "driver" : "jdbc:hsqldb:hsql://localhost/session_manager;sql.syntax_pgs=true?user=sa&password=",
+    "driver" : "jdbc:sqlite::memory:",
     "tables" : [ {
       "name" : "sessions",
       "fields" : [ {
@@ -134,7 +144,7 @@
     "schedulerEnabled" : false
   },
   "policyDecisionPoint" : {
-    "className" : "ii.cnr.iit.usagecontrolframework.pdp.PolicyDecisionPoint",
+    "className" : "it.cnr.iit.usagecontrolframework.pdp.PolicyDecisionPoint",
     "thread" : "tbd",
     "communication" : "API",
     "journalingDir" : "/tmp/journal"
@@ -168,7 +178,7 @@
   }, {
     "className" : "it.cnr.iit.ucsinterface.pep.AbstractPEP",
     "communication" : "REST_API",
-    "ip" : "10.0.0.11",
+    "ip" : "localhost",
     "port" : "9999",
     "revoke" : "SOFT",
     "id" : "3",

@@ -1,5 +1,6 @@
 package it.cnr.iit.usagecontrolframework.rest.jgiven.rules;
 
+import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.options;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
 
 import java.util.List;
@@ -18,8 +19,8 @@ import com.github.tomakehurst.wiremock.verification.NearMiss;
  */
 public class MockedHttpServiceTestRule extends ExternalResource {
 
-    private final boolean failOnUnmatchedStubs;
-    private final WireMockServer wireMockServer;
+    private boolean failOnUnmatchedStubs;
+    private WireMockServer wireMockServer;
 
     public MockedHttpServiceTestRule( Options options ) {
         this( options, true );
@@ -34,6 +35,8 @@ public class MockedHttpServiceTestRule extends ExternalResource {
         this( wireMockConfig().port( port ) );
     }
 
+    public MockedHttpServiceTestRule() {}
+
     public MockedHttpServiceTestRule( int httpsPort, String keystorePath, String keystorePassword ) {
         this( wireMockConfig()
             .httpsPort( httpsPort )
@@ -42,10 +45,6 @@ public class MockedHttpServiceTestRule extends ExternalResource {
             .keystorePath( keystorePath )
             .keystorePassword( keystorePassword )
             .trustStoreType( "JKS" ) );
-    }
-
-    public MockedHttpServiceTestRule() {
-        this( wireMockConfig() );
     }
 
     private void checkForUnmatchedRequests() {
@@ -57,8 +56,9 @@ public class MockedHttpServiceTestRule extends ExternalResource {
         }
     }
 
-    @Override
-    protected void before() {
+    public void start( int port ) {
+        wireMockConfig().port( port );
+        wireMockServer = new WireMockServer( options().port( port ) );
         wireMockServer.start();
     }
 

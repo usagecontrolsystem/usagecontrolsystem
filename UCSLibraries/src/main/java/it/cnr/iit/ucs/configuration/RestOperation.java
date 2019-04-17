@@ -1,4 +1,4 @@
-package it.cnr.iit.usagecontrolframework.rest;
+package it.cnr.iit.ucs.configuration;
 
 import static it.cnr.iit.ucsinterface.node.NodeInterface.ENDACCESSRESPONSE_REST;
 import static it.cnr.iit.ucsinterface.node.NodeInterface.ENDACCESS_REST;
@@ -8,7 +8,7 @@ import static it.cnr.iit.ucsinterface.node.NodeInterface.STARTACCESS_REST;
 import static it.cnr.iit.ucsinterface.node.NodeInterface.TRYACCESSRESPONSE_REST;
 import static it.cnr.iit.ucsinterface.node.NodeInterface.TRYACCESS_REST;
 
-public enum UCFRestOperation {
+public enum RestOperation {
 
     TRY_ACCESS( TRYACCESS_REST ),
     START_ACCESS( STARTACCESS_REST ),
@@ -25,7 +25,7 @@ public enum UCFRestOperation {
 
     private String operationUri;
 
-    UCFRestOperation( String operationUri ) {
+    RestOperation( String operationUri ) {
         this.operationUri = operationUri;
     }
 

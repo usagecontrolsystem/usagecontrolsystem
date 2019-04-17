@@ -32,7 +32,7 @@ import it.cnr.iit.utility.JsonUtility;
 public class GivenPEPRestSimulator extends Stage<GivenPEPRestSimulator> {
 
     @ScenarioRule
-    MockedHttpServiceTestRule restSimulatorTestRule = new MockedHttpServiceTestRule( getPort() );
+    MockedHttpServiceTestRule restSimulatorTestRule = new MockedHttpServiceTestRule();
 
     @ProvidedScenarioState
     WireMock wireMockContextHandler;
@@ -52,6 +52,7 @@ public class GivenPEPRestSimulator extends Stage<GivenPEPRestSimulator> {
     @BeforeScenario
     public void init() {
         loadConfiguration();
+        restSimulatorTestRule.start( getPort() );
     }
 
     private void loadConfiguration() {
@@ -70,8 +71,8 @@ public class GivenPEPRestSimulator extends Stage<GivenPEPRestSimulator> {
             loadConfiguration();
         }
         assertNotNull( "PEP address is not declared", configuration.getPepList() );
-        assertTrue( "At least one PEP address needs to be declared", configuration.getPepList().size() > 0 );
-        return configuration.getPepList().get( 0 ).getIp();
+        assertTrue( "At least one PEP address needs to be declared", !configuration.getPepList().isEmpty() );
+        return configuration.getPepList().get( Integer.parseInt( conf.getPepId() ) ).getIp();
     }
 
     private int getPort() {
@@ -79,8 +80,8 @@ public class GivenPEPRestSimulator extends Stage<GivenPEPRestSimulator> {
             loadConfiguration();
         }
         assertNotNull( "PEP address is not declared", configuration.getPepList() );
-        assertTrue( "At least one PEP address needs to be declared", configuration.getPepList().size() > 0 );
-        return Integer.parseInt( configuration.getPepList().get( 0 ).getPort() );
+        assertTrue( "At least one PEP address needs to be declared", !configuration.getPepList().isEmpty() );
+        return Integer.parseInt( configuration.getPepList().get( Integer.parseInt( conf.getPepId() ) ).getPort() );
     }
 
     public GivenPEPRestSimulator a_test_configuration_for_request_with_policy() {
