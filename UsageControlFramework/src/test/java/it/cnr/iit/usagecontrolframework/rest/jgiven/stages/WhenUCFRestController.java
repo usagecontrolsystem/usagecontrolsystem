@@ -1,6 +1,7 @@
 package it.cnr.iit.usagecontrolframework.rest.jgiven.stages;
 
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,9 +39,6 @@ public class WhenUCFRestController extends Stage<WhenUCFRestController> {
     @ExpectedScenarioState
     UCSConfiguration configuration;
 
-    @ProvidedScenarioState
-    MockHttpServletResponse mvcResponse;
-
     @Autowired
     WebApplicationContext webApplicationContext;
 
@@ -68,6 +66,7 @@ public class WhenUCFRestController extends Stage<WhenUCFRestController> {
             .contentType( MediaType.APPLICATION_JSON_VALUE ).content(
                 new ObjectMapper().writeValueAsString( jsonMessage ) ) )
             .andReturn();
+        assertNull( "POST to " + uri + " failed ", mvcResult.getResolvedException() );
         return mvcResult.getResponse();
     }
 }

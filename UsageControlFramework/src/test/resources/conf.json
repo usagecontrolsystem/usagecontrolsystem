@@ -189,7 +189,7 @@
   }, {
     "className" : "it.cnr.iit.ucsinterface.pep.AbstractPEP",
     "communication" : "REST_API",
-    "ip" : "10.221.99.190",
+    "ip" : "localhost",
     "port" : "9999",
     "revoke" : "SOFT",
     "id" : "1",

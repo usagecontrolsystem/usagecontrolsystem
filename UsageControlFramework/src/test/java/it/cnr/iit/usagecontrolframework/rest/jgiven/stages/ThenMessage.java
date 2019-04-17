@@ -1,5 +1,9 @@
 package it.cnr.iit.usagecontrolframework.rest.jgiven.stages;
 
+//import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
+//import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
+//import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
+
 import com.github.tomakehurst.wiremock.client.WireMock;
 import com.tngtech.jgiven.Stage;
 import com.tngtech.jgiven.annotation.ExpectedScenarioState;

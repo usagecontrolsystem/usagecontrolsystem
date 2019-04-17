@@ -1,5 +1,6 @@
 package it.cnr.iit.usagecontrolframework.rest.jgiven.stages;
 
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
 
 import java.io.File;
@@ -8,6 +9,7 @@ import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Optional;
 
 import javax.xml.bind.JAXBException;
 
@@ -18,7 +20,9 @@ import com.tngtech.jgiven.annotation.BeforeScenario;
 import com.tngtech.jgiven.annotation.ProvidedScenarioState;
 import com.tngtech.jgiven.integration.spring.JGivenStage;
 
+import it.cnr.iit.ucs.configuration.PepProperties;
 import it.cnr.iit.ucs.configuration.UCSConfiguration;
+import it.cnr.iit.ucsinterface.message.MEAN;
 import it.cnr.iit.ucsinterface.message.Message;
 import it.cnr.iit.ucsinterface.message.tryaccess.TryAccessMessage;
 import it.cnr.iit.ucsinterface.message.tryaccess.TryAccessMessageBuilder;
@@ -49,30 +53,49 @@ public class GivenMessage extends Stage<GivenMessage> {
 
     public GivenMessage a_TryAccess_request() {
         try {
-            message = buildTryAccessMessage( conf.getPepId(), conf.getUcsUri(), policy, request );
-        } catch( URISyntaxException | IOException e ) {
+            message = buildTryAccessMessage();
+        } catch( Exception e ) {
             fail( e.getLocalizedMessage() );
         }
         return self();
     }
 
-    protected TryAccessMessage buildTryAccessMessage( String pepId, String ucsUri, String policy, String request )
-            throws URISyntaxException, IOException {
-        TryAccessMessageBuilder builder = new TryAccessMessageBuilder( pepId, ucsUri );
-        builder.setPolicy( policy );
-        builder.setRequest( request );
+    protected TryAccessMessage buildTryAccessMessage() {
+        assertNotNull( ucsConfiguration );
+        PepProperties pepProps = ucsConfiguration.getPepList().get( Integer.parseInt( conf.getPepId() ) );
 
-        TryAccessMessage message = builder.build();
+        TryAccessMessageBuilder tryAccessBuilder = new TryAccessMessageBuilder( pepProps.getId(), pepProps.getIp() );
+        tryAccessBuilder.setPepUri( buildOnGoingEvaluationInterface( pepProps ) )
+            .setPolicy( policy ).setRequest( request ).setPolicyId( "1" );
 
-        return message;
+        TryAccessMessage tryAccessMessage = tryAccessBuilder.build();
+        tryAccessMessage.setCallback( buildResponseInterface( pepProps, "tryAccessResponse" ), MEAN.REST );
+
+        return tryAccessMessage;
     }
 
-    protected UCSConfiguration getUCSConfiguration( String ucsConfigFile )
-            throws JAXBException, URISyntaxException, IOException {
+    private final String buildResponseInterface( PepProperties pepProps, String name ) {
+        StringBuilder response = new StringBuilder();
+        response.append( "http://" + pepProps.getIp() + ":" );
+        response.append( pepProps.getPort() + "/" );
+        response.append( name );
+        return response.toString();
+    }
+
+    private String buildOnGoingEvaluationInterface( PepProperties pepProps ) {
+        return buildResponseInterface( pepProps, "onGoingEvaluation" );
+    }
+
+    protected UCSConfiguration getUCSConfiguration( String ucsConfigFile ) {
         ClassLoader classLoader = this.getClass().getClassLoader();
         File file = new File( classLoader.getResource( ucsConfigFile ).getFile() );
 
-        return JsonUtility.loadObjectFromJsonFile( file, UCSConfiguration.class ).get();
+        Optional<UCSConfiguration> loadObjectFromJsonFile = JsonUtility.loadObjectFromJsonFile( file, UCSConfiguration.class );
+        if( loadObjectFromJsonFile.isPresent() ) {
+            return loadObjectFromJsonFile.get();
+        } else {
+            return null;
+        }
     }
 
     protected String readResourceFileAsString( String resource ) throws URISyntaxException, IOException {
