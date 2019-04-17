@@ -71,8 +71,7 @@ public final class ObligationManager implements ObligationManagerInterface {
 
     @Override
     public final boolean setPIPs( List<PIPOMInterface> pips, PIPOMInterface pipRetrieval ) {
-        if( ( pips == null || pips.isEmpty() ) ||
-                pipRetrieval == null ) {
+        if( ( pips == null || pips.isEmpty() ) ) {
             log.log( Level.SEVERE,
                 "Invalid provided PIPS : pips_null {0}\t"
                         + "pips_empty {1}\t"
