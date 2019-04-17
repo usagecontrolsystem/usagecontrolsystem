@@ -74,10 +74,7 @@ public class PolicyAdministrationPoint implements PAPInterface {
         Reject.ifNull( properties );
         this.properties = properties;
         // TODO UCS-33 NOSONAR
-        if( properties.getPath() != null &&
-                Paths.get( properties.getPath() ).toFile().isDirectory() ) {
-            initialized = true;
-        }
+        initialized = true;
     }
 
     /**
