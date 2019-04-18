@@ -1,6 +1,5 @@
 package it.cnr.iit.test;
 
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
@@ -42,7 +41,7 @@ public class ContextHandlerCoverageTests extends UCFBaseTests {
         log.info( "Init tests " );
         ucsConfiguration = getUCSConfiguration( conf.getUcsConfigFile() );
         policy = readResourceFileAsString( conf.getPolicyFile() );
-        request = readResourceFileAsString( conf.getPolicyFile() );
+        request = readResourceFileAsString( conf.getRequestFile() );
     }
 
     @Before
@@ -51,12 +50,12 @@ public class ContextHandlerCoverageTests extends UCFBaseTests {
         // nothing to do for now
     }
 
-    @Test
-    public void contextHandlerConfigurationShouldFail() throws JAXBException, URISyntaxException, IOException {
+    @Test( expected = IllegalStateException.class )
+    public void contextHandlerConfigurationShouldFail() throws JAXBException, URISyntaxException, IOException, IllegalStateException {
         ContextHandlerLC contextHandler = getContextHandler( ucsConfiguration );
         contextHandler.verify();
-        assertFalse( contextHandler.startMonitoringThread() );
-        contextHandler.stopMonitoringThread();
+        contextHandler.startMonitoringThread();
+        // contextHandler.stopMonitoringThread();
     }
 
     @Test( expected = IllegalStateException.class )

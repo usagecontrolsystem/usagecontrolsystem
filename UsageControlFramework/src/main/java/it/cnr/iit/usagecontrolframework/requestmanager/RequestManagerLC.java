@@ -16,6 +16,7 @@
 package it.cnr.iit.usagecontrolframework.requestmanager;
 
 import java.util.concurrent.Callable;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.logging.Level;
@@ -91,8 +92,8 @@ public class RequestManagerLC extends AsynchronousRequestManager {
     private boolean initialize() {
         try {
             inquirers = Executors
-                .newFixedThreadPool( 2 );
-            inquirers.submit( new ContextHandlerInquirer() );
+                .newFixedThreadPool( 1 );
+            inquirers.submit( new ContextHandlerTrigger() );
         } catch( Exception e ) {
             log.severe( e.getMessage() );
             return false;
@@ -224,16 +225,75 @@ public class RequestManagerLC extends AsynchronousRequestManager {
                 try {
                     Message message = getQueueToCH().take();
                     if( message instanceof TryAccessMessage ) {
-                        getContextHandler().tryAccess( message );
+                        getContextHandler().tryAccess( (TryAccessMessage) message );
                     }
                     if( message instanceof StartAccessMessage ) {
-                        getContextHandler().startAccess( message );
+                        getContextHandler().startAccess( (StartAccessMessage) message );
                     }
                     if( message instanceof EndAccessMessage ) {
-                        getContextHandler().endAccess( message );
+                        getContextHandler().endAccess( (EndAccessMessage) message );
                     }
                     if( message instanceof ReevaluationMessage ) {
                         getContextHandler().reevaluate( message );
+                    }
+                    return message;
+                } catch( Exception e ) {
+                    log.severe( e.getMessage() );
+                    return null;
+                }
+            }
+        }
+    }
+
+    /**
+     * The context handler inquirers basically perform an infinite loop in order
+     * to retrieve the messages coming to the request manager and sends those
+     * requests to the context handler which will be in charge of answer to the
+     * requests
+     *
+     * @author antonio
+     *
+    */
+    private class ContextHandlerTrigger implements Callable<Message> {
+
+        @Override
+        public Message call() {
+
+            while( true ) {
+                // BEGIN parameter checking
+                if( !initialized ) {
+                    log.warning( "Request Manager not initialized correctly" );
+                    return null;
+                }
+                // END parameter checking
+                try {
+                    Message message = getQueueToCH().take();
+                    CompletableFuture<Message> completableFuture = null;
+
+                    if( message instanceof TryAccessMessage ) {
+                        completableFuture = CompletableFuture
+                            .supplyAsync( () -> getContextHandler().tryAccess( (TryAccessMessage) message ) );
+                    }
+                    if( message instanceof StartAccessMessage ) {
+                        completableFuture = CompletableFuture
+                            .supplyAsync( () -> {
+                                try {
+                                    return getContextHandler().startAccess( (StartAccessMessage) message );
+                                } catch( Exception e ) {
+                                    log.severe( e.getMessage() );
+                                    return null;
+                                }
+                            } );
+                    }
+                    if( message instanceof EndAccessMessage ) {
+                        completableFuture = CompletableFuture
+                            .supplyAsync( () -> getContextHandler().endAccess( (EndAccessMessage) message ) );
+                    }
+                    if( completableFuture != null ) {
+                        completableFuture.thenApplyAsync( e -> {
+                            sendMessageToOutside( e );
+                            return e;
+                        } );
                     }
                     return message;
                 } catch( Exception e ) {
@@ -256,9 +316,9 @@ public class RequestManagerLC extends AsynchronousRequestManager {
      *
      * @author antonio
      *
-    
+
     private class AttributeSupplier implements Callable<Void> {
-    
+
     	@Override
     	public Void call() throws Exception {
     		while (true) {
@@ -305,7 +365,7 @@ public class RequestManagerLC extends AsynchronousRequestManager {
      * @param message
      *          the message returned by the context handler
      * @return the message to be used as response
-    
+
     private MessagePipCh createResponse(Message message) {
     	MessagePipCh chResponse = (MessagePipCh) message;
     	switch (chResponse.getAction()) {

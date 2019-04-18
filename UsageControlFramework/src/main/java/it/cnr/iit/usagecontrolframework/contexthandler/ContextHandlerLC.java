@@ -21,6 +21,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.LinkedTransferQueue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -52,6 +53,7 @@ import it.cnr.iit.ucsinterface.pip.PIPCHInterface;
 import it.cnr.iit.ucsinterface.sessionmanager.OnGoingAttributesInterface;
 import it.cnr.iit.ucsinterface.sessionmanager.SessionInterface;
 import it.cnr.iit.utility.JAXBUtility;
+import it.cnr.iit.utility.errorhandling.Reject;
 import it.cnr.iit.xacmlutilities.Attribute;
 import it.cnr.iit.xacmlutilities.Category;
 import it.cnr.iit.xacmlutilities.policy.PolicyHelper;
@@ -127,13 +129,19 @@ public final class ContextHandlerLC extends AbstractContextHandler {
     /**
      * starts the thread in charge of monitoring the changes notified by PIPs
      */
-    @Override
-    public boolean startMonitoringThread() {
+    public boolean startMonitoringThreadOld() {
         if( isInitialized() ) {
             thread.start();
             return true;
         }
         return false;
+    }
+
+    @Override
+    public boolean startMonitoringThread() {
+        Reject.ifInvalidObjectState( isInitialized(), ContextHandlerLC.class.getName(), log );
+        CompletableFuture.runAsync( attributeMonitor );
+        return true;
     }
 
     /**
@@ -161,17 +169,14 @@ public final class ContextHandlerLC extends AbstractContextHandler {
      *
      */
     @Override
-    // TODO use TryAccessMessage(review message classes family) directly as a parameter
-    public void tryAccess( Message message ) {
-        if( !isInitialized() || message == null ) {
+    public TryAccessResponse tryAccess( TryAccessMessage tryAccess ) {
+        if( !isInitialized() || tryAccess == null ) {
             log.log( Level.SEVERE, "{0} {1} \t {2}",
-                new Object[] { "INVALID tryAccess ", isInitialized(), ( message == null ) } );
-            throw new IllegalStateException( "Error in tryAccess: " + isInitialized() + "\t" + ( message == null ) );
+                new Object[] { "INVALID tryAccess ", isInitialized(), ( tryAccess == null ) } );
+            throw new IllegalStateException( "Error in tryAccess: " + isInitialized() + "\t" + ( tryAccess == null ) );
         }
 
         log.log( Level.INFO, "[TIME] tryaccess received at {0}", new Object[] { System.currentTimeMillis() } );
-
-        TryAccessMessage tryAccess = (TryAccessMessage) message;
 
         PolicyHelper policyHelper = PolicyHelper.buildPolicyHelper( tryAccess.getPolicy() );
 
@@ -220,7 +225,12 @@ public final class ContextHandlerLC extends AbstractContextHandler {
         // obligation
         getObligationManager().translateObligations( pdpEvaluation, sessionId, ContextHandlerConstants.TRY_STATUS );
 
-        TryAccessResponse tryAccessResponse = new TryAccessResponse( getIp(), tryAccess.getSource(), message.getID() );
+        return buildTryAccessResponse( tryAccess, sessionId, pdpResponse, pdpEvaluation );
+    }
+
+    private TryAccessResponse buildTryAccessResponse( TryAccessMessage tryAccess, String sessionId, String pdpResponse,
+            PDPEvaluation pdpEvaluation ) {
+        TryAccessResponse tryAccessResponse = new TryAccessResponse( getIp(), tryAccess.getSource(), tryAccess.getID() );
         TryAccessResponseContent tryAccessResponseContent = new TryAccessResponseContent();
         tryAccessResponseContent.setSessionId( sessionId );
         tryAccessResponseContent.setStatus( pdpResponse );
@@ -229,7 +239,7 @@ public final class ContextHandlerLC extends AbstractContextHandler {
         if( tryAccess.getScheduled() ) {
             tryAccessResponse.setDestinationType();
         }
-        getRequestManagerToChInterface().sendMessageToOutside( tryAccessResponse );
+        return tryAccessResponse;
     }
 
     /**
@@ -328,9 +338,10 @@ public final class ContextHandlerLC extends AbstractContextHandler {
         boolean found = false;
         for( Attribute attribute : attributes ) {
             attribute.getAttributeValueMap().clear();
-            found = findInsideInternalList( attribute ) || findInRequest( attribute, request );
+            found = findInRequest( attribute, request ) || findInsideInternalList( attribute );
             if( !found ) {
                 externalAttributes.add( attribute );
+                // throw new IllegalStateException( "Missing attributes are declared in the policy" );
             }
         }
         return externalAttributes;
@@ -486,60 +497,38 @@ public final class ContextHandlerLC extends AbstractContextHandler {
      *
      */
     @Override
-    public void startAccess( Message message ) throws Exception {
+    public StartAccessResponse startAccess( StartAccessMessage startAccessMessage )
+            throws WrongOrderException, SessionManagerException, RevokeException {
         // BEGIN parameter checking
-        if( !isInitialized() || message == null || !( message instanceof StartAccessMessage ) ) {
+        if( !isInitialized() || startAccessMessage == null ) {
             log.log( Level.SEVERE, "Invalid startaccess {0} \t {1}",
-                new Object[] { isInitialized(), ( message instanceof StartAccessMessage ) } );
+                new Object[] { isInitialized(), ( startAccessMessage instanceof StartAccessMessage ) } );
             throw new IllegalStateException( "Invalid startaccess" );
         }
         // END parameter checking
         log.log( Level.INFO, "[TIME] startaccess begins at {0}", new Object[] { System.currentTimeMillis() } );
 
-        StartAccessMessage startAccessMessage = (StartAccessMessage) message;
         String sessionId = startAccessMessage.getSessionId();
+
+        verifySession( sessionId );
 
         Optional<SessionInterface> optional = getSessionManagerInterface().getSessionForId( sessionId );
 
-        if( !optional.isPresent() ) {
-            // throw exception here
-            return;
-        }
-        SessionInterface sessionToReevaluate = optional.get();
+        SessionInterface sessionToReevaluate = verifySessionState( optional, sessionId, ContextHandlerConstants.TRY_STATUS );
 
         PolicyHelper policyHelper = PolicyHelper.buildPolicyHelper( sessionToReevaluate.getPolicySet() );
 
         List<Attribute> attributes = policyHelper.getAttributesForCondition( STARTACCESS_POLICY );
-        log.log( Level.INFO, "[TIME] startaccess begin scheduling at {0}", new Object[] { System.currentTimeMillis() } );
-
-        StartAccessResponse response = new StartAccessResponse( startAccessMessage.getDestination(),
-            startAccessMessage.getSource(), message.getID() );
-
-        // check if there actually is a request to reevaluate for the received
-        // session id
-        if( !sessionToReevaluate.getStatus().equals( ContextHandlerConstants.TRY_STATUS ) ) {
-            // no request to reevaluate(some problem occurred during request and
-            // policy retrieving)
-            log.log( Level.SEVERE, "startaccess: tryaccess must be performed for session {0}", sessionId );
-
-            throw new WrongOrderException(
-                "[Context Handler] Startaccess: tryaccess must be performed yet for session " + sessionId );
-        }
-
         String request = sessionToReevaluate.getOriginalRequest();
 
         // make the request complete before reevaluation
-        String requestFull = makeRequestFull( request, policyHelper.getAttributesForCondition( STARTACCESS_POLICY ),
-            STATUS.STARTACCESS, true );
+        String requestFull = makeRequestFull( request, attributes, STATUS.STARTACCESS, true );
 
         // perform the evaluation
         PDPEvaluation pdpEvaluation = getPdpInterface().evaluate( requestFull,
             policyHelper.getConditionForEvaluation( STARTACCESS_POLICY ) );
 
         log.log( Level.INFO, "[TIME] startaccess ends at {0}", new Object[] { System.currentTimeMillis() } );
-
-        response.setStatus( pdpEvaluation.getResult() );
-        response.setResponse( pdpEvaluation );
 
         // PDP returns PERMIT
         if( pdpEvaluation.getResult().equalsIgnoreCase( DecisionType.PERMIT.value() ) ) {
@@ -552,7 +541,6 @@ public final class ContextHandlerLC extends AbstractContextHandler {
                 log.log( Level.WARNING, "[TIME] startaccess session {0} status not updated", sessionId );
             }
             log.log( Level.INFO, "[TIME] PERMIT startaccess ends at {0}", new Object[] { System.currentTimeMillis() } );
-            response.setStatus( pdpEvaluation.getResult() );
         } else {
             getObligationManager().translateObligations( pdpEvaluation, sessionId, ContextHandlerConstants.START_STATUS );
 
@@ -574,10 +562,35 @@ public final class ContextHandlerLC extends AbstractContextHandler {
                 "[Context Handler] Startaccess: Some problem occurred during execution of revokaccess for session "
                         + sessionId );
         }
+        StartAccessResponse response = new StartAccessResponse( startAccessMessage.getDestination(),
+            startAccessMessage.getSource(), startAccessMessage.getID() );
+        response.setStatus( pdpEvaluation.getResult() );
+        response.setResponse( pdpEvaluation );
         if( startAccessMessage.getScheduled() ) {
             response.setDestinationType();
         }
-        getRequestManagerToChInterface().sendMessageToOutside( response );
+
+        return response;
+    }
+
+    private void verifySession( String sessionId ) {
+        Reject.ifBlank( sessionId );
+        // UUID.fromString( sessionId );
+    }
+
+    private SessionInterface verifySessionState( Optional<SessionInterface> optional, String sessionId,
+            String... status ) throws WrongOrderException {
+        if( !optional.isPresent() ) {
+            throw new IllegalArgumentException( "Passed session id " + sessionId + "not present" );
+        }
+        SessionInterface sessionInterface = optional.get();
+        for( String actualStatus : status ) {
+            if( sessionInterface.getStatus().equals( actualStatus ) ) {
+                return sessionInterface;
+            }
+        }
+        throw new WrongOrderException(
+            "[Context Handler] status for session " + sessionId + "is not in " + status );
     }
 
     // ---------------------------------------------------------------------------
@@ -750,43 +763,27 @@ public final class ContextHandlerLC extends AbstractContextHandler {
     // END ACCESS
     // ---------------------------------------------------------------------------
     @Override
-    public void endAccess( Message message ) {
+    public EndAccessResponse endAccess( EndAccessMessage endAccessMessage ) {
         // BEGIN parameter checking
-        if( !isInitialized() ) {
-            log.severe( "CH not initialized correctly" );
-            return;
-        }
-        if( !( message instanceof EndAccessMessage ) ) {
-            log.severe( "Invalid message in endaccess" );
-            return;
+        if( !isInitialized() || endAccessMessage == null ) {
+            log.log( Level.SEVERE, "Invalid startaccess {0} \t {1}",
+                new Object[] { isInitialized(), ( endAccessMessage instanceof EndAccessMessage ) } );
+            throw new IllegalStateException( "Invalid endaccess" );
         }
         // END parameter checking
         try {
-            EndAccessMessage endAccessMessage = (EndAccessMessage) message;
             String sessionId = endAccessMessage.getSessionId();
+
+            verifySession( sessionId );
 
             log.log( Level.INFO, "[TIME] endaccess begins at {0}", new Object[] { System.currentTimeMillis() } );
 
             // check if an entry actually exists in db
             Optional<SessionInterface> optional = getSessionManagerInterface().getSessionForId( endAccessMessage.getSessionId() );
 
-            if( !optional.isPresent() ) {
-                // throw exception here
-                return;
-            }
-            SessionInterface sessionToReevaluate = optional.get();
-
-            if( ( !sessionToReevaluate.getStatus().equals( ContextHandlerConstants.START_STATUS )
-                    && !sessionToReevaluate.getStatus().equals( ContextHandlerConstants.REVOKE_STATUS ) ) ) {
-                // no entry exists for the actual session
-                log.log( Level.INFO,
-                    "[Context Handler] Endaccess: a tryaccess or startaccess must be performed yet for session {0}"
-                            + ", or the related endaccess has already been executed",
-                    sessionId );
-                throw new WrongOrderException(
-                    "[Context Handler] Endaccess: a tryaccess must be performed yet for session " + sessionId
-                            + ", or the related endaccess has already been executed" );
-            }
+            SessionInterface sessionToReevaluate = verifySessionState( optional, sessionId, ContextHandlerConstants.REVOKE_STATUS,
+                ContextHandlerConstants.START_STATUS,
+                ContextHandlerConstants.TRY_STATUS );
 
             PolicyHelper policyHelper = PolicyHelper.buildPolicyHelper( sessionToReevaluate.getPolicySet() );
 
@@ -807,7 +804,7 @@ public final class ContextHandlerLC extends AbstractContextHandler {
             getObligationManager().translateObligations( pdpEvaluation, sessionId, ContextHandlerConstants.END_STATUS );
 
             EndAccessResponse response = new EndAccessResponse( endAccessMessage.getDestination(),
-                endAccessMessage.getSource(), message.getID() );
+                endAccessMessage.getSource(), endAccessMessage.getID() );
             response.setResponse( pdpEvaluation );
             response.setStatus( pdpEvaluation.getResult() );
 
@@ -820,9 +817,10 @@ public final class ContextHandlerLC extends AbstractContextHandler {
                 log.log( Level.INFO, "[TIME] endaccess evaluation with revoke ends at {0}", System.currentTimeMillis() );
             }
 
-            getRequestManagerToChInterface().sendMessageToOutside( response );
+            return response;
         } catch( Exception e ) {
             log.severe( e.getMessage() );
+            return null;
         }
     }
 

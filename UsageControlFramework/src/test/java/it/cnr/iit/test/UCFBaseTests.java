@@ -354,6 +354,7 @@ public class UCFBaseTests {
 
     protected StartAccessMessage buildStartAccessMessage( String sessionId, String src, String dest ) {
         StartAccessMessage message = new StartAccessMessage( src, dest );
+        message.setSessionId( sessionId );
         return message;
     }
 
