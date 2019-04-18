@@ -99,7 +99,7 @@ public interface ContextHandlerInterface extends ContextHandlerPIPInterface {
      *          the message received by the RequestManager
      * @return a message stating the response of the PDP to the request
      */
-    public EndAccessResponse endAccess( EndAccessMessage message );
+    public EndAccessResponse endAccess( EndAccessMessage message ) throws WrongOrderException;
 
     /**
      * This is the reevaluation function. This function is triggered by a remote

@@ -575,7 +575,7 @@ public final class ContextHandlerLC extends AbstractContextHandler {
 
     private void verifySession( String sessionId ) {
         Reject.ifBlank( sessionId );
-        // UUID.fromString( sessionId );
+        UUID.fromString( sessionId );
     }
 
     private SessionInterface verifySessionState( Optional<SessionInterface> optional, String sessionId,
@@ -763,7 +763,7 @@ public final class ContextHandlerLC extends AbstractContextHandler {
     // END ACCESS
     // ---------------------------------------------------------------------------
     @Override
-    public EndAccessResponse endAccess( EndAccessMessage endAccessMessage ) {
+    public EndAccessResponse endAccess( EndAccessMessage endAccessMessage ) throws WrongOrderException {
         // BEGIN parameter checking
         if( !isInitialized() || endAccessMessage == null ) {
             log.log( Level.SEVERE, "Invalid startaccess {0} \t {1}",
@@ -771,57 +771,52 @@ public final class ContextHandlerLC extends AbstractContextHandler {
             throw new IllegalStateException( "Invalid endaccess" );
         }
         // END parameter checking
-        try {
-            String sessionId = endAccessMessage.getSessionId();
+        String sessionId = endAccessMessage.getSessionId();
 
-            verifySession( sessionId );
+        verifySession( sessionId );
 
-            log.log( Level.INFO, "[TIME] endaccess begins at {0}", new Object[] { System.currentTimeMillis() } );
+        log.log( Level.INFO, "[TIME] endaccess begins at {0}", new Object[] { System.currentTimeMillis() } );
 
-            // check if an entry actually exists in db
-            Optional<SessionInterface> optional = getSessionManagerInterface().getSessionForId( endAccessMessage.getSessionId() );
+        // check if an entry actually exists in db
+        Optional<SessionInterface> optional = getSessionManagerInterface().getSessionForId( endAccessMessage.getSessionId() );
 
-            SessionInterface sessionToReevaluate = verifySessionState( optional, sessionId, ContextHandlerConstants.REVOKE_STATUS,
-                ContextHandlerConstants.START_STATUS,
-                ContextHandlerConstants.TRY_STATUS );
+        SessionInterface sessionToReevaluate = verifySessionState( optional, sessionId, ContextHandlerConstants.REVOKE_STATUS,
+            ContextHandlerConstants.START_STATUS,
+            ContextHandlerConstants.TRY_STATUS );
 
-            PolicyHelper policyHelper = PolicyHelper.buildPolicyHelper( sessionToReevaluate.getPolicySet() );
+        PolicyHelper policyHelper = PolicyHelper.buildPolicyHelper( sessionToReevaluate.getPolicySet() );
 
-            log.log( Level.INFO, "[TIME] endaccess scheduler starts at {0}", new Object[] { System.currentTimeMillis() } );
-            List<Attribute> attributes = policyHelper.getAttributesForCondition( ENDACCESS_POLICY );
+        log.log( Level.INFO, "[TIME] endaccess scheduler starts at {0}", new Object[] { System.currentTimeMillis() } );
+        List<Attribute> attributes = policyHelper.getAttributesForCondition( ENDACCESS_POLICY );
 
-            String request = sessionToReevaluate.getOriginalRequest();
+        String request = sessionToReevaluate.getOriginalRequest();
 
-            // make the request complete before reevaluation
-            String requestFull = makeRequestFull( request, policyHelper.getAttributesForCondition( ENDACCESS_POLICY ),
-                STATUS.ENDACCESS, true );
+        // make the request complete before reevaluation
+        String requestFull = makeRequestFull( request, policyHelper.getAttributesForCondition( ENDACCESS_POLICY ),
+            STATUS.ENDACCESS, true );
 
-            PDPEvaluation pdpEvaluation = getPdpInterface().evaluate( requestFull,
-                policyHelper.getConditionForEvaluation( ENDACCESS_POLICY ) );
+        PDPEvaluation pdpEvaluation = getPdpInterface().evaluate( requestFull,
+            policyHelper.getConditionForEvaluation( ENDACCESS_POLICY ) );
 
-            log.log( Level.INFO, "[TIME] EndAccess evaluation ends at {0}", System.currentTimeMillis() );
+        log.log( Level.INFO, "[TIME] EndAccess evaluation ends at {0}", System.currentTimeMillis() );
 
-            getObligationManager().translateObligations( pdpEvaluation, sessionId, ContextHandlerConstants.END_STATUS );
+        getObligationManager().translateObligations( pdpEvaluation, sessionId, ContextHandlerConstants.END_STATUS );
 
-            EndAccessResponse response = new EndAccessResponse( endAccessMessage.getDestination(),
-                endAccessMessage.getSource(), endAccessMessage.getID() );
-            response.setResponse( pdpEvaluation );
-            response.setStatus( pdpEvaluation.getResult() );
+        EndAccessResponse response = new EndAccessResponse( endAccessMessage.getDestination(),
+            endAccessMessage.getSource(), endAccessMessage.getID() );
+        response.setResponse( pdpEvaluation );
+        response.setStatus( pdpEvaluation.getResult() );
 
-            if( endAccessMessage.getScheduled() ) {
-                response.setDestinationType();
-            }
-
-            // access must be revoked
-            if( revoke( sessionToReevaluate, attributes ) ) {
-                log.log( Level.INFO, "[TIME] endaccess evaluation with revoke ends at {0}", System.currentTimeMillis() );
-            }
-
-            return response;
-        } catch( Exception e ) {
-            log.severe( e.getMessage() );
-            return null;
+        if( endAccessMessage.getScheduled() ) {
+            response.setDestinationType();
         }
+
+        // access must be revoked
+        if( revoke( sessionToReevaluate, attributes ) ) {
+            log.log( Level.INFO, "[TIME] endaccess evaluation with revoke ends at {0}", System.currentTimeMillis() );
+        }
+
+        return response;
     }
 
     // ---------------------------------------------------------------------------
