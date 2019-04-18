@@ -4,10 +4,12 @@ import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static org.awaitility.Awaitility.await;
+import static org.awaitility.Duration.ONE_HUNDRED_MILLISECONDS;
 import static org.awaitility.Duration.TWO_SECONDS;
 import static org.junit.Assert.fail;
 
 import java.util.concurrent.Callable;
+import java.util.logging.Logger;
 
 import com.github.tomakehurst.wiremock.client.VerificationException;
 import com.github.tomakehurst.wiremock.client.WireMock;
@@ -19,13 +21,15 @@ import com.tngtech.jgiven.integration.spring.JGivenStage;
 @JGivenStage
 public class ThenMessage extends Stage<ThenMessage> {
 
+    private static final Logger log = Logger.getLogger( ThenMessage.class.getName() );
+
     @ExpectedScenarioState
     WireMock wireMockContextHandler;
 
     public ThenMessage the_asynch_post_request_for_$_was_received_by_PEPRest( @Quoted String operation ) {
-        await()
-            .pollDelay( TWO_SECONDS )
-                .until( postRequestWasVerified( operation ) );
+        await().with().pollInterval( ONE_HUNDRED_MILLISECONDS )
+            .and().with().pollDelay( TWO_SECONDS )
+            .until( postRequestWasVerified( operation ) );
         return self();
     }
 
@@ -37,6 +41,7 @@ public class ThenMessage extends Stage<ThenMessage> {
                     wireMockContextHandler.verifyThat( postRequestedFor( urlEqualTo( operation ) )
                         .withHeader( "Content-Type", equalTo( "application/json" ) ) );
                 } catch( VerificationException e ) {
+                    log.warning( "POST request is not yet received. Polling with 1 second delay for 10 seconds." );
                     return false;
                 } catch( Exception e ) {
                     fail( e.getLocalizedMessage() );
