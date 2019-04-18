@@ -15,7 +15,16 @@
  ******************************************************************************/
 package it.cnr.iit.ucsinterface.contexthandler;
 
+import it.cnr.iit.ucsinterface.contexthandler.exceptions.RevokeException;
+import it.cnr.iit.ucsinterface.contexthandler.exceptions.SessionManagerException;
+import it.cnr.iit.ucsinterface.contexthandler.exceptions.WrongOrderException;
 import it.cnr.iit.ucsinterface.message.Message;
+import it.cnr.iit.ucsinterface.message.endaccess.EndAccessMessage;
+import it.cnr.iit.ucsinterface.message.endaccess.EndAccessResponse;
+import it.cnr.iit.ucsinterface.message.startaccess.StartAccessMessage;
+import it.cnr.iit.ucsinterface.message.startaccess.StartAccessResponse;
+import it.cnr.iit.ucsinterface.message.tryaccess.TryAccessMessage;
+import it.cnr.iit.ucsinterface.message.tryaccess.TryAccessResponse;
 
 /**
  * This is the interface provided by the ContextHandler.
@@ -62,7 +71,7 @@ public interface ContextHandlerInterface extends ContextHandlerPIPInterface {
      *          message received by the RequestManager
      * @return a message stating the response of the PDP to the request.
      */
-    public void tryAccess( Message message );
+    public TryAccessResponse tryAccess( TryAccessMessage message );
 
     /**
      * This is the startAccess function. In this case a tryAccess has already been
@@ -76,7 +85,8 @@ public interface ContextHandlerInterface extends ContextHandlerPIPInterface {
      * @return a message stating the response of the PDP to the request
      * @throws Exception
      */
-    public void startAccess( Message message ) throws Exception;
+    public StartAccessResponse startAccess( StartAccessMessage message )
+            throws WrongOrderException, SessionManagerException, RevokeException;
 
     /**
      * This is the endAcces function. In this case the PEP doesn't require the
@@ -89,7 +99,7 @@ public interface ContextHandlerInterface extends ContextHandlerPIPInterface {
      *          the message received by the RequestManager
      * @return a message stating the response of the PDP to the request
      */
-    public void endAccess( Message message );
+    public EndAccessResponse endAccess( EndAccessMessage message );
 
     /**
      * This is the reevaluation function. This function is triggered by a remote
