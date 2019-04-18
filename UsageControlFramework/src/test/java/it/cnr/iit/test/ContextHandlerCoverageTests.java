@@ -113,7 +113,7 @@ public class ContextHandlerCoverageTests extends UCFBaseTests {
         contextHandler.setSessionManagerInterface(
             getSessionManagerForStatus( sessionId, policy, request, ContextHandlerConstants.START_STATUS ) );
         contextHandler.setPdpInterface( getMockedPDP( getMockedPDPEvaluation( DecisionType.DENY ) ) );
-        EndAccessMessage endAccessMessage = buildEndAccessMessage( conf.getSessionId(), "", "" );
+        EndAccessMessage endAccessMessage = buildEndAccessMessage( sessionId, "", "" );
         contextHandler.endAccess( endAccessMessage );
 
         contextHandler.stopMonitoringThread();
