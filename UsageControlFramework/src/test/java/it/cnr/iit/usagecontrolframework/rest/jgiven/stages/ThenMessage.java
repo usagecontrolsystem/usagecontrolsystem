@@ -41,7 +41,7 @@ public class ThenMessage extends Stage<ThenMessage> {
                     wireMockContextHandler.verifyThat( postRequestedFor( urlEqualTo( operation ) )
                         .withHeader( "Content-Type", equalTo( "application/json" ) ) );
                 } catch( VerificationException e ) {
-                    log.warning( "POST request is not yet received. Polling with 1 second delay for 10 seconds." );
+                    log.warning( "POST request is not yet received. Polling with 100ms interval for 10 seconds." );
                     return false;
                 } catch( Exception e ) {
                     fail( e.getLocalizedMessage() );
