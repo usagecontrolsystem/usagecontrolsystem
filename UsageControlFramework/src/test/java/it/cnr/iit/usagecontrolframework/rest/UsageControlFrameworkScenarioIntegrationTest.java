@@ -29,7 +29,7 @@ public class UsageControlFrameworkScenarioIntegrationTest
     GivenPEPRestSimulator givenPEPRestSimulator;
 
     @Test
-    public void a_tryAccess_request_is_replied_with_PERMIT() {
+    public void a_tryAccess_request_is_replied_with_tryAccessResponse() {
         given().a_TryAccess_request();
         givenPEPRestSimulator.and().a_mocked_PEPRest_for_$( TRY_ACCESS_RESPONSE.getOperationUri() )
             .and().a_success_response_status_code_of_$( HttpStatus.SC_OK );
