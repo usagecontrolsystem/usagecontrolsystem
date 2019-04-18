@@ -48,7 +48,7 @@ public class GivenMessage extends Stage<GivenMessage> {
     public void init() throws URISyntaxException, IOException, JAXBException {
         ucsConfiguration = getUCSConfiguration( conf.getUcsConfigFile() );
         policy = readResourceFileAsString( conf.getPolicyFile() );
-        request = readResourceFileAsString( conf.getPolicyFile() );
+        request = readResourceFileAsString( conf.getRequestFile() );
     }
 
     public GivenMessage a_TryAccess_request() {
