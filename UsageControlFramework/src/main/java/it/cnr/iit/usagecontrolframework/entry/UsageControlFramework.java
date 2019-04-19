@@ -57,7 +57,7 @@ import it.cnr.iit.ucsinterface.pip.PIPCHInterface;
 import it.cnr.iit.ucsinterface.pip.PIPOMInterface;
 import it.cnr.iit.ucsinterface.pip.PIPRetrieval;
 import it.cnr.iit.ucsinterface.requestmanager.AsynchronousRequestManager;
-import it.cnr.iit.ucsinterface.requestmanager.RequestManagerToExternalInterface;
+import it.cnr.iit.ucsinterface.requestmanager.UCSCHInterface;
 import it.cnr.iit.ucsinterface.ucs.UCSInterface;
 import it.cnr.iit.usagecontrolframework.builders.ObligationManagerBuilder;
 import it.cnr.iit.usagecontrolframework.proxies.ProxyPAP;
@@ -453,7 +453,7 @@ public final class UsageControlFramework implements UCSInterface {
         return proxyPEPMap;
     }
 
-    public RequestManagerToExternalInterface getRequestManager() {
+    public UCSCHInterface getRequestManager() {
         return requestManager;
     }
 

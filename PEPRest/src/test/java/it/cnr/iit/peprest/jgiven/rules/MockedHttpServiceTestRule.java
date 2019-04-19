@@ -1,4 +1,5 @@
 package it.cnr.iit.peprest.jgiven.rules;
+
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
 
 import java.util.List;
@@ -29,8 +30,9 @@ public class MockedHttpServiceTestRule extends ExternalResource {
         this.failOnUnmatchedStubs = failOnUnmatchedStubs;
     }
 
-    public MockedHttpServiceTestRule( int port ) {
-        this( wireMockConfig().port( port ) );
+    public MockedHttpServiceTestRule() {
+        // TODO load from autowrired config
+        this( wireMockConfig().port( 9998 ) );
     }
 
     public MockedHttpServiceTestRule( int httpsPort, String keystorePath, String keystorePassword ) {
@@ -41,10 +43,6 @@ public class MockedHttpServiceTestRule extends ExternalResource {
             .keystorePath( keystorePath )
             .keystorePassword( keystorePassword )
             .trustStoreType( "JKS" ) );
-    }
-
-    public MockedHttpServiceTestRule() {
-        this( wireMockConfig() );
     }
 
     private void checkForUnmatchedRequests() {

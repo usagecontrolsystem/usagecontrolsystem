@@ -15,8 +15,6 @@
  ******************************************************************************/
 package it.cnr.iit.peprest;
 
-import java.util.Collections;
-import java.util.Optional;
 import java.util.logging.Logger;
 
 import org.springframework.boot.SpringApplication;
@@ -24,9 +22,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
 import org.springframework.context.annotation.Bean;
-
-import it.cnr.iit.peprest.configuration.PEPRestConfiguration;
-import it.cnr.iit.peprest.configuration.PEPRestConfigurationLoader;
 
 import springfox.documentation.builders.ApiInfoBuilder;
 import springfox.documentation.builders.PathSelectors;
@@ -85,20 +80,8 @@ public class PEPRestStarter extends SpringBootServletInitializer {
             .version( "1.0" ).contact( "antonio.lamarra@iit.cnr.it" ).build();
     }
 
-    // TODO UCS-35 NOSONAR
     public static void main( String[] args ) {
-        // TODO use spring beans and load the config only once NOSONAR
-        Optional<PEPRestConfiguration> optConfiguration = PEPRestConfigurationLoader.getConfiguration();
-
-        if( !optConfiguration.isPresent() ) {
-            LOG.severe( PEPRestConfigurationLoader.CONFIG_ERR_MESSAGE );
-            return;
-        }
-
-        PEPRestConfiguration configuration = optConfiguration.get();
-
         SpringApplication app = new SpringApplication( PEPRestStarter.class );
-        app.setDefaultProperties( Collections.singletonMap( "server.port", configuration.getPep().getPort() ) );
         app.run( args );
     }
 

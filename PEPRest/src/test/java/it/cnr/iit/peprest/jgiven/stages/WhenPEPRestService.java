@@ -10,6 +10,7 @@ import org.mockito.Mockito;
 import com.tngtech.jgiven.Stage;
 import com.tngtech.jgiven.annotation.ExpectedScenarioState;
 import com.tngtech.jgiven.annotation.ProvidedScenarioState;
+import com.tngtech.jgiven.integration.spring.JGivenStage;
 
 import it.cnr.iit.peprest.PEPRest;
 import it.cnr.iit.peprest.PEPRestOperation;
@@ -18,6 +19,7 @@ import it.cnr.iit.peprest.messagetrack.MessageStorage;
 import it.cnr.iit.peprest.messagetrack.STATUS;
 import it.cnr.iit.ucsinterface.message.Message;
 
+@JGivenStage
 public class WhenPEPRestService extends Stage<WhenPEPRestService> {
 
     @ProvidedScenarioState

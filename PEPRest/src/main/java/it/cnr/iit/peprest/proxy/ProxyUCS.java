@@ -20,36 +20,30 @@ import java.util.logging.Logger;
 
 import org.springframework.http.ResponseEntity;
 
-import it.cnr.iit.peprest.configuration.RequestManagerProperties;
+import it.cnr.iit.peprest.configuration.UCSProperties;
 import it.cnr.iit.ucsinterface.message.Message;
 import it.cnr.iit.ucsinterface.message.PURPOSE;
-import it.cnr.iit.ucsinterface.requestmanager.RequestManagerToExternalInterface;
+import it.cnr.iit.ucsinterface.requestmanager.UCSCHInterface;
 import it.cnr.iit.utility.RESTUtils;
-import it.cnr.iit.utility.Utility;
+import it.cnr.iit.utility.errorhandling.Reject;
 
-public class ProxyRequestManager implements RequestManagerToExternalInterface {
+public class ProxyUCS implements UCSCHInterface {
 
-    private static final Logger log = Logger.getLogger( ProxyRequestManager.class.getName() );
+    private static final Logger log = Logger.getLogger( ProxyUCS.class.getName() );
 
-    private String port;
-    private String url;
-    private String startAccess;
-    private String endAccess;
-    private String tryAccess;
+    // TODO autowired
+    private UCSProperties ucs;
 
-    public ProxyRequestManager( RequestManagerProperties properties ) {
-        port = properties.getPort();
-        url = properties.getIp();
-        startAccess = properties.getStartAccess();
-        endAccess = properties.getEndAccess();
-        tryAccess = properties.getTryAccess();
+    public ProxyUCS( UCSProperties properties ) {
+        Reject.ifNull( properties );
+        ucs = properties;
     }
 
     @Override
     public Message sendMessageToCH( Message message ) {
         try {
             Optional<ResponseEntity<Void>> response = RESTUtils.post(
-                Utility.buildBaseUri( url, port ),
+                ucs.getBaseUri(),
                 getApiNameFromPurpose( message.getPurpose() ),
                 message );
             if( response.isPresent() && response.get().getStatusCode().is2xxSuccessful() ) {
@@ -65,11 +59,11 @@ public class ProxyRequestManager implements RequestManagerToExternalInterface {
     private String getApiNameFromPurpose( PURPOSE purpose ) {
         switch( purpose ) {
             case TRYACCESS:
-                return tryAccess;
+                return ucs.getTryAccessApi();
             case STARTACCESS:
-                return startAccess;
+                return ucs.getStartAccessApi();
             case ENDACCESS:
-                return endAccess;
+                return ucs.getEndAccessApi();
             default:
                 return "";
         }

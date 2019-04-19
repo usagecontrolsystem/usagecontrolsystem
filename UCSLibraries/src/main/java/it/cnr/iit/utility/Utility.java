@@ -17,10 +17,13 @@ package it.cnr.iit.utility;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
+import java.util.Optional;
+import java.util.PropertyResourceBundle;
 import java.util.Scanner;
 import java.util.logging.Logger;
 
@@ -147,6 +150,32 @@ public final class Utility {
             .append( ":" )
             .append( port );
         return sb.toString();
+    }
+
+    public static Optional<String> getKeyFromProperties( String propertiesFile, String key ) {
+        FileInputStream fis = null;
+        Optional<String> value = Optional.empty();
+        try {
+            File confFile = new File( Utility.class.getClassLoader()
+                .getResource( propertiesFile ).getFile() );
+            fis = new FileInputStream( confFile );
+            PropertyResourceBundle rb = new PropertyResourceBundle( fis );
+            if( rb.containsKey( key ) ) {
+                value = Optional.of( rb.getString( key ) );
+            }
+        } catch( IOException e ) {
+            log.severe( String.format( "Error reading key : {0}", e.getMessage() ) );
+        }
+
+        if( fis != null ) {
+            try {
+                fis.close();
+            } catch( Exception e ) {
+                // nothing to do here
+            }
+        }
+
+        return value;
     }
 
 }

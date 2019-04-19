@@ -56,24 +56,6 @@ public class OnGoingAttribute implements OnGoingAttributesInterface {
     // @DatabaseField(columnName = SESSION_ID_FIELD_NAME)
     private String sessionId;
 
-    @Override
-    public String getActionName() {
-        return actionName;
-    }
-
-    public void setActionName( String actionId ) {
-        this.actionName = actionId;
-    }
-
-    @Override
-    public String getSessionId() {
-        return sessionId;
-    }
-
-    public void setSessionId( String sessionId ) {
-        this.sessionId = sessionId;
-    }
-
     /**
      * Empty constructor
      */
@@ -85,19 +67,37 @@ public class OnGoingAttribute implements OnGoingAttributesInterface {
     /**
      * Constructor
      *
-     * @param name_
+     * @param attributeId
      *          subject or object attribute name
-     * @param subjectId_
+     * @param subjectName
      *          subject ID (null if it's an object attribute)
-     * @param resourceName_
+     * @param resourceName
      *          object ID (null if it's a subject attribute)
      */
-    public OnGoingAttribute( String name_, String subjectId_, String resourceName_,
+    public OnGoingAttribute( String attributeId, String subjectName, String resourceName,
             String actionName ) {
-        this.attributeId = name_;
-        this.subjectName = subjectId_;
-        this.resourceName = resourceName_;
+        setAttributeId( attributeId );
+        setSubjectName( subjectName );
+        setResourceName( resourceName );
+        setActionName( actionName );
+    }
+
+    @Override
+    public String getActionName() {
+        return actionName;
+    }
+
+    public void setActionName( String actionName ) {
         this.actionName = actionName;
+    }
+
+    @Override
+    public String getSessionId() {
+        return sessionId;
+    }
+
+    public void setSessionId( String sessionId ) {
+        this.sessionId = sessionId;
     }
 
     /**
@@ -113,11 +113,11 @@ public class OnGoingAttribute implements OnGoingAttributesInterface {
     /**
      * Sets the ID of the OnGoingAttribute raw in the database
      *
-     * @param id_
+     * @param id
      *          ID to be set
      */
-    public void setId( String id_ ) {
-        id = id_;
+    public void setId( String id ) {
+        this.id = id;
     }
 
     /**
@@ -133,11 +133,11 @@ public class OnGoingAttribute implements OnGoingAttributesInterface {
     /**
      * Sets the attribute name
      *
-     * @param name_
+     * @param attributeId
      *          attribute name to be set
      */
-    public void setAttributeId( String name_ ) {
-        attributeId = name_;
+    public void setAttributeId( String attributeId ) {
+        this.attributeId = attributeId;
     }
 
     /**
@@ -153,11 +153,11 @@ public class OnGoingAttribute implements OnGoingAttributesInterface {
     /**
      * Sets the subject ID
      *
-     * @param subjectId_
+     * @param subjectName
      *          subject ID to be set
      */
-    public void setSubjectName( String subjectId_ ) {
-        subjectName = subjectId_;
+    public void setSubjectName( String subjectName ) {
+        this.subjectName = subjectName;
     }
 
     /**
@@ -173,11 +173,11 @@ public class OnGoingAttribute implements OnGoingAttributesInterface {
     /**
      * Sets the resource ID
      *
-     * @param resourceId_
+     * @param resourceName
      *          object ID to be set
      */
-    public void setResourceName( String resourceId_ ) {
-        resourceName = resourceId_;
+    public void setResourceName( String resourceName ) {
+        this.resourceName = resourceName;
     }
 
     /**
@@ -192,11 +192,11 @@ public class OnGoingAttribute implements OnGoingAttributesInterface {
     /**
      * Sets the session for this attribute
      *
-     * @param session_
+     * @param session
      *          attribute session to be set
      */
-    public void setSession( Session session_ ) {
-        session = session_;
+    public void setSession( Session session ) {
+        this.session = session;
     }
 
     @Override
