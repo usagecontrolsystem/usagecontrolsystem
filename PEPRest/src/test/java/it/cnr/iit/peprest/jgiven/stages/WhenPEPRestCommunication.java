@@ -22,7 +22,6 @@ import com.tngtech.jgiven.annotation.ProvidedScenarioState;
 import com.tngtech.jgiven.annotation.Quoted;
 import com.tngtech.jgiven.integration.spring.JGivenStage;
 
-import it.cnr.iit.peprest.configuration.PEPRestConfiguration;
 import it.cnr.iit.ucsinterface.message.Message;
 
 @JGivenStage
@@ -42,9 +41,6 @@ public class WhenPEPRestCommunication extends Stage<WhenPEPRestCommunication> {
 
     @ExpectedScenarioState
     Message message;
-
-    @ExpectedScenarioState
-    PEPRestConfiguration configuration;
 
     @ProvidedScenarioState
     MockHttpServletResponse mvcResponse;

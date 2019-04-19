@@ -5,9 +5,11 @@ import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathMatching;
 import static org.junit.Assert.assertNotNull;
 
-import java.io.File;
+import java.net.URI;
 import java.util.Optional;
 import java.util.UUID;
+
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.github.tomakehurst.wiremock.client.MappingBuilder;
 import com.github.tomakehurst.wiremock.client.ResponseDefinitionBuilder;
@@ -18,22 +20,22 @@ import com.tngtech.jgiven.annotation.BeforeScenario;
 import com.tngtech.jgiven.annotation.ProvidedScenarioState;
 import com.tngtech.jgiven.annotation.Quoted;
 import com.tngtech.jgiven.annotation.ScenarioRule;
+import com.tngtech.jgiven.integration.spring.JGivenStage;
 
-import it.cnr.iit.peprest.PEPRest;
-import it.cnr.iit.peprest.configuration.PEPRestConfiguration;
-import it.cnr.iit.peprest.jgiven.rules.MockedHttpServiceTestRule;
-import it.cnr.iit.utility.JsonUtility;
+import it.cnr.iit.peprest.integration.PEPRestTestContext;
+import it.cnr.iit.usagecontrolframework.rest.jgiven.rules.MockedHttpServiceTestRule;
 
+@JGivenStage
 public class GivenContextHandlerRestSimulator extends Stage<GivenContextHandlerRestSimulator> {
 
     @ScenarioRule
-    MockedHttpServiceTestRule restSimulatorTestRule = new MockedHttpServiceTestRule( getPort() );
+    MockedHttpServiceTestRule restSimulatorTestRule = new MockedHttpServiceTestRule();
 
     @ProvidedScenarioState
     WireMock wireMockContextHandler;
 
-    @ProvidedScenarioState
-    PEPRestConfiguration configuration;
+    @Autowired
+    PEPRestTestContext properties;
 
     @ProvidedScenarioState
     String sessionId;
@@ -43,41 +45,25 @@ public class GivenContextHandlerRestSimulator extends Stage<GivenContextHandlerR
 
     @BeforeScenario
     public void init() {
-        loadConfiguration();
+        restSimulatorTestRule.start( getUCSUri().get().getPort() );
     }
 
-    private void loadConfiguration() {
-        if( configuration == null ) {
-            File confFile = new File( PEPRest.class.getClassLoader().getResource( "conf.json" ).getFile() );
-            Optional<PEPRestConfiguration> optPEPRestConfiguration = JsonUtility.loadObjectFromJsonFile( confFile,
-                PEPRestConfiguration.class );
-            if( optPEPRestConfiguration.isPresent() ) {
-                configuration = optPEPRestConfiguration.get();
-            }
-        }
-    }
-
-    private String getHost() {
-        if( configuration == null ) {
-            loadConfiguration();
-        }
-        return configuration.getRequestManager().getIp();
-    }
-
-    private int getPort() {
-        if( configuration == null ) {
-            loadConfiguration();
-        }
-        return Integer.parseInt( configuration.getRequestManager().getPort() );
+    private Optional<URI> getUCSUri() {
+        try {
+            URI uri = new URI( properties.getUcsBaseUri() );
+            return Optional.of( uri );
+        } catch( Exception e ) {}
+        return Optional.empty();
     }
 
     public GivenContextHandlerRestSimulator a_test_configuration_for_request_with_policy() {
-        loadConfiguration();
         return self();
     }
 
     public GivenContextHandlerRestSimulator a_mocked_context_handler_for_$( @Quoted String operationUri ) {
-        wireMockContextHandler = new WireMock( getHost(), getPort() );
+        URI uri = getUCSUri().get();
+
+        wireMockContextHandler = new WireMock( uri.getHost(), uri.getPort() );
         post = post( urlPathMatching( operationUri ) );
         return self();
     }
