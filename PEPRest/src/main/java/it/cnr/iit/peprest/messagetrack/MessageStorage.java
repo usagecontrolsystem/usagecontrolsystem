@@ -143,4 +143,9 @@ public class MessageStorage implements MessageStorageInterface, MessagesPerSessi
         messagesPerSession.get( sessionId ).add( messageId );
     }
 
+    public void clear() {
+        messageFlow.clear();
+        messagesPerSession.clear();
+    }
+
 }

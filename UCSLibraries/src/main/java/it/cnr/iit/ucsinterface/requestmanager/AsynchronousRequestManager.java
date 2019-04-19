@@ -45,7 +45,7 @@ import it.cnr.iit.utility.errorhandling.Reject;
  *
  */
 public abstract class AsynchronousRequestManager
-        implements RequestManagerToCHInterface, RequestManagerToExternalInterface,
+        implements RequestManagerToCHInterface, UCSCHInterface,
         InterfaceToPerformanceMonitor {
     protected static final Logger log = Logger.getLogger( AsynchronousRequestManager.class.getName() );
 

@@ -29,7 +29,7 @@ import it.cnr.iit.ucsinterface.message.Message;
  * @author antonio
  *
  */
-public interface RequestManagerToExternalInterface {
+public interface UCSCHInterface {
 
     /**
      * Sends a message from the external world to the context handler

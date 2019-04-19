@@ -26,7 +26,6 @@ import com.tngtech.jgiven.integration.spring.JGivenStage;
 
 import it.cnr.iit.peprest.PEPRest;
 import it.cnr.iit.peprest.PEPRestOperation;
-import it.cnr.iit.peprest.configuration.PEPRestConfiguration;
 import it.cnr.iit.peprest.messagetrack.CallerResponse;
 import it.cnr.iit.peprest.messagetrack.STATUS;
 import it.cnr.iit.ucsinterface.message.Message;
@@ -51,9 +50,6 @@ public class ThenMessage extends Stage<ThenMessage> {
 
     @ExpectedScenarioState
     WireMock wireMockContextHandler;
-
-    @ExpectedScenarioState
-    PEPRestConfiguration configuration;
 
     @ExpectedScenarioState
     Message message;

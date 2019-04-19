@@ -31,7 +31,7 @@ import it.cnr.iit.ucsinterface.message.tryaccess.TryAccessResponse;
 import it.cnr.iit.ucsinterface.node.NodeInterface;
 import it.cnr.iit.ucsinterface.pep.ExamplePEP;
 import it.cnr.iit.ucsinterface.pep.PEPInterface;
-import it.cnr.iit.ucsinterface.requestmanager.RequestManagerToExternalInterface;
+import it.cnr.iit.ucsinterface.requestmanager.UCSCHInterface;
 import it.cnr.iit.utility.RESTUtils;
 import it.cnr.iit.utility.Utility;
 
@@ -196,7 +196,7 @@ public class ProxyPEP extends Proxy implements PEPInterface {
      *          Request Manager
      */
     public void setRequestManagerInterface(
-            RequestManagerToExternalInterface requestManager ) {
+            UCSCHInterface requestManager ) {
         switch( getConnection() ) {
             case API:
                 abstractPEP.setRequestManagerInterface( requestManager );
