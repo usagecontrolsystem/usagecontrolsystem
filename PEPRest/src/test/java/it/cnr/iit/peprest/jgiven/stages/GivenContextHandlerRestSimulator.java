@@ -23,8 +23,8 @@ import com.tngtech.jgiven.annotation.Quoted;
 import com.tngtech.jgiven.annotation.ScenarioRule;
 import com.tngtech.jgiven.integration.spring.JGivenStage;
 
-import it.cnr.iit.peprest.jgiven.rules.MockedHttpServiceTestRule;
 import it.cnr.iit.peprest.properties.TestProperties;
+import it.cnr.iit.usagecontrolframework.rest.jgiven.rules.MockedHttpServiceTestRule;
 
 @JGivenStage
 public class GivenContextHandlerRestSimulator extends Stage<GivenContextHandlerRestSimulator> {
@@ -35,7 +35,6 @@ public class GivenContextHandlerRestSimulator extends Stage<GivenContextHandlerR
     @ProvidedScenarioState
     WireMock wireMockContextHandler;
 
-    @ProvidedScenarioState
     @Autowired
     TestProperties properties;
 
