@@ -1,5 +1,6 @@
 package it.cnr.iit.usagecontrolframework.rest.jgiven.stages;
 
+import static com.github.tomakehurst.wiremock.client.WireMock.containing;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
@@ -26,19 +27,21 @@ public class ThenMessage extends Stage<ThenMessage> {
     @ExpectedScenarioState
     WireMock wireMockContextHandler;
 
-    public ThenMessage the_asynch_post_request_for_$_was_received_by_PEPRest( @Quoted String operation ) {
+    public ThenMessage the_asynch_post_request_for_$_with_decision_$_was_received_by_PEPRest( @Quoted String operation,
+            @Quoted String decision ) {
         await().with().pollInterval( ONE_HUNDRED_MILLISECONDS )
             .and().with().pollDelay( TWO_SECONDS )
-            .until( postRequestWasVerified( operation ) );
+            .until( postRequestWasVerified( operation, decision ) );
         return self();
     }
 
-    private Callable<Boolean> postRequestWasVerified( String operation ) {
+    private Callable<Boolean> postRequestWasVerified( String operation, String decision ) {
         return new Callable<Boolean>() {
             @Override
             public Boolean call() throws Exception {
                 try {
                     wireMockContextHandler.verifyThat( postRequestedFor( urlEqualTo( operation ) )
+                        .withRequestBody( containing( "\"decision\":\"" + decision + "\"" ) )
                         .withHeader( "Content-Type", equalTo( "application/json" ) ) );
                 } catch( VerificationException e ) {
                     log.warning( "POST request is not yet received. Polling with 100ms interval for 10 seconds." );

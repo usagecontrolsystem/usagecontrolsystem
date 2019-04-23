@@ -25,17 +25,20 @@ import it.cnr.iit.usagecontrolframework.rest.jgiven.stages.WhenUCFRestController
 public class UsageControlFrameworkScenarioIntegrationTest
         extends SpringRuleScenarioTest<GivenMessage, WhenUCFRestController, ThenMessage> {
 
+    private static final String DECISION_PERMIT = "PERMIT";
+
     @ScenarioStage
     GivenPEPRestSimulator givenPEPRestSimulator;
 
     @Test
-    public void a_tryAccess_request_is_replied_with_tryAccessResponse() {
+    public void a_tryAccess_request_is_replied_with_tryAccessResponse_containg_Permit_decision() {
         given().a_TryAccess_request();
         givenPEPRestSimulator.and().a_mocked_PEPRest_for_$( TRY_ACCESS_RESPONSE.getOperationUri() )
             .and().a_success_response_status_code_of_$( HttpStatus.SC_OK );
 
         when().the_UCF_is_executed_for_$( TRY_ACCESS.getOperationUri() );
 
-        then().the_asynch_post_request_for_$_was_received_by_PEPRest( TRY_ACCESS_RESPONSE.getOperationUri() );
+        then().the_asynch_post_request_for_$_with_decision_$_was_received_by_PEPRest( TRY_ACCESS_RESPONSE.getOperationUri(),
+            DECISION_PERMIT );
     }
 }
