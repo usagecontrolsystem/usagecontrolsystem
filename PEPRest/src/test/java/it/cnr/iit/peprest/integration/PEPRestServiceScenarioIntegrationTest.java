@@ -28,11 +28,11 @@ import it.cnr.iit.peprest.jgiven.stages.GivenContextHandlerRestSimulator;
 import it.cnr.iit.peprest.jgiven.stages.GivenMessage;
 import it.cnr.iit.peprest.jgiven.stages.ThenMessage;
 import it.cnr.iit.peprest.jgiven.stages.WhenPEPRestCommunication;
+import it.cnr.iit.peprest.properties.TestProperties;
 import it.cnr.iit.usagecontrolframework.rest.jgiven.rules.UCSRestJGivenConfiguration;
 
-@SpringBootTest( classes = { MockServletContext.class, PEPRestTestContext.class } )
+@SpringBootTest( classes = { MockServletContext.class, TestProperties.class } )
 @WebAppConfiguration
-//@JGivenConfiguration( PEPRestJGivenConfiguration.class )
 @JGivenConfiguration( UCSRestJGivenConfiguration.class )
 public class PEPRestServiceScenarioIntegrationTest
         extends SpringRuleScenarioTest<GivenContextHandlerRestSimulator, WhenPEPRestCommunication, ThenMessage> {
