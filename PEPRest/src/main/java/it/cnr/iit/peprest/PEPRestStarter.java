@@ -23,6 +23,11 @@ import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
 import org.springframework.context.annotation.Bean;
 
+import it.cnr.iit.peprest.configuration.PEPProperties;
+import it.cnr.iit.peprest.configuration.UCSProperties;
+import it.cnr.iit.peprest.proxy.ProxyUCS;
+import it.cnr.iit.ucsinterface.requestmanager.UCSCHInterface;
+
 import springfox.documentation.builders.ApiInfoBuilder;
 import springfox.documentation.builders.PathSelectors;
 import springfox.documentation.service.ApiInfo;
@@ -83,6 +88,21 @@ public class PEPRestStarter extends SpringBootServletInitializer {
     public static void main( String[] args ) {
         SpringApplication app = new SpringApplication( PEPRestStarter.class );
         app.run( args );
+    }
+
+    @Bean
+    public PEPProperties getPEPProperties() {
+        return new PEPProperties();
+    }
+
+    @Bean
+    public UCSProperties getUCSProperties() {
+        return new UCSProperties();
+    }
+
+    @Bean
+    public UCSCHInterface getUCSInterface( UCSProperties ucsProperties ) {
+        return new ProxyUCS( ucsProperties );
     }
 
 }

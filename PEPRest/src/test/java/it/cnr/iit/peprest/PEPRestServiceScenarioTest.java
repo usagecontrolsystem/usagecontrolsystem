@@ -16,7 +16,7 @@ import com.tngtech.java.junit.dataprovider.DataProvider;
 import com.tngtech.java.junit.dataprovider.DataProviderRunner;
 import com.tngtech.java.junit.dataprovider.UseDataProvider;
 import com.tngtech.jgiven.annotation.ScenarioStage;
-import com.tngtech.jgiven.integration.spring.SpringRuleScenarioTest;
+import com.tngtech.jgiven.integration.spring.SpringScenarioTest;
 
 import it.cnr.iit.peprest.jgiven.stages.GivenContextHandlerRestSimulator;
 import it.cnr.iit.peprest.jgiven.stages.GivenMessage;
@@ -27,7 +27,7 @@ import oasis.names.tc.xacml.core.schema.wd_17.DecisionType;
 
 @RunWith( DataProviderRunner.class )
 public class PEPRestServiceScenarioTest
-        extends SpringRuleScenarioTest<GivenContextHandlerRestSimulator, WhenPEPRestService, ThenMessage> {
+        extends SpringScenarioTest<GivenContextHandlerRestSimulator, WhenPEPRestService, ThenMessage> {
 
     @ScenarioStage
     GivenMessage givenMessage;

@@ -1,5 +1,6 @@
 package it.cnr.iit.peprest.jgiven.rules;
 
+import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.options;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
 
 import java.util.List;
@@ -18,8 +19,8 @@ import com.github.tomakehurst.wiremock.verification.NearMiss;
  */
 public class MockedHttpServiceTestRule extends ExternalResource {
 
-    private final boolean failOnUnmatchedStubs;
-    private final WireMockServer wireMockServer;
+    private boolean failOnUnmatchedStubs;
+    private WireMockServer wireMockServer;
 
     public MockedHttpServiceTestRule( Options options ) {
         this( options, true );
@@ -30,10 +31,11 @@ public class MockedHttpServiceTestRule extends ExternalResource {
         this.failOnUnmatchedStubs = failOnUnmatchedStubs;
     }
 
-    public MockedHttpServiceTestRule() {
-        // TODO load from autowrired config
-        this( wireMockConfig().port( 9998 ) );
+    public MockedHttpServiceTestRule( int port ) {
+        this( wireMockConfig().port( port ) );
     }
+
+    public MockedHttpServiceTestRule() {}
 
     public MockedHttpServiceTestRule( int httpsPort, String keystorePath, String keystorePassword ) {
         this( wireMockConfig()
@@ -54,8 +56,9 @@ public class MockedHttpServiceTestRule extends ExternalResource {
         }
     }
 
-    @Override
-    protected void before() {
+    public void start( int port ) {
+        wireMockConfig().port( port );
+        wireMockServer = new WireMockServer( options().port( port ) );
         wireMockServer.start();
     }
 

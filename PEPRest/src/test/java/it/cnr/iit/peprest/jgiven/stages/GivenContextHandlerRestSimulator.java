@@ -23,8 +23,8 @@ import com.tngtech.jgiven.annotation.Quoted;
 import com.tngtech.jgiven.annotation.ScenarioRule;
 import com.tngtech.jgiven.integration.spring.JGivenStage;
 
-import it.cnr.iit.peprest.configuration.UCSProperties;
 import it.cnr.iit.peprest.jgiven.rules.MockedHttpServiceTestRule;
+import it.cnr.iit.peprest.properties.TestProperties;
 
 @JGivenStage
 public class GivenContextHandlerRestSimulator extends Stage<GivenContextHandlerRestSimulator> {
@@ -37,7 +37,7 @@ public class GivenContextHandlerRestSimulator extends Stage<GivenContextHandlerR
 
     @ProvidedScenarioState
     @Autowired
-    UCSProperties ucs;
+    TestProperties properties;
 
     @ProvidedScenarioState
     String sessionId;
@@ -47,25 +47,25 @@ public class GivenContextHandlerRestSimulator extends Stage<GivenContextHandlerR
 
     @BeforeScenario
     public void init() {
-        loadConfiguration();
-    }
-
-    private void loadConfiguration() {
-        // nothing
+        restSimulatorTestRule.start( getUCSUri().get().getPort() );
     }
 
     private Optional<URI> getUCSUri() {
-        URI uri;
+        System.out.println( "#### 1" );
+        System.out.println( "#### => " + properties == null );
+        System.out.println( "#### => " + properties.getUcsBaseUri() );
         try {
-            return Optional.of( new URI( ucs.getBaseUri() ) );
-        } catch( URISyntaxException e ) {
 
-        }
+            Optional<URI> uri = Optional.of( new URI( properties.getUcsBaseUri() ) );
+            System.out.println( "#### => " + uri.get().toString() );
+            return uri;
+        } catch( URISyntaxException e ) {}
+        System.out.println( "#### 2" );
         return Optional.empty();
     }
 
     public GivenContextHandlerRestSimulator a_test_configuration_for_request_with_policy() {
-        loadConfiguration();
+        // loadConfiguration();
         return self();
     }
 
