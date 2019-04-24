@@ -18,7 +18,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import it.cnr.iit.peprest.proxy.ProxyRequestManager;
+import it.cnr.iit.peprest.proxy.ProxyUCS;
 import it.cnr.iit.ucsinterface.message.Message;
 import it.cnr.iit.ucsinterface.message.startaccess.StartAccessResponse;
 import it.cnr.iit.ucsinterface.message.tryaccess.TryAccessResponse;
@@ -41,7 +41,7 @@ public abstract class PEPRestAbstractTest {
     protected PEPRest pepRest;
 
     @MockBean
-    protected ProxyRequestManager proxyRequestManager;
+    protected ProxyUCS proxyRequestManager;
 
     @Autowired
     WebApplicationContext webApplicationContext;

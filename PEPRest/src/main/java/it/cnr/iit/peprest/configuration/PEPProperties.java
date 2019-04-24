@@ -15,47 +15,76 @@
  ******************************************************************************/
 package it.cnr.iit.peprest.configuration;
 
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+
+@ConfigurationProperties( prefix = "pep" )
 public class PEPProperties {
 
-    private String ip;
-    private String port;
-    private String response;
-    private String revoke;
-    private String statusChanged;
-    private String policyPath;
-    private String requestPath;
+    @Value( "${id:1}" )
     private String id;
 
-    public String getIp() {
-        return ip;
+    @Value( "${base-uri}" )
+    private String baseUri;
+
+    @Value( "${revoke-type:HARD}" )
+    private String revokeType;
+
+    @Value( "${policy-path}" )
+    private String policyPath;
+
+    @Value( "${request-path}" )
+    private String requestPath;
+
+    @Value( "${status-changed-api}" )
+    private String statusChangedApi;
+
+    public String getId() {
+        return id;
     }
 
-    public String getPort() {
-        return port;
+    public void setId( String id ) {
+        this.id = id;
     }
 
-    public String getResponse() {
-        return response;
+    public String getBaseUri() {
+        return baseUri;
     }
 
-    public String getStatusChanged() {
-        return statusChanged;
+    public void setBaseUri( String baseUri ) {
+        this.baseUri = baseUri;
     }
 
-    public String getRevoke() {
-        return revoke;
+    public String getRevokeType() {
+        return revokeType;
+    }
+
+    public void setRevokeType( String revokeType ) {
+        this.revokeType = revokeType;
     }
 
     public String getPolicyPath() {
         return policyPath;
     }
 
+    public void setPolicyPath( String policyPath ) {
+        this.policyPath = policyPath;
+    }
+
     public String getRequestPath() {
         return requestPath;
     }
 
-    public String getId() {
-        return id;
+    public void setRequestPath( String requestPath ) {
+        this.requestPath = requestPath;
+    }
+
+    public String getStatusChangedApi() {
+        return statusChangedApi;
+    }
+
+    public void setStatusChangedApi( String statusChangedApi ) {
+        this.statusChangedApi = statusChangedApi;
     }
 
 }

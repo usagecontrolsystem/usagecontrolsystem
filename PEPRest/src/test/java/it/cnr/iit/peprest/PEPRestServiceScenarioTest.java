@@ -11,24 +11,32 @@ import static it.cnr.iit.peprest.PEPRestOperation.TRY_ACCESS_RESPONSE;
 import org.apache.http.HttpStatus;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.mock.web.MockServletContext;
+import org.springframework.test.context.web.WebAppConfiguration;
 
 import com.tngtech.java.junit.dataprovider.DataProvider;
 import com.tngtech.java.junit.dataprovider.DataProviderRunner;
 import com.tngtech.java.junit.dataprovider.UseDataProvider;
+import com.tngtech.jgiven.annotation.JGivenConfiguration;
 import com.tngtech.jgiven.annotation.ScenarioStage;
-import com.tngtech.jgiven.junit.ScenarioTest;
+import com.tngtech.jgiven.integration.spring.SpringRuleScenarioTest;
 
-import it.cnr.iit.peprest.PEPRestOperation;
+import it.cnr.iit.peprest.integration.PEPRestTestContext;
 import it.cnr.iit.peprest.jgiven.stages.GivenContextHandlerRestSimulator;
 import it.cnr.iit.peprest.jgiven.stages.GivenMessage;
 import it.cnr.iit.peprest.jgiven.stages.ThenMessage;
 import it.cnr.iit.peprest.jgiven.stages.WhenPEPRestService;
+import it.cnr.iit.usagecontrolframework.rest.jgiven.rules.UCSRestJGivenConfiguration;
 
 import oasis.names.tc.xacml.core.schema.wd_17.DecisionType;
 
 @RunWith( DataProviderRunner.class )
+@SpringBootTest( classes = { MockServletContext.class, PEPRestTestContext.class } )
+@WebAppConfiguration
+@JGivenConfiguration( UCSRestJGivenConfiguration.class )
 public class PEPRestServiceScenarioTest
-        extends ScenarioTest<GivenContextHandlerRestSimulator, WhenPEPRestService, ThenMessage> {
+        extends SpringRuleScenarioTest<GivenContextHandlerRestSimulator, WhenPEPRestService, ThenMessage> {
 
     @ScenarioStage
     GivenMessage givenMessage;

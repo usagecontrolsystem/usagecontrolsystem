@@ -36,7 +36,7 @@ import it.cnr.iit.ucsinterface.message.startaccess.StartAccessResponse;
 import it.cnr.iit.ucsinterface.message.tryaccess.TryAccessMessage;
 import it.cnr.iit.ucsinterface.message.tryaccess.TryAccessMessageBuilder;
 import it.cnr.iit.ucsinterface.message.tryaccess.TryAccessResponse;
-import it.cnr.iit.ucsinterface.requestmanager.RequestManagerToExternalInterface;
+import it.cnr.iit.ucsinterface.requestmanager.UCSCHInterface;
 import it.cnr.iit.utility.Utility;
 
 /**
@@ -54,7 +54,7 @@ public class ExamplePEP implements PEPInterface {
     private static final String START_PATH = "data";
 
     private PepProperties configuration;
-    private RequestManagerToExternalInterface requestManager;
+    private UCSCHInterface requestManager;
     // private ContextHandlerInterface contextHandler;
 
     // map of unanswered messages, the key is the id of the message
@@ -128,7 +128,7 @@ public class ExamplePEP implements PEPInterface {
      */
 
     public void setRequestManagerInterface(
-            RequestManagerToExternalInterface requestManager ) {
+            UCSCHInterface requestManager ) {
         this.requestManager = requestManager;
     }
 

@@ -4,8 +4,8 @@
   "scenarios": [
     {
       "className": "it.cnr.iit.usagecontrolframework.rest.UsageControlFrameworkScenarioIntegrationTest",
-      "testMethodName": "a_tryAccess_request_is_replied_with_PERMIT",
-      "description": "a tryAccess request is replied with PERMIT",
+      "testMethodName": "a_tryAccess_request_is_replied_with_tryAccessResponse",
+      "description": "a tryAccess request is replied with tryAccessResponse",
       "tagIds": [],
       "explicitParameters": [],
       "derivedParameters": [],
@@ -26,7 +26,7 @@
                 }
               ],
               "status": "PASSED",
-              "durationInNanos": 2823687
+              "durationInNanos": 4232982
             },
             {
               "name": "a mocked PEPRest for $",
@@ -47,7 +47,7 @@
                 }
               ],
               "status": "PASSED",
-              "durationInNanos": 34441
+              "durationInNanos": 34964
             },
             {
               "name": "a success response status code of $",
@@ -68,7 +68,7 @@
                 }
               ],
               "status": "PASSED",
-              "durationInNanos": 253084024
+              "durationInNanos": 335570676
             },
             {
               "name": "the UCF is executed for $",
@@ -89,7 +89,7 @@
                 }
               ],
               "status": "PASSED",
-              "durationInNanos": 97477441
+              "durationInNanos": 210216724
             },
             {
               "name": "the asynch post request for $ was received by PEPRest",
@@ -113,17 +113,17 @@
                 }
               ],
               "status": "PASSED",
-              "durationInNanos": 499388
+              "durationInNanos": 2061716715
             }
           ],
           "explicitArguments": [],
           "derivedArguments": [],
           "status": "SUCCESS",
           "success": true,
-          "durationInNanos": 1448696687
+          "durationInNanos": 3712402880
         }
       ],
-      "durationInNanos": 1448696687,
+      "durationInNanos": 3712402880,
       "executionStatus": "SUCCESS"
     }
   ],
