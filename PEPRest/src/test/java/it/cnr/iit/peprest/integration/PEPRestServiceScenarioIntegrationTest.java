@@ -18,6 +18,8 @@ import org.apache.http.HttpStatus;
 import org.junit.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.mock.web.MockServletContext;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import org.springframework.test.context.web.WebAppConfiguration;
 
 import com.tngtech.jgiven.annotation.JGivenConfiguration;
@@ -32,6 +34,7 @@ import it.cnr.iit.usagecontrolframework.rest.jgiven.rules.UCSRestJGivenConfigura
 
 @SpringBootTest( classes = { MockServletContext.class, PEPRestTestContext.class } )
 @WebAppConfiguration
+@DirtiesContext( classMode = ClassMode.BEFORE_EACH_TEST_METHOD )
 @JGivenConfiguration( UCSRestJGivenConfiguration.class )
 public class PEPRestServiceScenarioIntegrationTest
         extends SpringRuleScenarioTest<GivenContextHandlerRestSimulator, WhenPEPRestCommunication, ThenMessage> {
