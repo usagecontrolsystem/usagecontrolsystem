@@ -22,15 +22,18 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 import com.google.common.base.Throwables;
 
 import it.cnr.iit.peprest.configuration.PEPProperties;
+import it.cnr.iit.peprest.configuration.UCSProperties;
 import it.cnr.iit.peprest.messagetrack.MessageStorage;
 import it.cnr.iit.peprest.messagetrack.MessageStorageInterface;
 import it.cnr.iit.peprest.messagetrack.MessagesPerSession;
+import it.cnr.iit.peprest.proxy.ProxyUCS;
 import it.cnr.iit.ucsinterface.message.MEAN;
 import it.cnr.iit.ucsinterface.message.Message;
 import it.cnr.iit.ucsinterface.message.endaccess.EndAccessMessage;
@@ -74,6 +77,23 @@ public class PEPRest implements PEPInterface {
 
     @Autowired
     private UCSCHInterface ucs;
+
+    @Bean
+    public PEPProperties getPEPProperties() {
+        return new PEPProperties();
+    }
+
+    @Bean
+    public UCSProperties getUCSProperties() {
+        return new UCSProperties();
+    }
+
+    @Bean
+    public UCSCHInterface getUCSInterface( UCSProperties ucsProperties ) {
+        return new ProxyUCS( ucsProperties );
+    }
+
+    public PEPRest() {}
 
     public String tryAccess() {
         String request = Utility.readFileAbsPath( pep.getRequestPath() );
@@ -340,6 +360,12 @@ public class PEPRest implements PEPInterface {
 
     public void setMessageStorage( MessageStorage messageStorage ) {
         messageHistory = messageStorage;
+    }
+
+    public void clear() {
+        unanswered.clear();
+        responses.clear();
+        messageHistory.clear();
     }
 
 }

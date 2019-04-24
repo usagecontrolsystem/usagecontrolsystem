@@ -12,7 +12,6 @@ import com.tngtech.jgiven.integration.spring.EnableJGiven;
 @Configuration
 @EnableJGiven
 @ComponentScan( basePackages = { "it.cnr.iit.peprest" } )
-
 @EnableConfigurationProperties
 @TestPropertySource( properties = "application.properties" )
 @SpringBootConfiguration
@@ -81,6 +80,6 @@ public class PEPRestTestContext {
     }
 
     public void setUcsBaseUri( String ucsUri ) {
-        this.ucsBaseUri = ucsUri;
+        ucsBaseUri = ucsUri;
     }
 }

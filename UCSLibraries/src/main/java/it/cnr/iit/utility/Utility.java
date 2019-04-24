@@ -152,7 +152,11 @@ public final class Utility {
         return sb.toString();
     }
 
-    public static Optional<String> getKeyFromProperties( String propertiesFile, String key ) {
+    public static Optional<String> getPropertiesValue( String key ) {
+        return getPropertiesValue( "application.properties", key );
+    }
+
+    public static Optional<String> getPropertiesValue( String propertiesFile, String key ) {
         FileInputStream fis = null;
         Optional<String> value = Optional.empty();
         try {

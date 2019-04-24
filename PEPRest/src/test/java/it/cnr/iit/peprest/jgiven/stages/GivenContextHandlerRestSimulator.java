@@ -6,7 +6,6 @@ import static com.github.tomakehurst.wiremock.client.WireMock.urlPathMatching;
 import static org.junit.Assert.assertNotNull;
 
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -23,7 +22,7 @@ import com.tngtech.jgiven.annotation.Quoted;
 import com.tngtech.jgiven.annotation.ScenarioRule;
 import com.tngtech.jgiven.integration.spring.JGivenStage;
 
-import it.cnr.iit.peprest.properties.TestProperties;
+import it.cnr.iit.peprest.integration.PEPRestTestContext;
 import it.cnr.iit.usagecontrolframework.rest.jgiven.rules.MockedHttpServiceTestRule;
 
 @JGivenStage
@@ -36,7 +35,7 @@ public class GivenContextHandlerRestSimulator extends Stage<GivenContextHandlerR
     WireMock wireMockContextHandler;
 
     @Autowired
-    TestProperties properties;
+    PEPRestTestContext properties;
 
     @ProvidedScenarioState
     String sessionId;
@@ -50,21 +49,14 @@ public class GivenContextHandlerRestSimulator extends Stage<GivenContextHandlerR
     }
 
     private Optional<URI> getUCSUri() {
-        System.out.println( "#### 1" );
-        System.out.println( "#### => " + properties == null );
-        System.out.println( "#### => " + properties.getUcsBaseUri() );
         try {
-
-            Optional<URI> uri = Optional.of( new URI( properties.getUcsBaseUri() ) );
-            System.out.println( "#### => " + uri.get().toString() );
-            return uri;
-        } catch( URISyntaxException e ) {}
-        System.out.println( "#### 2" );
+            URI uri = new URI( properties.getUcsBaseUri() );
+            return Optional.of( uri );
+        } catch( Exception e ) {}
         return Optional.empty();
     }
 
     public GivenContextHandlerRestSimulator a_test_configuration_for_request_with_policy() {
-        // loadConfiguration();
         return self();
     }
 

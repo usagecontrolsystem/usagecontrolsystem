@@ -6,8 +6,10 @@ import static org.junit.Assert.fail;
 import java.util.Optional;
 
 import org.mockito.Mockito;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.tngtech.jgiven.Stage;
+import com.tngtech.jgiven.annotation.BeforeStage;
 import com.tngtech.jgiven.annotation.ExpectedScenarioState;
 import com.tngtech.jgiven.annotation.ProvidedScenarioState;
 import com.tngtech.jgiven.integration.spring.JGivenStage;
@@ -23,6 +25,7 @@ import it.cnr.iit.ucsinterface.message.Message;
 public class WhenPEPRestService extends Stage<WhenPEPRestService> {
 
     @ProvidedScenarioState
+    @Autowired
     PEPRest pepRest;
 
     @ProvidedScenarioState
@@ -37,11 +40,14 @@ public class WhenPEPRestService extends Stage<WhenPEPRestService> {
     @ExpectedScenarioState
     Message message;
 
-    public WhenPEPRestService() {
-        pepRest = new PEPRest();
+    @BeforeStage
+    public void init() {
         MessageStorage messageStorage = Mockito.mock( MessageStorage.class );
         pepRest.setMessageStorage( messageStorage );
+        pepRest.clear();
     }
+
+    public WhenPEPRestService() {}
 
     public WhenPEPRestService PEPRest_service_$_is_executed( PEPRestOperation restOperation ) {
         assertNotNull( pepRest );

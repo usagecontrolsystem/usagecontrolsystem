@@ -22,17 +22,17 @@ import com.tngtech.jgiven.annotation.JGivenConfiguration;
 import com.tngtech.jgiven.annotation.ScenarioStage;
 import com.tngtech.jgiven.integration.spring.SpringRuleScenarioTest;
 
+import it.cnr.iit.peprest.integration.PEPRestTestContext;
 import it.cnr.iit.peprest.jgiven.stages.GivenContextHandlerRestSimulator;
 import it.cnr.iit.peprest.jgiven.stages.GivenMessage;
 import it.cnr.iit.peprest.jgiven.stages.ThenMessage;
 import it.cnr.iit.peprest.jgiven.stages.WhenPEPRestService;
-import it.cnr.iit.peprest.properties.TestProperties;
 import it.cnr.iit.usagecontrolframework.rest.jgiven.rules.UCSRestJGivenConfiguration;
 
 import oasis.names.tc.xacml.core.schema.wd_17.DecisionType;
 
 @RunWith( DataProviderRunner.class )
-@SpringBootTest( classes = { MockServletContext.class, TestProperties.class } )
+@SpringBootTest( classes = { MockServletContext.class, PEPRestTestContext.class } )
 @WebAppConfiguration
 @JGivenConfiguration( UCSRestJGivenConfiguration.class )
 public class PEPRestServiceScenarioTest
