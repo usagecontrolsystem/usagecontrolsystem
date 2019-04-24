@@ -68,7 +68,7 @@ public class PEPRestStarter extends SpringBootServletInitializer {
     }
 
     /**
-     * the metadata are information visualized in the /basepath/swagger-ui.html
+     * the metadata are information visualised in the /basepath/swagger-ui.html
      * interface, only for documentation
      */
     private ApiInfo metadata() {

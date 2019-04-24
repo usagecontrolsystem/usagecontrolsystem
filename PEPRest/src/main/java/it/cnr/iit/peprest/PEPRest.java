@@ -47,6 +47,7 @@ import it.cnr.iit.ucsinterface.message.tryaccess.TryAccessResponse;
 import it.cnr.iit.ucsinterface.pep.PEPInterface;
 import it.cnr.iit.ucsinterface.requestmanager.UCSCHInterface;
 import it.cnr.iit.utility.Utility;
+import it.cnr.iit.utility.errorhandling.Reject;
 
 import oasis.names.tc.xacml.core.schema.wd_17.DecisionType;
 
@@ -250,10 +251,6 @@ public class PEPRest implements PEPInterface {
         return response.getPDPEvaluation().getResult();
     }
 
-    public ConcurrentMap<String, Message> getResponses() {
-        return responses;
-    }
-
     private final String buildResponseInterface( String name ) {
         StringBuilder sb = new StringBuilder();
         sb.append( pep.getBaseUri() );
@@ -275,6 +272,10 @@ public class PEPRest implements PEPInterface {
         endAccess( sessionId );
     }
 
+    public ConcurrentMap<String, Message> getResponses() {
+        return responses;
+    }
+
     public ConcurrentMap<String, Message> getUnanswered() {
         return unanswered;
     }
@@ -285,9 +286,7 @@ public class PEPRest implements PEPInterface {
      * @return an optional containing either the sessionId either nothing
      */
     public Optional<String> getSessionIdInTryAccess( String messageId ) {
-        if( messageId == null || messageId.isEmpty() ) {
-            throw new NullPointerException( "Passed message is null" );
-        }
+        Reject.ifBlank( messageId );
         Optional<Message> message = getMessageFromId( messageId );
         if( message.isPresent() ) {
             TryAccessResponse response = (TryAccessResponse) message.get();
@@ -302,9 +301,7 @@ public class PEPRest implements PEPInterface {
      * @return an optional containing either the required evaluation or an empty one
      */
     public Optional<String> getEvaluationResult( String messageId ) {
-        if( messageId == null || messageId.isEmpty() ) {
-            throw new NullPointerException( "Passed message is null" );
-        }
+        Reject.ifBlank( messageId );
         Optional<Message> optional = getMessageFromId( messageId );
         if( optional.isPresent() ) {
             Message message = optional.get();
