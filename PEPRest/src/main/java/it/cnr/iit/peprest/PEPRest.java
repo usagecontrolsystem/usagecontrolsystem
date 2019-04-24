@@ -93,8 +93,6 @@ public class PEPRest implements PEPInterface {
         return new ProxyUCS( ucsProperties );
     }
 
-    public PEPRest() {}
-
     public String tryAccess() {
         String request = Utility.readFileAbsPath( pep.getRequestPath() );
         String policy = Utility.readFileAbsPath( pep.getPolicyPath() );
@@ -117,8 +115,7 @@ public class PEPRest implements PEPInterface {
     }
 
     public String startAccess( String sessionId ) {
-        StartAccessMessage startAccessMessage = new StartAccessMessage( pep.getId(),
-            pep.getBaseUri() );
+        StartAccessMessage startAccessMessage = new StartAccessMessage( pep.getId(), pep.getBaseUri() );
         startAccessMessage.setSessionId( sessionId );
         startAccessMessage.setCallback( buildResponseInterface( "startAccessResponse" ), MEAN.REST );
         try {
@@ -193,8 +190,7 @@ public class PEPRest implements PEPInterface {
             // generic case to cater for multiple scenarios, e.g. pause/resume/pause/end etc...
             if( chPepMessage.getPDPEvaluation().getResult().contains( PERMIT ) ) {
                 log.info( "RESUME EXECUTION" );
-            }
-            if( chPepMessage.getPDPEvaluation().getResult().contains( DENY ) ) {
+            } else if( chPepMessage.getPDPEvaluation().getResult().contains( DENY ) ) {
                 log.info( "STOP EXECUTION" );
             }
         }
@@ -343,11 +339,10 @@ public class PEPRest implements PEPInterface {
      * @return an optional containing the message or nothing
      */
     private Optional<Message> getMessageFromId( String messageId ) {
-        if( responses.containsKey( messageId ) ) {
-            return Optional.of( responses.get( messageId ) );
-        } else {
+        if( !responses.containsKey( messageId ) ) {
             return Optional.empty();
         }
+        return Optional.of( responses.get( messageId ) );
     }
 
     public MessageStorageInterface getMessageHistory() {
