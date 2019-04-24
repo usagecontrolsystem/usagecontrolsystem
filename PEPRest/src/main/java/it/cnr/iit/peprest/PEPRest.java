@@ -89,8 +89,8 @@ public class PEPRest implements PEPInterface {
     }
 
     @Bean
-    public UCSCHInterface getUCSInterface( UCSProperties ucsProperties ) {
-        return new ProxyUCS( ucsProperties );
+    public UCSCHInterface getUCSInterface() {
+        return new ProxyUCS();
     }
 
     public String tryAccess() {

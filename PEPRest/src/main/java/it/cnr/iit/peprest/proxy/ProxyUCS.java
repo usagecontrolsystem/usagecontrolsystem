@@ -18,26 +18,23 @@ package it.cnr.iit.peprest.proxy;
 import java.util.Optional;
 import java.util.logging.Logger;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Component;
 
 import it.cnr.iit.peprest.configuration.UCSProperties;
 import it.cnr.iit.ucsinterface.message.Message;
 import it.cnr.iit.ucsinterface.message.PURPOSE;
 import it.cnr.iit.ucsinterface.requestmanager.UCSCHInterface;
 import it.cnr.iit.utility.RESTUtils;
-import it.cnr.iit.utility.errorhandling.Reject;
 
+@Component
 public class ProxyUCS implements UCSCHInterface {
 
     private static final Logger log = Logger.getLogger( ProxyUCS.class.getName() );
 
-    // TODO autowired
+    @Autowired
     private UCSProperties ucs;
-
-    public ProxyUCS( UCSProperties properties ) {
-        Reject.ifNull( properties );
-        ucs = properties;
-    }
 
     @Override
     public Message sendMessageToCH( Message message ) {
