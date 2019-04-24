@@ -13,7 +13,7 @@ import com.tngtech.jgiven.annotation.JGivenConfiguration;
 import com.tngtech.jgiven.annotation.ScenarioStage;
 import com.tngtech.jgiven.integration.spring.SpringRuleScenarioTest;
 
-import it.cnr.iit.usagecontrolframework.rest.jgiven.rules.UCSRestJGivenConfiguration;
+import it.cnr.iit.ucs.testing.jgiven.rules.UCSRestJGivenConfiguration;
 import it.cnr.iit.usagecontrolframework.rest.jgiven.stages.GivenMessage;
 import it.cnr.iit.usagecontrolframework.rest.jgiven.stages.GivenPEPRestSimulator;
 import it.cnr.iit.usagecontrolframework.rest.jgiven.stages.ThenMessage;

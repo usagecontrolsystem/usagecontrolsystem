@@ -24,8 +24,8 @@ import com.tngtech.jgiven.annotation.ScenarioRule;
 import com.tngtech.jgiven.integration.spring.JGivenStage;
 
 import it.cnr.iit.ucs.configuration.UCSConfiguration;
+import it.cnr.iit.ucs.testing.jgiven.rules.MockedHttpServiceTestRule;
 import it.cnr.iit.usagecontrolframework.rest.UCFTestContext;
-import it.cnr.iit.usagecontrolframework.rest.jgiven.rules.MockedHttpServiceTestRule;
 import it.cnr.iit.utility.JsonUtility;
 
 @JGivenStage

@@ -1,4 +1,4 @@
-package it.cnr.iit.usagecontrolframework.rest.jgiven.rules;
+package it.cnr.iit.ucs.testing.jgiven.rules;
 
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.options;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;

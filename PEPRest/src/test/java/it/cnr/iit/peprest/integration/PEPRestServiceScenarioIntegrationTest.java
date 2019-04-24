@@ -30,7 +30,7 @@ import it.cnr.iit.peprest.jgiven.stages.GivenContextHandlerRestSimulator;
 import it.cnr.iit.peprest.jgiven.stages.GivenMessage;
 import it.cnr.iit.peprest.jgiven.stages.ThenMessage;
 import it.cnr.iit.peprest.jgiven.stages.WhenPEPRestCommunication;
-import it.cnr.iit.usagecontrolframework.rest.jgiven.rules.UCSRestJGivenConfiguration;
+import it.cnr.iit.ucs.testing.jgiven.rules.UCSRestJGivenConfiguration;
 
 @SpringBootTest( classes = { MockServletContext.class, PEPRestTestContext.class } )
 @WebAppConfiguration
