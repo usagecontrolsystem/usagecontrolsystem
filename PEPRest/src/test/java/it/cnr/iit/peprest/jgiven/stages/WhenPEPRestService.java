@@ -24,7 +24,6 @@ import it.cnr.iit.ucsinterface.message.Message;
 @JGivenStage
 public class WhenPEPRestService extends Stage<WhenPEPRestService> {
 
-    @ProvidedScenarioState
     @Autowired
     PEPRest pepRest;
 
@@ -44,7 +43,6 @@ public class WhenPEPRestService extends Stage<WhenPEPRestService> {
     public void init() {
         MessageStorage messageStorage = Mockito.mock( MessageStorage.class );
         pepRest.setMessageStorage( messageStorage );
-        pepRest.clear();
     }
 
     public WhenPEPRestService() {}

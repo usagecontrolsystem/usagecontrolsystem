@@ -30,8 +30,7 @@ import it.cnr.iit.peprest.jgiven.stages.ThenMessage;
 import it.cnr.iit.peprest.jgiven.stages.WhenPEPRestCommunication;
 
 @SpringBootTest( classes = { MockServletContext.class, PEPRestTestContext.class } )
-//@WebAppConfiguration
-@DirtiesContext( classMode = ClassMode.BEFORE_EACH_TEST_METHOD )
+@DirtiesContext( classMode = ClassMode.BEFORE_CLASS )
 public class PEPRestServiceScenarioIntegrationTest
         extends SpringRuleScenarioTest<GivenContextHandlerRestSimulator, WhenPEPRestCommunication, ThenMessage> {
 

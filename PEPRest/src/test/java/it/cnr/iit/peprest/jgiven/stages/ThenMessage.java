@@ -38,7 +38,6 @@ import oasis.names.tc.xacml.core.schema.wd_17.DecisionType;
 @JGivenStage
 public class ThenMessage extends Stage<ThenMessage> {
 
-    @ExpectedScenarioState
     @Autowired
     PEPRest pepRest;
 

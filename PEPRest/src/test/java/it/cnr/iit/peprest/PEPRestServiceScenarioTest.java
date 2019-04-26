@@ -13,6 +13,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.mock.web.MockServletContext;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.annotation.DirtiesContext.ClassMode;
 
 import com.tngtech.java.junit.dataprovider.DataProvider;
 import com.tngtech.java.junit.dataprovider.DataProviderRunner;
@@ -30,6 +32,7 @@ import oasis.names.tc.xacml.core.schema.wd_17.DecisionType;
 
 @RunWith( DataProviderRunner.class )
 @SpringBootTest( classes = { MockServletContext.class, PEPRestTestContext.class } )
+@DirtiesContext( classMode = ClassMode.BEFORE_EACH_TEST_METHOD )
 public class PEPRestServiceScenarioTest
         extends SpringRuleScenarioTest<GivenContextHandlerRestSimulator, WhenPEPRestService, ThenMessage> {
 
