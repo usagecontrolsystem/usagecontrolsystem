@@ -22,30 +22,8 @@ import it.cnr.iit.ucs.configuration.distributed.DistributedProperties;
 import it.cnr.iit.ucs.configuration.pip.PipProperties;
 import it.cnr.iit.ucs.configuration.session_manager.SessionManagerProperties;
 
-/**
- * These are the classes required to perform marshalling/unmarshalling of the
- * xml file describing the properties of the UCS implementation.
- *
- * <p>
- * We want our framework to be highly modular and configurable. The latter
- * characteristic has to be provided by the XML file through which we configure
- * the framework.
- *
- * <br>
- *
- * <b>NOTE</b>: It can be considered the opportunity of plugging only the
- * modules provided in the configuration, hence let this part of code to
- * dynamically modify the pom.xml file or to do something similar with equinox
- * or felix.
- * </p>
- *
- * @author antonio
- *
- */
-
 public final class UCSConfiguration {
 
-    private GeneralProperties general;
     private ContextHandlerProperties contextHandler;
     private SessionManagerProperties sessionManager;
     private RequestManagerProperties requestManager;
@@ -95,10 +73,6 @@ public final class UCSConfiguration {
 
     public ObligationManagerProperties getObligationManager() {
         return obligationManager;
-    }
-
-    public GeneralProperties getGeneral() {
-        return general;
     }
 
     public DistributedProperties getDistributed() {

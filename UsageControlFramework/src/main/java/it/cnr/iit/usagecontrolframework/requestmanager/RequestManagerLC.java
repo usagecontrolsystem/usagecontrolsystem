@@ -15,13 +15,14 @@
  ******************************************************************************/
 package it.cnr.iit.usagecontrolframework.requestmanager;
 
+import java.net.URI;
+import java.util.Optional;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import it.cnr.iit.ucs.configuration.GeneralProperties;
 import it.cnr.iit.ucs.configuration.RequestManagerProperties;
 import it.cnr.iit.ucsinterface.message.Message;
 import it.cnr.iit.ucsinterface.message.endaccess.EndAccessMessage;
@@ -33,7 +34,9 @@ import it.cnr.iit.ucsinterface.message.startaccess.StartAccessMessage;
 import it.cnr.iit.ucsinterface.message.startaccess.StartAccessResponse;
 import it.cnr.iit.ucsinterface.message.tryaccess.TryAccessMessage;
 import it.cnr.iit.ucsinterface.message.tryaccess.TryAccessResponse;
-import it.cnr.iit.ucsinterface.requestmanager.AsynchronousRequestManager;
+import it.cnr.iit.usagecontrolframework.configuration.UCFProperties;
+import it.cnr.iit.utility.Utility;
+import it.cnr.iit.utility.errorhandling.Reject;
 
 /**
  * The request manager is an asynchronous component.
@@ -63,7 +66,6 @@ public class RequestManagerLC extends AsynchronousRequestManager {
     /*
      * This is the thread in charge of handling the operations requested from a
      * remote PIP except from reevaluation.
-
     private ExecutorService attributeSupplier;
     */
 
@@ -77,8 +79,8 @@ public class RequestManagerLC extends AsynchronousRequestManager {
      *
      * @param properties
      */
-    public RequestManagerLC( GeneralProperties generalProperties, RequestManagerProperties properties ) {
-        super( generalProperties, properties );
+    public RequestManagerLC( UCFProperties ucfProperties, RequestManagerProperties properties ) {
+        super( ucfProperties, properties );
         initialize();
         initialized = isInitialized();
     }
@@ -158,10 +160,14 @@ public class RequestManagerLC extends AsynchronousRequestManager {
     }
 
     private void sendReevaluation( ReevaluationResponse reevaluation ) {
+        Optional<URI> uri = Utility.parseUri( ucfProperties.getBaseUri() );
+        Reject.ifAbsent( uri );
+
         log.log( Level.INFO, "[TIME] Effectively Sending on going evaluation {0}",
             System.currentTimeMillis() );
+
         if( reevaluation.getDestination()
-            .equals( generalProperties.getIp() ) ) {
+            .equals( uri.get().getHost() ) ) {
             getPEPInterface().get( ( reevaluation ).getPepID() )
                 .onGoingEvaluation( reevaluation );
         } else {

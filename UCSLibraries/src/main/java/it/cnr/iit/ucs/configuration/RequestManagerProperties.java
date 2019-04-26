@@ -15,13 +15,6 @@
  ******************************************************************************/
 package it.cnr.iit.ucs.configuration;
 
-/**
- * Request manager xml
- *
- * @author antonio
- *
- */
-
 public class RequestManagerProperties {
 
     private String className;

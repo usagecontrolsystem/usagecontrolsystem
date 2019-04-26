@@ -15,19 +15,12 @@
  ******************************************************************************/
 package it.cnr.iit.usagecontrolframework.rest;
 
-import java.util.Collections;
-import java.util.Optional;
-import java.util.logging.Logger;
-
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.scheduling.annotation.EnableAsync;
-
-import it.cnr.iit.ucs.configuration.UCSConfiguration;
-import it.cnr.iit.usagecontrolframework.entry.UCSConfigurationLoader;
 
 import springfox.documentation.builders.ApiInfoBuilder;
 import springfox.documentation.builders.PathSelectors;
@@ -47,8 +40,6 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 @EnableSwagger2
 @EnableAsync
 public class UCFRestStarter extends SpringBootServletInitializer {
-
-    private static final Logger log = Logger.getLogger( UCFRestStarter.class.getName() );
 
     /**
      * Spring boot method for configuring the current application, right now it
@@ -92,18 +83,8 @@ public class UCFRestStarter extends SpringBootServletInitializer {
             .version( "1.0" ).contact( "antonio.lamarra@iit.cnr.it" ).build();
     }
 
-    // TODO UCS-35 NOSONAR
     public static void main( String[] args ) {
-        Optional<UCSConfiguration> optConfiguration = UCSConfigurationLoader.getConfiguration();
-
-        if( !optConfiguration.isPresent() ) {
-            log.severe( UCSConfigurationLoader.CONFIG_ERR_MESSAGE );
-            return;
-        }
-
         SpringApplication app = new SpringApplication( UCFRestStarter.class );
-        app.setDefaultProperties(
-            Collections.singletonMap( "server.port", optConfiguration.get().getGeneral().getPort() ) );
         app.run( args );
     }
 

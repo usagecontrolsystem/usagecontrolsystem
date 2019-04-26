@@ -15,12 +15,6 @@
  ******************************************************************************/
 package it.cnr.iit.ucs.configuration;
 
-/**
- * PDP xml
- *
- * @author antonio
- *
- */
 public class PdpProperties {
 
     private String className;

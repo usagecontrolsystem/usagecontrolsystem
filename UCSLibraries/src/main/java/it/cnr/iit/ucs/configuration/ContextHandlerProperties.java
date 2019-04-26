@@ -17,20 +17,12 @@ package it.cnr.iit.ucs.configuration;
 
 import it.cnr.iit.ucs.configuration.pip.PipRegisterProperties;
 
-/**
- * Context handler xml
- *
- * @author antonio
- *
- */
-
 public class ContextHandlerProperties {
 
     private String className;
     private String thread;
     private String communication;
-    private String ip;
-    private String port;
+    private String baseUri;
     private PipRegisterProperties pipRegister;
     private boolean schedulerEnabled;
 
@@ -46,12 +38,8 @@ public class ContextHandlerProperties {
         return communication;
     }
 
-    public String getIp() {
-        return ip;
-    }
-
-    public String getPort() {
-        return port;
+    public String getBaseUri() {
+        return baseUri;
     }
 
     public PipRegisterProperties getXmlPipRegister() {

@@ -24,6 +24,8 @@ import com.tngtech.jgiven.integration.spring.JGivenStage;
 
 import it.cnr.iit.peprest.integration.PEPRestTestContext;
 import it.cnr.iit.ucs.testing.jgiven.rules.MockedHttpServiceTestRule;
+import it.cnr.iit.utility.Utility;
+import it.cnr.iit.utility.errorhandling.Reject;
 
 @JGivenStage
 public class GivenContextHandlerRestSimulator extends Stage<GivenContextHandlerRestSimulator> {
@@ -45,15 +47,9 @@ public class GivenContextHandlerRestSimulator extends Stage<GivenContextHandlerR
 
     @BeforeScenario
     public void init() {
-        restSimulatorTestRule.start( getUCSUri().get().getPort() );
-    }
-
-    private Optional<URI> getUCSUri() {
-        try {
-            URI uri = new URI( properties.getUcsBaseUri() );
-            return Optional.of( uri );
-        } catch( Exception e ) {}
-        return Optional.empty();
+        Optional<URI> uri = Utility.parseUri( properties.getUcsBaseUri() );
+        Reject.ifAbsent( uri );
+        restSimulatorTestRule.start( uri.get().getPort() );
     }
 
     public GivenContextHandlerRestSimulator a_test_configuration_for_request_with_policy() {
@@ -61,9 +57,10 @@ public class GivenContextHandlerRestSimulator extends Stage<GivenContextHandlerR
     }
 
     public GivenContextHandlerRestSimulator a_mocked_context_handler_for_$( @Quoted String operationUri ) {
-        URI uri = getUCSUri().get();
+        Optional<URI> uri = Utility.parseUri( properties.getUcsBaseUri() );
+        Reject.ifAbsent( uri );
 
-        wireMockContextHandler = new WireMock( uri.getHost(), uri.getPort() );
+        wireMockContextHandler = new WireMock( uri.get().getHost(), uri.get().getPort() );
         post = post( urlPathMatching( operationUri ) );
         return self();
     }

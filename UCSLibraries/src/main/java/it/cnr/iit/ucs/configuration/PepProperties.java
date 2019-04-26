@@ -19,8 +19,7 @@ public class PepProperties {
 
     private String className;
     private String communication;
-    private String ip;
-    private String port;
+    private String baseUri;
     private String revoke = "SOFT";
     private String onGoingEvaluation;
     private String tryAccessResponse;
@@ -32,12 +31,8 @@ public class PepProperties {
         return communication;
     }
 
-    public String getIp() {
-        return ip;
-    }
-
-    public String getPort() {
-        return port;
+    public String getBaseUri() {
+        return baseUri;
     }
 
     public String getClassName() {

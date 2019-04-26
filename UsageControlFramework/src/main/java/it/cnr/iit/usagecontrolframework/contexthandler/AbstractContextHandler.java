@@ -13,15 +13,17 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  ******************************************************************************/
-package it.cnr.iit.ucsinterface.contexthandler;
+package it.cnr.iit.usagecontrolframework.contexthandler;
 
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import it.cnr.iit.ucs.configuration.ContextHandlerProperties;
-import it.cnr.iit.ucs.configuration.GeneralProperties;
+import it.cnr.iit.ucsinterface.contexthandler.ContextHandlerInterface;
 import it.cnr.iit.ucsinterface.forwardingqueue.ForwardingQueueToCHInterface;
 import it.cnr.iit.ucsinterface.obligationmanager.ObligationManagerInterface;
 import it.cnr.iit.ucsinterface.pap.PAPInterface;
@@ -31,6 +33,9 @@ import it.cnr.iit.ucsinterface.pip.PIPRMInterface;
 import it.cnr.iit.ucsinterface.pip.PIPRetrieval;
 import it.cnr.iit.ucsinterface.requestmanager.RequestManagerToCHInterface;
 import it.cnr.iit.ucsinterface.sessionmanager.SessionManagerInterface;
+import it.cnr.iit.usagecontrolframework.configuration.UCFProperties;
+import it.cnr.iit.utility.Utility;
+import it.cnr.iit.utility.errorhandling.Reject;
 
 /**
  * This is the abstract representation of the context handler object.
@@ -68,17 +73,14 @@ public abstract class AbstractContextHandler implements ContextHandlerInterface 
     private PAPInterface papInterface;
     // interface to the request manager
     private RequestManagerToCHInterface requestManagerToChInterface;
-    // ip of the context handler
-    private String ip;
-    // port on which the context handler is attached
-    private String port;
     // obligation manager
     private ObligationManagerInterface obligationManager;
     // forwarding queue interface
     private ForwardingQueueToCHInterface forwardingQueue;
 
-    protected GeneralProperties generalProperties;
+    protected UCFProperties ucfProperties;
     protected ContextHandlerProperties properties;
+    protected URI uri;
 
     private volatile boolean initialized = false;
 
@@ -90,11 +92,14 @@ public abstract class AbstractContextHandler implements ContextHandlerInterface 
      *          passed as a JAVA Object.
      *
      */
-    protected AbstractContextHandler( GeneralProperties generalProperties, ContextHandlerProperties properties ) {
+    protected AbstractContextHandler( UCFProperties ucfProperties, ContextHandlerProperties properties ) {
+        Reject.ifNull( properties );
         this.properties = properties;
-        this.generalProperties = generalProperties;
-        ip = properties.getIp();
-        port = properties.getPort();
+        Reject.ifNull( ucfProperties );
+        this.ucfProperties = ucfProperties;
+        Optional<URI> uri = Utility.parseUri( properties.getBaseUri() );
+        Reject.ifAbsent( uri );
+        this.uri = uri.get();
     }
 
     protected final boolean isInitialized() {
@@ -106,13 +111,14 @@ public abstract class AbstractContextHandler implements ContextHandlerInterface 
      * sets the initialized flag to true, otherwise to false.
      * Having the initialized flag to false makes it impossible to deal with this object
      */
+    @Deprecated
     public void verify() {
         final String[] checkObjectsNames = { "configuration", "sessionManager", "pipList/pipRetrieval",
             "pap", "pdp", "requestManagerToCh", "ip", "port", "forwardingQueue", "obligationManager" };
         final boolean[] checkObjects = { properties == null, sessionManagerInterface == null,
             pipList == null && pipRetrieval == null, papInterface == null,
             pdpInterface == null, requestManagerToChInterface == null,
-            ip == null, port == null, forwardingQueue == null, obligationManager == null };
+            forwardingQueue == null, obligationManager == null };
 
         StringBuilder sb = new StringBuilder();
         for( int i = 0; i < checkObjects.length; i++ ) {
@@ -217,14 +223,6 @@ public abstract class AbstractContextHandler implements ContextHandlerInterface 
             return;
         }
         this.requestManagerToChInterface = requestManagerToChInterface;
-    }
-
-    protected final String getIp() {
-        return ip;
-    }
-
-    protected final String getPort() {
-        return port;
     }
 
     /**

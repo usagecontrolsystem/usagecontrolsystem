@@ -13,7 +13,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  ******************************************************************************/
-package it.cnr.iit.ucsinterface.requestmanager;
+package it.cnr.iit.usagecontrolframework.requestmanager;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -21,15 +21,18 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.logging.Logger;
 
-import it.cnr.iit.ucs.configuration.GeneralProperties;
 import it.cnr.iit.ucs.configuration.RequestManagerProperties;
 import it.cnr.iit.ucsinterface.contexthandler.ContextHandlerInterface;
 import it.cnr.iit.ucsinterface.forwardingqueue.ForwardingQueueToRMInterface;
 import it.cnr.iit.ucsinterface.message.Message;
 import it.cnr.iit.ucsinterface.message.remoteretrieval.MessagePipCh;
 import it.cnr.iit.ucsinterface.node.NodeInterface;
-import it.cnr.iit.ucsinterface.node.NodeProxy;
 import it.cnr.iit.ucsinterface.pep.PEPInterface;
+import it.cnr.iit.ucsinterface.requestmanager.InterfaceToPerformanceMonitor;
+import it.cnr.iit.ucsinterface.requestmanager.RequestManagerToCHInterface;
+import it.cnr.iit.ucsinterface.requestmanager.UCSCHInterface;
+import it.cnr.iit.usagecontrolframework.configuration.UCFProperties;
+import it.cnr.iit.usagecontrolframework.proxies.NodeProxy;
 import it.cnr.iit.utility.errorhandling.Reject;
 
 /**
@@ -45,8 +48,7 @@ import it.cnr.iit.utility.errorhandling.Reject;
  *
  */
 public abstract class AsynchronousRequestManager
-        implements RequestManagerToCHInterface, UCSCHInterface,
-        InterfaceToPerformanceMonitor {
+        implements RequestManagerToCHInterface, UCSCHInterface, InterfaceToPerformanceMonitor {
     protected static final Logger log = Logger.getLogger( AsynchronousRequestManager.class.getName() );
 
     // queue of messages received from the context handler
@@ -63,9 +65,9 @@ public abstract class AsynchronousRequestManager
 
     private ForwardingQueueToRMInterface forwardingQueue;
 
-    // configuration of the request manager
+    protected UCFProperties ucfProperties;
     protected RequestManagerProperties properties;
-    protected GeneralProperties generalProperties;
+
     // interface used to communicate with other nodes
     private NodeInterface nodeInterface;
 
@@ -75,14 +77,16 @@ public abstract class AsynchronousRequestManager
      * @param properties
      *          the object representing the configuration of the request manager
      */
-    protected AsynchronousRequestManager( GeneralProperties generalProperties, RequestManagerProperties properties ) {
-        Reject.ifNull( generalProperties );
+    protected AsynchronousRequestManager( UCFProperties ucfProperties, RequestManagerProperties properties ) {
+        Reject.ifNull( ucfProperties );
         Reject.ifNull( properties );
+
         initialized = true;
         this.properties = properties;
-        this.generalProperties = generalProperties;
+        this.ucfProperties = ucfProperties;
+
         pep = new HashMap<>();
-        nodeInterface = new NodeProxy( generalProperties );
+        nodeInterface = new NodeProxy( ucfProperties );
     }
 
     /**
