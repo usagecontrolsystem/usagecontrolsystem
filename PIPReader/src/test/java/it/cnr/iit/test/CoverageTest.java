@@ -24,7 +24,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import it.cnr.iit.pipreader.PIPReader;
 import it.cnr.iit.ucs.builders.PIPBuilder;
-import it.cnr.iit.ucsinterface.contexthandler.AbstractContextHandler;
+import it.cnr.iit.usagecontrolframework.contexthandler.AbstractContextHandler;
 import it.cnr.iit.utility.JAXBUtility;
 import it.cnr.iit.utility.JsonUtility;
 import it.cnr.iit.utility.errorhandling.exception.PreconditionException;

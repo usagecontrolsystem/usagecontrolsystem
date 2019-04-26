@@ -28,9 +28,7 @@ import java.util.logging.Logger;
 import javax.xml.bind.JAXBException;
 
 import it.cnr.iit.ucs.configuration.ContextHandlerProperties;
-import it.cnr.iit.ucs.configuration.GeneralProperties;
 import it.cnr.iit.ucs.constants.STATUS;
-import it.cnr.iit.ucsinterface.contexthandler.AbstractContextHandler;
 import it.cnr.iit.ucsinterface.contexthandler.ContextHandlerConstants;
 import it.cnr.iit.ucsinterface.contexthandler.exceptions.RevokeException;
 import it.cnr.iit.ucsinterface.contexthandler.exceptions.SessionManagerException;
@@ -51,6 +49,7 @@ import it.cnr.iit.ucsinterface.pdp.PDPEvaluation;
 import it.cnr.iit.ucsinterface.pip.PIPCHInterface;
 import it.cnr.iit.ucsinterface.sessionmanager.OnGoingAttributesInterface;
 import it.cnr.iit.ucsinterface.sessionmanager.SessionInterface;
+import it.cnr.iit.usagecontrolframework.configuration.UCFProperties;
 import it.cnr.iit.utility.JAXBUtility;
 import it.cnr.iit.xacmlutilities.Attribute;
 import it.cnr.iit.xacmlutilities.Category;
@@ -120,8 +119,8 @@ public final class ContextHandlerLC extends AbstractContextHandler {
      *
      * @param properties
      */
-    public ContextHandlerLC( GeneralProperties generalProperties, ContextHandlerProperties properties ) {
-        super( generalProperties, properties );
+    public ContextHandlerLC( UCFProperties properties, ContextHandlerProperties chProperties ) {
+        super( properties, chProperties );
     }
 
     /**
@@ -211,16 +210,15 @@ public final class ContextHandlerLC extends AbstractContextHandler {
              */
             insertInSessionManager( sessionId, policy, request, status,
                 tryAccess.getScheduled() ? tryAccess.getPepUri()
-                        : getIp() + PEP_ID_SEPARATOR + tryAccess.getSource(),
-                policyHelper, tryAccess.getScheduled() ? tryAccess.getSource() : getIp() );
+                        : uri.getHost() + PEP_ID_SEPARATOR + tryAccess.getSource(),
+                policyHelper, tryAccess.getScheduled() ? tryAccess.getSource() : uri.getHost() );
 
             log.log( Level.INFO, "[TIME] permit tryAccess ends at {0}", new Object[] { System.currentTimeMillis() } );
 
         }
-        // obligation
         getObligationManager().translateObligations( pdpEvaluation, sessionId, ContextHandlerConstants.TRY_STATUS );
 
-        TryAccessResponse tryAccessResponse = new TryAccessResponse( getIp(), tryAccess.getSource(), message.getID() );
+        TryAccessResponse tryAccessResponse = new TryAccessResponse( uri.getHost(), tryAccess.getSource(), message.getID() );
         TryAccessResponseContent tryAccessResponseContent = new TryAccessResponseContent();
         tryAccessResponseContent.setSessionId( sessionId );
         tryAccessResponseContent.setStatus( pdpResponse );
@@ -1122,8 +1120,8 @@ public final class ContextHandlerLC extends AbstractContextHandler {
                 policyHelper.getAttributesForCondition( STARTACCESS_POLICY );
                 log.log( Level.INFO, "[TIME] reevaluation scheduler starts at {0}", System.currentTimeMillis() );
                 ReevaluationMessage reevaluationMessage = new ReevaluationMessage(
-                    generalProperties.getIp(),
-                    generalProperties.getIp() );
+                    uri.getHost(),
+                    uri.getHost() );
                 reevaluationMessage.setSession( session );
                 log.log( Level.INFO, "[TIME] reevaluation starts at {0}", System.currentTimeMillis() );
                 reevaluate( reevaluationMessage );
@@ -1169,7 +1167,7 @@ public final class ContextHandlerLC extends AbstractContextHandler {
         String[] uriSplitted = session.getPEPUri().split( PEP_ID_SEPARATOR );
         destination = session.getPEPUri().split( PEP_ID_SEPARATOR )[0];
         log.log( Level.INFO, "DESTINATION: {0}\t{1}", new Object[] { destination, session.getStatus() } );
-        ReevaluationResponse chPepMessage = new ReevaluationResponse( getIp(), destination );
+        ReevaluationResponse chPepMessage = new ReevaluationResponse( uri.getHost(), destination );
         pdpEvaluation.setSessionId( session.getId() );
         chPepMessage.setPDPEvaluation( pdpEvaluation );
         chPepMessage.setPepID( uriSplitted[uriSplitted.length - 1] );

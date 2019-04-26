@@ -21,6 +21,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.URI;
 import java.net.URL;
 import java.util.Optional;
 import java.util.PropertyResourceBundle;
@@ -140,18 +141,6 @@ public final class Utility {
         }
     }
 
-    // TODO avoid to do this fixing properties
-    public static String buildBaseUri( String ip, String port ) {
-        StringBuilder sb = new StringBuilder();
-        if( !ip.startsWith( "http" ) ) {
-            sb.append( "http://" );
-        }
-        sb.append( ip )
-            .append( ":" )
-            .append( port );
-        return sb.toString();
-    }
-
     public static Optional<String> getPropertiesValue( String key ) {
         return getPropertiesValue( "application.properties", key );
     }
@@ -180,6 +169,14 @@ public final class Utility {
         }
 
         return value;
+    }
+
+    public static Optional<URI> parseUri( String str ) {
+        try {
+            URI uri = new URI( str );
+            return Optional.of( uri );
+        } catch( Exception e ) {}
+        return Optional.empty();
     }
 
 }

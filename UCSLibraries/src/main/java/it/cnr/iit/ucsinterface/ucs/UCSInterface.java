@@ -15,7 +15,6 @@
  ******************************************************************************/
 package it.cnr.iit.ucsinterface.ucs;
 
-import it.cnr.iit.ucsinterface.message.Message;
 import it.cnr.iit.ucsinterface.message.endaccess.EndAccessMessage;
 import it.cnr.iit.ucsinterface.message.endaccess.EndAccessResponse;
 import it.cnr.iit.ucsinterface.message.reevaluation.ReevaluationMessage;
@@ -221,5 +220,5 @@ public interface UCSInterface {
      *
      * @param message
      */
-    public void register( Message message );
+    // public void register( Message message );
 }

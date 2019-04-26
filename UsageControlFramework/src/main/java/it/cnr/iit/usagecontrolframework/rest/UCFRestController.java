@@ -35,7 +35,6 @@ import it.cnr.iit.ucsinterface.message.startaccess.StartAccessResponse;
 import it.cnr.iit.ucsinterface.message.tryaccess.TryAccessMessage;
 import it.cnr.iit.ucsinterface.message.tryaccess.TryAccessResponse;
 import it.cnr.iit.ucsinterface.node.NodeInterface;
-import it.cnr.iit.usagecontrolframework.entry.UsageControlFramework;
 import it.cnr.iit.utility.LogProfiler;
 
 import io.swagger.annotations.ApiModel;

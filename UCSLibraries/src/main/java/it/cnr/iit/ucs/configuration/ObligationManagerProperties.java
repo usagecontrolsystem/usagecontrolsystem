@@ -15,12 +15,6 @@
  ******************************************************************************/
 package it.cnr.iit.ucs.configuration;
 
-/**
- * ObligationManager conf
- *
- * @author antonio
- *
- */
 public class ObligationManagerProperties {
 
     private String className;

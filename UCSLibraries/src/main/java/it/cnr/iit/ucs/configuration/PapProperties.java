@@ -15,12 +15,6 @@
  ******************************************************************************/
 package it.cnr.iit.ucs.configuration;
 
-/**
- * PAP xml
- *
- * @author antonio
- *
- */
 public class PapProperties {
 
     private String className;

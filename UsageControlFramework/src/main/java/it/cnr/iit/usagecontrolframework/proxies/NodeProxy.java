@@ -13,12 +13,12 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  ******************************************************************************/
-package it.cnr.iit.ucsinterface.node;
+package it.cnr.iit.usagecontrolframework.proxies;
 
+import java.net.URI;
 import java.util.Optional;
 import java.util.logging.Logger;
 
-import it.cnr.iit.ucs.configuration.GeneralProperties;
 import it.cnr.iit.ucs.constants.CONNECTION;
 import it.cnr.iit.ucsinterface.message.Message;
 import it.cnr.iit.ucsinterface.message.endaccess.EndAccessMessage;
@@ -29,9 +29,12 @@ import it.cnr.iit.ucsinterface.message.startaccess.StartAccessMessage;
 import it.cnr.iit.ucsinterface.message.startaccess.StartAccessResponse;
 import it.cnr.iit.ucsinterface.message.tryaccess.TryAccessMessage;
 import it.cnr.iit.ucsinterface.message.tryaccess.TryAccessResponse;
+import it.cnr.iit.ucsinterface.node.NodeInterface;
+import it.cnr.iit.usagecontrolframework.configuration.UCFProperties;
 import it.cnr.iit.utility.JsonUtility;
 import it.cnr.iit.utility.RESTUtils;
 import it.cnr.iit.utility.Utility;
+import it.cnr.iit.utility.errorhandling.Reject;
 
 /**
  * This is the class effectively implementing the proxy to communicate with
@@ -51,11 +54,17 @@ public class NodeProxy implements NodeInterface {
 
     private static final Logger log = Logger.getLogger( NodeProxy.class.getName() );
 
-    private GeneralProperties properties;
+    private UCFProperties properties;
     private CONNECTION connection = CONNECTION.REST_API;
+    private URI uri;
 
-    public NodeProxy( GeneralProperties generalProperties ) {
-        properties = generalProperties;
+    public NodeProxy( UCFProperties properties ) {
+        Reject.ifNull( properties );
+        this.properties = properties;
+
+        Optional<URI> uri = Utility.parseUri( properties.getBaseUri() );
+        Reject.ifAbsent( uri );
+        this.uri = uri.get();
     }
 
     @Override
@@ -74,6 +83,7 @@ public class NodeProxy implements NodeInterface {
 
     }
 
+    // TODO make this generic in ucsLibraries
     private Optional<String> getApi( Message message ) {
         if( message instanceof TryAccessMessage ) {
             return Optional.of( NodeInterface.TRYACCESS_REST );
@@ -113,7 +123,7 @@ public class NodeProxy implements NodeInterface {
 
         try {
             RESTUtils.asyncPost(
-                Utility.buildBaseUri( properties.getIp(), properties.getPort() ),
+                uri.toString(),
                 api.get(),
                 data.get() );
         } catch( Exception e ) {

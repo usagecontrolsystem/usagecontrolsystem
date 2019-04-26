@@ -13,7 +13,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  ******************************************************************************/
-package it.cnr.iit.usagecontrolframework.entry;
+package it.cnr.iit.usagecontrolframework.rest;
 
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
@@ -23,11 +23,15 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.logging.Logger;
 
-import org.springframework.scheduling.annotation.Async;
+import javax.annotation.PostConstruct;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.stereotype.Component;
+
+import it.cnr.iit.ucs.builders.ObligationManagerBuilder;
 import it.cnr.iit.ucs.builders.PIPBuilder;
 import it.cnr.iit.ucs.configuration.ContextHandlerProperties;
-import it.cnr.iit.ucs.configuration.GeneralProperties;
 import it.cnr.iit.ucs.configuration.ObligationManagerProperties;
 import it.cnr.iit.ucs.configuration.PapProperties;
 import it.cnr.iit.ucs.configuration.PdpProperties;
@@ -36,9 +40,7 @@ import it.cnr.iit.ucs.configuration.RequestManagerProperties;
 import it.cnr.iit.ucs.configuration.UCSConfiguration;
 import it.cnr.iit.ucs.configuration.pip.PipProperties;
 import it.cnr.iit.ucs.configuration.session_manager.SessionManagerProperties;
-import it.cnr.iit.ucsinterface.contexthandler.AbstractContextHandler;
 import it.cnr.iit.ucsinterface.forwardingqueue.ForwardingQueue;
-import it.cnr.iit.ucsinterface.message.Message;
 import it.cnr.iit.ucsinterface.message.endaccess.EndAccessMessage;
 import it.cnr.iit.ucsinterface.message.endaccess.EndAccessResponse;
 import it.cnr.iit.ucsinterface.message.reevaluation.ReevaluationMessage;
@@ -49,21 +51,23 @@ import it.cnr.iit.ucsinterface.message.startaccess.StartAccessResponse;
 import it.cnr.iit.ucsinterface.message.tryaccess.TryAccessMessage;
 import it.cnr.iit.ucsinterface.message.tryaccess.TryAccessResponse;
 import it.cnr.iit.ucsinterface.node.NodeInterface;
-import it.cnr.iit.ucsinterface.node.NodeProxy;
 import it.cnr.iit.ucsinterface.obligationmanager.ObligationManagerInterface;
 import it.cnr.iit.ucsinterface.pep.PEPInterface;
 import it.cnr.iit.ucsinterface.pip.PIPBase;
 import it.cnr.iit.ucsinterface.pip.PIPCHInterface;
 import it.cnr.iit.ucsinterface.pip.PIPOMInterface;
 import it.cnr.iit.ucsinterface.pip.PIPRetrieval;
-import it.cnr.iit.ucsinterface.requestmanager.AsynchronousRequestManager;
 import it.cnr.iit.ucsinterface.requestmanager.UCSCHInterface;
 import it.cnr.iit.ucsinterface.ucs.UCSInterface;
-import it.cnr.iit.usagecontrolframework.builders.ObligationManagerBuilder;
+import it.cnr.iit.usagecontrolframework.configuration.UCFProperties;
+import it.cnr.iit.usagecontrolframework.contexthandler.AbstractContextHandler;
+import it.cnr.iit.usagecontrolframework.proxies.NodeProxy;
 import it.cnr.iit.usagecontrolframework.proxies.ProxyPAP;
 import it.cnr.iit.usagecontrolframework.proxies.ProxyPDP;
 import it.cnr.iit.usagecontrolframework.proxies.ProxyPEP;
 import it.cnr.iit.usagecontrolframework.proxies.ProxySessionManager;
+import it.cnr.iit.usagecontrolframework.requestmanager.AsynchronousRequestManager;
+import it.cnr.iit.utility.errorhandling.Reject;
 
 /**
  * This is the usagecontrol framework class.
@@ -100,11 +104,17 @@ import it.cnr.iit.usagecontrolframework.proxies.ProxySessionManager;
  * @author antonio
  *
  */
+
+@Component
 public final class UsageControlFramework implements UCSInterface {
 
     private static final Logger log = Logger.getLogger( UsageControlFramework.class.getName() );
 
-    private UCSConfiguration configuration;
+    // TODO remove
+    private UCSConfiguration ucsConf;
+
+    @Autowired
+    private UCFProperties properties;
 
     // local components
     private AbstractContextHandler contextHandler;
@@ -136,17 +146,18 @@ public final class UsageControlFramework implements UCSInterface {
      * </p>
      */
     public UsageControlFramework() {
-        /*
-         * According to CERT we cannot leave an object in an inconsistent state,
-         * that's why at first we build all the various components using this
-         * utility function, if everything goes fine, then the object is
-         * initialized.
-         */
-        if( !buildComponents() ) {
-            return;
-        }
 
-        initialized = true;
+    }
+
+    @PostConstruct
+    public void init() {
+        Optional<UCSConfiguration> configuration = properties.getConfiguration();
+        Reject.ifAbsent( configuration );
+        ucsConf = configuration.get();
+
+        if( buildComponents() ) {
+            initialized = true;
+        }
     }
 
     /**
@@ -159,15 +170,6 @@ public final class UsageControlFramework implements UCSInterface {
      * @return
      */
     private boolean buildComponents() {
-        Optional<UCSConfiguration> optConfiguration = UCSConfigurationLoader.getConfiguration();
-
-        if( !optConfiguration.isPresent() ) {
-            log.severe( UCSConfigurationLoader.CONFIG_ERR_MESSAGE );
-            return false;
-        }
-
-        configuration = optConfiguration.get();
-
         // build the context handler
         if( !buildContextHandler() ) {
             log.info( "Error in building the context handler" );
@@ -206,7 +208,7 @@ public final class UsageControlFramework implements UCSInterface {
         }
 
         forwardingQueue = new ForwardingQueue();
-        nodeInterface = new NodeProxy( configuration.getGeneral() );
+        nodeInterface = new NodeProxy( properties );
         log.info( "*******************\nCC" );
         // checks if every component is ok
         return checkConnection();
@@ -220,14 +222,14 @@ public final class UsageControlFramework implements UCSInterface {
      * @return true if everything goes ok, false otherwise
      */
     private boolean buildContextHandler() {
-        ContextHandlerProperties properties = configuration.getContextHandler();
         try {
-            String className = properties.getClassName();
+            ContextHandlerProperties chProperties = ucsConf.getContextHandler();
+            String className = chProperties.getClassName();
             // TODO UCS-32 NOSONAR
             Constructor<?> constructor = Class.forName( className )
-                .getConstructor( GeneralProperties.class, ContextHandlerProperties.class );
+                .getConstructor( UCFProperties.class, ContextHandlerProperties.class );
             contextHandler = (AbstractContextHandler) constructor
-                .newInstance( configuration.getGeneral(), properties );
+                .newInstance( properties, chProperties );
             return true;
         } catch( Exception exception ) {
             log.severe( "build ContextHandler failed" + exception.getMessage() );
@@ -245,15 +247,15 @@ public final class UsageControlFramework implements UCSInterface {
      * @return true if everything goes ok, false otherwise
      */
     private boolean buildRequestManager() {
-        RequestManagerProperties properties = configuration.getRequestManager();
 
         try {
-            String className = properties.getClassName();
+            RequestManagerProperties rmProperties = ucsConf.getRequestManager();
+            String className = rmProperties.getClassName();
             // TODO UCS-32 NOSONAR
             Constructor<?> constructor = Class.forName( className )
-                .getConstructor( GeneralProperties.class, RequestManagerProperties.class );
+                .getConstructor( UCFProperties.class, RequestManagerProperties.class );
             requestManager = (AsynchronousRequestManager) constructor
-                .newInstance( configuration.getGeneral(), properties );
+                .newInstance( properties, rmProperties );
             return true;
         } catch( Exception exception ) {
             log.severe( "build RequestManager failed" + exception.getMessage() );
@@ -273,7 +275,7 @@ public final class UsageControlFramework implements UCSInterface {
     private boolean buildPIPs() {
         int failures = 0;
 
-        for( PipProperties pip : configuration.getPipList() ) {
+        for( PipProperties pip : ucsConf.getPipList() ) {
             Optional<PIPBase> optPip = PIPBuilder.buildFromProperties( pip );
 
             if( !optPip.isPresent() ) {
@@ -295,7 +297,7 @@ public final class UsageControlFramework implements UCSInterface {
      * @return true if everything goes fine, false otherwise
      */
     private boolean buildProxySM() {
-        SessionManagerProperties properties = configuration.getSessionManager();
+        SessionManagerProperties properties = ucsConf.getSessionManager();
         proxySessionManager = new ProxySessionManager( properties );
         proxySessionManager.start();
         return proxySessionManager.isInitialized();
@@ -308,7 +310,7 @@ public final class UsageControlFramework implements UCSInterface {
      */
     private boolean buildObligationManager() {
         try {
-            ObligationManagerProperties properties = configuration.getObligationManager();
+            ObligationManagerProperties properties = ucsConf.getObligationManager();
             obligationManager = ObligationManagerBuilder.build( properties,
                 new ArrayList<PIPOMInterface>( pipList ), pipRetrieval );
             return true;
@@ -324,7 +326,7 @@ public final class UsageControlFramework implements UCSInterface {
      * @return true if everything goes fine, false otherwise
      */
     private boolean buildProxyPDP() {
-        PdpProperties properties = configuration.getPolicyDecisionPoint();
+        PdpProperties properties = ucsConf.getPolicyDecisionPoint();
         proxyPDP = new ProxyPDP( properties );
         return proxyPDP.isInitialized();
     }
@@ -335,7 +337,7 @@ public final class UsageControlFramework implements UCSInterface {
      * @return true if everything goes fine, false otherwise
      */
     private boolean buildProxyPolicyAdministrationPoint() {
-        PapProperties properties = configuration.getPolicyAdministrationPoint();
+        PapProperties properties = ucsConf.getPolicyAdministrationPoint();
         proxyPAP = new ProxyPAP( properties );
         return proxyPAP.isInitialized();
     }
@@ -374,7 +376,7 @@ public final class UsageControlFramework implements UCSInterface {
      * @return true if the proxy was correclty set up, false otherwise
      */
     private boolean buildProxyPEP() {
-        List<PepProperties> pepList = configuration.getPepList();
+        List<PepProperties> pepList = ucsConf.getPepList();
         for( PepProperties pep : pepList ) {
             ProxyPEP proxyPEP = new ProxyPEP( pep );
             proxyPEP.setRequestManagerInterface( requestManager );
@@ -391,42 +393,49 @@ public final class UsageControlFramework implements UCSInterface {
     @Override
     @Async
     public void tryAccess( TryAccessMessage tryAccessMessage ) {
+        // TODO check if sent
         getRequestManager().sendMessageToCH( tryAccessMessage );
     }
 
     @Override
     @Async
     public void tryAccessResponse( TryAccessResponse tryAccessResponse ) {
+        // TODO check if sent
         getRequestManager().sendMessageToCH( tryAccessResponse );
     }
 
     @Override
     @Async
     public void startAccess( StartAccessMessage startAccessMessage ) {
+        // TODO check if sent
         getRequestManager().sendMessageToCH( startAccessMessage );
     }
 
     @Override
     @Async
     public void startAccessResponse( StartAccessResponse startAccessResponse ) {
+        // TODO check if sent
         getRequestManager().sendMessageToCH( startAccessResponse );
     }
 
     @Override
     @Async
     public void endAccess( EndAccessMessage endAccessMessage ) {
+        // TODO check if sent
         getRequestManager().sendMessageToCH( endAccessMessage );
     }
 
     @Override
     @Async
     public void endAccessResponse( EndAccessResponse endAccessResponse ) {
+        // TODO check if sent
         getRequestManager().sendMessageToCH( endAccessResponse );
     }
 
     @Override
     @Async
     public void onGoingEvaluation( ReevaluationMessage onGoingEvaluation ) {
+        // TODO check if sent
         getRequestManager().sendMessageToCH( onGoingEvaluation );
     }
 
@@ -434,20 +443,20 @@ public final class UsageControlFramework implements UCSInterface {
     @Async
     public void onGoingEvaluationResponse(
             ReevaluationResponse onGoingEvaluationResponse ) {
+        // TODO check if sent
         getRequestManager().sendMessageToCH( onGoingEvaluationResponse );
     }
 
     @Override
     @Async
     public void retrieveRemote( MessagePipCh messagePipCh ) {
+        // TODO check if sent
         getRequestManager().sendMessageToCH( messagePipCh );
     }
 
     @Override
     @Async
     public void retrieveRemoteResponse( MessagePipCh messagePipCh ) {} // NOSONAR
-
-    /* Getters */
 
     public Map<String, PEPInterface> getPEPProxy() {
         return proxyPEPMap;
@@ -460,8 +469,5 @@ public final class UsageControlFramework implements UCSInterface {
     public boolean getInitialized() {
         return initialized;
     }
-
-    @Override
-    public void register( Message message ) {} // NOSONAR
 
 }

@@ -18,12 +18,6 @@ package it.cnr.iit.ucs.configuration;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Proxy xml
- *
- * @author antonio
- *
- */
 public class ProxiesProperties {
 
     private List<String> proxyClasses = new ArrayList<>();
