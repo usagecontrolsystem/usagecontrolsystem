@@ -20,9 +20,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.mock.web.MockServletContext;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.DirtiesContext.ClassMode;
-import org.springframework.test.context.web.WebAppConfiguration;
 
-import com.tngtech.jgiven.annotation.JGivenConfiguration;
 import com.tngtech.jgiven.annotation.ScenarioStage;
 import com.tngtech.jgiven.integration.spring.SpringRuleScenarioTest;
 
@@ -30,12 +28,10 @@ import it.cnr.iit.peprest.jgiven.stages.GivenContextHandlerRestSimulator;
 import it.cnr.iit.peprest.jgiven.stages.GivenMessage;
 import it.cnr.iit.peprest.jgiven.stages.ThenMessage;
 import it.cnr.iit.peprest.jgiven.stages.WhenPEPRestCommunication;
-import it.cnr.iit.ucs.testing.jgiven.rules.UCSRestJGivenConfiguration;
 
 @SpringBootTest( classes = { MockServletContext.class, PEPRestTestContext.class } )
-@WebAppConfiguration
+//@WebAppConfiguration
 @DirtiesContext( classMode = ClassMode.BEFORE_EACH_TEST_METHOD )
-@JGivenConfiguration( UCSRestJGivenConfiguration.class )
 public class PEPRestServiceScenarioIntegrationTest
         extends SpringRuleScenarioTest<GivenContextHandlerRestSimulator, WhenPEPRestCommunication, ThenMessage> {
 
