@@ -24,7 +24,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import it.cnr.iit.pipreader.PIPReader;
 import it.cnr.iit.ucs.builders.PIPBuilder;
-import it.cnr.iit.usagecontrolframework.contexthandler.AbstractContextHandler;
+import it.cnr.iit.ucsinterface.contexthandler.ContextHandlerInterface;
 import it.cnr.iit.utility.JAXBUtility;
 import it.cnr.iit.utility.JsonUtility;
 import it.cnr.iit.utility.errorhandling.exception.PreconditionException;
@@ -94,22 +94,22 @@ public class CoverageTest {
     private Attribute actionAttribute = new Attribute();
     private Attribute environmentAttribute = new Attribute();
 
-    private AbstractContextHandler abstractContextHandler;
+    private ContextHandlerInterface contextHandler;
 
     public void init() {
         try {
             resetRequest();
-            abstractContextHandler = Mockito.mock( AbstractContextHandler.class );
+            contextHandler = Mockito.mock( ContextHandlerInterface.class );
             subjectAttributePip = new PIPReader( PIPBuilder.getPropertiesFromString( subjectPip ).get() );
             resourceAttributePip = new PIPReader( PIPBuilder.getPropertiesFromString( resourcePip ).get() );
             actionAttributePip = new PIPReader( PIPBuilder.getPropertiesFromString( actionPip ).get() );
             environmentAttributePip = new PIPReader( PIPBuilder.getPropertiesFromString( environmentPip ).get() );
             assertTrue( subjectAttributePip.isPIPInitialized() );
             initAttributes();
-            subjectAttributePip.setContextHandlerInterface( abstractContextHandler );
-            resourceAttributePip.setContextHandlerInterface( abstractContextHandler );
-            actionAttributePip.setContextHandlerInterface( abstractContextHandler );
-            environmentAttributePip.setContextHandlerInterface( abstractContextHandler );
+            subjectAttributePip.setContextHandlerInterface( contextHandler );
+            resourceAttributePip.setContextHandlerInterface( contextHandler );
+            actionAttributePip.setContextHandlerInterface( contextHandler );
+            environmentAttributePip.setContextHandlerInterface( contextHandler );
         } catch( Exception e ) {
             e.printStackTrace();
         }
