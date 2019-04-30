@@ -354,10 +354,4 @@ public class PEPRest implements PEPInterface {
         messageHistory = messageStorage;
     }
 
-    public void clear() {
-        unanswered.clear();
-        responses.clear();
-        messageHistory.clear();
-    }
-
 }
