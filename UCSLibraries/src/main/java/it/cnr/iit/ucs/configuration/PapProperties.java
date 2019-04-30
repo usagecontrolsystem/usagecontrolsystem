@@ -18,16 +18,11 @@ package it.cnr.iit.ucs.configuration;
 public class PapProperties {
 
     private String className;
-    private String thread;
     private String communication;
     private String path;
 
     public String getClassName() {
         return className;
-    }
-
-    public String getThread() {
-        return thread;
     }
 
     public String getPath() {

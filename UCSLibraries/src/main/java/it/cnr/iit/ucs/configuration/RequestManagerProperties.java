@@ -18,16 +18,11 @@ package it.cnr.iit.ucs.configuration;
 public class RequestManagerProperties {
 
     private String className;
-    private String thread;
     private String communication;
     private String remoteResponse;
 
     public String getClassName() {
         return className;
-    }
-
-    public String getThread() {
-        return thread;
     }
 
     public String getCommunication() {

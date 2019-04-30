@@ -15,9 +15,6 @@
  ******************************************************************************/
 package it.cnr.iit.ucs.constants;
 
-/**
- *  Constants to be used in the communication tag in the xml file
- *  */
 public enum CONNECTION {
     API( "API" ),
     REST_API( "REST_API" ),
@@ -29,6 +26,7 @@ public enum CONNECTION {
         this.string = string;
     }
 
+    /*
     public static CONNECTION getCONNECTION( String string ) {
         if( string.equals( API.toString() ) ) {
             return API;
@@ -39,8 +37,8 @@ public enum CONNECTION {
         } else {
             return null;
         }
-
-    }
+    
+    }*/
 
     @Override
     public String toString() {

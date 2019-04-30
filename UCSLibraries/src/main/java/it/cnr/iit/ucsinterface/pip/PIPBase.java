@@ -49,7 +49,7 @@ public abstract class PIPBase implements PIPCHInterface, PIPOMInterface {
     private HashMap<String, Attribute> attributes = new HashMap<>();
     private PipProperties properties;
 
-    private volatile boolean initialized = false;
+    private volatile boolean initialised = false;
 
     public enum TAGS {
         ENVIRONMENT( "environment" ),
@@ -82,12 +82,12 @@ public abstract class PIPBase implements PIPCHInterface, PIPOMInterface {
     public PIPBase( PipProperties properties ) {
         Reject.ifNull( properties );
         this.properties = properties;
-        initialized = true;
+        initialised = true;
     }
 
     @Override
     public final ArrayList<String> getAttributeIds() {
-        Reject.ifInvalidObjectState( initialized, PIPBase.class.getName(), log );
+        Reject.ifInvalidObjectState( initialised, PIPBase.class.getName(), log );
         ArrayList<String> arrayList = new ArrayList<>();
         arrayList.addAll( attributes.keySet() );
         return arrayList;
@@ -95,7 +95,7 @@ public abstract class PIPBase implements PIPCHInterface, PIPOMInterface {
 
     @Override
     public final ArrayList<Attribute> getAttributes() {
-        Reject.ifInvalidObjectState( initialized, PIPBase.class.getName(), log );
+        Reject.ifInvalidObjectState( initialised, PIPBase.class.getName(), log );
         ArrayList<Attribute> arrayList = new ArrayList<>();
         arrayList.addAll( attributes.values() );
         return arrayList;
@@ -111,14 +111,14 @@ public abstract class PIPBase implements PIPCHInterface, PIPOMInterface {
     }
 
     protected final boolean isInitialized() {
-        return initialized;
+        return initialised;
     }
 
     @Override
     public boolean setContextHandlerInterface(
             ContextHandlerPIPInterface contextHandlerInterface ) {
         Reject.ifNull( contextHandlerInterface );
-        Reject.ifInvalidObjectState( initialized, PIPBase.class.getName(), log );
+        Reject.ifInvalidObjectState( initialised, PIPBase.class.getName(), log );
         this.contextHandlerInterface = contextHandlerInterface;
         return true;
     }

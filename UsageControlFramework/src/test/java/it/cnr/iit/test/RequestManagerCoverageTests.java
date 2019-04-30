@@ -10,18 +10,24 @@ import javax.xml.bind.JAXBException;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import it.cnr.iit.ucs.configuration.UCSConfiguration;
 import it.cnr.iit.ucsinterface.message.Message;
+import it.cnr.iit.usagecontrolframework.configuration.UCFProperties;
 import it.cnr.iit.usagecontrolframework.requestmanager.RequestManagerLC;
 
 @ActiveProfiles( "test" )
 @SpringBootTest
 @RunWith( SpringRunner.class )
 public class RequestManagerCoverageTests extends UCFBaseTests {
+
+    @Autowired
+    private UCFProperties ucfProp;
+
     private UCSConfiguration ucsConfiguration;
 
     @PostConstruct
@@ -40,7 +46,7 @@ public class RequestManagerCoverageTests extends UCFBaseTests {
     public void requestManagerCoverageTestShouldFail()
             throws JAXBException, URISyntaxException, IOException, NoSuchMethodException, SecurityException,
             InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
-        RequestManagerLC requestManager = getRequestManager( null );
+        RequestManagerLC requestManager = getRequestManager( null, null );
         requestManager.sendMessageToCH( null );
         requestManager.sendMessageToOutside( null );
     }
@@ -49,7 +55,7 @@ public class RequestManagerCoverageTests extends UCFBaseTests {
     public void requestManagerCoverageTest()
             throws JAXBException, URISyntaxException, IOException, NoSuchMethodException, SecurityException,
             InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
-        RequestManagerLC requestManager = getRequestManager( ucsConfiguration );
+        RequestManagerLC requestManager = getRequestManager( ucfProp, ucsConfiguration );
         requestManager.setInterfaces( getMockedContextHandlerInterface(),
             getMockedPEPMap( "", "" ),
             getMockedNodeInterface(),
@@ -62,7 +68,7 @@ public class RequestManagerCoverageTests extends UCFBaseTests {
     public void requestManagerCoverageTest2()
             throws JAXBException, URISyntaxException, IOException, NoSuchMethodException, SecurityException,
             InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
-        RequestManagerLC requestManager = getRequestManager( ucsConfiguration );
+        RequestManagerLC requestManager = getRequestManager( ucfProp, ucsConfiguration );
         Message message = new Message( "", "" );
         requestManager.setInterfaces( getMockedContextHandlerInterface(),
             getMockedPEPMap( "", "" ),

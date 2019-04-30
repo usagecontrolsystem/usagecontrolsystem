@@ -2,6 +2,7 @@ package it.cnr.iit.ucs.builders;
 
 import java.lang.reflect.Constructor;
 import java.util.Optional;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import it.cnr.iit.ucs.configuration.pip.PipProperties;
@@ -39,7 +40,7 @@ public class PIPBuilder {
             PIPBase pip = (PIPBase) constructor.newInstance( properties );
             return Optional.of( pip );
         } catch( Exception e ) {
-            log.severe( String.format( MSG_ERR_BUILD_PROP, e.getMessage() ) );
+            log.log( Level.SEVERE, MSG_ERR_BUILD_PROP, e.getMessage() );
         }
         return Optional.empty();
     }

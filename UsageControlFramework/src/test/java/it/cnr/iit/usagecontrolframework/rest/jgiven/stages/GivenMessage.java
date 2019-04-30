@@ -64,7 +64,7 @@ public class GivenMessage extends Stage<GivenMessage> {
         assertNotNull( ucsConfiguration );
         PepProperties pepProps = ucsConfiguration.getPepList().get( Integer.parseInt( conf.getPepId() ) );
 
-        TryAccessMessageBuilder tryAccessBuilder = new TryAccessMessageBuilder( pepProps.getId(), pepProps.getIp() );
+        TryAccessMessageBuilder tryAccessBuilder = new TryAccessMessageBuilder( pepProps.getId(), pepProps.getBaseUri() );
         tryAccessBuilder.setPepUri( buildOnGoingEvaluationInterface( pepProps ) )
             .setPolicy( policy ).setRequest( request ).setPolicyId( "1" );
 
@@ -76,8 +76,10 @@ public class GivenMessage extends Stage<GivenMessage> {
 
     private final String buildResponseInterface( PepProperties pepProps, String name ) {
         StringBuilder response = new StringBuilder();
-        response.append( "http://" + pepProps.getIp() + ":" );
-        response.append( pepProps.getPort() + "/" );
+        response.append( pepProps.getBaseUri() );
+        if( !( pepProps.getBaseUri().endsWith( "/" ) || name.startsWith( "/" ) ) ) {
+            response.append( "/" );
+        }
         response.append( name );
         return response.toString();
     }

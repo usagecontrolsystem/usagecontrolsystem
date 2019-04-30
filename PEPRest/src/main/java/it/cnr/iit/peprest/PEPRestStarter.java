@@ -33,24 +33,11 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 @EnableSwagger2
 public class PEPRestStarter extends SpringBootServletInitializer {
 
-    /**
-     * Spring boot method for configuring the current application, right now it
-     * automatically scan for interfaces annotated via spring boot methods in all
-     * sub classes --> CLASSES THAT ARE IN SUBPACKAGES of this class
-     */
     @Override
-    protected SpringApplicationBuilder configure(
-            SpringApplicationBuilder application ) {
+    protected SpringApplicationBuilder configure( SpringApplicationBuilder application ) {
         return application.sources( PEPRestStarter.class );
     }
 
-    /**
-     * Docker is a SwaggerUI configuration component, in particular specifies to
-     * use the V2.0 (SWAGGER_2) of swagger generated interfaces it also tells to
-     * include only path that are under / if other rest interfaces are added with
-     * different base path, they won't be included this path selector can be
-     * removed if all interfaces should be documented.
-     */
     @Bean
     public Docket documentation() {
         Docket docket = new Docket( DocumentationType.SWAGGER_2 );
@@ -58,19 +45,11 @@ public class PEPRestStarter extends SpringBootServletInitializer {
         return docket.select().paths( PathSelectors.regex( "/.*" ) ).build();
     }
 
-    /**
-     * it just tells swagger that no special configuration are requested
-     *
-     */
     @Bean
     public UiConfiguration uiConfig() {
         return UiConfiguration.DEFAULT;
     }
 
-    /**
-     * the metadata are information visualised in the /basepath/swagger-ui.html
-     * interface, only for documentation
-     */
     private ApiInfo metadata() {
         return new ApiInfoBuilder().title( "PEP REST API" ).description( "API for PEP" )
             .version( "1.0" ).contact( "antonio.lamarra@iit.cnr.it" ).build();

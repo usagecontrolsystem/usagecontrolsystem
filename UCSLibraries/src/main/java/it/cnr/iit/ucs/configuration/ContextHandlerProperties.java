@@ -15,23 +15,14 @@
  ******************************************************************************/
 package it.cnr.iit.ucs.configuration;
 
-import it.cnr.iit.ucs.configuration.pip.PipRegisterProperties;
-
 public class ContextHandlerProperties {
 
     private String className;
-    private String thread;
     private String communication;
     private String baseUri;
-    private PipRegisterProperties pipRegister;
-    private boolean schedulerEnabled;
 
     public String getClassName() {
         return className;
-    }
-
-    public String getThread() {
-        return thread;
     }
 
     public String getCommunication() {
@@ -40,14 +31,6 @@ public class ContextHandlerProperties {
 
     public String getBaseUri() {
         return baseUri;
-    }
-
-    public PipRegisterProperties getXmlPipRegister() {
-        return pipRegister;
-    }
-
-    public boolean isSchedulerEnabled() {
-        return schedulerEnabled;
     }
 
 }

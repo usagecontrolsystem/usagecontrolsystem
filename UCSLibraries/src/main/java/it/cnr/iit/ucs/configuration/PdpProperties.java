@@ -18,24 +18,15 @@ package it.cnr.iit.ucs.configuration;
 public class PdpProperties {
 
     private String className;
-    private String thread;
     private String communication;
-    private String journalingDir;
+    private String journalDir;
 
-    public String getJournalingDir() {
-        return journalingDir;
-    }
-
-    public void setJournalingDir( String journalingDir ) {
-        this.journalingDir = journalingDir;
+    public String getJournalDir() {
+        return journalDir;
     }
 
     public String getClassName() {
         return className;
-    }
-
-    public String getThread() {
-        return thread;
     }
 
     public String getCommunication() {

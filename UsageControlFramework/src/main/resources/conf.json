@@ -1,11 +1,4 @@
 {
-  "general" : {
-    "ip" : "localhost",
-    "port" : "9998",
-    "rest" : null,
-    "schedulerEnabled" : false
-  },
-  "distributed" : null,
   "pipList" : [ {
     "id" : "PIPReaderEnv",
     "className" : "it.cnr.iit.pipreader.PIPReader",
@@ -21,7 +14,8 @@
     } ],
     "connection" : null,
     "multiattribute" : "false",
-    "table" : null
+    "table" : null,
+    "journalDir" : "/tmp/ucf"
   }, {
     "id" : "PIPReaderEnv",
     "className" : "it.cnr.iit.pipreader.PIPReader",
@@ -36,7 +30,8 @@
     } ],
     "connection" : null,
     "multiattribute" : "false",
-    "table" : null
+    "table" : null,
+    "journalDir" : "/tmp/ucf"
   }, {
     "id" : "PIPReaderEnv",
     "className" : "it.cnr.iit.pipreader.PIPReader",
@@ -51,11 +46,12 @@
     } ],
     "connection" : null,
     "multiattribute" : "false",
-    "table" : null
+    "table" : null,
+    "journalDir" : "/tmp/ucf"
   } ],
   "sessionManager" : {
     "type" : "Local",
-    "ip" : "localhost",
+    "host" : "localhost",
     "cluster" : "Test Cluster",
     "keyspace" : "sessionmanager",
     "username" : "root",
@@ -63,8 +59,7 @@
     "communication" : "API",
     "className" : "it.cnr.iit.sessionmanagerdesktop.SessionManagerDesktop",
     "key" : null,
-    "host" : "localhost",
-    "driver" : "jdbc:hsqldb:hsql://localhost/session_manager;sql.syntax_pgs=true?user=sa&password=",
+    "dbUri" : "jdbc:sqlite::memory:",
     "tables" : [ {
       "name" : "sessions",
       "fields" : [ {
@@ -125,26 +120,21 @@
   "proxies" : null,
   "contextHandler" : {
     "className" : "it.cnr.iit.usagecontrolframework.contexthandler.ContextHandlerLC",
-    "thread" : "",
     "communication" : "API",
-    "ip" : "localhost",
-    "port" : "8080",
-    "schedulerEnabled" : false
+    "baseUri" : "http://localhost:8080"
   },
   "policyDecisionPoint" : {
-    "className" : "ii.cnr.iit.usagecontrolframework.pdp.PolicyDecisionPoint",
-    "thread" : "tbd",
-    "communication" : "API"
+    "className" : "it.cnr.iit.usagecontrolframework.pdp.PolicyDecisionPoint",
+    "communication" : "API",
+    "journalDir" : "/tmp/ucf"
   },
   "policyAdministrationPoint" : {
     "className" : "it.cnr.iit.usagecontrolframework.pap.PolicyAdministrationPoint",
-    "thread" : "tbd",
     "communication" : "API",
     "path" : null
   },
   "requestManager" : {
     "className" : "it.cnr.iit.usagecontrolframework.requestmanager.RequestManagerLC",
-    "thread" : "1",
     "communication" : "REST",
     "remoteResponse" : "/retrieveRemoteResponse"
   },
@@ -154,8 +144,7 @@
   "pepList" : [ {
     "className" : "it.cnr.iit.ucsinterface.pep.AbstractPEP",
     "communication" : "REST_API",
-    "ip" : "127.0.0.1",
-    "port" : "9999",
+    "baseUri" : "http://localhost:9999",
     "revoke" : "SOFT",
     "id" : "1",
     "onGoingEvaluation" : "onGoingEvaluation",

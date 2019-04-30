@@ -65,12 +65,12 @@ public final class SessionManagerDesktop implements SessionManagerInterface {
 
     public SessionManagerDesktop( SessionManagerProperties properties ) {
         // BEGIN parameter checking
-        if( properties == null || properties.getDriver() == null ) {
+        if( properties == null || properties.getDbUri() == null ) {
             return;
         }
         // END parameter checking
         // TODO clean properties since only driver is used
-        databaseURL = properties.getDriver();
+        databaseURL = properties.getDbUri();
         sessionDao = null;
         attributesDao = null;
         initialized = true;

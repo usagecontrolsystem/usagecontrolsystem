@@ -19,13 +19,13 @@ import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.logging.Logger;
 
 import javax.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
@@ -57,7 +57,6 @@ import it.cnr.iit.ucsinterface.pip.PIPBase;
 import it.cnr.iit.ucsinterface.pip.PIPCHInterface;
 import it.cnr.iit.ucsinterface.pip.PIPOMInterface;
 import it.cnr.iit.ucsinterface.pip.PIPRetrieval;
-import it.cnr.iit.ucsinterface.requestmanager.UCSCHInterface;
 import it.cnr.iit.ucsinterface.ucs.UCSInterface;
 import it.cnr.iit.usagecontrolframework.configuration.UCFProperties;
 import it.cnr.iit.usagecontrolframework.contexthandler.AbstractContextHandler;
@@ -70,7 +69,7 @@ import it.cnr.iit.usagecontrolframework.requestmanager.AsynchronousRequestManage
 import it.cnr.iit.utility.errorhandling.Reject;
 
 /**
- * This is the usagecontrol framework class.
+ * This is the usage control framework class.
  * <p>
  * This class is in charge of instantiating all the classes and of providing
  * communication means to each component. In order to have a framework that is
@@ -106,15 +105,9 @@ import it.cnr.iit.utility.errorhandling.Reject;
  */
 
 @Component
-public final class UsageControlFramework implements UCSInterface {
+public class UsageControlFramework implements UCSInterface {
 
     private static final Logger log = Logger.getLogger( UsageControlFramework.class.getName() );
-
-    // TODO remove
-    private UCSConfiguration ucsConf;
-
-    @Autowired
-    private UCFProperties properties;
 
     // local components
     private AbstractContextHandler contextHandler;
@@ -131,44 +124,33 @@ public final class UsageControlFramework implements UCSInterface {
 
     private ForwardingQueue forwardingQueue;
 
-    // the only component not initialized here
+    // the only component not initialised here
     private NodeInterface nodeInterface;
 
-    private volatile boolean initialized = false;
+    private volatile boolean initialised = false;
 
-    /**
-     * Constructor for the UsageControlFramework.
-     * <p>
-     * Here we build up all the proxies required to communicate with the various
-     * components. We have chosen an approach based on proxies because in this way
-     * it becomes a lot easier the part of swapping components, moreover the
-     * framework in this way gains flexibility.
-     * </p>
-     */
-    public UsageControlFramework() {
+    @Deprecated
+    private UCSConfiguration ucsConf;
 
+    @Autowired
+    private UCFProperties properties;
+
+    @Bean
+    public UCFProperties getUCFProperties() {
+        return new UCFProperties();
     }
 
     @PostConstruct
-    public void init() {
-        Optional<UCSConfiguration> configuration = properties.getConfiguration();
-        Reject.ifAbsent( configuration );
-        ucsConf = configuration.get();
+    private void init() {
+        Optional<UCSConfiguration> conf = properties.getUCSConfiguration();
+        Reject.ifAbsent( conf );
+        ucsConf = conf.get();
 
         if( buildComponents() ) {
-            initialized = true;
+            initialised = true;
         }
     }
 
-    /**
-     * This utility function has the task of initializing the various proxies.
-     * <p>
-     * The only objects that do not have a proxy are the PIPs, the ContextHandler
-     * and the Request Manager.
-     * </p>
-     *
-     * @return
-     */
     private boolean buildComponents() {
         // build the context handler
         if( !buildContextHandler() ) {
@@ -209,18 +191,29 @@ public final class UsageControlFramework implements UCSInterface {
 
         forwardingQueue = new ForwardingQueue();
         nodeInterface = new NodeProxy( properties );
-        log.info( "*******************\nCC" );
-        // checks if every component is ok
+        log.info( "UCF component building done." );
         return checkConnection();
     }
 
-    /**
-     * Builds the context handler. The building of the context handler employs a
-     * class which simply performs the building and return the context handler
-     * instance.
-     *
-     * @return true if everything goes ok, false otherwise
-     */
+    private boolean checkConnection() {
+        List<PIPCHInterface> pipchList = new ArrayList<>( pipList );
+
+        contextHandler.setInterfaces( proxySessionManager, requestManager, proxyPDP,
+            proxyPAP, pipchList, pipRetrieval, obligationManager, forwardingQueue );
+
+        try {
+            contextHandler.startMonitoringThread();
+        } catch( Exception e ) {
+            log.severe( "Error starting context handler : " + e.getMessage() );
+            return false;
+        }
+
+        requestManager.setInterfaces( contextHandler, proxyPEPMap, nodeInterface, forwardingQueue );
+        proxyPDP.setInterfaces( proxyPAP );
+
+        return true;
+    }
+
     private boolean buildContextHandler() {
         try {
             ContextHandlerProperties chProperties = ucsConf.getContextHandler();
@@ -237,15 +230,6 @@ public final class UsageControlFramework implements UCSInterface {
         }
     }
 
-    /**
-     * Function in charge of building the request manager.
-     * <p>
-     * By reading the xml provided in the configuration file, this function is
-     * able to build up the request manager.
-     * </p>
-     *
-     * @return true if everything goes ok, false otherwise
-     */
     private boolean buildRequestManager() {
 
         try {
@@ -263,15 +247,6 @@ public final class UsageControlFramework implements UCSInterface {
         }
     }
 
-    /**
-     * Function in charge of building the various PIPS.
-     * <p>
-     * Basically by reading the provided XML this function is able to build up the
-     * required PIPs.
-     * </p>
-     *
-     * @return true if all the PIPs are correctly created, false otherwise
-     */
     private boolean buildPIPs() {
         int failures = 0;
 
@@ -291,11 +266,6 @@ public final class UsageControlFramework implements UCSInterface {
         return failures == 0;
     }
 
-    /**
-     * Builds the proxy to deal with the Session Manager
-     *
-     * @return true if everything goes fine, false otherwise
-     */
     private boolean buildProxySM() {
         SessionManagerProperties properties = ucsConf.getSessionManager();
         proxySessionManager = new ProxySessionManager( properties );
@@ -303,11 +273,6 @@ public final class UsageControlFramework implements UCSInterface {
         return proxySessionManager.isInitialized();
     }
 
-    /**
-     * Builds the proxy to the obligation manager
-     *
-     * @return true if everything goes fine, false otherwise
-     */
     private boolean buildObligationManager() {
         try {
             ObligationManagerProperties properties = ucsConf.getObligationManager();
@@ -320,61 +285,18 @@ public final class UsageControlFramework implements UCSInterface {
         }
     }
 
-    /**
-     * Builds the proxy to deal with the PDP
-     *
-     * @return true if everything goes fine, false otherwise
-     */
     private boolean buildProxyPDP() {
         PdpProperties properties = ucsConf.getPolicyDecisionPoint();
         proxyPDP = new ProxyPDP( properties );
         return proxyPDP.isInitialized();
     }
 
-    /**
-     * Builds the proxy to deal with the PAP
-     *
-     * @return true if everything goes fine, false otherwise
-     */
     private boolean buildProxyPolicyAdministrationPoint() {
         PapProperties properties = ucsConf.getPolicyAdministrationPoint();
         proxyPAP = new ProxyPAP( properties );
         return proxyPAP.isInitialized();
     }
 
-    /**
-     * At first sets up all the interfaces to allow communication between the
-     * various components, then performs a very simple ping function in order to
-     * check if every component is right
-     *
-     * @return true if everything goes ok, false otherwise
-     * @throws Exception
-     */
-    private boolean checkConnection() {
-        List<PIPCHInterface> pipchList = new ArrayList<>( pipList );
-
-        contextHandler.setInterfaces( proxySessionManager, requestManager, proxyPDP,
-            proxyPAP, pipchList, pipRetrieval, obligationManager, forwardingQueue );
-
-        try {
-            contextHandler.startMonitoringThread();
-        } catch( Exception e ) {
-            log.severe( e.getMessage() );
-            return false;
-        }
-
-        requestManager.setInterfaces( contextHandler, proxyPEPMap, nodeInterface,
-            forwardingQueue );
-        proxyPDP.setInterfaces( proxyPAP );
-
-        return true;
-    }
-
-    /**
-     * Builds the Proxy to communicate with the PEP
-     *
-     * @return true if the proxy was correclty set up, false otherwise
-     */
     private boolean buildProxyPEP() {
         List<PepProperties> pepList = ucsConf.getPepList();
         for( PepProperties pep : pepList ) {
@@ -388,55 +310,53 @@ public final class UsageControlFramework implements UCSInterface {
         return true;
     }
 
-    /* Functions */
-
     @Override
     @Async
     public void tryAccess( TryAccessMessage tryAccessMessage ) {
         // TODO check if sent
-        getRequestManager().sendMessageToCH( tryAccessMessage );
+        requestManager.sendMessageToCH( tryAccessMessage );
     }
 
     @Override
     @Async
     public void tryAccessResponse( TryAccessResponse tryAccessResponse ) {
         // TODO check if sent
-        getRequestManager().sendMessageToCH( tryAccessResponse );
+        requestManager.sendMessageToCH( tryAccessResponse );
     }
 
     @Override
     @Async
     public void startAccess( StartAccessMessage startAccessMessage ) {
         // TODO check if sent
-        getRequestManager().sendMessageToCH( startAccessMessage );
+        requestManager.sendMessageToCH( startAccessMessage );
     }
 
     @Override
     @Async
     public void startAccessResponse( StartAccessResponse startAccessResponse ) {
         // TODO check if sent
-        getRequestManager().sendMessageToCH( startAccessResponse );
+        requestManager.sendMessageToCH( startAccessResponse );
     }
 
     @Override
     @Async
     public void endAccess( EndAccessMessage endAccessMessage ) {
         // TODO check if sent
-        getRequestManager().sendMessageToCH( endAccessMessage );
+        requestManager.sendMessageToCH( endAccessMessage );
     }
 
     @Override
     @Async
     public void endAccessResponse( EndAccessResponse endAccessResponse ) {
         // TODO check if sent
-        getRequestManager().sendMessageToCH( endAccessResponse );
+        requestManager.sendMessageToCH( endAccessResponse );
     }
 
     @Override
     @Async
     public void onGoingEvaluation( ReevaluationMessage onGoingEvaluation ) {
         // TODO check if sent
-        getRequestManager().sendMessageToCH( onGoingEvaluation );
+        requestManager.sendMessageToCH( onGoingEvaluation );
     }
 
     @Override
@@ -444,30 +364,22 @@ public final class UsageControlFramework implements UCSInterface {
     public void onGoingEvaluationResponse(
             ReevaluationResponse onGoingEvaluationResponse ) {
         // TODO check if sent
-        getRequestManager().sendMessageToCH( onGoingEvaluationResponse );
+        requestManager.sendMessageToCH( onGoingEvaluationResponse );
     }
 
     @Override
     @Async
     public void retrieveRemote( MessagePipCh messagePipCh ) {
         // TODO check if sent
-        getRequestManager().sendMessageToCH( messagePipCh );
+        requestManager.sendMessageToCH( messagePipCh );
     }
 
     @Override
     @Async
     public void retrieveRemoteResponse( MessagePipCh messagePipCh ) {} // NOSONAR
 
-    public Map<String, PEPInterface> getPEPProxy() {
-        return proxyPEPMap;
-    }
-
-    public UCSCHInterface getRequestManager() {
-        return requestManager;
-    }
-
-    public boolean getInitialized() {
-        return initialized;
+    public boolean isInitialised() {
+        return initialised;
     }
 
 }

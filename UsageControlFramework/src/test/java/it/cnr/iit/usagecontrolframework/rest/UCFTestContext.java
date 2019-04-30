@@ -12,7 +12,6 @@ import com.tngtech.jgiven.integration.spring.EnableJGiven;
 @Configuration
 @EnableJGiven
 @ComponentScan( basePackages = { "it.cnr.iit.usagecontrolframework.rest" } )
-
 @EnableConfigurationProperties
 @TestPropertySource( properties = "application.properties" )
 @SpringBootConfiguration

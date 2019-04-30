@@ -20,12 +20,6 @@ import java.util.List;
 
 import it.cnr.iit.ucs.configuration.session_manager.Table;
 
-/**
- * PIP conf
- *
- * @author antonio
- *
- */
 public final class PipProperties {
 
     private String id;
