@@ -16,11 +16,13 @@ import it.cnr.iit.usagecontrolframework.rest.jgiven.stages.GivenPEPRestSimulator
 import it.cnr.iit.usagecontrolframework.rest.jgiven.stages.ThenMessage;
 import it.cnr.iit.usagecontrolframework.rest.jgiven.stages.WhenUCFRestController;
 
+import oasis.names.tc.xacml.core.schema.wd_17.DecisionType;
+
 @SpringBootTest( classes = { MockServletContext.class, UCFTestContext.class } )
 public class UsageControlFrameworkScenarioIntegrationTest
         extends SpringRuleScenarioTest<GivenMessage, WhenUCFRestController, ThenMessage> {
 
-    private static final String DECISION_PERMIT = "PERMIT";
+    private static final String DECISION_PERMIT = DecisionType.PERMIT.value();
 
     @ScenarioStage
     GivenPEPRestSimulator givenPEPRestSimulator;
