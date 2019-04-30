@@ -27,14 +27,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import it.cnr.iit.ucsinterface.message.endaccess.EndAccessMessage;
-import it.cnr.iit.ucsinterface.message.endaccess.EndAccessResponse;
 import it.cnr.iit.ucsinterface.message.reevaluation.ReevaluationMessage;
-import it.cnr.iit.ucsinterface.message.reevaluation.ReevaluationResponse;
-import it.cnr.iit.ucsinterface.message.remoteretrieval.MessagePipCh;
 import it.cnr.iit.ucsinterface.message.startaccess.StartAccessMessage;
-import it.cnr.iit.ucsinterface.message.startaccess.StartAccessResponse;
 import it.cnr.iit.ucsinterface.message.tryaccess.TryAccessMessage;
-import it.cnr.iit.ucsinterface.message.tryaccess.TryAccessResponse;
 import it.cnr.iit.ucsinterface.node.NodeInterface;
 import it.cnr.iit.ucsinterface.ucs.UCSInterface;
 import it.cnr.iit.utility.LogProfiler;
@@ -114,76 +109,6 @@ public class UCFRestController {
         Reject.ifNull( message );
         log.log( Level.INFO, "Reevaluation received at {0}", System.currentTimeMillis() );
         ucs.onGoingEvaluation( message );
-    }
-
-    @ApiOperation( httpMethod = "POST", value = "Receives request from PIP for attribute retrieval operation" )
-    @ApiResponses( value = {
-        @ApiResponse( code = 500, message = "Invalid message received" ),
-        @ApiResponse( code = 200, message = "OK" ) } )
-    @PostMapping( value = "/retrieveRemote", consumes = MediaType.TEXT_PLAIN_VALUE )
-    // TODO UCS-34 NOSONAR
-    public void retrieveRemote( @RequestBody( ) MessagePipCh message ) {
-        Reject.ifNull( message );
-        ucs.retrieveRemote( message );
-    }
-
-    @ApiOperation( httpMethod = "POST", value = "Receives response from PIP for attribute retrieval operation" )
-    @ApiResponses( value = {
-        @ApiResponse( code = 500, message = "Invalid message received" ),
-        @ApiResponse( code = 200, message = "OK" ) } )
-    @PostMapping( value = "/retrieveRemoteResponse", consumes = MediaType.TEXT_PLAIN_VALUE )
-    // TODO UCS-34 NOSONAR
-    public void retrieveRemoteResponse( @RequestBody( ) MessagePipCh message ) {
-        Reject.ifNull( message );
-        ucs.retrieveRemoteResponse( message );
-    }
-
-    @ApiOperation( httpMethod = "POST", value = "Receives request from PEP for tryaccess operation" )
-    @ApiResponses( value = {
-        @ApiResponse( code = 500, message = "Invalid message received" ),
-        @ApiResponse( code = 200, message = "OK" ) } )
-    @PostMapping( value = NodeInterface.TRYACCESSRESPONSE_REST, consumes = MediaType.TEXT_PLAIN_VALUE )
-    // TODO UCS-34 NOSONAR
-    public void tryAccessResponse( @RequestBody( ) TryAccessResponse message ) {
-        Reject.ifNull( message );
-        log.log( Level.INFO, "Trytaccess received at {0}", System.currentTimeMillis() );
-        ucs.tryAccessResponse( message );
-    }
-
-    @ApiOperation( httpMethod = "POST", value = "Receives request from PEP for tryaccess operation" )
-    @ApiResponses( value = {
-        @ApiResponse( code = 500, message = "Invalid message received" ),
-        @ApiResponse( code = 200, message = "OK" ) } )
-    @PostMapping( value = NodeInterface.STARTACCESSRESPONSE_REST, consumes = MediaType.TEXT_PLAIN_VALUE )
-    // TODO UCS-34 NOSONAR
-    public void startAccessResponse( @RequestBody( ) StartAccessResponse message ) {
-        Reject.ifNull( message );
-        log.log( Level.INFO, "Startaccess received at {0}", System.currentTimeMillis() );
-        ucs.startAccessResponse( message );
-    }
-
-    @ApiOperation( httpMethod = "POST", value = "Receives request from PEP for tryaccess operation" )
-    @ApiResponses( value = {
-        @ApiResponse( code = 500, message = "Invalid message received" ),
-        @ApiResponse( code = 200, message = "OK" ) } )
-    @PostMapping( value = NodeInterface.ENDACCESSRESPONSE_REST, consumes = MediaType.TEXT_PLAIN_VALUE )
-    // TODO UCS-34 NOSONAR
-    public void endAccessResponse( @RequestBody( ) EndAccessResponse message ) {
-        Reject.ifNull( message );
-        log.log( Level.INFO, "Endaccess received at {0}", System.currentTimeMillis() );
-        ucs.endAccessResponse( message );
-    }
-
-    @ApiOperation( httpMethod = "POST", value = "Receives request from PEP for endaccess operation" )
-    @ApiResponses( value = {
-        @ApiResponse( code = 500, message = "Invalid message received" ),
-        @ApiResponse( code = 200, message = "OK" ) } )
-    @PostMapping( value = NodeInterface.ONGOINGRESPONSE_REST, consumes = MediaType.TEXT_PLAIN_VALUE )
-    // TODO UCS-34 NOSONAR
-    public void reevaluationResponse( @RequestBody( ) ReevaluationResponse message ) {
-        Reject.ifNull( message );
-        log.log( Level.INFO, "On going Evaluation received at {0}", System.currentTimeMillis() );
-        ucs.onGoingEvaluationResponse( message );
     }
 
     @Bean
