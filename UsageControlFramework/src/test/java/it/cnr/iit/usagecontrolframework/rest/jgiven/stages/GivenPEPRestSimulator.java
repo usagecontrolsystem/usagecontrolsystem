@@ -4,9 +4,9 @@ import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathMatching;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 
 import java.io.File;
+import java.net.URI;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -27,6 +27,8 @@ import it.cnr.iit.ucs.configuration.UCSConfiguration;
 import it.cnr.iit.ucs.testing.jgiven.rules.MockedHttpServiceTestRule;
 import it.cnr.iit.usagecontrolframework.rest.UCFTestContext;
 import it.cnr.iit.utility.JsonUtility;
+import it.cnr.iit.utility.Utility;
+import it.cnr.iit.utility.errorhandling.Reject;
 
 @JGivenStage
 public class GivenPEPRestSimulator extends Stage<GivenPEPRestSimulator> {
@@ -52,7 +54,9 @@ public class GivenPEPRestSimulator extends Stage<GivenPEPRestSimulator> {
     @BeforeScenario
     public void init() {
         loadConfiguration();
-        restSimulatorTestRule.start( getPort() );
+        Optional<URI> uri = Utility.parseUri( conf.getUcsUri() );
+        Reject.ifAbsent( uri );
+        restSimulatorTestRule.start( uri.get().getPort() );
     }
 
     private void loadConfiguration() {
@@ -66,31 +70,16 @@ public class GivenPEPRestSimulator extends Stage<GivenPEPRestSimulator> {
         }
     }
 
-    private String getHost() {
-        if( configuration == null ) {
-            loadConfiguration();
-        }
-        assertNotNull( "PEP address is not declared", configuration.getPepList() );
-        assertTrue( "At least one PEP address needs to be declared", !configuration.getPepList().isEmpty() );
-        return configuration.getPepList().get( Integer.parseInt( conf.getPepId() ) ).getIp();
-    }
-
-    private int getPort() {
-        if( configuration == null ) {
-            loadConfiguration();
-        }
-        assertNotNull( "PEP address is not declared", configuration.getPepList() );
-        assertTrue( "At least one PEP address needs to be declared", !configuration.getPepList().isEmpty() );
-        return Integer.parseInt( configuration.getPepList().get( Integer.parseInt( conf.getPepId() ) ).getPort() );
-    }
-
     public GivenPEPRestSimulator a_test_configuration_for_request_with_policy() {
         loadConfiguration();
         return self();
     }
 
     public GivenPEPRestSimulator a_mocked_PEPRest_for_$( @Quoted String operationUri ) {
-        wireMockContextHandler = new WireMock( getHost(), getPort() );
+        Optional<URI> uri = Utility.parseUri( conf.getUcsUri() );
+        Reject.ifAbsent( uri );
+
+        wireMockContextHandler = new WireMock( uri.get().getHost(), uri.get().getPort() );
         post = post( urlPathMatching( operationUri ) );
         return self();
     }

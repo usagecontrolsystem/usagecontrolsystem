@@ -4,8 +4,8 @@
   "scenarios": [
     {
       "className": "it.cnr.iit.usagecontrolframework.rest.UsageControlFrameworkScenarioIntegrationTest",
-      "testMethodName": "a_tryAccess_request_is_replied_with_tryAccessResponse",
-      "description": "a tryAccess request is replied with tryAccessResponse",
+      "testMethodName": "a_tryAccess_request_is_replied_with_tryAccessResponse_containg_Permit_decision",
+      "description": "a tryAccess request is replied with tryAccessResponse containg Permit decision",
       "tagIds": [],
       "explicitParameters": [],
       "derivedParameters": [],
@@ -25,8 +25,8 @@
                   "value": "a TryAccess request"
                 }
               ],
-              "status": "PASSED",
-              "durationInNanos": 4232982
+              "status": "FAILED",
+              "durationInNanos": 2401081
             },
             {
               "name": "a mocked PEPRest for $",
@@ -46,8 +46,8 @@
                   }
                 }
               ],
-              "status": "PASSED",
-              "durationInNanos": 34964
+              "status": "SKIPPED",
+              "durationInNanos": 0
             },
             {
               "name": "a success response status code of $",
@@ -67,8 +67,8 @@
                   }
                 }
               ],
-              "status": "PASSED",
-              "durationInNanos": 335570676
+              "status": "SKIPPED",
+              "durationInNanos": 0
             },
             {
               "name": "the UCF is executed for $",
@@ -88,11 +88,11 @@
                   }
                 }
               ],
-              "status": "PASSED",
-              "durationInNanos": 210216724
+              "status": "SKIPPED",
+              "durationInNanos": 0
             },
             {
-              "name": "the asynch post request for $ was received by PEPRest",
+              "name": "the asynch post request for $ with decision $ was received by PEPRest",
               "words": [
                 {
                   "value": "Then",
@@ -109,22 +109,72 @@
                   }
                 },
                 {
+                  "value": "with decision"
+                },
+                {
+                  "value": "PERMIT",
+                  "argumentInfo": {
+                    "argumentName": "decision",
+                    "formattedValue": "\"PERMIT\""
+                  }
+                },
+                {
                   "value": "was received by PEPRest"
                 }
               ],
-              "status": "PASSED",
-              "durationInNanos": 2061716715
+              "status": "SKIPPED",
+              "durationInNanos": 0
             }
           ],
           "explicitArguments": [],
           "derivedArguments": [],
-          "status": "SUCCESS",
-          "success": true,
-          "durationInNanos": 3712402880
+          "status": "FAILED",
+          "success": false,
+          "errorMessage": "java.lang.AssertionError: Index: 1, Size: 1",
+          "stackTrace": [
+            "org.junit.Assert.fail(Assert.java:88)",
+            "it.cnr.iit.usagecontrolframework.rest.jgiven.stages.GivenMessage.a_TryAccess_request(GivenMessage.java:58)",
+            "it.cnr.iit.usagecontrolframework.rest.jgiven.stages.GivenMessage$ByteBuddy$RS3tzCm7.a_TryAccess_request$accessor$lXBgiCvz(Unknown Source)",
+            "it.cnr.iit.usagecontrolframework.rest.jgiven.stages.GivenMessage$ByteBuddy$RS3tzCm7$auxiliary$GFBfUtpj.call(Unknown Source)",
+            "it.cnr.iit.usagecontrolframework.rest.jgiven.stages.GivenMessage$ByteBuddy$RS3tzCm7.a_TryAccess_request(Unknown Source)",
+            "it.cnr.iit.usagecontrolframework.rest.UsageControlFrameworkScenarioIntegrationTest.a_tryAccess_request_is_replied_with_tryAccessResponse_containg_Permit_decision(UsageControlFrameworkScenarioIntegrationTest.java:30)",
+            "org.junit.runners.model.FrameworkMethod$1.runReflectiveCall(FrameworkMethod.java:50)",
+            "org.junit.internal.runners.model.ReflectiveCallable.run(ReflectiveCallable.java:12)",
+            "org.junit.runners.model.FrameworkMethod.invokeExplosively(FrameworkMethod.java:47)",
+            "org.junit.internal.runners.statements.InvokeMethod.evaluate(InvokeMethod.java:17)",
+            "com.tngtech.jgiven.junit.JGivenMethodRule$1.evaluate(JGivenMethodRule.java:73)",
+            "org.springframework.test.context.junit4.statements.RunBeforeTestMethodCallbacks.evaluate(RunBeforeTestMethodCallbacks.java:75)",
+            "org.springframework.test.context.junit4.statements.RunAfterTestMethodCallbacks.evaluate(RunAfterTestMethodCallbacks.java:86)",
+            "org.springframework.test.context.junit4.statements.RunPrepareTestInstanceCallbacks.evaluate(RunPrepareTestInstanceCallbacks.java:64)",
+            "org.springframework.test.context.junit4.statements.SpringRepeat.evaluate(SpringRepeat.java:84)",
+            "org.springframework.test.context.junit4.statements.SpringFailOnTimeout.evaluate(SpringFailOnTimeout.java:87)",
+            "org.springframework.test.context.junit4.statements.ProfileValueChecker.evaluate(ProfileValueChecker.java:103)",
+            "org.junit.runners.ParentRunner.runLeaf(ParentRunner.java:325)",
+            "org.junit.runners.BlockJUnit4ClassRunner.runChild(BlockJUnit4ClassRunner.java:78)",
+            "org.junit.runners.BlockJUnit4ClassRunner.runChild(BlockJUnit4ClassRunner.java:57)",
+            "org.junit.runners.ParentRunner$3.run(ParentRunner.java:290)",
+            "org.junit.runners.ParentRunner$1.schedule(ParentRunner.java:71)",
+            "org.junit.runners.ParentRunner.runChildren(ParentRunner.java:288)",
+            "org.junit.runners.ParentRunner.access$000(ParentRunner.java:58)",
+            "org.junit.runners.ParentRunner$2.evaluate(ParentRunner.java:268)",
+            "org.junit.rules.TestWatcher$1.evaluate(TestWatcher.java:55)",
+            "org.springframework.test.context.junit4.statements.RunBeforeTestClassCallbacks.evaluate(RunBeforeTestClassCallbacks.java:61)",
+            "org.springframework.test.context.junit4.statements.RunAfterTestClassCallbacks.evaluate(RunAfterTestClassCallbacks.java:70)",
+            "org.springframework.test.context.junit4.statements.ProfileValueChecker.evaluate(ProfileValueChecker.java:103)",
+            "org.springframework.test.context.junit4.rules.SpringClassRule$TestContextManagerCacheEvictor.evaluate(SpringClassRule.java:190)",
+            "org.junit.rules.RunRules.evaluate(RunRules.java:20)",
+            "org.junit.runners.ParentRunner.run(ParentRunner.java:363)",
+            "org.eclipse.jdt.internal.junit4.runner.JUnit4TestReference.run(JUnit4TestReference.java:89)",
+            "org.eclipse.jdt.internal.junit.runner.TestExecution.run(TestExecution.java:41)",
+            "org.eclipse.jdt.internal.junit.runner.RemoteTestRunner.runTests(RemoteTestRunner.java:541)",
+            "org.eclipse.jdt.internal.junit.runner.RemoteTestRunner.runTests(RemoteTestRunner.java:763)",
+            "org.eclipse.jdt.internal.junit.runner.RemoteTestRunner.run(RemoteTestRunner.java:463)",
+            "org.eclipse.jdt.internal.junit.runner.RemoteTestRunner.main(RemoteTestRunner.java:209)"
+          ],
+          "durationInNanos": 247684644
         }
       ],
-      "durationInNanos": 3712402880,
-      "executionStatus": "SUCCESS"
+      "durationInNanos": 247684644
     }
   ],
   "tagMap": {}

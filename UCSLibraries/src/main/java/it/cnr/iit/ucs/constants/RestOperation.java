@@ -1,4 +1,4 @@
-package it.cnr.iit.ucs.configuration;
+package it.cnr.iit.ucs.constants;
 
 import static it.cnr.iit.ucsinterface.node.NodeInterface.ENDACCESSRESPONSE_REST;
 import static it.cnr.iit.ucsinterface.node.NodeInterface.ENDACCESS_REST;

@@ -19,13 +19,13 @@ public class PepProperties {
 
     private String className;
     private String communication;
+    private String id;
     private String baseUri;
     private String revoke = "SOFT";
     private String onGoingEvaluation;
     private String tryAccessResponse;
     private String startAccessResponse;
     private String endAccessResponse;
-    private String id;
 
     public String getCommunication() {
         return communication;

@@ -54,7 +54,7 @@ import it.cnr.iit.utility.errorhandling.Reject;
  * </p>
  *
  *
- * @author antonio
+ * @author Antonio La Marra, Alessandro Rosetti
  *
  */
 public abstract class AbstractContextHandler implements ContextHandlerInterface {
@@ -108,8 +108,8 @@ public abstract class AbstractContextHandler implements ContextHandlerInterface 
 
     /**
      * Verifies that the status of the context handler is consistent. In case it is consistent it
-     * sets the initialized flag to true, otherwise to false.
-     * Having the initialized flag to false makes it impossible to deal with this object
+     * sets the initialised flag to true, otherwise to false.
+     * Having the initialised flag to false makes it impossible to deal with this object
      */
     @Deprecated
     public void verify() {
@@ -240,7 +240,7 @@ public abstract class AbstractContextHandler implements ContextHandlerInterface 
      * @param pipList
      *          the list of PIPs available to the context handler
      * @param pipRetrieval
-     *          the pipretrieval to be used by the context handler
+     *          the pip-retrieval to be used by the context handler
      * @param obligationManager
      *          the interface to the obligation manager
      */
@@ -269,12 +269,6 @@ public abstract class AbstractContextHandler implements ContextHandlerInterface 
         verify();
     }
 
-    /**
-     * Sets the obligation manager
-     *
-     * @param obligationManager
-     *          the obligation manager to be used
-     */
     public void setObligationManager( ObligationManagerInterface obligationManager ) {
         if( obligationManager != null ) {
             this.obligationManager = obligationManager;
@@ -294,11 +288,6 @@ public abstract class AbstractContextHandler implements ContextHandlerInterface 
         }
     }
 
-    /**
-     * Retrieves the forwarding queue interface
-     *
-     * @return the ForwardingQueueToCHInterface
-     */
     protected final ForwardingQueueToCHInterface getForwardingQueue() {
         return forwardingQueue;
     }

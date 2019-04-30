@@ -18,12 +18,6 @@ package it.cnr.iit.ucs.configuration.session_manager;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Xml table
- *
- * @author antonio
- *
- */
 public class Table {
 
     private String name;

@@ -17,16 +17,10 @@ package it.cnr.iit.ucs.configuration.session_manager;
 
 import java.util.List;
 
-/**
- * Session manager properties
- *
- * @author antonio
- *
- */
 public class SessionManagerProperties {
 
     private String type;
-    private String ip;
+    private String host;
     private String cluster;
     private String keyspace;
     private String username;
@@ -35,16 +29,15 @@ public class SessionManagerProperties {
     private String className;
     private String replicationFactor;
     private String key;
-    private String host;
-    private String driver;
+    private String dbUri;
     private List<Table> tables;
 
     public String getType() {
         return type;
     }
 
-    public String getIp() {
-        return ip;
+    public String getHost() {
+        return host;
     }
 
     public String getCluster() {
@@ -83,12 +76,8 @@ public class SessionManagerProperties {
         return key;
     }
 
-    public String getHost() {
-        return host;
-    }
-
-    public String getDriver() {
-        return driver;
+    public String getDbUri() {
+        return dbUri;
     }
 
 }

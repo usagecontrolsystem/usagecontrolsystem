@@ -104,7 +104,7 @@ public class CoverageTest {
             resourceAttributePip = new PIPReader( PIPBuilder.getPropertiesFromString( resourcePip ).get() );
             actionAttributePip = new PIPReader( PIPBuilder.getPropertiesFromString( actionPip ).get() );
             environmentAttributePip = new PIPReader( PIPBuilder.getPropertiesFromString( environmentPip ).get() );
-            assertTrue( subjectAttributePip.isPIPInitialized() );
+            assertTrue( subjectAttributePip.isInitialised() );
             initAttributes();
             subjectAttributePip.setContextHandlerInterface( contextHandler );
             resourceAttributePip.setContextHandlerInterface( contextHandler );
@@ -162,23 +162,23 @@ public class CoverageTest {
         try {
             fault = new PIPReader( PIPBuilder.getPropertiesFromString( missingCategory ).get() );
         } catch( Exception e ) {}
-        assertFalse( fault != null && fault.isPIPInitialized() );
+        assertFalse( fault != null && fault.isInitialised() );
         try {
             fault = new PIPReader( PIPBuilder.getPropertiesFromString( missingAttributeId ).get() );
         } catch( Exception e ) {}
-        assertFalse( fault != null && fault.isPIPInitialized() );
+        assertFalse( fault != null && fault.isInitialised() );
         try {
             fault = new PIPReader( PIPBuilder.getPropertiesFromString( missingExpectedCategory ).get() );
         } catch( Exception e ) {}
-        assertFalse( fault != null && fault.isPIPInitialized() );
+        assertFalse( fault != null && fault.isInitialised() );
         try {
             fault = new PIPReader( PIPBuilder.getPropertiesFromString( missingDataType ).get() );
         } catch( Exception e ) {}
-        assertFalse( fault != null && fault.isPIPInitialized() );
+        assertFalse( fault != null && fault.isInitialised() );
         try {
             fault = new PIPReader( PIPBuilder.getPropertiesFromString( missingFilePath ).get() );
         } catch( Exception e ) {}
-        assertFalse( fault != null && fault.isPIPInitialized() );
+        assertFalse( fault != null && fault.isInitialised() );
 
         // fault = new PIPReader( PIPBuilder.getPipPropertiesFromString(malformedInput).get() );
         // assertEquals( fault.initialized, false );
@@ -187,7 +187,7 @@ public class CoverageTest {
     @Test( expected = PreconditionException.class )
     public void testNullProperties() {
         fault = new PIPReader( null );
-        assertFalse( fault.isPIPInitialized() );
+        assertFalse( fault.isInitialised() );
     }
 
     public void testRetrieve() {

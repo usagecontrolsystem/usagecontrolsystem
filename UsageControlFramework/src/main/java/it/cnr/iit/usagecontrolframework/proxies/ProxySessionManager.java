@@ -62,10 +62,6 @@ public class ProxySessionManager extends Proxy implements SessionManagerInterfac
     private volatile boolean started = false;
     private volatile boolean initialized = false;
 
-    /**
-     *
-     * @param properties
-     */
     public ProxySessionManager( SessionManagerProperties properties ) {
         // BEGIN parameter checking
         if( properties == null || properties.getCommunication() == null ) {

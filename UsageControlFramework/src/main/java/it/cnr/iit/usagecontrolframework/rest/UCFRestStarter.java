@@ -20,6 +20,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.scheduling.annotation.EnableAsync;
 
 import springfox.documentation.builders.ApiInfoBuilder;
@@ -39,25 +40,14 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 @SpringBootApplication
 @EnableSwagger2
 @EnableAsync
+@ComponentScan( basePackages = { "it.cnr.iit" } )
 public class UCFRestStarter extends SpringBootServletInitializer {
 
-    /**
-     * Spring boot method for configuring the current application, right now it
-     * automatically scan for interfaces annotated via spring boot methods in all
-     * sub classes --> CLASSES THAT ARE IN SUBPACKAGES of this class
-     */
     @Override
     protected SpringApplicationBuilder configure( SpringApplicationBuilder application ) {
         return application.sources( UCFRestStarter.class );
     }
 
-    /**
-     * Docker is a SwaggerUI configuration component, in particular specifies to use
-     * the V2.0 (SWAGGER_2) of swagger generated interfaces it also tells to include
-     * only path that are under / if other rest interfaces are added with different
-     * base path, they won't be included this path selector can be removed if all
-     * interfaces should be documented.
-     */
     @Bean
     public Docket documentation() {
         Docket docket = new Docket( DocumentationType.SWAGGER_2 );
@@ -65,21 +55,15 @@ public class UCFRestStarter extends SpringBootServletInitializer {
         return docket.select().paths( PathSelectors.regex( "/.*" ) ).build();
     }
 
-    /**
-     * it just tells swagger that no special configuration are requested
-     *
-     */
     @Bean
     public UiConfiguration uiConfig() {
         return UiConfiguration.DEFAULT;
     }
 
-    /**
-     * the metadata are information visualized in the /basepath/swagger-ui.html
-     * interface, only for documentation
-     */
     private ApiInfo metadata() {
-        return new ApiInfoBuilder().title( "Usage Control System REST API" ).description( "API for Usage Control System" )
+        return new ApiInfoBuilder()
+            .title( "Usage Control System REST API" )
+            .description( "API for Usage Control System" )
             .version( "1.0" ).contact( "antonio.lamarra@iit.cnr.it" ).build();
     }
 

@@ -1,17 +1,9 @@
 {
-  "general" : {
-    "ip" : "localhost",
-    "port" : "9998",
-    "rest" : null,
-    "schedulerEnabled" : false
-  },
-"pipList": [
-        {
+"pipList": [ {
             "id": "PIPReaderEnv",
             "className": "it.cnr.iit.pipreader.PIPReader",
             "retrieval": "false",
-            "attributes": [
-                {
+            "attributes": [ {
                     "args": {
                         "CATEGORY": "urn:oasis:names:tc:xacml:1.0:subject-category:access-subject",
                         "ATTRIBUTE_ID": "urn:oasis:names:tc:xacml:1.0:subject:role",
@@ -25,13 +17,11 @@
             "multiattribute": "false",
             "table": null,
             "journalDir": "/tmp/journal"
-        },
-        {
+        }, {
             "id": "PIPReaderEnv",
             "className": "it.cnr.iit.pipreader.PIPReader",
             "retrieval": "false",
-            "attributes": [
-                {
+            "attributes": [ {
                     "args": {
                         "CATEGORY": "urn:oasis:names:tc:xacml:3.0:attribute-category:environment",
                         "ATTRIBUTE_ID": "urn:oasis:names:tc:xacml:3.0:environment:virus",
@@ -44,13 +34,11 @@
             "multiattribute": "false",
             "table": null,
             "journalDir": "/tmp/journal"
-        },
-        {
+        }, {
             "id": "PIPReaderEnv",
             "className": "it.cnr.iit.pipreader.PIPReader",
             "retrieval": "false",
-            "attributes": [
-                {
+            "attributes": [ {
                     "args": {
                         "CATEGORY": "urn:oasis:names:tc:xacml:3.0:attribute-category:environment",
                         "ATTRIBUTE_ID": "urn:oasis:names:tc:xacml:3.0:environment:camera",
@@ -63,11 +51,10 @@
             "multiattribute": "false",
             "table": null,
             "journalDir": "/tmp/journal"
-        }
-    ],
+        } ],
   "sessionManager" : {
     "type" : "Local",
-    "ip" : "localhost",
+    "host" : "localhost",
     "cluster" : "Test Cluster",
     "keyspace" : "sessionmanager",
     "username" : "root",
@@ -75,8 +62,7 @@
     "communication" : "API",
     "className" : "it.cnr.iit.sessionmanagerdesktop.SessionManagerDesktop",
     "key" : null,
-    "host" : "localhost",
-    "driver" : "jdbc:sqlite::memory:",
+    "dbUri" : "jdbc:sqlite::memory:",
     "tables" : [ {
       "name" : "sessions",
       "fields" : [ {
@@ -137,27 +123,21 @@
   "proxies" : null,
   "contextHandler" : {
     "className" : "it.cnr.iit.usagecontrolframework.contexthandler.ContextHandlerLC",
-    "thread" : "",
     "communication" : "API",
-    "ip" : "localhost",
-    "port" : "8080",
-    "schedulerEnabled" : false
+    "baseUri" : "http://localhost:8080"
   },
   "policyDecisionPoint" : {
     "className" : "it.cnr.iit.usagecontrolframework.pdp.PolicyDecisionPoint",
-    "thread" : "tbd",
     "communication" : "API",
-    "journalingDir" : "/tmp/journal"
+    "journalDir" : "/tmp/ucf"
   },
   "policyAdministrationPoint" : {
     "className" : "it.cnr.iit.usagecontrolframework.pap.PolicyAdministrationPoint",
-    "thread" : "tbd",
     "communication" : "API",
     "path" : null
   },
   "requestManager" : {
     "className" : "it.cnr.iit.usagecontrolframework.requestmanager.RequestManagerLC",
-    "thread" : "1",
     "communication" : "REST",
     "remoteResponse" : "/retrieveRemoteResponse"
   },
@@ -167,30 +147,7 @@
   "pepList" : [ {
     "className" : "it.cnr.iit.ucsinterface.pep.AbstractPEP",
     "communication" : "REST_API",
-    "ip" : "localhost",
-    "port" : "9999",
-    "revoke" : "SOFT",
-    "id" : "2",
-    "onGoingEvaluation" : "onGoingEvaluation",
-    "tryAccessResponse" : "tryAccessResponse",
-    "startAccessResponse" : "startAccessResponse",
-    "endAccessResponse" : "endAccessResponse"
-  }, {
-    "className" : "it.cnr.iit.ucsinterface.pep.AbstractPEP",
-    "communication" : "REST_API",
-    "ip" : "localhost",
-    "port" : "9999",
-    "revoke" : "SOFT",
-    "id" : "3",
-    "onGoingEvaluation" : "onGoingEvaluation",
-    "tryAccessResponse" : "tryAccessResponse",
-    "startAccessResponse" : "startAccessResponse",
-    "endAccessResponse" : "endAccessResponse"
-  }, {
-    "className" : "it.cnr.iit.ucsinterface.pep.AbstractPEP",
-    "communication" : "REST_API",
-    "ip" : "localhost",
-    "port" : "9999",
+    "baseUri" : "http://localhost:9999",
     "revoke" : "SOFT",
     "id" : "1",
     "onGoingEvaluation" : "onGoingEvaluation",

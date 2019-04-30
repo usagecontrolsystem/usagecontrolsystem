@@ -15,14 +15,11 @@ public class UCFProperties {
     @Value( "${base-uri}" )
     private String baseUri;
 
-    @Value( "${rest}" )
-    private String rest;
-
-    @Value( "${distributedType}" )
-    private String distributedType;
-
-    @Value( "${schedulerEnabled}" )
+    @Value( "#{new Boolean('${scheduler-enabled}')}" )
     private boolean schedulerEnabled;
+
+    @Value( "${journal-dir}" )
+    private String journalDir;
 
     @Deprecated
     @Value( "${conf-file}" )
@@ -36,28 +33,20 @@ public class UCFProperties {
         this.baseUri = baseUri;
     }
 
-    public String getRest() {
-        return rest;
-    }
-
-    public void setRest( String rest ) {
-        this.rest = rest;
-    }
-
-    public String getDistributedType() {
-        return distributedType;
-    }
-
-    public void setDistributedType( String distributedType ) {
-        this.distributedType = distributedType;
-    }
-
     public boolean isSchedulerEnabled() {
         return schedulerEnabled;
     }
 
     public void setSchedulerEnabled( boolean schedulerEnabled ) {
         this.schedulerEnabled = schedulerEnabled;
+    }
+
+    public String getJournalDir() {
+        return journalDir;
+    }
+
+    public void setJournalDir( String journalDir ) {
+        this.journalDir = journalDir;
     }
 
     @Deprecated
@@ -71,7 +60,7 @@ public class UCFProperties {
     }
 
     @Deprecated
-    public Optional<UCSConfiguration> getConfiguration() {
+    public Optional<UCSConfiguration> getUCSConfiguration() {
         // TODO UCS-33 NOSONAR
         ClassLoader classLoader = UCFProperties.class.getClassLoader();
         File confFile = new File( classLoader.getResource( configFile ).getFile() );

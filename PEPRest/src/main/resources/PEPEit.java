@@ -58,7 +58,7 @@ public class PEPEit implements PEPInterface {
 
 	private volatile boolean initialized = false;
 
-	private Object mutex = new Object();
+	//private Object mutex = new Object();
 
 	private ExecutorService listener = Executors.newFixedThreadPool(1);
 

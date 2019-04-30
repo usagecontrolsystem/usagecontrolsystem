@@ -12,7 +12,11 @@ import javax.xml.bind.JAXBException;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Bean;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
@@ -23,6 +27,7 @@ import it.cnr.iit.ucsinterface.message.reevaluation.ReevaluationMessage;
 import it.cnr.iit.ucsinterface.message.remoteretrieval.MessagePipCh;
 import it.cnr.iit.ucsinterface.message.startaccess.StartAccessMessage;
 import it.cnr.iit.ucsinterface.message.tryaccess.TryAccessMessage;
+import it.cnr.iit.usagecontrolframework.configuration.UCFProperties;
 import it.cnr.iit.usagecontrolframework.contexthandler.ContextHandlerLC;
 import it.cnr.iit.xacmlutilities.Category;
 import it.cnr.iit.xacmlutilities.DataType;
@@ -31,11 +36,21 @@ import oasis.names.tc.xacml.core.schema.wd_17.DecisionType;
 
 @ActiveProfiles( "test" )
 @SpringBootTest
+@DirtiesContext( classMode = ClassMode.BEFORE_EACH_TEST_METHOD )
 @RunWith( SpringRunner.class )
 public class ContextHandlerCoverageTests extends UCFBaseTests {
+
+    @Autowired
+    private UCFProperties ucfProp;
+
     private UCSConfiguration ucsConfiguration;
     private String policy;
     private String request;
+
+    @Bean
+    public UCFProperties getUCFProperties() {
+        return new UCFProperties();
+    }
 
     @PostConstruct
     private void init() throws URISyntaxException, IOException, JAXBException {
@@ -53,7 +68,7 @@ public class ContextHandlerCoverageTests extends UCFBaseTests {
 
     @Test
     public void contextHandlerConfigurationShouldFail() throws JAXBException, URISyntaxException, IOException {
-        ContextHandlerLC contextHandler = getContextHandler( ucsConfiguration );
+        ContextHandlerLC contextHandler = getContextHandler( ucfProp, ucsConfiguration );
         contextHandler.verify();
         assertFalse( contextHandler.startMonitoringThread() );
         contextHandler.stopMonitoringThread();
@@ -61,7 +76,7 @@ public class ContextHandlerCoverageTests extends UCFBaseTests {
 
     @Test( expected = IllegalStateException.class )
     public void contextHandlerTryAccessShouldFail() throws JAXBException, URISyntaxException, IOException {
-        ContextHandlerLC contextHandler = getContextHandler( ucsConfiguration );
+        ContextHandlerLC contextHandler = getContextHandler( ucfProp, ucsConfiguration );
         initContextHandler( contextHandler );
         // set the pdp response to return deny
         contextHandler.setPdpInterface( getMockedPDP( getMockedPDPEvaluation( DecisionType.DENY ) ) );
@@ -76,7 +91,7 @@ public class ContextHandlerCoverageTests extends UCFBaseTests {
 
     // @Test(expected = RevokeException.class)
     public void contextHandlerStartAccessShouldFail() throws JAXBException, URISyntaxException, IOException, Exception {
-        ContextHandlerLC contextHandler = getContextHandlerCorrectlyInitialized( ucsConfiguration, policy, request );
+        ContextHandlerLC contextHandler = getContextHandlerCorrectlyInitialized( ucfProp, ucsConfiguration, policy, request );
 
         /* tryAccess */
         TryAccessMessage tryAccessMessage = buildTryAccessMessage( conf.getPepId(), conf.getUcsUri(), policy, request );
@@ -95,7 +110,7 @@ public class ContextHandlerCoverageTests extends UCFBaseTests {
 
     @Test
     public void contextHandlerEndAccessShouldFail() throws JAXBException, URISyntaxException, IOException, Exception {
-        ContextHandlerLC contextHandler = getContextHandlerCorrectlyInitialized( ucsConfiguration, policy, request );
+        ContextHandlerLC contextHandler = getContextHandlerCorrectlyInitialized( ucfProp, ucsConfiguration, policy, request );
 
         /* tryAccess */
         TryAccessMessage tryAccessMessage = buildTryAccessMessage( conf.getPepId(), conf.getUcsUri(), policy, request );
@@ -119,7 +134,7 @@ public class ContextHandlerCoverageTests extends UCFBaseTests {
 
     @Test
     public void contextHandlerFullFlow() throws JAXBException, URISyntaxException, IOException, Exception {
-        ContextHandlerLC contextHandler = getContextHandlerCorrectlyInitialized( ucsConfiguration, policy, request );
+        ContextHandlerLC contextHandler = getContextHandlerCorrectlyInitialized( ucfProp, ucsConfiguration, policy, request );
 
         /* tryAccess */
         TryAccessMessage tryAccessMessage = buildTryAccessMessage( conf.getPepId(), conf.getUcsUri(), policy, request );

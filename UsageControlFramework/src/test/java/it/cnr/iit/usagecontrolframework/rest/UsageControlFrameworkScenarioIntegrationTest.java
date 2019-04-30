@@ -1,7 +1,7 @@
 package it.cnr.iit.usagecontrolframework.rest;
 
-import static it.cnr.iit.ucs.configuration.RestOperation.TRY_ACCESS;
-import static it.cnr.iit.ucs.configuration.RestOperation.TRY_ACCESS_RESPONSE;
+import static it.cnr.iit.ucs.constants.RestOperation.TRY_ACCESS;
+import static it.cnr.iit.ucs.constants.RestOperation.TRY_ACCESS_RESPONSE;
 
 import org.apache.http.HttpStatus;
 import org.junit.Test;

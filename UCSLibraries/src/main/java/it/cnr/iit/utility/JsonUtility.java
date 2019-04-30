@@ -5,6 +5,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Optional;
 import java.util.logging.Logger;
@@ -45,7 +46,9 @@ public class JsonUtility {
         String data = null;
         try {
             // TODO UCS-33 NOSONAR
-            data = new String( Files.readAllBytes( Paths.get( file.getAbsolutePath() ) ), StandardCharsets.UTF_8 );
+            Path path = Paths.get( file.getAbsolutePath() );
+            byte[] bytes = Files.readAllBytes( path );
+            data = new String( bytes, StandardCharsets.UTF_8 );
         } catch( IOException e ) {
             log.severe( "Error reading file : " + file.getAbsolutePath() + ", " + e.getMessage() );
             return Optional.empty();

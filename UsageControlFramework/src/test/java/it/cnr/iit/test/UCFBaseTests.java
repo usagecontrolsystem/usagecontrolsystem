@@ -54,6 +54,7 @@ import it.cnr.iit.ucsinterface.pip.PIPRetrieval;
 import it.cnr.iit.ucsinterface.requestmanager.RequestManagerToCHInterface;
 import it.cnr.iit.ucsinterface.sessionmanager.SessionInterface;
 import it.cnr.iit.ucsinterface.sessionmanager.SessionManagerInterface;
+import it.cnr.iit.usagecontrolframework.configuration.UCFProperties;
 import it.cnr.iit.usagecontrolframework.contexthandler.ContextHandlerLC;
 import it.cnr.iit.usagecontrolframework.proxies.ProxyPAP;
 import it.cnr.iit.usagecontrolframework.proxies.ProxyPDP;
@@ -77,15 +78,15 @@ public class UCFBaseTests {
 
     /* Request manager functions */
 
-    protected RequestManagerLC getRequestManager( UCSConfiguration ucsConfiguration ) {
-        RequestManagerLC requestManager = new RequestManagerLC( ucsConfiguration.getGeneral(), ucsConfiguration.getRequestManager() );
+    protected RequestManagerLC getRequestManager( UCFProperties ucfProp, UCSConfiguration ucsConfiguration ) {
+        RequestManagerLC requestManager = new RequestManagerLC( ucfProp, ucsConfiguration.getRequestManager() );
         return requestManager;
     }
 
     /* Context Hanlder functions */
 
-    protected ContextHandlerLC getContextHandler( UCSConfiguration ucsConfiguration ) {
-        ContextHandlerLC contextHandler = new ContextHandlerLC( ucsConfiguration.getGeneral(), ucsConfiguration.getContextHandler() );
+    protected ContextHandlerLC getContextHandler( UCFProperties ucfProp, UCSConfiguration ucsConfiguration ) {
+        ContextHandlerLC contextHandler = new ContextHandlerLC( ucfProp, ucsConfiguration.getContextHandler() );
         return contextHandler;
     }
 
@@ -99,9 +100,10 @@ public class UCFBaseTests {
         contextHandler.setPIPRetrieval( getMockedPipRetrieval() );
     }
 
-    protected ContextHandlerLC getContextHandlerCorrectlyInitialized( UCSConfiguration ucsConfiguration, String policy,
+    protected ContextHandlerLC getContextHandlerCorrectlyInitialized( UCFProperties ucfProp, UCSConfiguration ucsConfiguration,
+            String policy,
             String request ) {
-        ContextHandlerLC contextHandler = getContextHandler( ucsConfiguration );
+        ContextHandlerLC contextHandler = getContextHandler( ucfProp, ucsConfiguration );
         initContextHandler( contextHandler );
         contextHandler.setSessionManagerInterface(
             getSessionManagerForStatus( "", policy, request, ContextHandlerConstants.TRY_STATUS ) );

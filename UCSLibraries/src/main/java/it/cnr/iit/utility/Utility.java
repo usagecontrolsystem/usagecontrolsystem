@@ -26,9 +26,12 @@ import java.net.URL;
 import java.util.Optional;
 import java.util.PropertyResourceBundle;
 import java.util.Scanner;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.xml.bind.JAXBException;
+
+import it.cnr.iit.utility.errorhandling.Reject;
 
 /**
  * This class contains all the utility function we need throughout this project.
@@ -40,9 +43,7 @@ public final class Utility {
 
     private static final Logger log = Logger.getLogger( Utility.class.getName() );
 
-    private Utility() {
-
-    }
+    private Utility() {} // NOSONAR
 
     /**
      * Reads a file using the passed parameter as absolute path. Returns a String
@@ -141,6 +142,15 @@ public final class Utility {
         }
     }
 
+    public static boolean createPathIfNotExists( String path ) {
+        Reject.ifNull( path );
+        File dir = new File( path );
+        if( !dir.exists() ) {
+            return dir.mkdir();
+        }
+        return true;
+    }
+
     public static Optional<String> getPropertiesValue( String key ) {
         return getPropertiesValue( "application.properties", key );
     }
@@ -157,7 +167,7 @@ public final class Utility {
                 value = Optional.of( rb.getString( key ) );
             }
         } catch( IOException e ) {
-            log.severe( String.format( "Error reading key : {0}", e.getMessage() ) );
+            log.log( Level.SEVERE, "Error reading key : {0}", e.getMessage() );
         }
 
         if( fis != null ) {
