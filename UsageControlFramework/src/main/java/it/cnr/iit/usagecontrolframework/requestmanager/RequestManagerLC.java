@@ -63,7 +63,7 @@ public class RequestManagerLC extends AsynchronousRequestManager {
     /*
      * This is the thread in charge of handling the operations requested from a
      * remote PIP except from reevaluation.
-
+    
     private ExecutorService attributeSupplier;
     */
 
@@ -215,12 +215,6 @@ public class RequestManagerLC extends AsynchronousRequestManager {
         public Message call() {
 
             while( true ) {
-                // BEGIN parameter checking
-                if( !initialized ) {
-                    log.warning( "Request Manager not initialized correctly" );
-                    return null;
-                }
-                // END parameter checking
                 try {
                     Message message = getQueueToCH().take();
                     if( message instanceof TryAccessMessage ) {
@@ -256,9 +250,9 @@ public class RequestManagerLC extends AsynchronousRequestManager {
      *
      * @author antonio
      *
-    
+
     private class AttributeSupplier implements Callable<Void> {
-    
+
     	@Override
     	public Void call() throws Exception {
     		while (true) {
@@ -305,7 +299,7 @@ public class RequestManagerLC extends AsynchronousRequestManager {
      * @param message
      *          the message returned by the context handler
      * @return the message to be used as response
-    
+
     private MessagePipCh createResponse(Message message) {
     	MessagePipCh chResponse = (MessagePipCh) message;
     	switch (chResponse.getAction()) {
