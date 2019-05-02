@@ -21,6 +21,7 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.logging.Logger;
 
+import it.cnr.iit.ucs.properties.components.GeneralProperties;
 import it.cnr.iit.ucs.properties.components.RequestManagerProperties;
 import it.cnr.iit.ucsinterface.contexthandler.ContextHandlerInterface;
 import it.cnr.iit.ucsinterface.forwardingqueue.ForwardingQueueToRMInterface;
@@ -31,7 +32,6 @@ import it.cnr.iit.ucsinterface.pep.PEPInterface;
 import it.cnr.iit.ucsinterface.requestmanager.InterfaceToPerformanceMonitor;
 import it.cnr.iit.ucsinterface.requestmanager.RequestManagerToCHInterface;
 import it.cnr.iit.ucsinterface.requestmanager.UCSCHInterface;
-import it.cnr.iit.usagecontrolframework.properties.UCFProperties;
 import it.cnr.iit.usagecontrolframework.proxies.NodeProxy;
 import it.cnr.iit.utility.errorhandling.Reject;
 
@@ -67,22 +67,23 @@ public abstract class AsynchronousRequestManager
 
     private ForwardingQueueToRMInterface forwardingQueue;
 
-    protected UCFProperties ucfProperties;
+    protected GeneralProperties properties;
     protected RequestManagerProperties rmProperties;
 
     // interface used to communicate with other nodes
     private NodeInterface nodeInterface;
 
-    protected AsynchronousRequestManager( UCFProperties properties ) {
+    protected AsynchronousRequestManager( GeneralProperties properties, RequestManagerProperties rmProperties ) {
+        Reject.ifNull( rmProperties );
+        rmProperties = rmProperties;
+
         Reject.ifNull( properties );
-        Reject.ifNull( properties.getRequestManager() );
-
-        rmProperties = properties.getRequestManager();
-
-        initialised = true;
+        nodeInterface = new NodeProxy( properties );
+        this.properties = properties;
 
         pep = new HashMap<>();
-        nodeInterface = new NodeProxy( ucfProperties );
+
+        initialised = true;
     }
 
     /**

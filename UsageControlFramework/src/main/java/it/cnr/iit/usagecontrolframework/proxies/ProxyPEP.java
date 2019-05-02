@@ -56,7 +56,7 @@ public class ProxyPEP extends Proxy implements PEPInterface {
 
     private PepProperties properties;
     private URI uri;
-    private ExamplePEP abstractPEP;
+    private ExamplePEP abstractPEP; // TODO use interface
 
     private boolean initialized = false;
 
@@ -68,40 +68,30 @@ public class ProxyPEP extends Proxy implements PEPInterface {
         Reject.ifAbsent( uri );
         this.uri = uri.get();
 
-        Reject.ifNull( properties.getCommunicationType() );
+        String connectionType = properties.getCommunicationType();
+        Reject.ifBlank( connectionType );
         switch( getConnection() ) {
             case API:
-                if( localPep( properties ) ) {
-                    initialized = true;
-                }
-                break;
-            case SOCKET:
-                if( connectSocket( properties ) ) { // NOSONAR
+                if( buildLocalPep( properties ) ) {
                     initialized = true;
                 }
                 break;
             case REST_API:
-                // if( connectRest( properties ) ) {
                 initialized = true;
-                // }
+                break;
+            case SOCKET:
+                log.severe( "Unimplemented communication medium : " + connectionType );
                 break;
             default:
-                log.severe( "Incorrect communication medium : " + properties.getCommunicationType() );
-                return;
+                log.severe( "Incorrect communication medium : " + connectionType );
         }
     }
 
-    private boolean localPep( PepProperties properties ) {
-        // BEGIN parameter checking
-        String className = properties.getClassName();
-        if( className == null ) {
-            return false;
-        }
-        // END parameter checking
-
+    private boolean buildLocalPep( PepProperties properties ) {
+        Reject.ifBlank( properties.getClassName() );
         try {
             // TODO UCS-32 NOSONAR
-            Constructor<?> constructor = Class.forName( className )
+            Constructor<?> constructor = Class.forName( properties.getClassName() )
                 .getConstructor( PepProperties.class );
             abstractPEP = (ExamplePEP) constructor.newInstance( properties );
             return true;
@@ -110,10 +100,6 @@ public class ProxyPEP extends Proxy implements PEPInterface {
                 | IllegalArgumentException | InvocationTargetException e ) {
             log.severe( e.getMessage() );
         }
-        return false;
-    }
-
-    private boolean connectSocket( PepProperties properties ) {
         return false;
     }
 
@@ -133,7 +119,9 @@ public class ProxyPEP extends Proxy implements PEPInterface {
                 break;
             case REST_API:
             case SOCKET:
+                break;
             default:
+                log.severe( "Incorrect communication medium" );
                 break;
         }
 
@@ -194,9 +182,6 @@ public class ProxyPEP extends Proxy implements PEPInterface {
         return Optional.empty();
     }
 
-    /**
-     * Function to start the local PEP
-     */
     public void start() {
         switch( getConnection() ) {
             case API:

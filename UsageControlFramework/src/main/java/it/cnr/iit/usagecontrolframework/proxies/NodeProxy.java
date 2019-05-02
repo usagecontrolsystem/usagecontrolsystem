@@ -20,6 +20,7 @@ import java.util.Optional;
 import java.util.logging.Logger;
 
 import it.cnr.iit.ucs.constants.CONNECTION;
+import it.cnr.iit.ucs.properties.components.GeneralProperties;
 import it.cnr.iit.ucsinterface.message.Message;
 import it.cnr.iit.ucsinterface.message.endaccess.EndAccessMessage;
 import it.cnr.iit.ucsinterface.message.endaccess.EndAccessResponse;
@@ -30,7 +31,6 @@ import it.cnr.iit.ucsinterface.message.startaccess.StartAccessResponse;
 import it.cnr.iit.ucsinterface.message.tryaccess.TryAccessMessage;
 import it.cnr.iit.ucsinterface.message.tryaccess.TryAccessResponse;
 import it.cnr.iit.ucsinterface.node.NodeInterface;
-import it.cnr.iit.usagecontrolframework.properties.UCFProperties;
 import it.cnr.iit.utility.JsonUtility;
 import it.cnr.iit.utility.RESTUtils;
 import it.cnr.iit.utility.Utility;
@@ -54,11 +54,11 @@ public class NodeProxy implements NodeInterface {
 
     private static final Logger log = Logger.getLogger( NodeProxy.class.getName() );
 
-    private UCFProperties properties;
+    private GeneralProperties properties;
     private CONNECTION connection = CONNECTION.REST_API;
     private URI uri;
 
-    public NodeProxy( UCFProperties properties ) {
+    public NodeProxy( GeneralProperties properties ) {
         Reject.ifNull( properties );
         this.properties = properties;
 

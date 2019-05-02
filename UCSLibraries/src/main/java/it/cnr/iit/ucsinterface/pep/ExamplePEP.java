@@ -148,7 +148,7 @@ public class ExamplePEP implements PEPInterface {
         // END parameter checking
 
         ReevaluationResponse chPepMessage = (ReevaluationResponse) message;
-        if( configuration.getApiRevoke().equals( "HARD" ) ) {
+        if( configuration.getRevokeType().equals( "HARD" ) ) {
             EndAccessMessage endAccess = new EndAccessMessage( PART.PEP.toString(),
                 PART.CH.toString() );
             endAccess.setCallback( null, MEAN.API );

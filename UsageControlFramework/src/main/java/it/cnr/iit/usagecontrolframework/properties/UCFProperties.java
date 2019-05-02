@@ -2,7 +2,6 @@ package it.cnr.iit.usagecontrolframework.properties;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.NestedConfigurationProperty;
 import org.springframework.stereotype.Component;
@@ -12,42 +11,10 @@ import org.springframework.stereotype.Component;
     prefix = "ucf",
     ignoreUnknownFields = true,
     ignoreInvalidFields = true )
-public class UCFProperties {
+public class UCFProperties /*implements UCSProperties */ {
 
-    @Value( "${base-uri}" )
-    private String baseUri;
-
-    @Value( "#{new Boolean('${scheduler-enabled}')}" )
-    private boolean schedulerEnabled;
-
-    @Value( "${journal-dir}" )
-    private String journalDir;
-
-    public String getBaseUri() {
-        return baseUri;
-    }
-
-    public void setBaseUri( String baseUri ) {
-        this.baseUri = baseUri;
-    }
-
-    public boolean isSchedulerEnabled() {
-        return schedulerEnabled;
-    }
-
-    public void setSchedulerEnabled( boolean schedulerEnabled ) {
-        this.schedulerEnabled = schedulerEnabled;
-    }
-
-    public String getJournalDir() {
-        return journalDir;
-    }
-
-    public void setJournalDir( String journalDir ) {
-        this.journalDir = journalDir;
-    }
-
-    /**********************************************************/
+    @NestedConfigurationProperty
+    private UCFGeneralProperties general;
 
     @NestedConfigurationProperty
     private UCFContextHandlerProperties contextHandler;
@@ -67,7 +34,12 @@ public class UCFProperties {
     @NestedConfigurationProperty
     private UCFObligationManagerProperties obligationManager;
 
-    // @Override
+    @NestedConfigurationProperty
+    private List<UCFPipProperties> pipList;
+
+    @NestedConfigurationProperty
+    private List<UCFPepProperties> pepList;
+
     public UCFContextHandlerProperties getContextHandler() {
         return contextHandler;
     }
@@ -76,7 +48,6 @@ public class UCFProperties {
         this.contextHandler = contextHandler;
     }
 
-    // @Override
     public UCFRequestManagerProperties getRequestManager() {
         return requestManager;
     }
@@ -85,34 +56,60 @@ public class UCFProperties {
         this.requestManager = requestManager;
     }
 
-    // @Override
+    public UCFGeneralProperties getGeneral() {
+        return general;
+    }
+
+    public void setGeneral( UCFGeneralProperties general ) {
+        this.general = general;
+    }
+
     public UCFSessionManagerProperties getSessionManager() {
-        return null;
+        return sessionManager;
     }
 
-    // @Override
-    public UCFPdpProperties getPolicyDecisionPoint() {
-        return null;
+    public void setSessionManager( UCFSessionManagerProperties sessionManager ) {
+        this.sessionManager = sessionManager;
     }
 
-    // @Override
     public UCFPapProperties getPolicyAdministrationPoint() {
-        return null;
+        return policyAdministrationPoint;
     }
 
-    // @Override
+    public void setPolicyAdministrationPoint( UCFPapProperties policyAdministrationPoint ) {
+        this.policyAdministrationPoint = policyAdministrationPoint;
+    }
+
+    public UCFPdpProperties getPolicyDecisionPoint() {
+        return policyDecisionPoint;
+    }
+
+    public void setPolicyDecisionPoint( UCFPdpProperties policyDecisionPoint ) {
+        this.policyDecisionPoint = policyDecisionPoint;
+    }
+
     public UCFObligationManagerProperties getObligationManager() {
-        return null;
+        return obligationManager;
     }
 
-    // @Override
-    public List<UCFPipProperties> getPIPs() {
-        return null;
+    public void setObligationManager( UCFObligationManagerProperties obligationManager ) {
+        this.obligationManager = obligationManager;
     }
 
-    // @Override
-    public List<UCFPepProperties> getPEPs() {
-        return null;
+    public List<UCFPipProperties> getPipList() {
+        return pipList;
+    }
+
+    public void setPipList( List<UCFPipProperties> pipList ) {
+        this.pipList = pipList;
+    }
+
+    public List<UCFPepProperties> getPepList() {
+        return pepList;
+    }
+
+    public void setPepList( List<UCFPepProperties> pepList ) {
+        this.pepList = pepList;
     }
 
 }

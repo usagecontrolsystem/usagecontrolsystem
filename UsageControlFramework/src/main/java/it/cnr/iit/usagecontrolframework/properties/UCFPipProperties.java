@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Value;
 
 import it.cnr.iit.ucs.properties.components.Attribute;
 import it.cnr.iit.ucs.properties.components.PipProperties;
-import it.cnr.iit.ucs.properties.components.Table;
 
 public class UCFPipProperties implements PipProperties {
 
@@ -72,20 +71,16 @@ public class UCFPipProperties implements PipProperties {
 
     @Override
     public String getRetrieval() {
-        // TODO Auto-generated method stub
         return null;
     }
+
+    public void setRetrieval( String retrieval ) {}
 
     @Override
     public List<Attribute> getAttributes() {
-        // TODO Auto-generated method stub
         return null;
     }
 
-    @Override
-    public Table getTable() {
-        // TODO Auto-generated method stub
-        return null;
-    }
+    public void setAttributes( List<Attribute> attributes ) {}
 
 }

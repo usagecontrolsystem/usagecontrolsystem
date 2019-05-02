@@ -9,17 +9,17 @@ public class UCFPepProperties implements PepProperties {
     @Value( "${class-name}" )
     private String className;
 
-    @Value( "${communication-type}" )
+    @Value( "${communication-type:API}" )
     private String communicationType;
 
     @Value( "${base-uri}" )
     private String baseUri;
 
-    @Value( "${id}" )
+    @Value( "${id:1}" )
     private String id;
 
-    @Value( "${api-revoke}" )
-    private String apiRevoke;
+    @Value( "${revoke-type:SOFT}" )
+    private String revokeType;
 
     @Value( "${api-ongoing-evaluation}" )
     private String apiOngoingEvaluation;
@@ -70,12 +70,12 @@ public class UCFPepProperties implements PepProperties {
     }
 
     @Override
-    public String getApiRevoke() {
-        return apiRevoke;
+    public String getRevokeType() {
+        return revokeType;
     }
 
-    public void setApiRevoke( String apiRevoke ) {
-        this.apiRevoke = apiRevoke;
+    public void setRevokeType( String revokeType ) {
+        this.revokeType = revokeType;
     }
 
     @Override

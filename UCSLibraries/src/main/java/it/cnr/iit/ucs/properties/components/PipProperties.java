@@ -27,8 +27,6 @@ public interface PipProperties extends PluginProperties, IdProperties, JournalPr
 
     public List<Attribute> getAttributes();
 
-    public Table getTable();
-
     public boolean isMultiattribute();
 
 }

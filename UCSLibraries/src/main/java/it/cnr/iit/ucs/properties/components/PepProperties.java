@@ -20,7 +20,7 @@ import it.cnr.iit.ucs.properties.base.UriProperties;
 
 public interface PepProperties extends PluginProperties, UriProperties {
 
-    public String getApiRevoke();
+    public String getRevokeType();
 
     public String getApiOngoingEvaluation();
 

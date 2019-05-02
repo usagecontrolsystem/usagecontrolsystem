@@ -49,9 +49,7 @@ import it.cnr.iit.utility.errorhandling.Reject;
  * <li>PolicyAdministrationPoint</li>
  * <li>RequestManager</li>
  * </ol>
- *
  * </p>
- *
  *
  * @author Antonio La Marra, Alessandro Rosetti
  *
@@ -83,11 +81,10 @@ public abstract class AbstractContextHandler implements ContextHandlerInterface 
     private volatile boolean initialized = false;
 
     /**
-     * Superclass constructor. The constructor requires the various interfaces the
+     * The constructor requires the various interfaces the
      * ContextHandler will have to deal with to work properly.
      *
-     * @param the only parameter is the configuration of the actual context handler
-     *          passed as a JAVA Object.
+     * @param the only parameter is the configuration of the actual context handler.
      *
      */
     protected AbstractContextHandler( ContextHandlerProperties properties ) {
@@ -103,9 +100,7 @@ public abstract class AbstractContextHandler implements ContextHandlerInterface 
     }
 
     /**
-     * Verifies that the status of the context handler is consistent. In case it is consistent it
-     * sets the initialised flag to true, otherwise to false.
-     * Having the initialised flag to false makes it impossible to deal with this object
+     * Verifies that the status of the context handler is consistent.
      */
     @Deprecated
     public void verify() {
