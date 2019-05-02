@@ -19,7 +19,7 @@ import java.lang.reflect.Constructor;
 import java.util.List;
 import java.util.logging.Logger;
 
-import it.cnr.iit.ucs.configuration.ObligationManagerProperties;
+import it.cnr.iit.ucs.properties.components.ObligationManagerProperties;
 import it.cnr.iit.ucsinterface.obligationmanager.ObligationManagerInterface;
 import it.cnr.iit.ucsinterface.pip.PIPOMInterface;
 

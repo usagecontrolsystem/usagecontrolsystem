@@ -19,9 +19,9 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.logging.Logger;
 
-import it.cnr.iit.ucs.configuration.PdpProperties;
 import it.cnr.iit.ucs.constants.CONNECTION;
 import it.cnr.iit.ucs.constants.STATUS;
+import it.cnr.iit.ucs.properties.components.PdpProperties;
 import it.cnr.iit.ucsinterface.pdp.AbstractPDP;
 import it.cnr.iit.ucsinterface.pdp.PDPEvaluation;
 import it.cnr.iit.ucsinterface.pdp.PDPInterface;
@@ -54,10 +54,10 @@ public final class ProxyPDP extends Proxy implements PDPInterface {
                 break;
             case SOCKET:
             case REST_API:
-                log.severe( "Unimplemented communication medium : " + properties.getCommunication() );
+                log.severe( "Unimplemented communication medium : " + properties.getCommunicationType() );
                 break;
             default:
-                log.severe( "Incorrect communication medium : " + properties.getCommunication() );
+                log.severe( "Incorrect communication medium : " + properties.getCommunicationType() );
         }
     }
 
@@ -111,7 +111,7 @@ public final class ProxyPDP extends Proxy implements PDPInterface {
 
     @Override
     protected CONNECTION getConnection() {
-        return CONNECTION.valueOf( properties.getCommunication() );
+        return CONNECTION.valueOf( properties.getCommunicationType() );
     }
 
     @Override

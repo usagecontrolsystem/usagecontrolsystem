@@ -31,15 +31,10 @@ import org.springframework.stereotype.Component;
 
 import it.cnr.iit.ucs.builders.ObligationManagerBuilder;
 import it.cnr.iit.ucs.builders.PIPBuilder;
-import it.cnr.iit.ucs.configuration.ContextHandlerProperties;
-import it.cnr.iit.ucs.configuration.ObligationManagerProperties;
-import it.cnr.iit.ucs.configuration.PapProperties;
-import it.cnr.iit.ucs.configuration.PdpProperties;
-import it.cnr.iit.ucs.configuration.PepProperties;
-import it.cnr.iit.ucs.configuration.RequestManagerProperties;
-import it.cnr.iit.ucs.configuration.UCSConfiguration;
-import it.cnr.iit.ucs.configuration.pip.PipProperties;
-import it.cnr.iit.ucs.configuration.session_manager.SessionManagerProperties;
+import it.cnr.iit.ucs.properties.components.ContextHandlerProperties;
+import it.cnr.iit.ucs.properties.components.PepProperties;
+import it.cnr.iit.ucs.properties.components.PipProperties;
+import it.cnr.iit.ucs.properties.components.RequestManagerProperties;
 import it.cnr.iit.ucsinterface.forwardingqueue.ForwardingQueue;
 import it.cnr.iit.ucsinterface.message.endaccess.EndAccessMessage;
 import it.cnr.iit.ucsinterface.message.endaccess.EndAccessResponse;
@@ -58,15 +53,14 @@ import it.cnr.iit.ucsinterface.pip.PIPCHInterface;
 import it.cnr.iit.ucsinterface.pip.PIPOMInterface;
 import it.cnr.iit.ucsinterface.pip.PIPRetrieval;
 import it.cnr.iit.ucsinterface.ucs.UCSInterface;
-import it.cnr.iit.usagecontrolframework.configuration.UCFProperties;
 import it.cnr.iit.usagecontrolframework.contexthandler.AbstractContextHandler;
+import it.cnr.iit.usagecontrolframework.properties.UCFProperties;
 import it.cnr.iit.usagecontrolframework.proxies.NodeProxy;
 import it.cnr.iit.usagecontrolframework.proxies.ProxyPAP;
 import it.cnr.iit.usagecontrolframework.proxies.ProxyPDP;
 import it.cnr.iit.usagecontrolframework.proxies.ProxyPEP;
 import it.cnr.iit.usagecontrolframework.proxies.ProxySessionManager;
 import it.cnr.iit.usagecontrolframework.requestmanager.AsynchronousRequestManager;
-import it.cnr.iit.utility.errorhandling.Reject;
 
 /**
  * This is the usage control framework class.
@@ -129,9 +123,6 @@ public class UsageControlFramework implements UCSInterface {
 
     private volatile boolean initialised = false;
 
-    @Deprecated
-    private UCSConfiguration ucsConf;
-
     @Autowired
     private UCFProperties properties;
 
@@ -142,10 +133,6 @@ public class UsageControlFramework implements UCSInterface {
 
     @PostConstruct
     private void init() {
-        Optional<UCSConfiguration> conf = properties.getUCSConfiguration();
-        Reject.ifAbsent( conf );
-        ucsConf = conf.get();
-
         if( buildComponents() ) {
             initialised = true;
         }
@@ -216,24 +203,25 @@ public class UsageControlFramework implements UCSInterface {
 
     private boolean buildContextHandler() {
         try {
-            ContextHandlerProperties chProperties = ucsConf.getContextHandler();
+            ContextHandlerProperties chProperties = properties.getContextHandler();
+            log.info( "prop null    : " + String.valueOf( properties == null ) );
+            log.info( "ch prop null : " + String.valueOf( chProperties == null ) );
             String className = chProperties.getClassName();
             // TODO UCS-32 NOSONAR
             Constructor<?> constructor = Class.forName( className )
-                .getConstructor( UCFProperties.class, ContextHandlerProperties.class );
+                .getConstructor( ContextHandlerProperties.class );
             contextHandler = (AbstractContextHandler) constructor
-                .newInstance( properties, chProperties );
+                .newInstance( chProperties );
             return true;
-        } catch( Exception exception ) {
-            log.severe( "build ContextHandler failed" + exception.getMessage() );
+        } catch( Exception e ) {
+            log.severe( "build ContextHandler failed : " + e.getMessage() );
             return false;
         }
     }
 
     private boolean buildRequestManager() {
-
         try {
-            RequestManagerProperties rmProperties = ucsConf.getRequestManager();
+            RequestManagerProperties rmProperties = properties.getRequestManager();
             String className = rmProperties.getClassName();
             // TODO UCS-32 NOSONAR
             Constructor<?> constructor = Class.forName( className )
@@ -242,7 +230,7 @@ public class UsageControlFramework implements UCSInterface {
                 .newInstance( properties, rmProperties );
             return true;
         } catch( Exception exception ) {
-            log.severe( "build RequestManager failed" + exception.getMessage() );
+            log.severe( "build RequestManager failed : " + exception.getMessage() );
             return false;
         }
     }
@@ -250,7 +238,7 @@ public class UsageControlFramework implements UCSInterface {
     private boolean buildPIPs() {
         int failures = 0;
 
-        for( PipProperties pip : ucsConf.getPipList() ) {
+        for( PipProperties pip : properties.getPIPList() ) {
             Optional<PIPBase> optPip = PIPBuilder.buildFromProperties( pip );
 
             if( !optPip.isPresent() ) {
@@ -267,16 +255,15 @@ public class UsageControlFramework implements UCSInterface {
     }
 
     private boolean buildProxySM() {
-        SessionManagerProperties properties = ucsConf.getSessionManager();
-        proxySessionManager = new ProxySessionManager( properties );
+        proxySessionManager = new ProxySessionManager( properties.getSessionManager() );
         proxySessionManager.start();
         return proxySessionManager.isInitialized();
     }
 
     private boolean buildObligationManager() {
         try {
-            ObligationManagerProperties properties = ucsConf.getObligationManager();
-            obligationManager = ObligationManagerBuilder.build( properties,
+            obligationManager = ObligationManagerBuilder.build(
+                properties.getObligationManager(),
                 new ArrayList<PIPOMInterface>( pipList ), pipRetrieval );
             return true;
         } catch( Exception e ) {
@@ -286,20 +273,17 @@ public class UsageControlFramework implements UCSInterface {
     }
 
     private boolean buildProxyPDP() {
-        PdpProperties properties = ucsConf.getPolicyDecisionPoint();
-        proxyPDP = new ProxyPDP( properties );
+        proxyPDP = new ProxyPDP( properties.getPolicyDecisionPoint() );
         return proxyPDP.isInitialized();
     }
 
     private boolean buildProxyPolicyAdministrationPoint() {
-        PapProperties properties = ucsConf.getPolicyAdministrationPoint();
-        proxyPAP = new ProxyPAP( properties );
+        proxyPAP = new ProxyPAP( properties.getPolicyAdministrationPoint() );
         return proxyPAP.isInitialized();
     }
 
     private boolean buildProxyPEP() {
-        List<PepProperties> pepList = ucsConf.getPepList();
-        for( PepProperties pep : pepList ) {
+        for( PepProperties pep : properties.getPEPList() ) {
             ProxyPEP proxyPEP = new ProxyPEP( pep );
             proxyPEP.setRequestManagerInterface( requestManager );
             if( !proxyPEP.isInitialized() ) {

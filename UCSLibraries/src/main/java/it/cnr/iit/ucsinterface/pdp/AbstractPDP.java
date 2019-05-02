@@ -15,7 +15,7 @@
  ******************************************************************************/
 package it.cnr.iit.ucsinterface.pdp;
 
-import it.cnr.iit.ucs.configuration.PdpProperties;
+import it.cnr.iit.ucs.properties.components.PdpProperties;
 import it.cnr.iit.ucsinterface.obligationmanager.ObligationManagerInterface;
 import it.cnr.iit.ucsinterface.pap.PAPInterface;
 
@@ -41,10 +41,10 @@ public abstract class AbstractPDP implements PDPInterface {
     // variable in charge of storing the status of this class.
     private volatile boolean initialized = false;
     // configuration of the pdp
-    private PdpProperties configuration = null;
+    private PdpProperties configuration;
 
     /**
-     * The constructor for the abstrasct class is empty
+     * The constructor for the abstract class is empty
      */
     public AbstractPDP( PdpProperties configuration ) {
         // BEGIN parameter checking
@@ -95,7 +95,7 @@ public abstract class AbstractPDP implements PDPInterface {
 
     /**
      * This function is in charge of verifying that the object is consistent. If
-     * the object is consistent the initialized flag will be updated
+     * the object is consistent the initialised flag will be updated
      */
     private void verify() {
         if( obligationManagerInterface != null && papInterface != null
@@ -105,9 +105,9 @@ public abstract class AbstractPDP implements PDPInterface {
     }
 
     /**
-     * Checks if the object has been correctly initialized
+     * Checks if the object has been correctly initialised
      *
-     * @return true if the object has been correctly initialized, false otherwise
+     * @return true if the object has been correctly initialised, false otherwise
      */
     public final boolean isInitialized() {
         return initialized;

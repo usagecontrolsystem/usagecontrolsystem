@@ -13,32 +13,12 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  ******************************************************************************/
-package it.cnr.iit.ucs.configuration.distributed;
+package it.cnr.iit.ucs.properties.components;
 
-import java.util.ArrayList;
-import java.util.List;
+import it.cnr.iit.ucs.properties.base.PluginProperties;
 
-public class CassandraProperties {
+public interface RequestManagerProperties extends PluginProperties {
 
-    private String host;
-    private String cluster;
-    private ArrayList<String> keyspaces;
-    private String replicator;
-
-    public String getHost() {
-        return host;
-    }
-
-    public String getCluster() {
-        return cluster;
-    }
-
-    public List<String> getKeyspaces() {
-        return keyspaces;
-    }
-
-    public String getReplicator() {
-        return replicator;
-    }
+    public String getApiRemoteResponse();
 
 }

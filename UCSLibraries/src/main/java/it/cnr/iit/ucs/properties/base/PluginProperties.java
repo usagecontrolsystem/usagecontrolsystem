@@ -13,30 +13,12 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  ******************************************************************************/
-package it.cnr.iit.ucs.configuration.session_manager;
+package it.cnr.iit.ucs.properties.base;
 
-/**
- * Table field xml
- *
- * @author antonio
- *
- */
-public class Field {
+public interface PluginProperties {
 
-    private String name;
-    private String type;
-    private String key;
+    public String getClassName();
 
-    public String getName() {
-        return name;
-    }
-
-    public String getType() {
-        return type;
-    }
-
-    public String getKey() {
-        return key;
-    }
+    public String getCommunicationType();
 
 }

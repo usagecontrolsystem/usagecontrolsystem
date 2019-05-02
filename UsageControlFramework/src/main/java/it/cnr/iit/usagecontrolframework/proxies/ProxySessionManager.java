@@ -22,8 +22,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.logging.Logger;
 
-import it.cnr.iit.ucs.configuration.session_manager.SessionManagerProperties;
 import it.cnr.iit.ucs.constants.CONNECTION;
+import it.cnr.iit.ucs.properties.components.SessionManagerProperties;
 import it.cnr.iit.ucsinterface.sessionmanager.OnGoingAttributesInterface;
 import it.cnr.iit.ucsinterface.sessionmanager.SessionInterface;
 import it.cnr.iit.ucsinterface.sessionmanager.SessionManagerInterface;
@@ -64,7 +64,7 @@ public class ProxySessionManager extends Proxy implements SessionManagerInterfac
 
     public ProxySessionManager( SessionManagerProperties properties ) {
         // BEGIN parameter checking
-        if( properties == null || properties.getCommunication() == null ) {
+        if( properties == null || properties.getCommunicationType() == null ) {
             return;
         }
         // END parameter checking
@@ -88,7 +88,7 @@ public class ProxySessionManager extends Proxy implements SessionManagerInterfac
                 }
                 break;
             default:
-                log.severe( "Incorrect communication medium : " + properties.getCommunication() );
+                log.severe( "Incorrect communication medium : " + properties.getCommunicationType() );
                 return;
         }
     }
@@ -163,7 +163,7 @@ public class ProxySessionManager extends Proxy implements SessionManagerInterfac
                 // TODO
                 return false;
             default:
-                log.severe( "Incorrect communication medium : " + properties.getCommunication() );
+                log.severe( "Incorrect communication medium : " + properties.getCommunicationType() );
                 return false;
         }
     }
@@ -187,7 +187,7 @@ public class ProxySessionManager extends Proxy implements SessionManagerInterfac
                 // TODO
                 return false;
             default:
-                log.severe( "Incorrect communication medium : " + properties.getCommunication() );
+                log.severe( "Incorrect communication medium : " + properties.getCommunicationType() );
                 return false;
         }
     }
@@ -242,7 +242,7 @@ public class ProxySessionManager extends Proxy implements SessionManagerInterfac
                 // TODO
                 return false;
             default:
-                log.severe( "Incorrect communication medium : " + properties.getCommunication() );
+                log.severe( "Incorrect communication medium : " + properties.getCommunicationType() );
                 return false;
         }
     }
@@ -642,7 +642,7 @@ public class ProxySessionManager extends Proxy implements SessionManagerInterfac
 
     @Override
     protected CONNECTION getConnection() {
-        return CONNECTION.valueOf( properties.getCommunication() );
+        return CONNECTION.valueOf( properties.getCommunicationType() );
     }
 
 }

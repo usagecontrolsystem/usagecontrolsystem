@@ -13,23 +13,23 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  ******************************************************************************/
-package it.cnr.iit.ucs.configuration;
+package it.cnr.iit.ucs.properties.components;
 
-public class RequestManagerProperties {
+import it.cnr.iit.ucs.properties.base.PluginProperties;
+import it.cnr.iit.ucs.properties.base.UriProperties;
 
-    private String className;
-    private String communication;
-    private String remoteResponse;
+public interface PepProperties extends PluginProperties, UriProperties {
 
-    public String getClassName() {
-        return className;
-    }
+    public String getApiRevoke();
 
-    public String getCommunication() {
-        return communication;
-    }
+    public String getApiOngoingEvaluation();
 
-    public String getRemoteResponse() {
-        return remoteResponse;
-    }
+    public String getApiTryAccessResponse();
+
+    public String getApiStartAccessResponse();
+
+    public String getApiEndAccessResponse();
+
+    public String getId();
+
 }

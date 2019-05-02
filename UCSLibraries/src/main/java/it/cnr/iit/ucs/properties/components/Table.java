@@ -13,23 +13,22 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  ******************************************************************************/
-package it.cnr.iit.ucs.configuration;
+package it.cnr.iit.ucs.properties.components;
 
-public class PapProperties {
+import java.util.ArrayList;
+import java.util.List;
 
-    private String className;
-    private String communication;
-    private String path;
+public class Table {
 
-    public String getClassName() {
-        return className;
+    private String name;
+    private List<Field> fields = new ArrayList<>();
+
+    public String getName() {
+        return name;
     }
 
-    public String getPath() {
-        return path;
+    public List<Field> getFields() {
+        return fields;
     }
 
-    public String getCommunication() {
-        return communication;
-    }
 }

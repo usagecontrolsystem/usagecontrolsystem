@@ -27,7 +27,7 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import it.cnr.iit.sessionmanagerdesktop.SessionManagerDesktop;
-import it.cnr.iit.ucs.configuration.session_manager.SessionManagerProperties;
+import it.cnr.iit.ucs.properties.components.SessionManagerProperties;
 import it.cnr.iit.ucsinterface.sessionmanager.OnGoingAttributesInterface;
 import it.cnr.iit.ucsinterface.sessionmanager.SessionInterface;
 import it.cnr.iit.utility.JsonUtility;

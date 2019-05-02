@@ -13,24 +13,9 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  ******************************************************************************/
-package it.cnr.iit.ucs.configuration;
+package it.cnr.iit.ucs.properties.base;
 
-public class ContextHandlerProperties {
+public interface IdProperties {
 
-    private String className;
-    private String communication;
-    private String baseUri;
-
-    public String getClassName() {
-        return className;
-    }
-
-    public String getCommunication() {
-        return communication;
-    }
-
-    public String getBaseUri() {
-        return baseUri;
-    }
-
+    public String getId();
 }

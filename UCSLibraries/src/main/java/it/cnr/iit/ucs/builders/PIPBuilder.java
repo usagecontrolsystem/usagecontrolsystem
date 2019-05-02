@@ -5,7 +5,7 @@ import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import it.cnr.iit.ucs.configuration.pip.PipProperties;
+import it.cnr.iit.ucs.properties.components.PipProperties;
 import it.cnr.iit.ucsinterface.pip.PIPBase;
 import it.cnr.iit.utility.JsonUtility;
 

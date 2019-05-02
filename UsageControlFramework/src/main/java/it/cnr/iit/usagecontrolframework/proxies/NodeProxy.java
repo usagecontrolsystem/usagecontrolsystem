@@ -30,7 +30,7 @@ import it.cnr.iit.ucsinterface.message.startaccess.StartAccessResponse;
 import it.cnr.iit.ucsinterface.message.tryaccess.TryAccessMessage;
 import it.cnr.iit.ucsinterface.message.tryaccess.TryAccessResponse;
 import it.cnr.iit.ucsinterface.node.NodeInterface;
-import it.cnr.iit.usagecontrolframework.configuration.UCFProperties;
+import it.cnr.iit.usagecontrolframework.properties.UCFProperties;
 import it.cnr.iit.utility.JsonUtility;
 import it.cnr.iit.utility.RESTUtils;
 import it.cnr.iit.utility.Utility;

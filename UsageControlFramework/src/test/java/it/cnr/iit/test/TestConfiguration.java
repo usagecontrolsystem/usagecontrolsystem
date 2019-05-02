@@ -1,15 +1,11 @@
 package it.cnr.iit.test;
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.SpringBootConfiguration;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.test.context.TestPropertySource;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 
-@EnableConfigurationProperties
-@TestPropertySource( properties = "application.properties" )
-@SpringBootConfiguration
+@ConfigurationProperties( prefix = "ucftest" )
 public class TestConfiguration {
-    @Value( "${ucs-config-file}" )
+    @Value( "${config-file}" )
     private String ucsConfigFile;
 
     @Value( "${policy-file}" )

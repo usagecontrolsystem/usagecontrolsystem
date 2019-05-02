@@ -13,21 +13,30 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  ******************************************************************************/
-package it.cnr.iit.ucs.configuration.pip;
+package it.cnr.iit.ucs.properties.components;
 
-import java.util.HashMap;
-import java.util.Map;
+/**
+ * Table field xml
+ *
+ * @author antonio
+ *
+ */
+public class Field {
 
-public class Attribute {
+    private String name;
+    private String type;
+    private String key;
 
-    private Map<String, String> arguments = new HashMap<>();
-
-    public Map<String, String> getArgs() {
-        return arguments;
+    public String getName() {
+        return name;
     }
 
-    public void setArgs( Map<String, String> args ) {
-        arguments = args;
+    public String getType() {
+        return type;
+    }
+
+    public String getKey() {
+        return key;
     }
 
 }

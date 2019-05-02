@@ -21,7 +21,7 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.logging.Logger;
 
-import it.cnr.iit.ucs.configuration.RequestManagerProperties;
+import it.cnr.iit.ucs.properties.components.RequestManagerProperties;
 import it.cnr.iit.ucsinterface.contexthandler.ContextHandlerInterface;
 import it.cnr.iit.ucsinterface.forwardingqueue.ForwardingQueueToRMInterface;
 import it.cnr.iit.ucsinterface.message.Message;
@@ -31,24 +31,25 @@ import it.cnr.iit.ucsinterface.pep.PEPInterface;
 import it.cnr.iit.ucsinterface.requestmanager.InterfaceToPerformanceMonitor;
 import it.cnr.iit.ucsinterface.requestmanager.RequestManagerToCHInterface;
 import it.cnr.iit.ucsinterface.requestmanager.UCSCHInterface;
-import it.cnr.iit.usagecontrolframework.configuration.UCFProperties;
+import it.cnr.iit.usagecontrolframework.properties.UCFProperties;
 import it.cnr.iit.usagecontrolframework.proxies.NodeProxy;
 import it.cnr.iit.utility.errorhandling.Reject;
 
 /**
  * This is the abstract class representing the request manager.
  * <p>
- * Since we may have different flavors of the request manager, each with its own
+ * Since we may have different flavours of the request manager, each with its own
  * characteristics (single thread or multiple threads, algorithms used to
- * prioritize the queue and so on), this is a way to provide all the
+ * prioritise the queue and so on), this is a way to provide all the
  * RequestManagers the same basics characteristics
  * </p>
  *
- * @author antonio
+ * @author Antonio La Marra, Alessandro Rosetti
  *
  */
 public abstract class AsynchronousRequestManager
         implements RequestManagerToCHInterface, UCSCHInterface, InterfaceToPerformanceMonitor {
+
     protected static final Logger log = Logger.getLogger( AsynchronousRequestManager.class.getName() );
 
     // queue of messages received from the context handler
@@ -57,33 +58,28 @@ public abstract class AsynchronousRequestManager
     private final BlockingQueue<Message> queueToCH = new LinkedBlockingQueue<>();
     // interface provided by the context handler
     private final BlockingQueue<MessagePipCh> retrieveRequests = new LinkedBlockingQueue<>();
+
     private ContextHandlerInterface contextHandler;
     // interface provided by the PEP
     private HashMap<String, PEPInterface> pep;
-    // flag that states if the request manager has been correctly initialized
-    private volatile boolean initialized = false;
+    // flag that states if the request manager has been correctly initialised
+    private volatile boolean initialised = false;
 
     private ForwardingQueueToRMInterface forwardingQueue;
 
     protected UCFProperties ucfProperties;
-    protected RequestManagerProperties properties;
+    protected RequestManagerProperties rmProperties;
 
     // interface used to communicate with other nodes
     private NodeInterface nodeInterface;
 
-    /**
-     * Constructor for the request manager
-     *
-     * @param properties
-     *          the object representing the configuration of the request manager
-     */
-    protected AsynchronousRequestManager( UCFProperties ucfProperties, RequestManagerProperties properties ) {
-        Reject.ifNull( ucfProperties );
+    protected AsynchronousRequestManager( UCFProperties properties ) {
         Reject.ifNull( properties );
+        Reject.ifNull( properties.getRequestManager() );
 
-        initialized = true;
-        this.properties = properties;
-        this.ucfProperties = ucfProperties;
+        rmProperties = properties.getRequestManager();
+
+        initialised = true;
 
         pep = new HashMap<>();
         nodeInterface = new NodeProxy( ucfProperties );
@@ -93,16 +89,16 @@ public abstract class AsynchronousRequestManager
      * Set the interfaces the RequestManager has to communicate with
      *
      * @param contextHandler
-     *          the interface privided by the context handler
+     *          the interface provided by the context handler
      * @param proxyPEPMap
      *          the interface to the PEP (behind this interface there is proxy)
      * @param nodeInterface
-     *          the interface privided by the nodes for a distributes system
+     *          the interface provided by the nodes for a distributes system
      */
     public final void setInterfaces( ContextHandlerInterface contextHandler,
             Map<String, PEPInterface> proxyPEPMap, NodeInterface nodeInterface,
             ForwardingQueueToRMInterface forwardingQueue ) {
-        Reject.ifInvalidObjectState( initialized, AsynchronousRequestManager.class.getName(), log );
+        Reject.ifInvalidObjectState( initialised, AsynchronousRequestManager.class.getName(), log );
         Reject.ifNull( contextHandler, proxyPEPMap, forwardingQueue, nodeInterface );
         this.contextHandler = contextHandler;
         pep.putAll( proxyPEPMap );
@@ -110,51 +106,42 @@ public abstract class AsynchronousRequestManager
         this.nodeInterface = nodeInterface;
     }
 
-    /**
-     * Checks if the abstract class has been correctly initialized
-     *
-     * @return the initialized flag
-     */
     protected boolean isInitialized() {
-        return initialized;
+        return initialised;
     }
 
     protected ContextHandlerInterface getContextHandler() {
-        Reject.ifInvalidObjectState( initialized, AsynchronousRequestManager.class.getName(), log );
+        Reject.ifInvalidObjectState( initialised, AsynchronousRequestManager.class.getName(), log );
         return contextHandler;
     }
 
     protected HashMap<String, PEPInterface> getPEPInterface() {
-        Reject.ifInvalidObjectState( initialized, AsynchronousRequestManager.class.getName(), log );
+        Reject.ifInvalidObjectState( initialised, AsynchronousRequestManager.class.getName(), log );
         return pep;
     }
 
     protected BlockingQueue<Message> getQueueFromCH() {
-        Reject.ifInvalidObjectState( initialized, AsynchronousRequestManager.class.getName(), log );
+        Reject.ifInvalidObjectState( initialised, AsynchronousRequestManager.class.getName(), log );
         return queueFromCH;
     }
 
     protected BlockingQueue<Message> getQueueToCH() {
-        Reject.ifInvalidObjectState( initialized, AsynchronousRequestManager.class.getName(), log );
+        Reject.ifInvalidObjectState( initialised, AsynchronousRequestManager.class.getName(), log );
         return queueToCH;
     }
 
-    protected final RequestManagerProperties getConfiguration() {
-        return properties;
-    }
-
     protected final BlockingQueue<MessagePipCh> getRetrieveRequestsQueue() {
-        Reject.ifInvalidObjectState( initialized, AsynchronousRequestManager.class.getName(), log );
+        Reject.ifInvalidObjectState( initialised, AsynchronousRequestManager.class.getName(), log );
         return retrieveRequests;
     }
 
     protected final NodeInterface getNodeInterface() {
-        Reject.ifInvalidObjectState( initialized, AsynchronousRequestManager.class.getName(), log );
+        Reject.ifInvalidObjectState( initialised, AsynchronousRequestManager.class.getName(), log );
         return nodeInterface;
     }
 
     protected final ForwardingQueueToRMInterface getForwardingQueue() {
-        Reject.ifInvalidObjectState( initialized, AsynchronousRequestManager.class.getName(), log );
+        Reject.ifInvalidObjectState( initialised, AsynchronousRequestManager.class.getName(), log );
         return forwardingQueue;
     }
 

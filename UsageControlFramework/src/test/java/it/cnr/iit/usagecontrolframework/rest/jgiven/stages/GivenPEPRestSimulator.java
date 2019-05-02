@@ -23,8 +23,8 @@ import com.tngtech.jgiven.annotation.Quoted;
 import com.tngtech.jgiven.annotation.ScenarioRule;
 import com.tngtech.jgiven.integration.spring.JGivenStage;
 
-import it.cnr.iit.ucs.configuration.UCSConfiguration;
 import it.cnr.iit.ucs.testing.jgiven.rules.MockedHttpServiceTestRule;
+import it.cnr.iit.usagecontrolframework.properties.UCFProperties;
 import it.cnr.iit.usagecontrolframework.rest.UCFTestContext;
 import it.cnr.iit.utility.JsonUtility;
 import it.cnr.iit.utility.Utility;
@@ -40,7 +40,7 @@ public class GivenPEPRestSimulator extends Stage<GivenPEPRestSimulator> {
     WireMock wireMockContextHandler;
 
     @ProvidedScenarioState
-    UCSConfiguration configuration;
+    UCFProperties prop;
 
     @ProvidedScenarioState
     String sessionId;
@@ -60,12 +60,12 @@ public class GivenPEPRestSimulator extends Stage<GivenPEPRestSimulator> {
     }
 
     private void loadConfiguration() {
-        if( configuration == null ) {
+        if( prop == null ) {
             File confFile = new File( this.getClass().getClassLoader().getResource( "conf.json" ).getFile() );
-            Optional<UCSConfiguration> optPEPRestConfiguration = JsonUtility.loadObjectFromJsonFile( confFile,
-                UCSConfiguration.class );
+            Optional<UCFProperties> optPEPRestConfiguration = JsonUtility.loadObjectFromJsonFile( confFile,
+                UCFProperties.class );
             if( optPEPRestConfiguration.isPresent() ) {
-                configuration = optPEPRestConfiguration.get();
+                prop = optPEPRestConfiguration.get();
             }
         }
     }

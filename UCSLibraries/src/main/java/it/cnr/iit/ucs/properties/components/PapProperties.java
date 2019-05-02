@@ -13,22 +13,12 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  ******************************************************************************/
-package it.cnr.iit.ucs.configuration.session_manager;
+package it.cnr.iit.ucs.properties.components;
 
-import java.util.ArrayList;
-import java.util.List;
+import it.cnr.iit.ucs.properties.base.PluginProperties;
 
-public class Table {
+public interface PapProperties extends PluginProperties {
 
-    private String name;
-    private List<Field> fields = new ArrayList<>();
-
-    public String getName() {
-        return name;
-    }
-
-    public List<Field> getFields() {
-        return fields;
-    }
+    public String getPath();
 
 }

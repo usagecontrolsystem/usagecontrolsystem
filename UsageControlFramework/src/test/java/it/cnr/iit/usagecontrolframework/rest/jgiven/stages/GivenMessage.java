@@ -20,12 +20,12 @@ import com.tngtech.jgiven.annotation.BeforeScenario;
 import com.tngtech.jgiven.annotation.ProvidedScenarioState;
 import com.tngtech.jgiven.integration.spring.JGivenStage;
 
-import it.cnr.iit.ucs.configuration.PepProperties;
-import it.cnr.iit.ucs.configuration.UCSConfiguration;
+import it.cnr.iit.ucs.properties.components.PepProperties;
 import it.cnr.iit.ucsinterface.message.MEAN;
 import it.cnr.iit.ucsinterface.message.Message;
 import it.cnr.iit.ucsinterface.message.tryaccess.TryAccessMessage;
 import it.cnr.iit.ucsinterface.message.tryaccess.TryAccessMessageBuilder;
+import it.cnr.iit.usagecontrolframework.properties.UCFProperties;
 import it.cnr.iit.usagecontrolframework.rest.UCFTestContext;
 import it.cnr.iit.utility.JsonUtility;
 
@@ -36,7 +36,7 @@ public class GivenMessage extends Stage<GivenMessage> {
     private String request;
 
     @ProvidedScenarioState
-    UCSConfiguration ucsConfiguration;
+    UCFProperties prop;
 
     @Autowired
     UCFTestContext conf;
@@ -46,7 +46,7 @@ public class GivenMessage extends Stage<GivenMessage> {
 
     @BeforeScenario
     public void init() throws URISyntaxException, IOException, JAXBException {
-        ucsConfiguration = getUCSConfiguration( conf.getUcsConfigFile() );
+        // prop = getUCSConfiguration( conf.getUcsConfigFile() );
         policy = readResourceFileAsString( conf.getPolicyFile() );
         request = readResourceFileAsString( conf.getRequestFile() );
     }
@@ -61,8 +61,8 @@ public class GivenMessage extends Stage<GivenMessage> {
     }
 
     protected TryAccessMessage buildTryAccessMessage() {
-        assertNotNull( ucsConfiguration );
-        PepProperties pepProps = ucsConfiguration.getPepList().get( Integer.parseInt( conf.getPepId() ) );
+        assertNotNull( prop );
+        PepProperties pepProps = prop.getPEPList().get( Integer.parseInt( conf.getPepId() ) );
 
         TryAccessMessageBuilder tryAccessBuilder = new TryAccessMessageBuilder( pepProps.getId(), pepProps.getBaseUri() );
         tryAccessBuilder.setPepUri( buildOnGoingEvaluationInterface( pepProps ) )
@@ -88,11 +88,11 @@ public class GivenMessage extends Stage<GivenMessage> {
         return buildResponseInterface( pepProps, "onGoingEvaluation" );
     }
 
-    protected UCSConfiguration getUCSConfiguration( String ucsConfigFile ) {
+    protected UCFProperties getUCSConfiguration( String ucsConfigFile ) {
         ClassLoader classLoader = this.getClass().getClassLoader();
         File file = new File( classLoader.getResource( ucsConfigFile ).getFile() );
 
-        Optional<UCSConfiguration> loadObjectFromJsonFile = JsonUtility.loadObjectFromJsonFile( file, UCSConfiguration.class );
+        Optional<UCFProperties> loadObjectFromJsonFile = JsonUtility.loadObjectFromJsonFile( file, UCFProperties.class );
         if( loadObjectFromJsonFile.isPresent() ) {
             return loadObjectFromJsonFile.get();
         } else {

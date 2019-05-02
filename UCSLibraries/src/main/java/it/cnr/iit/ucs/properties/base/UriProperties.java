@@ -13,23 +13,9 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  ******************************************************************************/
-package it.cnr.iit.ucs.configuration.distributed;
+package it.cnr.iit.ucs.properties.base;
 
-public class KademliaContact {
-    private String nodeId;
-    private String address;
-    private int udpPort;
+public interface UriProperties {
 
-    public String getNodeId() {
-        return nodeId;
-    }
-
-    public String getAddress() {
-        return address;
-    }
-
-    public int getUdpPort() {
-        return udpPort;
-    }
-
+    public String getBaseUri();
 }

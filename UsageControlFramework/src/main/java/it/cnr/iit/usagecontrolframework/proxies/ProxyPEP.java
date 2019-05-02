@@ -24,8 +24,8 @@ import java.util.logging.Logger;
 
 import com.google.common.base.Throwables;
 
-import it.cnr.iit.ucs.configuration.PepProperties;
 import it.cnr.iit.ucs.constants.CONNECTION;
+import it.cnr.iit.ucs.properties.components.PepProperties;
 import it.cnr.iit.ucsinterface.message.Message;
 import it.cnr.iit.ucsinterface.message.endaccess.EndAccessResponse;
 import it.cnr.iit.ucsinterface.message.startaccess.StartAccessResponse;
@@ -68,7 +68,7 @@ public class ProxyPEP extends Proxy implements PEPInterface {
         Reject.ifAbsent( uri );
         this.uri = uri.get();
 
-        Reject.ifNull( properties.getCommunication() );
+        Reject.ifNull( properties.getCommunicationType() );
         switch( getConnection() ) {
             case API:
                 if( localPep( properties ) ) {
@@ -86,7 +86,7 @@ public class ProxyPEP extends Proxy implements PEPInterface {
                 // }
                 break;
             default:
-                log.severe( "Incorrect communication medium : " + properties.getCommunication() );
+                log.severe( "Incorrect communication medium : " + properties.getCommunicationType() );
                 return;
         }
     }
@@ -184,11 +184,11 @@ public class ProxyPEP extends Proxy implements PEPInterface {
 
     private Optional<String> getApi( Message message ) {
         if( message instanceof TryAccessResponse ) {
-            return Optional.of( properties.getTryAccessResponse() );
+            return Optional.of( properties.getApiTryAccessResponse() );
         } else if( message instanceof StartAccessResponse ) {
-            return Optional.of( properties.getStartAccessResponse() );
+            return Optional.of( properties.getApiStartAccessResponse() );
         } else if( message instanceof EndAccessResponse ) {
-            return Optional.of( properties.getEndAccessResponse() );
+            return Optional.of( properties.getApiEndAccessResponse() );
         }
 
         return Optional.empty();
@@ -217,7 +217,7 @@ public class ProxyPEP extends Proxy implements PEPInterface {
 
     @Override
     protected CONNECTION getConnection() {
-        return CONNECTION.valueOf( properties.getCommunication() );
+        return CONNECTION.valueOf( properties.getCommunicationType() );
     }
 
     @Override

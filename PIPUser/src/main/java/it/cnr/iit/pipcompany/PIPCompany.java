@@ -12,7 +12,7 @@ import it.cnr.iit.pip.piprole.table.DatabaseConfiguration;
 import it.cnr.iit.pip.piprole.table.UserTable;
 import it.cnr.iit.sqlmiddleware.SQLMiddleware;
 import it.cnr.iit.sqlmiddlewareinterface.SQLMiddlewarePIPInterface;
-import it.cnr.iit.ucs.configuration.pip.PipProperties;
+import it.cnr.iit.ucs.properties.components.PipProperties;
 import it.cnr.iit.ucsinterface.obligationmanager.ObligationInterface;
 import it.cnr.iit.ucsinterface.pip.PIPBase;
 import it.cnr.iit.ucsinterface.pip.exception.PIPException;

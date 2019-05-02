@@ -13,13 +13,21 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  ******************************************************************************/
-package it.cnr.iit.ucs.configuration;
+package it.cnr.iit.ucs.properties.components;
 
-public class ObligationManagerProperties {
+import java.util.HashMap;
+import java.util.Map;
 
-    private String className;
+public class Attribute {
 
-    public String getClassName() {
-        return className;
+    private Map<String, String> arguments = new HashMap<>();
+
+    public Map<String, String> getArgs() {
+        return arguments;
     }
+
+    public void setArgs( Map<String, String> args ) {
+        arguments = args;
+    }
+
 }

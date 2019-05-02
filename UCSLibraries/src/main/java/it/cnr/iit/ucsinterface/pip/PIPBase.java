@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.logging.Logger;
 
-import it.cnr.iit.ucs.configuration.pip.PipProperties;
+import it.cnr.iit.ucs.properties.components.PipProperties;
 import it.cnr.iit.ucsinterface.contexthandler.ContextHandlerPIPInterface;
 import it.cnr.iit.utility.errorhandling.Reject;
 import it.cnr.iit.xacmlutilities.Attribute;

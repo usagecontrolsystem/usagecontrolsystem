@@ -13,18 +13,11 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  ******************************************************************************/
-package it.cnr.iit.ucs.configuration.distributed;
+package it.cnr.iit.ucs.properties.components;
 
-public class DistributedProperties {
+import it.cnr.iit.ucs.properties.base.JournalProperties;
+import it.cnr.iit.ucs.properties.base.PluginProperties;
 
-    private CassandraProperties cassandra;
-    private KademliaProperties kademlia;
+public interface PdpProperties extends PluginProperties, JournalProperties {
 
-    public CassandraProperties getCassandra() {
-        return cassandra;
-    }
-
-    public KademliaProperties getKademlia() {
-        return kademlia;
-    }
 }

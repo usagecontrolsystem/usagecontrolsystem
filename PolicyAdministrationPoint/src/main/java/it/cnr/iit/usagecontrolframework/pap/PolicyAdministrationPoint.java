@@ -26,7 +26,7 @@ import java.util.Optional;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
-import it.cnr.iit.ucs.configuration.PapProperties;
+import it.cnr.iit.ucs.properties.components.PapProperties;
 import it.cnr.iit.ucsinterface.pap.PAPInterface;
 import it.cnr.iit.utility.JAXBUtility;
 import it.cnr.iit.utility.errorhandling.Reject;

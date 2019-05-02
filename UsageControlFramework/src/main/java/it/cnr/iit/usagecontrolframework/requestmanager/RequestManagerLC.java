@@ -23,7 +23,6 @@ import java.util.concurrent.Executors;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import it.cnr.iit.ucs.configuration.RequestManagerProperties;
 import it.cnr.iit.ucsinterface.message.Message;
 import it.cnr.iit.ucsinterface.message.endaccess.EndAccessMessage;
 import it.cnr.iit.ucsinterface.message.endaccess.EndAccessResponse;
@@ -34,7 +33,7 @@ import it.cnr.iit.ucsinterface.message.startaccess.StartAccessMessage;
 import it.cnr.iit.ucsinterface.message.startaccess.StartAccessResponse;
 import it.cnr.iit.ucsinterface.message.tryaccess.TryAccessMessage;
 import it.cnr.iit.ucsinterface.message.tryaccess.TryAccessResponse;
-import it.cnr.iit.usagecontrolframework.configuration.UCFProperties;
+import it.cnr.iit.usagecontrolframework.properties.UCFProperties;
 import it.cnr.iit.utility.Utility;
 import it.cnr.iit.utility.errorhandling.Reject;
 
@@ -66,12 +65,9 @@ public class RequestManagerLC extends AsynchronousRequestManager {
     /*
      * This is the thread in charge of handling the operations requested from a
      * remote PIP except from reevaluation.
-    
+
     private ExecutorService attributeSupplier;
     */
-
-    // states if the request manager has been correctly initialized
-    private volatile boolean initialized = false;
 
     /**
      * Constructor for the RequestManager starting from an XML which describes the
@@ -80,14 +76,13 @@ public class RequestManagerLC extends AsynchronousRequestManager {
      *
      * @param properties
      */
-    public RequestManagerLC( UCFProperties ucfProperties, RequestManagerProperties properties ) {
-        super( ucfProperties, properties );
+    public RequestManagerLC( UCFProperties properties ) {
+        super( properties );
         initialize();
-        initialized = isInitialized();
     }
 
     /**
-     * Initializes the request manager with a------ pool of threads
+     * Initialises the request manager with a------ pool of threads
      *
      * @return true if everything goes fine, false in case of exceptions
     */
@@ -257,9 +252,9 @@ public class RequestManagerLC extends AsynchronousRequestManager {
      *
      * @author antonio
      *
-
+    
     private class AttributeSupplier implements Callable<Void> {
-
+    
     	@Override
     	public Void call() throws Exception {
     		while (true) {
@@ -306,7 +301,7 @@ public class RequestManagerLC extends AsynchronousRequestManager {
      * @param message
      *          the message returned by the context handler
      * @return the message to be used as response
-
+    
     private MessagePipCh createResponse(Message message) {
     	MessagePipCh chResponse = (MessagePipCh) message;
     	switch (chResponse.getAction()) {

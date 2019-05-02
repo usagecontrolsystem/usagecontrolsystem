@@ -22,7 +22,7 @@ import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import it.cnr.iit.ucs.configuration.ContextHandlerProperties;
+import it.cnr.iit.ucs.properties.components.ContextHandlerProperties;
 import it.cnr.iit.ucsinterface.contexthandler.ContextHandlerInterface;
 import it.cnr.iit.ucsinterface.forwardingqueue.ForwardingQueueToCHInterface;
 import it.cnr.iit.ucsinterface.obligationmanager.ObligationManagerInterface;
@@ -33,7 +33,6 @@ import it.cnr.iit.ucsinterface.pip.PIPRMInterface;
 import it.cnr.iit.ucsinterface.pip.PIPRetrieval;
 import it.cnr.iit.ucsinterface.requestmanager.RequestManagerToCHInterface;
 import it.cnr.iit.ucsinterface.sessionmanager.SessionManagerInterface;
-import it.cnr.iit.usagecontrolframework.configuration.UCFProperties;
 import it.cnr.iit.utility.Utility;
 import it.cnr.iit.utility.errorhandling.Reject;
 
@@ -78,7 +77,6 @@ public abstract class AbstractContextHandler implements ContextHandlerInterface 
     // forwarding queue interface
     private ForwardingQueueToCHInterface forwardingQueue;
 
-    protected UCFProperties ucfProperties;
     protected ContextHandlerProperties properties;
     protected URI uri;
 
@@ -92,11 +90,9 @@ public abstract class AbstractContextHandler implements ContextHandlerInterface 
      *          passed as a JAVA Object.
      *
      */
-    protected AbstractContextHandler( UCFProperties ucfProperties, ContextHandlerProperties properties ) {
+    protected AbstractContextHandler( ContextHandlerProperties properties ) {
         Reject.ifNull( properties );
         this.properties = properties;
-        Reject.ifNull( ucfProperties );
-        this.ucfProperties = ucfProperties;
         Optional<URI> uri = Utility.parseUri( properties.getBaseUri() );
         Reject.ifAbsent( uri );
         this.uri = uri.get();

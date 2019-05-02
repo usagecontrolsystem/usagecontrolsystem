@@ -13,23 +13,22 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  ******************************************************************************/
-package it.cnr.iit.ucs.configuration;
+package it.cnr.iit.ucs.properties.components;
 
-public class PdpProperties {
+import java.util.List;
 
-    private String className;
-    private String communication;
-    private String journalDir;
+import it.cnr.iit.ucs.properties.base.IdProperties;
+import it.cnr.iit.ucs.properties.base.JournalProperties;
+import it.cnr.iit.ucs.properties.base.PluginProperties;
 
-    public String getJournalDir() {
-        return journalDir;
-    }
+public interface PipProperties extends PluginProperties, IdProperties, JournalProperties {
 
-    public String getClassName() {
-        return className;
-    }
+    public String getRetrieval();
 
-    public String getCommunication() {
-        return communication;
-    }
+    public List<Attribute> getAttributes();
+
+    public Table getTable();
+
+    public boolean isMultiattribute();
+
 }

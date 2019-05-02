@@ -24,7 +24,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.logging.Logger;
 
-import it.cnr.iit.ucs.configuration.PepProperties;
+import it.cnr.iit.ucs.properties.components.PepProperties;
 import it.cnr.iit.ucsinterface.message.MEAN;
 import it.cnr.iit.ucsinterface.message.Message;
 import it.cnr.iit.ucsinterface.message.PART;
@@ -148,7 +148,7 @@ public class ExamplePEP implements PEPInterface {
         // END parameter checking
 
         ReevaluationResponse chPepMessage = (ReevaluationResponse) message;
-        if( configuration.getRevoke().equals( "HARD" ) ) {
+        if( configuration.getApiRevoke().equals( "HARD" ) ) {
             EndAccessMessage endAccess = new EndAccessMessage( PART.PEP.toString(),
                 PART.CH.toString() );
             endAccess.setCallback( null, MEAN.API );

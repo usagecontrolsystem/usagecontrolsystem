@@ -27,8 +27,8 @@ import java.util.logging.Logger;
 
 import javax.xml.bind.JAXBException;
 
-import it.cnr.iit.ucs.configuration.ContextHandlerProperties;
 import it.cnr.iit.ucs.constants.STATUS;
+import it.cnr.iit.ucs.properties.components.ContextHandlerProperties;
 import it.cnr.iit.ucsinterface.contexthandler.ContextHandlerConstants;
 import it.cnr.iit.ucsinterface.contexthandler.exceptions.RevokeException;
 import it.cnr.iit.ucsinterface.contexthandler.exceptions.SessionManagerException;
@@ -49,7 +49,6 @@ import it.cnr.iit.ucsinterface.pdp.PDPEvaluation;
 import it.cnr.iit.ucsinterface.pip.PIPCHInterface;
 import it.cnr.iit.ucsinterface.sessionmanager.OnGoingAttributesInterface;
 import it.cnr.iit.ucsinterface.sessionmanager.SessionInterface;
-import it.cnr.iit.usagecontrolframework.configuration.UCFProperties;
 import it.cnr.iit.utility.JAXBUtility;
 import it.cnr.iit.xacmlutilities.Attribute;
 import it.cnr.iit.xacmlutilities.Category;
@@ -115,12 +114,8 @@ public final class ContextHandlerLC extends AbstractContextHandler {
     // boolean variable that states if the thread has to run again or not
     private volatile boolean continueMonitoring = true;
 
-    /**
-     *
-     * @param properties
-     */
-    public ContextHandlerLC( UCFProperties properties, ContextHandlerProperties chProperties ) {
-        super( properties, chProperties );
+    public ContextHandlerLC( ContextHandlerProperties chProperties ) {
+        super( chProperties );
     }
 
     /**

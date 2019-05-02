@@ -13,17 +13,10 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  ******************************************************************************/
-package it.cnr.iit.ucs.configuration;
+package it.cnr.iit.ucs.properties.base;
 
-import java.util.ArrayList;
-import java.util.List;
+public interface JournalProperties {
 
-public class ProxiesProperties {
-
-    private List<String> proxyClasses = new ArrayList<>();
-
-    public List<String> getProxyClasses() {
-        return proxyClasses;
-    }
+    public String getJournalDir();
 
 }
