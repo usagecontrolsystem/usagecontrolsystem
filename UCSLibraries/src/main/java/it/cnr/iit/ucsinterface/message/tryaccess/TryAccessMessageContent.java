@@ -75,7 +75,6 @@ public final class TryAccessMessageContent {
      * @return true if everything goes fine, false otherwise
      */
     public boolean setPolicyId( String policyId ) {
-        Reject.ifBlank( policyId );
         this.policyId = policyId;
         return true;
     }
@@ -89,7 +88,6 @@ public final class TryAccessMessageContent {
      * @return true if everything goes fine, false otherwise
      */
     public boolean setPolicy( String policy ) {
-        Reject.ifBlank( policy );
         try {
             JAXBUtility.unmarshalToObject( PolicyType.class, policy );
             this.policy = policy;

@@ -194,7 +194,7 @@ public final class ContextHandlerLC extends AbstractContextHandler {
         PDPEvaluation pdpEvaluation = getPdpInterface().evaluate( requestFull, policyBuilder.append( policy ),
             STATUS.TRYACCESS );
 
-        policy = policyBuilder.toString();
+        // policy = policyBuilder.toString();
 
         // status of the incoming request
         String status = ContextHandlerConstants.TRY_STATUS;
@@ -874,7 +874,7 @@ public final class ContextHandlerLC extends AbstractContextHandler {
                     // right action
                     LinkedList<String> searchList = new LinkedList<>( pip.getAttributeIds() );
                     if( searchList.contains( attribute.getAttributeId() ) ) {
-
+        
                         switch( messagePipCh.getAction() ) {
                             case RETRIEVE:
                                 attribute.setValue( pip.getAttributesCharacteristics().get( attribute.getAttributeId() )

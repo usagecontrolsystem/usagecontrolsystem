@@ -213,10 +213,10 @@ public class RequestManagerLC extends AsynchronousRequestManager {
 
         @Override
         public Message call() {
+            Message message;
+            try {
+                while( ( message = getQueueToCH().take() ) != null ) {
 
-            while( true ) {
-                try {
-                    Message message = getQueueToCH().take();
                     if( message instanceof TryAccessMessage ) {
                         getContextHandler().tryAccess( message );
                     }
@@ -229,12 +229,12 @@ public class RequestManagerLC extends AsynchronousRequestManager {
                     if( message instanceof ReevaluationMessage ) {
                         getContextHandler().reevaluate( message );
                     }
-                    return message;
-                } catch( Exception e ) {
-                    log.severe( e.getMessage() );
-                    return null;
                 }
+            } catch( Exception e ) {
+                log.severe( e.getMessage() );
+                Thread.currentThread().interrupt();
             }
+            return null;
         }
     }
 
