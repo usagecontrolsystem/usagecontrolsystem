@@ -16,7 +16,6 @@
 package it.cnr.iit.peprest;
 
 import java.util.Optional;
-import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.logging.Level;
@@ -102,7 +101,7 @@ public class PEPRest implements PEPInterface {
         TryAccessMessageBuilder tryAccessBuilder = new TryAccessMessageBuilder( pep.getId(),
             pep.getBaseUri() );
         tryAccessBuilder.setPepUri( buildOnGoingEvaluationInterface() )
-            .setPolicy( policy ).setRequest( request ).setPolicyId( createPolicyId() );
+            .setPolicy( policy ).setRequest( request );
         TryAccessMessage tryAccessMessage = tryAccessBuilder.build();
         tryAccessMessage.setCallback( buildResponseInterface( "tryAccessResponse" ), MEAN.REST );
         log.log( Level.INFO, "[TIME] TRYACCESS {0} ", System.currentTimeMillis() );
@@ -115,10 +114,6 @@ public class PEPRest implements PEPInterface {
             log.log( Level.WARNING, IS_MSG_DELIVERED_TO_DESTINATION, message.isDeliveredToDestination() );
             throw Throwables.propagate( new IllegalAccessException( UNABLE_TO_DELIVER_MESSSAGE_TO_UCS ) );
         }
-    }
-
-    private synchronized String createPolicyId() {
-        return UUID.randomUUID().toString();
     }
 
     public String startAccess( String sessionId ) {
