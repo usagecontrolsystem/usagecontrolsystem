@@ -15,30 +15,11 @@
  ******************************************************************************/
 package it.cnr.iit.ucs.properties.components;
 
-import java.util.List;
-
 import it.cnr.iit.ucs.properties.base.PluginProperties;
-import it.cnr.iit.ucs.properties.base.UriProperties;
 
-public interface SessionManagerProperties extends PluginProperties, UriProperties {
+public interface SessionManagerProperties extends PluginProperties {
 
     public String getType();
-
-    public String getHost();
-
-    public String getCluster();
-
-    public String getKeyspace();
-
-    public String getUsername();
-
-    public String getPassword();
-
-    public List<Table> getTables();
-
-    public String getReplicationFactor();
-
-    public String getKey();
 
     public String getDbUri();
 
