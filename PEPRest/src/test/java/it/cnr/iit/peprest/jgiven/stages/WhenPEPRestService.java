@@ -15,10 +15,10 @@ import com.tngtech.jgiven.annotation.ProvidedScenarioState;
 import com.tngtech.jgiven.integration.spring.JGivenStage;
 
 import it.cnr.iit.peprest.PEPRest;
-import it.cnr.iit.peprest.PEPRestOperation;
 import it.cnr.iit.peprest.messagetrack.CallerResponse;
 import it.cnr.iit.peprest.messagetrack.MessageStorage;
 import it.cnr.iit.peprest.messagetrack.STATUS;
+import it.cnr.iit.ucs.constants.RestOperation;
 import it.cnr.iit.ucsinterface.message.Message;
 
 @JGivenStage
@@ -47,13 +47,13 @@ public class WhenPEPRestService extends Stage<WhenPEPRestService> {
 
     public WhenPEPRestService() {}
 
-    public WhenPEPRestService PEPRest_service_$_is_executed( PEPRestOperation restOperation ) {
+    public WhenPEPRestService PEPRest_service_$_is_executed( RestOperation restOperation ) {
         assertNotNull( pepRest );
         performOperation( restOperation );
         return self();
     }
 
-    public WhenPEPRestService PEPRest_service_$_execution_fails( PEPRestOperation restOperation ) {
+    public WhenPEPRestService PEPRest_service_$_execution_fails( RestOperation restOperation ) {
         assertNotNull( pepRest );
         try {
             performOperation( restOperation );
@@ -63,7 +63,7 @@ public class WhenPEPRestService extends Stage<WhenPEPRestService> {
         return self();
     }
 
-    private void performOperation( PEPRestOperation restOperation ) {
+    private void performOperation( RestOperation restOperation ) {
         switch( restOperation ) {
             case TRY_ACCESS:
                 messageId = pepRest.tryAccess();
@@ -87,7 +87,7 @@ public class WhenPEPRestService extends Stage<WhenPEPRestService> {
         }
     }
 
-    public WhenPEPRestService PEPRest_service_receive_response_is_executed( PEPRestOperation operation ) {
+    public WhenPEPRestService PEPRest_service_receive_response_is_executed( RestOperation operation ) {
         assertNotNull( message );
         CallerResponse callerResponse = new CallerResponse();
         callerResponse.setSessionId( sessionId );

@@ -13,7 +13,7 @@ import com.tngtech.jgiven.annotation.ExpectedScenarioState;
 import com.tngtech.jgiven.annotation.Hidden;
 import com.tngtech.jgiven.annotation.ProvidedScenarioState;
 
-import it.cnr.iit.peprest.PEPRestOperation;
+import it.cnr.iit.ucs.constants.RestOperation;
 import it.cnr.iit.ucsinterface.message.Message;
 import it.cnr.iit.ucsinterface.message.endaccess.EndAccessResponse;
 import it.cnr.iit.ucsinterface.message.reevaluation.ReevaluationResponse;
@@ -88,7 +88,7 @@ public class GivenMessage extends Stage<GivenMessage> {
         return pdpResponse;
     }
 
-    public GivenMessage create_permit_response_for_$( PEPRestOperation operation ) {
+    public GivenMessage create_permit_response_for_$( RestOperation operation ) {
         switch( operation ) {
             case TRY_ACCESS_RESPONSE:
                 message = buildTryAccessResponse( DecisionType.PERMIT );

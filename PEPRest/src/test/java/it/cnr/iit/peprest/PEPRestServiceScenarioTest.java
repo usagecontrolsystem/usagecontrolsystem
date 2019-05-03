@@ -1,12 +1,12 @@
 package it.cnr.iit.peprest;
 
-import static it.cnr.iit.peprest.PEPRestOperation.END_ACCESS;
-import static it.cnr.iit.peprest.PEPRestOperation.END_ACCESS_RESPONSE;
-import static it.cnr.iit.peprest.PEPRestOperation.ON_GOING_RESPONSE;
-import static it.cnr.iit.peprest.PEPRestOperation.START_ACCESS;
-import static it.cnr.iit.peprest.PEPRestOperation.START_ACCESS_RESPONSE;
-import static it.cnr.iit.peprest.PEPRestOperation.TRY_ACCESS;
-import static it.cnr.iit.peprest.PEPRestOperation.TRY_ACCESS_RESPONSE;
+import static it.cnr.iit.ucs.constants.RestOperation.END_ACCESS;
+import static it.cnr.iit.ucs.constants.RestOperation.END_ACCESS_RESPONSE;
+import static it.cnr.iit.ucs.constants.RestOperation.ON_GOING_RESPONSE;
+import static it.cnr.iit.ucs.constants.RestOperation.START_ACCESS;
+import static it.cnr.iit.ucs.constants.RestOperation.START_ACCESS_RESPONSE;
+import static it.cnr.iit.ucs.constants.RestOperation.TRY_ACCESS;
+import static it.cnr.iit.ucs.constants.RestOperation.TRY_ACCESS_RESPONSE;
 
 import org.apache.http.HttpStatus;
 import org.junit.Test;
@@ -27,6 +27,7 @@ import it.cnr.iit.peprest.jgiven.stages.GivenContextHandlerRestSimulator;
 import it.cnr.iit.peprest.jgiven.stages.GivenMessage;
 import it.cnr.iit.peprest.jgiven.stages.ThenMessage;
 import it.cnr.iit.peprest.jgiven.stages.WhenPEPRestService;
+import it.cnr.iit.ucs.constants.RestOperation;
 
 import oasis.names.tc.xacml.core.schema.wd_17.DecisionType;
 
@@ -59,7 +60,7 @@ public class PEPRestServiceScenarioTest
 
     @Test
     @UseDataProvider( "dataPepRestOperations" )
-    public void an_access_message_can_be_delivered_to_UCS( PEPRestOperation restOperation ) {
+    public void an_access_message_can_be_delivered_to_UCS( RestOperation restOperation ) {
         given().a_test_configuration_for_request_with_policy()
             .with().a_test_session_id()
             .and().a_mocked_context_handler_for_$( restOperation.getOperationUri() )
@@ -74,7 +75,7 @@ public class PEPRestServiceScenarioTest
 
     @Test
     @UseDataProvider( "dataPepRestOperations" )
-    public void ignore_access_message_delivered_to_UCS_if_fault_response_is_received( PEPRestOperation restOperation ) {
+    public void ignore_access_message_delivered_to_UCS_if_fault_response_is_received( RestOperation restOperation ) {
         given().a_test_configuration_for_request_with_policy()
             .with().a_test_session_id()
             .and().a_mocked_context_handler_for_$( restOperation.getOperationUri() )
@@ -118,7 +119,7 @@ public class PEPRestServiceScenarioTest
 
     @Test
     @UseDataProvider( "dataPepRestResponseOperations" )
-    public void a_response_is_delivered_from_UCS( PEPRestOperation restOperation ) {
+    public void a_response_is_delivered_from_UCS( RestOperation restOperation ) {
 
         givenMessage.given().create_permit_response_for_$( restOperation );
         given().and().a_mocked_context_handler_for_$( START_ACCESS.getOperationUri() )

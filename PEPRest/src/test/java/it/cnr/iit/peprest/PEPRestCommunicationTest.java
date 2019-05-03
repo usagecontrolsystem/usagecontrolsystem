@@ -1,7 +1,7 @@
 package it.cnr.iit.peprest;
 
-import static it.cnr.iit.peprest.PEPRestOperation.FINISH;
-import static it.cnr.iit.peprest.PEPRestOperation.FLOW_STATUS;
+import static it.cnr.iit.ucs.constants.RestOperation.FINISH;
+import static it.cnr.iit.ucs.constants.RestOperation.FLOW_STATUS;
 import static org.apache.http.HttpStatus.SC_BAD_REQUEST;
 import static org.apache.http.HttpStatus.SC_OK;
 import static org.assertj.core.api.Assertions.fail;

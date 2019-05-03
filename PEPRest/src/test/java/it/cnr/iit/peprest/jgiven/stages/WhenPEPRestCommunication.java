@@ -1,7 +1,7 @@
 package it.cnr.iit.peprest.jgiven.stages;
 
-import static it.cnr.iit.peprest.PEPRestOperation.FLOW_STATUS;
-import static it.cnr.iit.peprest.PEPRestOperation.START_EVALUATION;
+import static it.cnr.iit.ucs.constants.RestOperation.FLOW_STATUS;
+import static it.cnr.iit.ucs.constants.RestOperation.START_EVALUATION;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
 

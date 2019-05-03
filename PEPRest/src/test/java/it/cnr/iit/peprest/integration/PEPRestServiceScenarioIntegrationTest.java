@@ -1,16 +1,16 @@
 package it.cnr.iit.peprest.integration;
 
-import static it.cnr.iit.peprest.PEPRestOperation.END_ACCESS;
-import static it.cnr.iit.peprest.PEPRestOperation.ON_GOING_RESPONSE;
-import static it.cnr.iit.peprest.PEPRestOperation.START_ACCESS;
-import static it.cnr.iit.peprest.PEPRestOperation.START_ACCESS_RESPONSE;
-import static it.cnr.iit.peprest.PEPRestOperation.TRY_ACCESS;
-import static it.cnr.iit.peprest.PEPRestOperation.TRY_ACCESS_RESPONSE;
 import static it.cnr.iit.peprest.messagetrack.STATUS.ENDACCESS_SENT;
 import static it.cnr.iit.peprest.messagetrack.STATUS.STARTACCESS_PERMIT;
 import static it.cnr.iit.peprest.messagetrack.STATUS.STARTACCESS_SENT;
 import static it.cnr.iit.peprest.messagetrack.STATUS.TRYACCESS_DENY;
 import static it.cnr.iit.peprest.messagetrack.STATUS.TRYACCESS_SENT;
+import static it.cnr.iit.ucs.constants.RestOperation.END_ACCESS;
+import static it.cnr.iit.ucs.constants.RestOperation.ON_GOING_RESPONSE;
+import static it.cnr.iit.ucs.constants.RestOperation.START_ACCESS;
+import static it.cnr.iit.ucs.constants.RestOperation.START_ACCESS_RESPONSE;
+import static it.cnr.iit.ucs.constants.RestOperation.TRY_ACCESS;
+import static it.cnr.iit.ucs.constants.RestOperation.TRY_ACCESS_RESPONSE;
 import static oasis.names.tc.xacml.core.schema.wd_17.DecisionType.DENY;
 import static oasis.names.tc.xacml.core.schema.wd_17.DecisionType.PERMIT;
 

@@ -4,6 +4,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.exactly;
 import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
+import static it.cnr.iit.ucs.constants.RestOperation.TRY_ACCESS_RESPONSE;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -25,9 +26,9 @@ import com.tngtech.jgiven.annotation.Quoted;
 import com.tngtech.jgiven.integration.spring.JGivenStage;
 
 import it.cnr.iit.peprest.PEPRest;
-import it.cnr.iit.peprest.PEPRestOperation;
 import it.cnr.iit.peprest.messagetrack.CallerResponse;
 import it.cnr.iit.peprest.messagetrack.STATUS;
+import it.cnr.iit.ucs.constants.RestOperation;
 import it.cnr.iit.ucsinterface.message.Message;
 import it.cnr.iit.ucsinterface.message.endaccess.EndAccessMessage;
 import it.cnr.iit.ucsinterface.message.startaccess.StartAccessMessage;
@@ -62,7 +63,7 @@ public class ThenMessage extends Stage<ThenMessage> {
     @ExpectedScenarioState
     List<String> messageIds;
 
-    public ThenMessage the_$_message_is_put_in_the_unanswered_queue( PEPRestOperation restOperation ) {
+    public ThenMessage the_$_message_is_put_in_the_unanswered_queue( RestOperation restOperation ) {
         assertNotNull( pepRest.getUnanswered() );
         assertTrue( pepRest.getUnanswered().size() > 0 );
         Message messageType = pepRest.getUnanswered().entrySet().stream().findFirst().get().getValue();
@@ -135,8 +136,8 @@ public class ThenMessage extends Stage<ThenMessage> {
         return self();
     }
 
-    public ThenMessage the_session_id_is_not_null( PEPRestOperation restOperation, String messageId ) {
-        if( restOperation == PEPRestOperation.TRY_ACCESS_RESPONSE ) {
+    public ThenMessage the_session_id_is_not_null( RestOperation restOperation, String messageId ) {
+        if( restOperation == TRY_ACCESS_RESPONSE ) {
             assertNotNull( pepRest.getSessionIdInTryAccess( message.getID() ).get() );
             assertTrue( pepRest.getSessionIdInTryAccess( messageId ).get().length() > 0 );
         }
@@ -196,7 +197,7 @@ public class ThenMessage extends Stage<ThenMessage> {
         return objectMapper.readValue( json, clazz );
     }
 
-    public ThenMessage a_$_message_is_sent_to_context_handler( PEPRestOperation restOperation ) {
+    public ThenMessage a_$_message_is_sent_to_context_handler( RestOperation restOperation ) {
         assertTrue( pepRest.getUnanswered().size() > 0 );
         switch( restOperation ) {
             case TRY_ACCESS:
@@ -220,7 +221,7 @@ public class ThenMessage extends Stage<ThenMessage> {
         return self();
     }
 
-    public ThenMessage a_$_message_is_NOT_sent_to_context_handler( PEPRestOperation restOperation ) {
+    public ThenMessage a_$_message_is_NOT_sent_to_context_handler( RestOperation restOperation ) {
         switch( restOperation ) {
             case START_ACCESS:
                 try {
