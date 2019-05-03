@@ -38,7 +38,7 @@ import oasis.names.tc.xacml.core.schema.wd_17.AttributesType;
 import oasis.names.tc.xacml.core.schema.wd_17.RequestType;
 
 @EnableConfigurationProperties
-@TestPropertySource( properties = "application-test.properties" )
+@TestPropertySource( properties = "application.properties" )
 @ActiveProfiles( "test" )
 @RunWith( SpringRunner.class )
 @SpringBootTest

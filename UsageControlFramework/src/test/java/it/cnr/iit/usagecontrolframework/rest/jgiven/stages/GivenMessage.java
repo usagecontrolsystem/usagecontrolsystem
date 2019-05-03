@@ -3,13 +3,11 @@ package it.cnr.iit.usagecontrolframework.rest.jgiven.stages;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Optional;
 
 import javax.xml.bind.JAXBException;
 
@@ -26,9 +24,7 @@ import it.cnr.iit.ucsinterface.message.MEAN;
 import it.cnr.iit.ucsinterface.message.Message;
 import it.cnr.iit.ucsinterface.message.tryaccess.TryAccessMessage;
 import it.cnr.iit.ucsinterface.message.tryaccess.TryAccessMessageBuilder;
-import it.cnr.iit.usagecontrolframework.properties.UCFProperties;
 import it.cnr.iit.usagecontrolframework.rest.UCFTestContext;
-import it.cnr.iit.utility.JsonUtility;
 
 @JGivenStage
 public class GivenMessage extends Stage<GivenMessage> {
@@ -86,18 +82,6 @@ public class GivenMessage extends Stage<GivenMessage> {
 
     private String buildOnGoingEvaluationInterface( PepProperties pepProps ) {
         return buildResponseInterface( pepProps, "onGoingEvaluation" );
-    }
-
-    protected UCFProperties getUCSConfiguration( String ucsConfigFile ) {
-        ClassLoader classLoader = this.getClass().getClassLoader();
-        File file = new File( classLoader.getResource( ucsConfigFile ).getFile() );
-
-        Optional<UCFProperties> loadObjectFromJsonFile = JsonUtility.loadObjectFromJsonFile( file, UCFProperties.class );
-        if( loadObjectFromJsonFile.isPresent() ) {
-            return loadObjectFromJsonFile.get();
-        } else {
-            return null;
-        }
     }
 
     protected String readResourceFileAsString( String resource ) throws URISyntaxException, IOException {
