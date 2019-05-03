@@ -19,7 +19,6 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import it.cnr.iit.ucs.constants.STATUS;
 import it.cnr.iit.ucs.properties.components.PdpProperties;
@@ -39,9 +38,6 @@ public class PDPTest {
     @Value( "${request.deny}" )
     private String requestDeny;
 
-    @Value( "${pdp.conf}" )
-    private String configuration;
-
     @Value( "${request.indeterminate}" )
     private String requestIndeterminate;
 
@@ -60,11 +56,39 @@ public class PDPTest {
     @Value( "${policy.dup}" )
     private String policyDup;
 
+    @Value( "${ucf.policy-decision-point.class-name}" )
+    private String className;
+
+    @Value( "${ucf.policy-decision-point.communication-type}" )
+    private String communication;
+
+    @Value( "${ucf.policy-decision-point.journal-dir}" )
+    private String journalDir;
+
     private PolicyDecisionPoint policyDecisionpoint;
 
     @Before
     public void init() throws JsonParseException, JsonMappingException, IOException {
-        policyDecisionpoint = new PolicyDecisionPoint( new ObjectMapper().readValue( configuration, PdpProperties.class ) );
+
+        PdpProperties pdpProperties = new PdpProperties() {
+
+            @Override
+            public String getJournalDir() {
+                return journalDir;
+            }
+
+            @Override
+            public String getCommunicationType() {
+                return communication;
+            }
+
+            @Override
+            public String getClassName() {
+                return className;
+            }
+        };
+
+        policyDecisionpoint = new PolicyDecisionPoint( pdpProperties );
     }
 
     @Test
