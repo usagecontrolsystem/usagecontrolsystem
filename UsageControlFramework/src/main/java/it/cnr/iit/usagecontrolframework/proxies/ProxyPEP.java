@@ -66,7 +66,7 @@ public class ProxyPEP extends Proxy implements PEPInterface {
 
         Optional<URI> uri = Utility.parseUri( properties.getBaseUri() );
         Reject.ifAbsent( uri );
-        this.uri = uri.get();
+        this.uri = uri.get(); // NOSONAR
 
         String connectionType = properties.getCommunicationType();
         Reject.ifBlank( connectionType );
@@ -156,7 +156,7 @@ public class ProxyPEP extends Proxy implements PEPInterface {
                 try {
                     RESTUtils.asyncPost(
                         uri.toString(),
-                        api.get(),
+                        api.get(), // NOSONAR : we believe in exceptions
                         message );
                 } catch( Exception e ) {
                     log.severe( "Error posting message : " + api );

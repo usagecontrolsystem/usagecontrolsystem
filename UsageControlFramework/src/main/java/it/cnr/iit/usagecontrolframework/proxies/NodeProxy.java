@@ -64,7 +64,7 @@ public class NodeProxy implements NodeInterface {
 
         Optional<URI> uri = Utility.parseUri( properties.getBaseUri() );
         Reject.ifAbsent( uri );
-        this.uri = uri.get();
+        this.uri = uri.get(); // NOSONAR
     }
 
     @Override

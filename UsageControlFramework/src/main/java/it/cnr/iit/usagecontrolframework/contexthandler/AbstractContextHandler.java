@@ -92,7 +92,7 @@ public abstract class AbstractContextHandler implements ContextHandlerInterface 
         this.properties = properties;
         Optional<URI> uri = Utility.parseUri( properties.getBaseUri() );
         Reject.ifAbsent( uri );
-        this.uri = uri.get();
+        this.uri = uri.get(); // NOSONAR
     }
 
     protected final boolean isInitialized() {

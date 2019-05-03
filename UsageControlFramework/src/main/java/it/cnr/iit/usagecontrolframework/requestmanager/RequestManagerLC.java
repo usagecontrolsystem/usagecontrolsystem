@@ -66,7 +66,7 @@ public class RequestManagerLC extends AsynchronousRequestManager {
     /*
      * This is the thread in charge of handling the operations requested from a
      * remote PIP except from reevaluation.
-    
+
     private ExecutorService attributeSupplier;
     */
 
@@ -150,12 +150,14 @@ public class RequestManagerLC extends AsynchronousRequestManager {
     private void sendReevaluation( ReevaluationResponse reevaluation ) {
         Optional<URI> uri = Utility.parseUri( properties.getBaseUri() );
         Reject.ifAbsent( uri );
+        String host = uri.get().getHost(); // NOSONAR
+        Reject.ifBlank( host );
 
         log.log( Level.INFO, "[TIME] Effectively Sending on going evaluation {0}",
             System.currentTimeMillis() );
 
         if( reevaluation.getDestination()
-            .equals( uri.get().getHost() ) ) {
+            .equals( host ) ) {
             getPEPInterface().get( ( reevaluation ).getPepID() )
                 .onGoingEvaluation( reevaluation );
         } else {
@@ -244,9 +246,9 @@ public class RequestManagerLC extends AsynchronousRequestManager {
      *
      * @author antonio
      *
-
+    
     private class AttributeSupplier implements Callable<Void> {
-
+    
     	@Override
     	public Void call() throws Exception {
     		while (true) {
@@ -293,7 +295,7 @@ public class RequestManagerLC extends AsynchronousRequestManager {
      * @param message
      *          the message returned by the context handler
      * @return the message to be used as response
-
+    
     private MessagePipCh createResponse(Message message) {
     	MessagePipCh chResponse = (MessagePipCh) message;
     	switch (chResponse.getAction()) {
