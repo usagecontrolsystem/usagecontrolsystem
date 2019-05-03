@@ -40,6 +40,8 @@ public class ThenMessage extends Stage<ThenMessage> {
     @ExpectedScenarioState
     String sessionId;
 
+    List<SessionInterface> sessionsList;
+
     public ThenMessage the_asynch_post_request_for_$_with_decision_$_was_received_by_PEPRest( @Quoted String operation,
             @Quoted String decision ) {
         await().with().pollInterval( ONE_HUNDRED_MILLISECONDS )
@@ -68,7 +70,10 @@ public class ThenMessage extends Stage<ThenMessage> {
     }
 
     public ThenMessage an_entry_for_session_with_status_$_is_persisted( @Quoted String status ) {
-        List<SessionInterface> sessionsList = sessionManager.getSessionsForStatus( status );
+        await().with().pollInterval( ONE_HUNDRED_MILLISECONDS )
+            .and().with().pollDelay( TWO_SECONDS )
+            .until( sessionForStatusCreated( status ) );
+
         assertNotNull( sessionsList );
         SessionInterface sessionInterface = sessionsList.get( 0 );
         assertTrue( sessionInterface.getStatus().equalsIgnoreCase( status ) );
@@ -76,11 +81,48 @@ public class ThenMessage extends Stage<ThenMessage> {
         return self();
     }
 
+    private Callable<Boolean> sessionForStatusCreated( String status ) {
+        return new Callable<Boolean>() {
+            @Override
+            public Boolean call() throws Exception {
+                try {
+                    sessionsList = sessionManager.getSessionsForStatus( status );
+                    if( sessionsList.isEmpty() ) {
+                        log.warning( "Session for status is not yet created. Polling with 100ms interval for 10 seconds." );
+                        return false;
+                    }
+                } catch( Exception e ) {
+                    fail( e.getLocalizedMessage() );
+                }
+                return true;
+            }
+        };
+    }
+
     public ThenMessage the_session_entry_status_is_updated_to_$( @Quoted String status ) {
         assertNotNull( sessionId );
-        Optional<SessionInterface> sessionInterface = sessionManager.getSessionForId( sessionId );
-        assertTrue( sessionInterface.isPresent() );
-        assertTrue( sessionInterface.get().getStatus().equalsIgnoreCase( status ) );
+        await().with().pollInterval( ONE_HUNDRED_MILLISECONDS )
+            .and().with().pollDelay( TWO_SECONDS )
+            .until( sessionForIdUpdated( status ) );
         return self();
+    }
+
+    private Callable<Boolean> sessionForIdUpdated( String status ) {
+        return new Callable<Boolean>() {
+            @Override
+            public Boolean call() throws Exception {
+                try {
+                    Optional<SessionInterface> sessionInterface = sessionManager.getSessionForId( sessionId );
+                    assertTrue( sessionInterface.isPresent() );
+                    if( !sessionInterface.get().getStatus().equalsIgnoreCase( status ) ) {
+                        log.warning( "Session Id is not yet updated. Polling with 100ms interval for 10 seconds." );
+                        return false;
+                    }
+                } catch( Exception e ) {
+                    fail( e.getLocalizedMessage() );
+                }
+                return true;
+            }
+        };
     }
 }
