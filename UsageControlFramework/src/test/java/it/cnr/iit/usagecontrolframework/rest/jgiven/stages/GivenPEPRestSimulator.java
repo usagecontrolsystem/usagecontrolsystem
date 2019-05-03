@@ -51,7 +51,7 @@ public class GivenPEPRestSimulator extends Stage<GivenPEPRestSimulator> {
 
     @BeforeScenario
     public void init() {
-        Optional<URI> uri = Utility.parseUri( properties.getGeneral().getBaseUri() );
+        Optional<URI> uri = Utility.parseUri( properties.getPepList().get( 0 ).getBaseUri() );
         Reject.ifAbsent( uri );
         restSimulatorTestRule.start( uri.get().getPort() );
     }
@@ -61,7 +61,7 @@ public class GivenPEPRestSimulator extends Stage<GivenPEPRestSimulator> {
     }
 
     public GivenPEPRestSimulator a_mocked_PEPRest_for_$( @Quoted String operationUri ) {
-        Optional<URI> uri = Utility.parseUri( properties.getGeneral().getBaseUri() );
+        Optional<URI> uri = Utility.parseUri( properties.getPepList().get( 0 ).getBaseUri() );
         Reject.ifAbsent( uri );
 
         wireMockContextHandler = new WireMock( uri.get().getHost(), uri.get().getPort() );
