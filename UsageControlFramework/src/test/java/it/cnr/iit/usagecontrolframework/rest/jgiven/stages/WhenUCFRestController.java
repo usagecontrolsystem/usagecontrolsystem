@@ -39,6 +39,9 @@ public class WhenUCFRestController extends Stage<WhenUCFRestController> {
     @ExpectedScenarioState
     UCFProperties configuration;
 
+    @ExpectedScenarioState
+    String sessionId;
+
     @Autowired
     WebApplicationContext webApplicationContext;
 

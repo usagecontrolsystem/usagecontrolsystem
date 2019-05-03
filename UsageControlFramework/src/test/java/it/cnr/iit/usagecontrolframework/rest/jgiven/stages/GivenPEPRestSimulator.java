@@ -24,7 +24,6 @@ import com.tngtech.jgiven.integration.spring.JGivenStage;
 
 import it.cnr.iit.ucs.properties.UCSProperties;
 import it.cnr.iit.ucs.testing.jgiven.rules.MockedHttpServiceTestRule;
-import it.cnr.iit.usagecontrolframework.rest.UCFTestContext;
 import it.cnr.iit.utility.Utility;
 import it.cnr.iit.utility.errorhandling.Reject;
 
@@ -45,9 +44,6 @@ public class GivenPEPRestSimulator extends Stage<GivenPEPRestSimulator> {
 
     @Autowired
     UCSProperties properties;
-
-    @Autowired
-    UCFTestContext testContext;
 
     @BeforeScenario
     public void init() {

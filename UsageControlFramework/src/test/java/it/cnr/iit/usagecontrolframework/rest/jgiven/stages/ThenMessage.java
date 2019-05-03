@@ -7,8 +7,12 @@ import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static org.awaitility.Awaitility.await;
 import static org.awaitility.Duration.ONE_HUNDRED_MILLISECONDS;
 import static org.awaitility.Duration.TWO_SECONDS;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.Callable;
 import java.util.logging.Logger;
 
@@ -19,6 +23,9 @@ import com.tngtech.jgiven.annotation.ExpectedScenarioState;
 import com.tngtech.jgiven.annotation.Quoted;
 import com.tngtech.jgiven.integration.spring.JGivenStage;
 
+import it.cnr.iit.sessionmanagerdesktop.SessionManagerDesktop;
+import it.cnr.iit.ucsinterface.sessionmanager.SessionInterface;
+
 @JGivenStage
 public class ThenMessage extends Stage<ThenMessage> {
 
@@ -26,6 +33,12 @@ public class ThenMessage extends Stage<ThenMessage> {
 
     @ExpectedScenarioState
     WireMock wireMockContextHandler;
+
+    @ExpectedScenarioState
+    SessionManagerDesktop sessionManager;
+
+    @ExpectedScenarioState
+    String sessionId;
 
     public ThenMessage the_asynch_post_request_for_$_with_decision_$_was_received_by_PEPRest( @Quoted String operation,
             @Quoted String decision ) {
@@ -52,5 +65,22 @@ public class ThenMessage extends Stage<ThenMessage> {
                 return true;
             }
         };
+    }
+
+    public ThenMessage an_entry_for_session_with_status_$_is_persisted( @Quoted String status ) {
+        List<SessionInterface> sessionsList = sessionManager.getSessionsForStatus( status );
+        assertNotNull( sessionsList );
+        SessionInterface sessionInterface = sessionsList.get( 0 );
+        assertTrue( sessionInterface.getStatus().equalsIgnoreCase( status ) );
+        sessionId = sessionInterface.getId();
+        return self();
+    }
+
+    public ThenMessage the_session_entry_status_is_updated_to_$( @Quoted String status ) {
+        assertNotNull( sessionId );
+        Optional<SessionInterface> sessionInterface = sessionManager.getSessionForId( sessionId );
+        assertTrue( sessionInterface.isPresent() );
+        assertTrue( sessionInterface.get().getStatus().equalsIgnoreCase( status ) );
+        return self();
     }
 }
