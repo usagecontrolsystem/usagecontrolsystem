@@ -23,7 +23,7 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import it.cnr.iit.pipreader.PIPReader;
-import it.cnr.iit.ucs.builders.PIPBuilder;
+import it.cnr.iit.properties.UCFPipProperties;
 import it.cnr.iit.ucsinterface.contexthandler.ContextHandlerInterface;
 import it.cnr.iit.utility.JAXBUtility;
 import it.cnr.iit.utility.JsonUtility;
@@ -100,10 +100,10 @@ public class CoverageTest {
         try {
             resetRequest();
             contextHandler = Mockito.mock( ContextHandlerInterface.class );
-            subjectAttributePip = new PIPReader( PIPBuilder.getPropertiesFromString( subjectPip ).get() );
-            resourceAttributePip = new PIPReader( PIPBuilder.getPropertiesFromString( resourcePip ).get() );
-            actionAttributePip = new PIPReader( PIPBuilder.getPropertiesFromString( actionPip ).get() );
-            environmentAttributePip = new PIPReader( PIPBuilder.getPropertiesFromString( environmentPip ).get() );
+            subjectAttributePip = new PIPReader( getPropertiesFromString( subjectPip ) );
+            resourceAttributePip = new PIPReader( getPropertiesFromString( resourcePip ) );
+            actionAttributePip = new PIPReader( getPropertiesFromString( actionPip ) );
+            environmentAttributePip = new PIPReader( getPropertiesFromString( environmentPip ) );
             assertTrue( subjectAttributePip.isInitialised() );
             initAttributes();
             subjectAttributePip.setContextHandlerInterface( contextHandler );
@@ -158,25 +158,29 @@ public class CoverageTest {
         }
     }
 
+    public static UCFPipProperties getPropertiesFromString( String properties ) {
+        return JsonUtility.loadObjectFromJsonString( properties, UCFPipProperties.class ).get();
+    }
+
     public void testInitialization() {
         try {
-            fault = new PIPReader( PIPBuilder.getPropertiesFromString( missingCategory ).get() );
+            fault = new PIPReader( getPropertiesFromString( missingCategory ) );
         } catch( Exception e ) {}
         assertFalse( fault != null && fault.isInitialised() );
         try {
-            fault = new PIPReader( PIPBuilder.getPropertiesFromString( missingAttributeId ).get() );
+            fault = new PIPReader( getPropertiesFromString( missingAttributeId ) );
         } catch( Exception e ) {}
         assertFalse( fault != null && fault.isInitialised() );
         try {
-            fault = new PIPReader( PIPBuilder.getPropertiesFromString( missingExpectedCategory ).get() );
+            fault = new PIPReader( getPropertiesFromString( missingExpectedCategory ) );
         } catch( Exception e ) {}
         assertFalse( fault != null && fault.isInitialised() );
         try {
-            fault = new PIPReader( PIPBuilder.getPropertiesFromString( missingDataType ).get() );
+            fault = new PIPReader( getPropertiesFromString( missingDataType ) );
         } catch( Exception e ) {}
         assertFalse( fault != null && fault.isInitialised() );
         try {
-            fault = new PIPReader( PIPBuilder.getPropertiesFromString( missingFilePath ).get() );
+            fault = new PIPReader( getPropertiesFromString( missingFilePath ) );
         } catch( Exception e ) {}
         assertFalse( fault != null && fault.isInitialised() );
 

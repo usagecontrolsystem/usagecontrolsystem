@@ -3,6 +3,8 @@ package it.cnr.iit.properties;
 import java.util.List;
 import java.util.Map;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import it.cnr.iit.ucs.properties.components.PipProperties;
 
 public class UCFPipProperties implements PipProperties {
@@ -54,6 +56,7 @@ public class UCFPipProperties implements PipProperties {
     }
 
     @Override
+    @JsonIgnore
     public boolean isMultiAttribute() {
         return attributes != null && attributes.size() > 1;
     }
