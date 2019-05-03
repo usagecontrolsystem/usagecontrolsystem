@@ -1,4 +1,4 @@
-package it.cnr.iit.test;
+package it.cnr.iit.test.properties;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;

@@ -2,6 +2,7 @@ package it.cnr.iit.usagecontrolframework.rest;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringBootConfiguration;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -11,9 +12,13 @@ import com.tngtech.jgiven.integration.spring.EnableJGiven;
 
 @Configuration
 @EnableJGiven
-@ComponentScan( basePackages = { "it.cnr.iit.usagecontrolframework.rest" } )
+@ComponentScan( basePackages = { "it.cnr.iit" } )
 @EnableConfigurationProperties
 @TestPropertySource( properties = "application.properties" )
+@ConfigurationProperties(
+    prefix = "ucftest",
+    ignoreUnknownFields = true,
+    ignoreInvalidFields = true )
 @SpringBootConfiguration
 public class UCFTestContext {
 

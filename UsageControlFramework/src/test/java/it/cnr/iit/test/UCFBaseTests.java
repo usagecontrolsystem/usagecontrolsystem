@@ -23,6 +23,7 @@ import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import it.cnr.iit.test.properties.TestProperties;
 import it.cnr.iit.ucs.builders.PIPBuilder;
 import it.cnr.iit.ucs.constants.STATUS;
 import it.cnr.iit.ucs.properties.UCSProperties;

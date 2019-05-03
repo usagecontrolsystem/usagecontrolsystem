@@ -18,6 +18,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import it.cnr.iit.test.properties.TestProperties;
 import it.cnr.iit.ucs.properties.UCSProperties;
 import it.cnr.iit.ucsinterface.message.Message;
 import it.cnr.iit.usagecontrolframework.properties.UCFProperties;

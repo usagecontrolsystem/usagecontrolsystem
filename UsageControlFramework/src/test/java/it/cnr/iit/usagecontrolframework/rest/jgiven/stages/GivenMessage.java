@@ -36,20 +36,19 @@ public class GivenMessage extends Stage<GivenMessage> {
     private String policy;
     private String request;
 
-    @ProvidedScenarioState
     @Autowired
     UCSProperties properties;
 
     @Autowired
-    UCFTestContext testconf;
+    UCFTestContext testContext;
 
     @ProvidedScenarioState
     Message message;
 
     @BeforeScenario
     public void init() throws URISyntaxException, IOException, JAXBException {
-        policy = readResourceFileAsString( testconf.getPolicyFile() );
-        request = readResourceFileAsString( testconf.getRequestFile() );
+        policy = readResourceFileAsString( testContext.getPolicyFile() );
+        request = readResourceFileAsString( testContext.getRequestFile() );
     }
 
     public GivenMessage a_TryAccess_request() {
@@ -63,7 +62,7 @@ public class GivenMessage extends Stage<GivenMessage> {
 
     protected TryAccessMessage buildTryAccessMessage() {
         assertNotNull( properties );
-        PepProperties pepProps = properties.getPepList().get( Integer.parseInt( testconf.getPepId() ) );
+        PepProperties pepProps = properties.getPepList().get( Integer.parseInt( testContext.getPepId() ) );
 
         TryAccessMessageBuilder tryAccessBuilder = new TryAccessMessageBuilder( pepProps.getId(), pepProps.getBaseUri() );
         tryAccessBuilder.setPepUri( buildOnGoingEvaluationInterface( pepProps ) )

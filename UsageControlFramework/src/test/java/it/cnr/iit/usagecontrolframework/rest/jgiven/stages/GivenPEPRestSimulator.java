@@ -47,7 +47,7 @@ public class GivenPEPRestSimulator extends Stage<GivenPEPRestSimulator> {
     UCSProperties properties;
 
     @Autowired
-    UCFTestContext testconf;
+    UCFTestContext testContext;
 
     @BeforeScenario
     public void init() {
