@@ -15,14 +15,16 @@
  ******************************************************************************/
 package it.cnr.iit.usagecontrolframework.requestmanager;
 
+import java.net.URI;
+import java.util.Optional;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import it.cnr.iit.ucs.configuration.GeneralProperties;
-import it.cnr.iit.ucs.configuration.RequestManagerProperties;
+import it.cnr.iit.ucs.properties.components.GeneralProperties;
+import it.cnr.iit.ucs.properties.components.RequestManagerProperties;
 import it.cnr.iit.ucsinterface.message.Message;
 import it.cnr.iit.ucsinterface.message.endaccess.EndAccessMessage;
 import it.cnr.iit.ucsinterface.message.endaccess.EndAccessResponse;
@@ -33,7 +35,8 @@ import it.cnr.iit.ucsinterface.message.startaccess.StartAccessMessage;
 import it.cnr.iit.ucsinterface.message.startaccess.StartAccessResponse;
 import it.cnr.iit.ucsinterface.message.tryaccess.TryAccessMessage;
 import it.cnr.iit.ucsinterface.message.tryaccess.TryAccessResponse;
-import it.cnr.iit.ucsinterface.requestmanager.AsynchronousRequestManager;
+import it.cnr.iit.utility.Utility;
+import it.cnr.iit.utility.errorhandling.Reject;
 
 /**
  * The request manager is an asynchronous component.
@@ -47,7 +50,7 @@ import it.cnr.iit.ucsinterface.requestmanager.AsynchronousRequestManager;
  * between the UCS and the PEP.
  * </p>
  *
- * @author antonio
+ * @author Antonio La Marra, Alessandro Rosetti
  *
  */
 public class RequestManagerLC extends AsynchronousRequestManager {
@@ -67,38 +70,25 @@ public class RequestManagerLC extends AsynchronousRequestManager {
     private ExecutorService attributeSupplier;
     */
 
-    // states if the request manager has been correctly initialized
-    private volatile boolean initialized = false;
-
-    /**
-     * Constructor for the RequestManager starting from an XML which describes the
-     * basic properties. In this way the Request Manager becomes more easy to be
-     * configured
-     *
-     * @param properties
-     */
-    public RequestManagerLC( GeneralProperties generalProperties, RequestManagerProperties properties ) {
-        super( generalProperties, properties );
+    public RequestManagerLC( GeneralProperties properties, RequestManagerProperties rmProperties ) {
+        super( properties, rmProperties );
         initialize();
-        initialized = isInitialized();
     }
 
     /**
-     * Initializes the request manager with a------ pool of threads
+     * Initialises the request manager with a------ pool of threads
      *
      * @return true if everything goes fine, false in case of exceptions
     */
     private boolean initialize() {
         try {
-            inquirers = Executors
-                .newFixedThreadPool( 2 );
+            inquirers = Executors.newFixedThreadPool( 2 );
             inquirers.submit( new ContextHandlerInquirer() );
         } catch( Exception e ) {
-            log.severe( e.getMessage() );
+            log.severe( "Error initialising the RequestManager inquirers : " + e.getMessage() );
             return false;
         }
         return true;
-
     }
 
     @Override
@@ -158,10 +148,14 @@ public class RequestManagerLC extends AsynchronousRequestManager {
     }
 
     private void sendReevaluation( ReevaluationResponse reevaluation ) {
+        Optional<URI> uri = Utility.parseUri( properties.getBaseUri() );
+        Reject.ifAbsent( uri );
+
         log.log( Level.INFO, "[TIME] Effectively Sending on going evaluation {0}",
             System.currentTimeMillis() );
+
         if( reevaluation.getDestination()
-            .equals( generalProperties.getIp() ) ) {
+            .equals( uri.get().getHost() ) ) {
             getPEPInterface().get( ( reevaluation ).getPepID() )
                 .onGoingEvaluation( reevaluation );
         } else {

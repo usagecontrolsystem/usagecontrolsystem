@@ -25,7 +25,7 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.logging.Logger;
 
-import it.cnr.iit.ucs.configuration.pip.PipProperties;
+import it.cnr.iit.ucs.properties.components.PipProperties;
 import it.cnr.iit.ucsinterface.obligationmanager.ObligationInterface;
 import it.cnr.iit.ucsinterface.pip.PIPBase;
 import it.cnr.iit.ucsinterface.pip.exception.PIPException;
@@ -61,9 +61,9 @@ public final class PIPReader extends PIPBase {
     /**
      * Whenever a PIP has to retrieve some informations related to an attribute
      * that is stored inside the request, it has to know in advance all the
-     * informations to retrieve that atrtribute. E.g. if this PIP has to retrieve
+     * informations to retrieve that attribute. E.g. if this PIP has to retrieve
      * the informations about the subject, it has to know in advance which is the
-     * attribute id qualifying the subject, its category and the datatype used,
+     * attribute id qualifying the subject, its category and the data-type used,
      * otherwise it is not able to retrieve the value of that attribute, hence it
      * would not be able to communicate with the AM properly
      */
@@ -72,12 +72,7 @@ public final class PIPReader extends PIPBase {
     // this is the attribute manager of this pip
     private String filePath;
 
-    // states if the pip has been correctly initialized
-    private volatile boolean initialized = false;
-
-    public boolean isPIPInitialized() {
-        return initialized;
-    }
+    private volatile boolean initialised = false;
 
     // list that stores the attributes on which a subscribe has been performed
     protected final BlockingQueue<Attribute> subscriptions = new LinkedBlockingQueue<>();
@@ -87,64 +82,51 @@ public final class PIPReader extends PIPBase {
     // timer to be used to instantiate the subscriber timer
     private Timer timer = new Timer();
 
-    /**
-     * Constructor for the PIP reader
-     *
-     * @param properties
-     *          the xml describing the pipreader in string format
-     */
     public PIPReader( PipProperties properties ) {
         super( properties );
         Reject.ifInvalidObjectState( isInitialized(), PIPReader.class.getName(), log );
 
-        if( initialize( properties ) ) {
-            log.info( "initialising" );
-            initialized = true;
+        if( initialise( properties ) ) {
+            log.info( "initialising PIPReader" );
+            initialised = true;
             subscriberTimer = new PRSubscriberTimer( contextHandlerInterface,
                 subscriptions, filePath );
 
             subscriberTimer.setJournal( journal );
             timer.scheduleAtFixedRate( subscriberTimer, 0, 10L * 1000 );
         } else {
-            log.info( "error initialising" );
+            log.severe( "error initialising PIPReader" );
             throw new IllegalStateException( "PIPReader not initialised correctly" );
         }
     }
 
-    /**
-     * Performs the effective initialization of the PIP.
-     *
-     * @param xmlPip
-     *          the xml of the pip in string format
-     * @return true if everything goes ok, false otherwise
-     */
-    private boolean initialize( PipProperties properties ) {
+    private boolean initialise( PipProperties properties ) {
         try {
-            Map<String, String> arguments = properties.getAttributes().get( 0 ).getArgs();
+            Map<String, String> attributeMap = properties.getAttributes().get( 0 );
             Attribute attribute = new Attribute();
-            if( !attribute.createAttributeId( arguments.get( ATTRIBUTE_ID ) ) ) {
-                log.severe( "wrong set Attribute" );
+            if( !attribute.createAttributeId( attributeMap.get( ATTRIBUTE_ID ) ) ) {
+                log.severe( "wrong attribute" );
                 return false;
             }
             if( !attribute
-                .setCategory( Category.toCATEGORY( arguments.get( CATEGORY ) ) ) ) {
-                log.severe( "wrong set category " + arguments.get( CATEGORY ) );
+                .setCategory( Category.toCATEGORY( attributeMap.get( CATEGORY ) ) ) ) {
+                log.severe( "wrong category " + attributeMap.get( CATEGORY ) );
                 return false;
             }
             if( !attribute.setAttributeDataType(
-                DataType.toDATATYPE( arguments.get( DATA_TYPE ) ) ) ) {
-                log.severe( "wrong set datatype" );
+                DataType.toDATATYPE( attributeMap.get( DATA_TYPE ) ) ) ) {
+                log.severe( "wrong datatype" );
                 return false;
             }
-            if( attribute.getCategory() != Category.ENVIRONMENT && !setExpectedCategory( arguments.get( EXPECTED_CATEGORY ) ) ) {
+            if( attribute.getCategory() != Category.ENVIRONMENT && !setExpectedCategory( attributeMap.get( EXPECTED_CATEGORY ) ) ) {
                 return false;
             }
             addAttribute( attribute );
-            setFilePath( arguments.get( FILE_PATH ) );
+            setFilePath( attributeMap.get( FILE_PATH ) );
             configure( properties.getJournalDir() );
             return true;
         } catch( Exception e ) {
-            log.severe( e.getMessage() );
+            log.severe( "error initialise : " + e.getMessage() );
             return false;
         }
     }
@@ -153,14 +135,13 @@ public final class PIPReader extends PIPBase {
         Reject.ifBlank( journalDir );
         try {
             // TODO UCS-33 NOSONAR
-            File file = new File( journalDir );
-            if( !file.exists() ) {
-                file.mkdir();
+            if( !Utility.createPathIfNotExists( journalDir ) ) {
+                return false;
             }
-            journal = JournalBuilder.of( file ).open();
+            journal = JournalBuilder.of( new File( journalDir ) ).open();
             return true;
         } catch( Exception e ) {
-            throw new IllegalStateException( "Error while initializing the journaling dir" + e.getMessage() );
+            throw new IllegalStateException( "Error while initialising the journaling dir" + e.getMessage() );
         }
     }
 
@@ -178,7 +159,7 @@ public final class PIPReader extends PIPBase {
     @Override
     public void retrieve( RequestType accessRequest ) throws PIPException {
         Reject.ifInvalidObjectState( isInitialized(), PIPReader.class.getName(), log );
-        Reject.ifInvalidObjectState( initialized, PIPReader.class.getName(), log );
+        Reject.ifInvalidObjectState( initialised, PIPReader.class.getName(), log );
         Reject.ifNull( accessRequest );
 
         String value;
@@ -208,7 +189,7 @@ public final class PIPReader extends PIPBase {
     @Override
     public void subscribe( RequestType accessRequest ) throws PIPException {
         Reject.ifInvalidObjectState( isInitialized(), PIPReader.class.getName(), log );
-        Reject.ifInvalidObjectState( initialized, PIPReader.class.getName(), log );
+        Reject.ifInvalidObjectState( initialised, PIPReader.class.getName(), log );
         Reject.ifNull( accessRequest );
         Reject.ifNull( contextHandlerInterface );
 
@@ -256,7 +237,7 @@ public final class PIPReader extends PIPBase {
     @Override
     public boolean unsubscribe( List<Attribute> attributes ) throws PIPException {
         Reject.ifInvalidObjectState( isInitialized(), PIPReader.class.getName(), log );
-        Reject.ifInvalidObjectState( initialized, PIPReader.class.getName(), log );
+        Reject.ifInvalidObjectState( initialised, PIPReader.class.getName(), log );
         Reject.ifEmpty( attributes );
 
         for( Attribute attribute : attributes ) {
@@ -299,7 +280,7 @@ public final class PIPReader extends PIPBase {
     @Override
     public String subscribe( Attribute attributeRetrieval ) throws PIPException {
         Reject.ifInvalidObjectState( isInitialized(), PIPReader.class.getName(), log );
-        Reject.ifInvalidObjectState( initialized, PIPReader.class.getName(), log );
+        Reject.ifInvalidObjectState( initialised, PIPReader.class.getName(), log );
         Reject.ifNull( attributeRetrieval );
         Reject.ifNull( contextHandlerInterface );
 
@@ -409,7 +390,7 @@ public final class PIPReader extends PIPBase {
         Reject.ifBlank( category );
         Category categoryObj = Category.toCATEGORY( category );
         if( categoryObj == null ) {
-            initialized = false;
+            initialised = false;
             return false;
         }
         expectedCategory = categoryObj;
@@ -427,4 +408,7 @@ public final class PIPReader extends PIPBase {
         }
     }
 
+    public boolean isInitialised() {
+        return initialised;
+    }
 }

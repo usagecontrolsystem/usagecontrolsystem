@@ -22,11 +22,12 @@ import java.util.List;
 import java.util.Optional;
 import java.util.logging.Logger;
 
-import it.cnr.iit.ucs.configuration.session_manager.SessionManagerProperties;
 import it.cnr.iit.ucs.constants.CONNECTION;
+import it.cnr.iit.ucs.properties.components.SessionManagerProperties;
 import it.cnr.iit.ucsinterface.sessionmanager.OnGoingAttributesInterface;
 import it.cnr.iit.ucsinterface.sessionmanager.SessionInterface;
 import it.cnr.iit.ucsinterface.sessionmanager.SessionManagerInterface;
+import it.cnr.iit.utility.errorhandling.Reject;
 import it.cnr.iit.xacmlutilities.Attribute;
 
 /**
@@ -49,7 +50,7 @@ import it.cnr.iit.xacmlutilities.Attribute;
  * just knows that to deal with the session manager it can use the api.
  * </p>
  *
- * @author antonio
+ * @author Antonio La Marra, Alessandro Rosetti
  *
  */
 public class ProxySessionManager extends Proxy implements SessionManagerInterface {
@@ -62,37 +63,24 @@ public class ProxySessionManager extends Proxy implements SessionManagerInterfac
     private volatile boolean started = false;
     private volatile boolean initialized = false;
 
-    /**
-     *
-     * @param properties
-     */
     public ProxySessionManager( SessionManagerProperties properties ) {
-        // BEGIN parameter checking
-        if( properties == null || properties.getCommunication() == null ) {
-            return;
-        }
-        // END parameter checking
+        Reject.ifNull( properties );
+        Reject.ifNull( properties.getCommunicationType() );
 
         this.properties = properties;
 
         switch( getConnection() ) {
             case API:
-                if( localSM( properties ) ) {
+                if( buildLocalSessionManager( properties ) ) {
                     initialized = true;
                 }
                 break;
             case SOCKET:
-                if( connectSocket( properties ) ) { // NOSONAR
-                    initialized = true;
-                }
-                break;
             case REST_API:
-                if( connectRest( properties ) ) { // NOSONAR
-                    initialized = true;
-                }
+                log.severe( "Unimplemented communication medium : " + properties.getCommunicationType() );
                 break;
             default:
-                log.severe( "Incorrect communication medium : " + properties.getCommunication() );
+                log.severe( "Incorrect communication medium : " + properties.getCommunicationType() );
                 return;
         }
     }
@@ -106,16 +94,11 @@ public class ProxySessionManager extends Proxy implements SessionManagerInterfac
      * @param properties
      * @return
      */
-    private boolean localSM( SessionManagerProperties properties ) {
-        // BEGIN parameter checking
-        String className = properties.getClassName();
-        if( className == null || className.isEmpty() ) {
-            return false;
-        }
-        // END parameter checking
+    private boolean buildLocalSessionManager( SessionManagerProperties properties ) {
+        Reject.ifBlank( properties.getClassName() );
         try {
             // TODO UCS-32 NOSONAR
-            Constructor<?> constructor = Class.forName( className )
+            Constructor<?> constructor = Class.forName( properties.getClassName() )
                 .getConstructor( SessionManagerProperties.class );
             sessionManagerInterface = (SessionManagerInterface) constructor
                 .newInstance( properties );
@@ -125,26 +108,6 @@ public class ProxySessionManager extends Proxy implements SessionManagerInterfac
                 | IllegalArgumentException | InvocationTargetException e ) {
             log.severe( e.getMessage() );
         }
-        return false;
-    }
-
-    /**
-     * TODO
-     *
-     * @param properties
-     * @return
-     */
-    private boolean connectSocket( SessionManagerProperties properties ) {
-        return false;
-    }
-
-    /**
-     * TODO
-     *
-     * @param xmlSM
-     * @return
-     */
-    private boolean connectRest( SessionManagerProperties properties ) {
         return false;
     }
 
@@ -167,7 +130,7 @@ public class ProxySessionManager extends Proxy implements SessionManagerInterfac
                 // TODO
                 return false;
             default:
-                log.severe( "Incorrect communication medium : " + properties.getCommunication() );
+                log.severe( "Incorrect communication medium : " + properties.getCommunicationType() );
                 return false;
         }
     }
@@ -191,7 +154,7 @@ public class ProxySessionManager extends Proxy implements SessionManagerInterfac
                 // TODO
                 return false;
             default:
-                log.severe( "Incorrect communication medium : " + properties.getCommunication() );
+                log.severe( "Incorrect communication medium : " + properties.getCommunicationType() );
                 return false;
         }
     }
@@ -246,7 +209,7 @@ public class ProxySessionManager extends Proxy implements SessionManagerInterfac
                 // TODO
                 return false;
             default:
-                log.severe( "Incorrect communication medium : " + properties.getCommunication() );
+                log.severe( "Incorrect communication medium : " + properties.getCommunicationType() );
                 return false;
         }
     }
@@ -646,7 +609,7 @@ public class ProxySessionManager extends Proxy implements SessionManagerInterfac
 
     @Override
     protected CONNECTION getConnection() {
-        return CONNECTION.valueOf( properties.getCommunication() );
+        return CONNECTION.valueOf( properties.getCommunicationType() );
     }
 
 }

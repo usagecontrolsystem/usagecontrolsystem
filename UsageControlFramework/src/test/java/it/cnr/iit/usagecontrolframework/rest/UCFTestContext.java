@@ -2,6 +2,7 @@ package it.cnr.iit.usagecontrolframework.rest;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringBootConfiguration;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -11,14 +12,15 @@ import com.tngtech.jgiven.integration.spring.EnableJGiven;
 
 @Configuration
 @EnableJGiven
-@ComponentScan( basePackages = { "it.cnr.iit.usagecontrolframework.rest" } )
-
+@ComponentScan( basePackages = { "it.cnr.iit" } )
 @EnableConfigurationProperties
 @TestPropertySource( properties = "application.properties" )
+@ConfigurationProperties(
+    prefix = "ucftest",
+    ignoreUnknownFields = true,
+    ignoreInvalidFields = true )
 @SpringBootConfiguration
 public class UCFTestContext {
-    @Value( "${ucs-config-file}" )
-    private String ucsConfigFile;
 
     @Value( "${policy-file}" )
     private String policyFile;
@@ -31,17 +33,6 @@ public class UCFTestContext {
 
     @Value( "${session-id}" )
     private String sessionId;
-
-    @Value( "${ucs-uri}" )
-    private String ucsUri;
-
-    public String getUcsConfigFile() {
-        return ucsConfigFile;
-    }
-
-    public void setUcsConfigFile( String ucsConfigFile ) {
-        this.ucsConfigFile = ucsConfigFile;
-    }
 
     public String getPolicyFile() {
         return policyFile;
@@ -75,11 +66,4 @@ public class UCFTestContext {
         this.sessionId = sessionId;
     }
 
-    public String getUcsUri() {
-        return ucsUri;
-    }
-
-    public void setUcsUri( String ucsUri ) {
-        this.ucsUri = ucsUri;
-    }
 }

@@ -27,10 +27,9 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import it.cnr.iit.sessionmanagerdesktop.SessionManagerDesktop;
-import it.cnr.iit.ucs.configuration.session_manager.SessionManagerProperties;
+import it.cnr.iit.ucs.properties.components.SessionManagerProperties;
 import it.cnr.iit.ucsinterface.sessionmanager.OnGoingAttributesInterface;
 import it.cnr.iit.ucsinterface.sessionmanager.SessionInterface;
-import it.cnr.iit.utility.JsonUtility;
 
 @EnableConfigurationProperties
 @TestPropertySource( properties = "application-test.properties" )
@@ -42,8 +41,17 @@ public class SessionManagerTest {
 
     private static final Logger log = Logger.getLogger( SessionManagerTest.class.getName() );
 
-    @Value( "${conf}" )
-    private String conf;
+    @Value( "${ucf.session-manager.class-name}" )
+    private String className;
+
+    @Value( "${ucf.session-manager.communication-type}" )
+    private String communicationType;
+
+    @Value( "${ucf.session-manager.type}" )
+    private String type;
+
+    @Value( "${ucf.session-manager.db-uri}" )
+    private String dbUri;
 
     @Value( "${session.sessionid}" )
     private String sessionId;
@@ -98,10 +106,32 @@ public class SessionManagerTest {
 
     @Before
     public void init() {
-        log.info( conf );
+
+        SessionManagerProperties sessionManagerProperties = new SessionManagerProperties() {
+
+            @Override
+            public String getCommunicationType() {
+                return communicationType;
+            }
+
+            @Override
+            public String getClassName() {
+                return className;
+            }
+
+            @Override
+            public String getType() {
+                return type;
+            }
+
+            @Override
+            public String getDbUri() {
+                return dbUri;
+            }
+        };
+
         try {
-            SessionManagerProperties properties = JsonUtility.loadObjectFromJsonString( conf, SessionManagerProperties.class ).get();
-            sessionManagerDesktop = new SessionManagerDesktop( properties );
+            sessionManagerDesktop = new SessionManagerDesktop( sessionManagerProperties );
             // TODO do a test for failing conf
             // properties = JAXBUtility.unmarshalToObject( XMLSessionManager.class, failingConf );
         } catch( Exception e ) {

@@ -23,8 +23,8 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import it.cnr.iit.pipreader.PIPReader;
-import it.cnr.iit.ucs.builders.PIPBuilder;
-import it.cnr.iit.ucsinterface.contexthandler.AbstractContextHandler;
+import it.cnr.iit.properties.UCFPipProperties;
+import it.cnr.iit.ucsinterface.contexthandler.ContextHandlerInterface;
 import it.cnr.iit.utility.JAXBUtility;
 import it.cnr.iit.utility.JsonUtility;
 import it.cnr.iit.utility.errorhandling.exception.PreconditionException;
@@ -38,7 +38,7 @@ import oasis.names.tc.xacml.core.schema.wd_17.AttributesType;
 import oasis.names.tc.xacml.core.schema.wd_17.RequestType;
 
 @EnableConfigurationProperties
-@TestPropertySource( properties = "application-test.properties" )
+@TestPropertySource( properties = "application.properties" )
 @ActiveProfiles( "test" )
 @RunWith( SpringRunner.class )
 @SpringBootTest
@@ -94,22 +94,22 @@ public class CoverageTest {
     private Attribute actionAttribute = new Attribute();
     private Attribute environmentAttribute = new Attribute();
 
-    private AbstractContextHandler abstractContextHandler;
+    private ContextHandlerInterface contextHandler;
 
     public void init() {
         try {
             resetRequest();
-            abstractContextHandler = Mockito.mock( AbstractContextHandler.class );
-            subjectAttributePip = new PIPReader( PIPBuilder.getPropertiesFromString( subjectPip ).get() );
-            resourceAttributePip = new PIPReader( PIPBuilder.getPropertiesFromString( resourcePip ).get() );
-            actionAttributePip = new PIPReader( PIPBuilder.getPropertiesFromString( actionPip ).get() );
-            environmentAttributePip = new PIPReader( PIPBuilder.getPropertiesFromString( environmentPip ).get() );
-            assertTrue( subjectAttributePip.isPIPInitialized() );
+            contextHandler = Mockito.mock( ContextHandlerInterface.class );
+            subjectAttributePip = new PIPReader( getPropertiesFromString( subjectPip ) );
+            resourceAttributePip = new PIPReader( getPropertiesFromString( resourcePip ) );
+            actionAttributePip = new PIPReader( getPropertiesFromString( actionPip ) );
+            environmentAttributePip = new PIPReader( getPropertiesFromString( environmentPip ) );
+            assertTrue( subjectAttributePip.isInitialised() );
             initAttributes();
-            subjectAttributePip.setContextHandlerInterface( abstractContextHandler );
-            resourceAttributePip.setContextHandlerInterface( abstractContextHandler );
-            actionAttributePip.setContextHandlerInterface( abstractContextHandler );
-            environmentAttributePip.setContextHandlerInterface( abstractContextHandler );
+            subjectAttributePip.setContextHandlerInterface( contextHandler );
+            resourceAttributePip.setContextHandlerInterface( contextHandler );
+            actionAttributePip.setContextHandlerInterface( contextHandler );
+            environmentAttributePip.setContextHandlerInterface( contextHandler );
         } catch( Exception e ) {
             e.printStackTrace();
         }
@@ -158,27 +158,31 @@ public class CoverageTest {
         }
     }
 
+    public static UCFPipProperties getPropertiesFromString( String properties ) {
+        return JsonUtility.loadObjectFromJsonString( properties, UCFPipProperties.class ).get();
+    }
+
     public void testInitialization() {
         try {
-            fault = new PIPReader( PIPBuilder.getPropertiesFromString( missingCategory ).get() );
+            fault = new PIPReader( getPropertiesFromString( missingCategory ) );
         } catch( Exception e ) {}
-        assertFalse( fault != null && fault.isPIPInitialized() );
+        assertFalse( fault != null && fault.isInitialised() );
         try {
-            fault = new PIPReader( PIPBuilder.getPropertiesFromString( missingAttributeId ).get() );
+            fault = new PIPReader( getPropertiesFromString( missingAttributeId ) );
         } catch( Exception e ) {}
-        assertFalse( fault != null && fault.isPIPInitialized() );
+        assertFalse( fault != null && fault.isInitialised() );
         try {
-            fault = new PIPReader( PIPBuilder.getPropertiesFromString( missingExpectedCategory ).get() );
+            fault = new PIPReader( getPropertiesFromString( missingExpectedCategory ) );
         } catch( Exception e ) {}
-        assertFalse( fault != null && fault.isPIPInitialized() );
+        assertFalse( fault != null && fault.isInitialised() );
         try {
-            fault = new PIPReader( PIPBuilder.getPropertiesFromString( missingDataType ).get() );
+            fault = new PIPReader( getPropertiesFromString( missingDataType ) );
         } catch( Exception e ) {}
-        assertFalse( fault != null && fault.isPIPInitialized() );
+        assertFalse( fault != null && fault.isInitialised() );
         try {
-            fault = new PIPReader( PIPBuilder.getPropertiesFromString( missingFilePath ).get() );
+            fault = new PIPReader( getPropertiesFromString( missingFilePath ) );
         } catch( Exception e ) {}
-        assertFalse( fault != null && fault.isPIPInitialized() );
+        assertFalse( fault != null && fault.isInitialised() );
 
         // fault = new PIPReader( PIPBuilder.getPipPropertiesFromString(malformedInput).get() );
         // assertEquals( fault.initialized, false );
@@ -187,7 +191,7 @@ public class CoverageTest {
     @Test( expected = PreconditionException.class )
     public void testNullProperties() {
         fault = new PIPReader( null );
-        assertFalse( fault.isPIPInitialized() );
+        assertFalse( fault.isInitialised() );
     }
 
     public void testRetrieve() {

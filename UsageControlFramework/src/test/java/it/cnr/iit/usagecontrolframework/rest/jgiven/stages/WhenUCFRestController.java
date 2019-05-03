@@ -21,8 +21,8 @@ import com.tngtech.jgiven.annotation.ProvidedScenarioState;
 import com.tngtech.jgiven.annotation.Quoted;
 import com.tngtech.jgiven.integration.spring.JGivenStage;
 
-import it.cnr.iit.ucs.configuration.UCSConfiguration;
 import it.cnr.iit.ucsinterface.message.Message;
+import it.cnr.iit.usagecontrolframework.properties.UCFProperties;
 
 @JGivenStage
 public class WhenUCFRestController extends Stage<WhenUCFRestController> {
@@ -37,7 +37,7 @@ public class WhenUCFRestController extends Stage<WhenUCFRestController> {
     Message message;
 
     @ExpectedScenarioState
-    UCSConfiguration configuration;
+    UCFProperties configuration;
 
     @Autowired
     WebApplicationContext webApplicationContext;

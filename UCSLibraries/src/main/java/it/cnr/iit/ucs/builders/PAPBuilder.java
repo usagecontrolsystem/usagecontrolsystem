@@ -4,7 +4,7 @@ import java.lang.reflect.Constructor;
 import java.util.Optional;
 import java.util.logging.Logger;
 
-import it.cnr.iit.ucs.configuration.PapProperties;
+import it.cnr.iit.ucs.properties.components.PapProperties;
 import it.cnr.iit.ucsinterface.pap.PAPInterface;
 import it.cnr.iit.utility.JsonUtility;
 

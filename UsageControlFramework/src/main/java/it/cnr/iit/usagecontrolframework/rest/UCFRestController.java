@@ -18,25 +18,22 @@ package it.cnr.iit.usagecontrolframework.rest;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import it.cnr.iit.ucs.exceptions.NotFoundException;
 import it.cnr.iit.ucsinterface.message.endaccess.EndAccessMessage;
-import it.cnr.iit.ucsinterface.message.endaccess.EndAccessResponse;
 import it.cnr.iit.ucsinterface.message.reevaluation.ReevaluationMessage;
-import it.cnr.iit.ucsinterface.message.reevaluation.ReevaluationResponse;
-import it.cnr.iit.ucsinterface.message.remoteretrieval.MessagePipCh;
 import it.cnr.iit.ucsinterface.message.startaccess.StartAccessMessage;
-import it.cnr.iit.ucsinterface.message.startaccess.StartAccessResponse;
 import it.cnr.iit.ucsinterface.message.tryaccess.TryAccessMessage;
-import it.cnr.iit.ucsinterface.message.tryaccess.TryAccessResponse;
 import it.cnr.iit.ucsinterface.node.NodeInterface;
-import it.cnr.iit.usagecontrolframework.entry.UsageControlFramework;
+import it.cnr.iit.ucsinterface.ucs.UCSInterface;
 import it.cnr.iit.utility.LogProfiler;
+import it.cnr.iit.utility.errorhandling.Reject;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiOperation;
@@ -49,7 +46,7 @@ import io.swagger.annotations.ApiResponses;
  * Maybe it is better to offer an interface for each possible request that can
  * be sent to the UCS. In this way we will have many entry points. However all
  * these will be mapped on the same RequestManager function so that it becomes a
- * lot easier to perform task as prioritizing between the queues and so on.
+ * lot easier to perform task as prioritising between the queues and so on.
  * </p>
  *
  * @author antonio
@@ -62,7 +59,8 @@ public class UCFRestController {
 
     private static final Logger log = Logger.getLogger( UCFRestController.class.getName() );
 
-    private UsageControlFramework usageControlFramework = new UsageControlFramework();
+    @Autowired
+    private UCSInterface ucs;
 
     @ApiOperation( httpMethod = "POST", value = "Receives request from PEP for tryaccess operation" )
     @ApiResponses( value = {
@@ -71,14 +69,9 @@ public class UCFRestController {
     @PostMapping( value = NodeInterface.TRYACCESS_REST, consumes = MediaType.APPLICATION_JSON_VALUE )
     // TODO UCS-34 NOSONAR
     public void sendMessage( @RequestBody( ) TryAccessMessage message ) {
-        // BEGIN parameter checking
-        if( message == null ) {
-            throw new NotFoundException();
-        }
-        // END parameter checking
+        Reject.ifNull( message );
         LogProfiler.getInstance().log( "REST CALLED" );
-
-        usageControlFramework.tryAccess( message );
+        ucs.tryAccess( message );
 
     }
 
@@ -89,13 +82,9 @@ public class UCFRestController {
     @PostMapping( value = NodeInterface.STARTACCESS_REST, consumes = MediaType.APPLICATION_JSON_VALUE )
     // TODO UCS-34 NOSONAR
     public void sendMessage( @RequestBody( ) StartAccessMessage message ) {
-        // BEGIN parameter checking
-        if( message == null ) {
-            throw new NotFoundException();
-        }
-        // END parameter checking
-        log.log( Level.INFO, "[TIME] Startaccess received {0}", System.currentTimeMillis() );
-        usageControlFramework.startAccess( message );
+        Reject.ifNull( message );
+        log.log( Level.INFO, "Startaccess received {0}", System.currentTimeMillis() );
+        ucs.startAccess( message );
     }
 
     @ApiOperation( httpMethod = "POST", value = "Receives request from PEP for endaccess operation" )
@@ -105,13 +94,9 @@ public class UCFRestController {
     @PostMapping( value = NodeInterface.ENDACCESS_REST, consumes = MediaType.APPLICATION_JSON_VALUE )
     // TODO UCS-34 NOSONAR
     public void sendMessage( @RequestBody( ) EndAccessMessage message ) {
-        // BEGIN parameter checking
-        if( message == null ) {
-            throw new NotFoundException();
-        }
-        // END parameter checking
-        log.log( Level.INFO, "[TIME] Endaccess received {0}", System.currentTimeMillis() );
-        usageControlFramework.endAccess( message );
+        Reject.ifNull( message );
+        log.log( Level.INFO, "Endaccess received {0}", System.currentTimeMillis() );
+        ucs.endAccess( message );
     }
 
     @ApiOperation( httpMethod = "POST", value = "Receives request from PEP for endaccess operation" )
@@ -121,108 +106,13 @@ public class UCFRestController {
     @PostMapping( value = NodeInterface.ONGOING_REST, consumes = MediaType.TEXT_PLAIN_VALUE )
     // TODO UCS-34 NOSONAR
     public void sendMessage( @RequestBody( ) ReevaluationMessage message ) {
-        // BEGIN parameter checking
-        if( message == null ) {
-            throw new NotFoundException();
-        }
-        // END parameter checking
-
-        log.log( Level.INFO, "[TIME] Reevaluation received {0}", System.currentTimeMillis() );
-        usageControlFramework.onGoingEvaluation( message );
+        Reject.ifNull( message );
+        log.log( Level.INFO, "Reevaluation received at {0}", System.currentTimeMillis() );
+        ucs.onGoingEvaluation( message );
     }
 
-    @ApiOperation( httpMethod = "POST", value = "Receives request from PIP for attribute retrieval operation" )
-    @ApiResponses( value = {
-        @ApiResponse( code = 500, message = "Invalid message received" ),
-        @ApiResponse( code = 200, message = "OK" ) } )
-    @PostMapping( value = "/retrieveRemote", consumes = MediaType.TEXT_PLAIN_VALUE )
-    // TODO UCS-34 NOSONAR
-    public void retrieveRemote( @RequestBody( ) MessagePipCh message ) {
-        // BEGIN parameter checking
-        if( message == null ) {
-            throw new NotFoundException();
-        }
-        // END parameter checking
-        usageControlFramework.retrieveRemote( message );
-    }
-
-    @ApiOperation( httpMethod = "POST", value = "Receives response from PIP for attribute retrieval operation" )
-    @ApiResponses( value = {
-        @ApiResponse( code = 500, message = "Invalid message received" ),
-        @ApiResponse( code = 200, message = "OK" ) } )
-    @PostMapping( value = "/retrieveRemoteResponse", consumes = MediaType.TEXT_PLAIN_VALUE )
-    // TODO UCS-34 NOSONAR
-    public void retrieveRemoteResponse( @RequestBody( ) MessagePipCh message ) {
-        // BEGIN parameter checking
-        if( message == null ) {
-            throw new NotFoundException();
-        }
-        // END parameter checking
-
-        usageControlFramework.retrieveRemoteResponse( message );
-    }
-
-    @ApiOperation( httpMethod = "POST", value = "Receives request from PEP for tryaccess operation" )
-    @ApiResponses( value = {
-        @ApiResponse( code = 500, message = "Invalid message received" ),
-        @ApiResponse( code = 200, message = "OK" ) } )
-    @PostMapping( value = NodeInterface.TRYACCESSRESPONSE_REST, consumes = MediaType.TEXT_PLAIN_VALUE )
-    // TODO UCS-34 NOSONAR
-    public void tryAccessResponse( @RequestBody( ) TryAccessResponse message ) {
-        // BEGIN parameter checking
-        if( message == null ) {
-            throw new NotFoundException();
-        }
-        // END parameter checking
-        usageControlFramework.tryAccessResponse( message );
-    }
-
-    @ApiOperation( httpMethod = "POST", value = "Receives request from PEP for tryaccess operation" )
-    @ApiResponses( value = {
-        @ApiResponse( code = 500, message = "Invalid message received" ),
-        @ApiResponse( code = 200, message = "OK" ) } )
-    @PostMapping( value = NodeInterface.STARTACCESSRESPONSE_REST, consumes = MediaType.TEXT_PLAIN_VALUE )
-    // TODO UCS-34 NOSONAR
-    public void startAccessResponse( @RequestBody( ) StartAccessResponse message ) {
-        // BEGIN parameter checking
-        if( message == null ) {
-            throw new NotFoundException();
-        }
-        // END parameter checking
-        log.info( "[TIME] Startaccess received " + System.currentTimeMillis() );
-        usageControlFramework.startAccessResponse( message );
-    }
-
-    @ApiOperation( httpMethod = "POST", value = "Receives request from PEP for tryaccess operation" )
-    @ApiResponses( value = {
-        @ApiResponse( code = 500, message = "Invalid message received" ),
-        @ApiResponse( code = 200, message = "OK" ) } )
-    @PostMapping( value = NodeInterface.ENDACCESSRESPONSE_REST, consumes = MediaType.TEXT_PLAIN_VALUE )
-    // TODO UCS-34 NOSONAR
-    public void endAccessResponse( @RequestBody( ) EndAccessResponse message ) {
-        // BEGIN parameter checking
-        if( message == null ) {
-            throw new NotFoundException();
-        }
-        // END parameter checking
-        log.info( "[TIME] Endaccess received " + System.currentTimeMillis() );
-        usageControlFramework.endAccessResponse( message );
-    }
-
-    @ApiOperation( httpMethod = "POST", value = "Receives request from PEP for endaccess operation" )
-    @ApiResponses( value = {
-        @ApiResponse( code = 500, message = "Invalid message received" ),
-        @ApiResponse( code = 200, message = "OK" ) } )
-    @PostMapping( value = NodeInterface.ONGOINGRESPONSE_REST, consumes = MediaType.TEXT_PLAIN_VALUE )
-    // TODO UCS-34 NOSONAR
-    public void reevaluationResponse( @RequestBody( ) ReevaluationResponse message ) {
-        // BEGIN parameter checking
-        if( message == null ) {
-            throw new NotFoundException();
-        }
-        // END parameter checking
-
-        log.info( "[TIME] On going Evaluation received " + System.currentTimeMillis() );
-        usageControlFramework.onGoingEvaluationResponse( message );
+    @Bean
+    public UCSInterface getUCSInterface() {
+        return new UsageControlFramework();
     }
 }

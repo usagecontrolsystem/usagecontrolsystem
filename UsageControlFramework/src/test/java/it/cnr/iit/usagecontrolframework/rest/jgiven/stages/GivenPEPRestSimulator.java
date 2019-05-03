@@ -4,9 +4,8 @@ import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathMatching;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 
-import java.io.File;
+import java.net.URI;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -23,10 +22,11 @@ import com.tngtech.jgiven.annotation.Quoted;
 import com.tngtech.jgiven.annotation.ScenarioRule;
 import com.tngtech.jgiven.integration.spring.JGivenStage;
 
-import it.cnr.iit.ucs.configuration.UCSConfiguration;
+import it.cnr.iit.ucs.properties.UCSProperties;
 import it.cnr.iit.ucs.testing.jgiven.rules.MockedHttpServiceTestRule;
 import it.cnr.iit.usagecontrolframework.rest.UCFTestContext;
-import it.cnr.iit.utility.JsonUtility;
+import it.cnr.iit.utility.Utility;
+import it.cnr.iit.utility.errorhandling.Reject;
 
 @JGivenStage
 public class GivenPEPRestSimulator extends Stage<GivenPEPRestSimulator> {
@@ -38,59 +38,33 @@ public class GivenPEPRestSimulator extends Stage<GivenPEPRestSimulator> {
     WireMock wireMockContextHandler;
 
     @ProvidedScenarioState
-    UCSConfiguration configuration;
-
-    @ProvidedScenarioState
     String sessionId;
 
     private ResponseDefinitionBuilder aResponse;
     private MappingBuilder post;
 
     @Autowired
-    UCFTestContext conf;
+    UCSProperties properties;
+
+    @Autowired
+    UCFTestContext testContext;
 
     @BeforeScenario
     public void init() {
-        loadConfiguration();
-        restSimulatorTestRule.start( getPort() );
-    }
-
-    private void loadConfiguration() {
-        if( configuration == null ) {
-            File confFile = new File( this.getClass().getClassLoader().getResource( "conf.json" ).getFile() );
-            Optional<UCSConfiguration> optPEPRestConfiguration = JsonUtility.loadObjectFromJsonFile( confFile,
-                UCSConfiguration.class );
-            if( optPEPRestConfiguration.isPresent() ) {
-                configuration = optPEPRestConfiguration.get();
-            }
-        }
-    }
-
-    private String getHost() {
-        if( configuration == null ) {
-            loadConfiguration();
-        }
-        assertNotNull( "PEP address is not declared", configuration.getPepList() );
-        assertTrue( "At least one PEP address needs to be declared", !configuration.getPepList().isEmpty() );
-        return configuration.getPepList().get( Integer.parseInt( conf.getPepId() ) ).getIp();
-    }
-
-    private int getPort() {
-        if( configuration == null ) {
-            loadConfiguration();
-        }
-        assertNotNull( "PEP address is not declared", configuration.getPepList() );
-        assertTrue( "At least one PEP address needs to be declared", !configuration.getPepList().isEmpty() );
-        return Integer.parseInt( configuration.getPepList().get( Integer.parseInt( conf.getPepId() ) ).getPort() );
+        Optional<URI> uri = Utility.parseUri( properties.getPepList().get( 0 ).getBaseUri() );
+        Reject.ifAbsent( uri );
+        restSimulatorTestRule.start( uri.get().getPort() );
     }
 
     public GivenPEPRestSimulator a_test_configuration_for_request_with_policy() {
-        loadConfiguration();
         return self();
     }
 
     public GivenPEPRestSimulator a_mocked_PEPRest_for_$( @Quoted String operationUri ) {
-        wireMockContextHandler = new WireMock( getHost(), getPort() );
+        Optional<URI> uri = Utility.parseUri( properties.getPepList().get( 0 ).getBaseUri() );
+        Reject.ifAbsent( uri );
+
+        wireMockContextHandler = new WireMock( uri.get().getHost(), uri.get().getPort() );
         post = post( urlPathMatching( operationUri ) );
         return self();
     }

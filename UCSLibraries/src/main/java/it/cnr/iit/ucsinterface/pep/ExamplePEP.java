@@ -24,7 +24,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.logging.Logger;
 
-import it.cnr.iit.ucs.configuration.PepProperties;
+import it.cnr.iit.ucs.properties.components.PepProperties;
 import it.cnr.iit.ucsinterface.message.MEAN;
 import it.cnr.iit.ucsinterface.message.Message;
 import it.cnr.iit.ucsinterface.message.PART;
@@ -38,6 +38,7 @@ import it.cnr.iit.ucsinterface.message.tryaccess.TryAccessMessageBuilder;
 import it.cnr.iit.ucsinterface.message.tryaccess.TryAccessResponse;
 import it.cnr.iit.ucsinterface.requestmanager.UCSCHInterface;
 import it.cnr.iit.utility.Utility;
+import it.cnr.iit.utility.errorhandling.Reject;
 
 /**
  * USED for local experiments
@@ -55,7 +56,6 @@ public class ExamplePEP implements PEPInterface {
 
     private PepProperties configuration;
     private UCSCHInterface requestManager;
-    // private ContextHandlerInterface contextHandler;
 
     // map of unanswered messages, the key is the id of the message
     private HashMap<String, Message> unanswered = new HashMap<>();
@@ -66,19 +66,16 @@ public class ExamplePEP implements PEPInterface {
     private Object mutex = new Object();
 
     public ExamplePEP( PepProperties configuration ) {
-        // BEGIN parameter checking
-        if( configuration == null ) {
-            return;
-        }
-        // END parameter checking
+        Reject.ifNull( configuration );
         this.configuration = configuration;
+
         initialized = true;
     }
 
     public String tryAccess() {
         String request = Utility.readFileAbsPath( START_PATH + "/RequestAntonio.xml" );
         String policy = Utility.readFileAbsPath( START_PATH + "/PolicyGiacomo.xml" );
-        String pepUri = configuration.getIp();
+        String pepUri = configuration.getBaseUri(); // TODO or host?
 
         TryAccessMessageBuilder tryAccessBuilder = new TryAccessMessageBuilder(
             PART.PEP.toString(), PART.CH.toString() );
@@ -151,7 +148,7 @@ public class ExamplePEP implements PEPInterface {
         // END parameter checking
 
         ReevaluationResponse chPepMessage = (ReevaluationResponse) message;
-        if( configuration.getRevoke().equals( "HARD" ) ) {
+        if( configuration.getRevokeType().equals( "HARD" ) ) {
             EndAccessMessage endAccess = new EndAccessMessage( PART.PEP.toString(),
                 PART.CH.toString() );
             endAccess.setCallback( null, MEAN.API );

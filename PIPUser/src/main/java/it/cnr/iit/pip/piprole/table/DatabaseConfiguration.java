@@ -4,7 +4,7 @@ import java.util.Map;
 
 import it.cnr.iit.sqlmiddleware.HIBERNATE_CONFIGURATIONS;
 import it.cnr.iit.sqlmiddlewareinterface.SQLMiddlewarePIPConfigurationInterface;
-import it.cnr.iit.ucs.configuration.pip.PipProperties;
+import it.cnr.iit.ucs.properties.components.PipProperties;
 
 /**
  * This class represents the configuration for the SQLMiddleware.
@@ -36,7 +36,7 @@ public class DatabaseConfiguration
         }
         // END parameter checking
         DatabaseConfiguration configuration = new DatabaseConfiguration();
-        Map<String, String> args = properties.getAttributes().get( 0 ).getArgs();
+        Map<String, String> args = properties.getAttributes().get( 0 );
         if( ( configuration.driver = args
             .get( HIBERNATE_CONFIGURATIONS.DRIVER_CLASS.getString() ) ) == null ) {
             return null;

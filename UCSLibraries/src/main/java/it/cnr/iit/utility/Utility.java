@@ -21,13 +21,17 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.URI;
 import java.net.URL;
 import java.util.Optional;
 import java.util.PropertyResourceBundle;
 import java.util.Scanner;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.xml.bind.JAXBException;
+
+import it.cnr.iit.utility.errorhandling.Reject;
 
 /**
  * This class contains all the utility function we need throughout this project.
@@ -39,9 +43,7 @@ public final class Utility {
 
     private static final Logger log = Logger.getLogger( Utility.class.getName() );
 
-    private Utility() {
-
-    }
+    private Utility() {} // NOSONAR
 
     /**
      * Reads a file using the passed parameter as absolute path. Returns a String
@@ -140,16 +142,13 @@ public final class Utility {
         }
     }
 
-    // TODO avoid to do this fixing properties
-    public static String buildBaseUri( String ip, String port ) {
-        StringBuilder sb = new StringBuilder();
-        if( !ip.startsWith( "http" ) ) {
-            sb.append( "http://" );
+    public static boolean createPathIfNotExists( String path ) {
+        Reject.ifNull( path );
+        File dir = new File( path );
+        if( !dir.exists() ) {
+            return dir.mkdir();
         }
-        sb.append( ip )
-            .append( ":" )
-            .append( port );
-        return sb.toString();
+        return true;
     }
 
     public static Optional<String> getPropertiesValue( String key ) {
@@ -168,7 +167,7 @@ public final class Utility {
                 value = Optional.of( rb.getString( key ) );
             }
         } catch( IOException e ) {
-            log.severe( String.format( "Error reading key : {0}", e.getMessage() ) );
+            log.log( Level.SEVERE, "Error reading key : {0}", e.getMessage() );
         }
 
         if( fis != null ) {
@@ -180,6 +179,14 @@ public final class Utility {
         }
 
         return value;
+    }
+
+    public static Optional<URI> parseUri( String str ) {
+        try {
+            URI uri = new URI( str );
+            return Optional.of( uri );
+        } catch( Exception e ) {}
+        return Optional.empty();
     }
 
 }

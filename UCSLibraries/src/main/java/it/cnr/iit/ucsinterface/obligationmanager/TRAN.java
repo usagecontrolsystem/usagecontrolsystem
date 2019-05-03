@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2018 IIT-CNR
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy
  * of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
@@ -24,14 +24,14 @@ public class TRAN {
     private String ST_FROM;
     private String ST_TO;
     private String RULE_ID;
-    private Map<String, Object> additionalProperties = new HashMap<String, Object>();
+    private Map<String, Object> additionalProperties = new HashMap<>();
 
     public Integer getACTIONTYPE() {
         return ACTION_TYPE;
     }
 
     public void setACTIONTYPE( Integer aCTIONTYPE ) {
-        this.ACTION_TYPE = aCTIONTYPE;
+        ACTION_TYPE = aCTIONTYPE;
     }
 
     public String getSTFROM() {
@@ -39,7 +39,7 @@ public class TRAN {
     }
 
     public void setSTFROM( String sTFROM ) {
-        this.ST_FROM = sTFROM;
+        ST_FROM = sTFROM;
     }
 
     public String getSTTO() {
@@ -47,7 +47,7 @@ public class TRAN {
     }
 
     public void setSTTO( String sTTO ) {
-        this.ST_TO = sTTO;
+        ST_TO = sTTO;
     }
 
     public String getRULEID() {
@@ -55,15 +55,15 @@ public class TRAN {
     }
 
     public void setRULEID( String rULEID ) {
-        this.RULE_ID = rULEID;
+        RULE_ID = rULEID;
     }
 
     public Map<String, Object> getAdditionalProperties() {
-        return this.additionalProperties;
+        return additionalProperties;
     }
 
     public void setAdditionalProperty( String name, Object value ) {
-        this.additionalProperties.put( name, value );
+        additionalProperties.put( name, value );
     }
 
 }

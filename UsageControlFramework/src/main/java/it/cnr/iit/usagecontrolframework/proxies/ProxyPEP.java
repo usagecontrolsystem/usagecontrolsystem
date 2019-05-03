@@ -17,13 +17,15 @@ package it.cnr.iit.usagecontrolframework.proxies;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.net.URI;
+import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.logging.Logger;
 
 import com.google.common.base.Throwables;
 
-import it.cnr.iit.ucs.configuration.PepProperties;
 import it.cnr.iit.ucs.constants.CONNECTION;
+import it.cnr.iit.ucs.properties.components.PepProperties;
 import it.cnr.iit.ucsinterface.message.Message;
 import it.cnr.iit.ucsinterface.message.endaccess.EndAccessResponse;
 import it.cnr.iit.ucsinterface.message.startaccess.StartAccessResponse;
@@ -34,6 +36,7 @@ import it.cnr.iit.ucsinterface.pep.PEPInterface;
 import it.cnr.iit.ucsinterface.requestmanager.UCSCHInterface;
 import it.cnr.iit.utility.RESTUtils;
 import it.cnr.iit.utility.Utility;
+import it.cnr.iit.utility.errorhandling.Reject;
 
 /**
  * This is the proxy towards the PEP.
@@ -51,84 +54,44 @@ public class ProxyPEP extends Proxy implements PEPInterface {
 
     private static final Logger log = Logger.getLogger( ProxyPEP.class.getName() );
 
+    private PepProperties properties;
+    private URI uri;
+    private ExamplePEP abstractPEP; // TODO use interface
+
     private boolean initialized = false;
 
-    PepProperties properties;
-
-    // --------------------
-    // case of a local PEP
-    private ExamplePEP abstractPEP;
-    // case of remote PEP
-    // --------------------
-
-    // url of the PEP
-    private String url = "";
-    // Port on which the PEP is attached to
-    private String port = "";
-    // interfaces provided by the PEP to allow the proxy to call it when a
-    // response is available
-    private String tryAccessResponse = "";
-    private String startAccessResponse = "";
-    private String endAccessResponse = "";
-
-    /**
-     * Constructor for the proxy PEP
-     *
-     * @param properties
-     *          the configuration of the PEP in xml format
-     */
     public ProxyPEP( PepProperties properties ) {
-        // BEGIN parameter checking
-        if( properties == null ) {
-            return;
-        }
-        String configuration = properties.getCommunication();
-        if( configuration == null ) {
-            return;
-        }
-        // END parameter checking
+        Reject.ifNull( properties );
         this.properties = properties;
 
+        Optional<URI> uri = Utility.parseUri( properties.getBaseUri() );
+        Reject.ifAbsent( uri );
+        this.uri = uri.get();
+
+        String connectionType = properties.getCommunicationType();
+        Reject.ifBlank( connectionType );
         switch( getConnection() ) {
             case API:
-                if( localPep( properties ) ) {
-                    initialized = true;
-                }
-                break;
-            case SOCKET:
-                if( connectSocket( properties ) ) { // NOSONAR
+                if( buildLocalPep( properties ) ) {
                     initialized = true;
                 }
                 break;
             case REST_API:
-                if( connectRest( properties ) ) {
-                    initialized = true;
-                }
+                initialized = true;
+                break;
+            case SOCKET:
+                log.severe( "Unimplemented communication medium : " + connectionType );
                 break;
             default:
-                log.severe( "Incorrect communication medium : " + properties.getCommunication() );
-                return;
+                log.severe( "Incorrect communication medium : " + connectionType );
         }
     }
 
-    /**
-     * Function that performs the instantiation of a local PEP
-     *
-     * @param properties
-     *          the configuration of the PEP
-     * @return true if everything goes right, false otherwise
-     */
-    private boolean localPep( PepProperties properties ) {
-        // BEGIN parameter checking
-        String className = properties.getClassName();
-        if( className == null ) {
-            return false;
-        }
-        // END parameter checking
-
+    private boolean buildLocalPep( PepProperties properties ) {
+        Reject.ifBlank( properties.getClassName() );
         try {
             // TODO UCS-32 NOSONAR
-            Constructor<?> constructor = Class.forName( className )
+            Constructor<?> constructor = Class.forName( properties.getClassName() )
                 .getConstructor( PepProperties.class );
             abstractPEP = (ExamplePEP) constructor.newInstance( properties );
             return true;
@@ -138,53 +101,6 @@ public class ProxyPEP extends Proxy implements PEPInterface {
             log.severe( e.getMessage() );
         }
         return false;
-    }
-
-    /**
-     * Function that connects to a remote PEP via socket
-     *
-     * @param xmlPep
-     *          the configuration of the remote PEP
-     * @return true if everything goes right, false otherwise
-     */
-    private boolean connectSocket( PepProperties properties ) {
-        return false;
-    }
-
-    /**
-     * Configures all the strings required to connect to a remote PEP via rest
-     * interface
-     *
-     * @param properties
-     *          the configuration file for the pep
-     * @return true if everything goes ok, false otherwise
-     */
-    private boolean connectRest( PepProperties properties ) {
-        if( properties.getIp() == null ) {
-            log.warning( "Missing url parameter in configuration file" );
-            return false;
-        }
-
-        if( properties.getPort() == null ) {
-            log.warning( "Missing port parameter in configuration file" );
-            return false;
-        }
-
-        if( ( tryAccessResponse = properties.getTryAccessResponse() ) == null ) {
-            log.warning( "Missing tryAccessResponse parameter in configuration file" );
-            return false;
-        }
-
-        if( ( startAccessResponse = properties.getStartAccessResponse() ) == null ) {
-            log.warning( "Missing startAccessResponse parameter in configuration file" );
-            return false;
-        }
-
-        if( ( endAccessResponse = properties.getEndAccessResponse() ) == null ) {
-            log.warning( "Missing endAccessResponse parameter in configuration file" );
-            return false;
-        }
-        return true;
     }
 
     /**
@@ -203,7 +119,9 @@ public class ProxyPEP extends Proxy implements PEPInterface {
                 break;
             case REST_API:
             case SOCKET:
+                break;
             default:
+                log.severe( "Incorrect communication medium" );
                 break;
         }
 
@@ -216,7 +134,7 @@ public class ProxyPEP extends Proxy implements PEPInterface {
                 return abstractPEP.onGoingEvaluation( message );
             case REST_API:
                 RESTUtils.asyncPost(
-                    Utility.buildBaseUri( properties.getIp(), properties.getPort() ),
+                    properties.getBaseUri(),
                     NodeInterface.ONGOINGRESPONSE_REST,
                     message );
                 break;
@@ -227,33 +145,18 @@ public class ProxyPEP extends Proxy implements PEPInterface {
     }
 
     @Override
+    // TODO decide better return type, bool?
     public String receiveResponse( Message message ) {
         switch( getConnection() ) {
             case API:
                 abstractPEP.receiveResponse( message );
                 break;
-            /**
-             * LONG STORY:
-             * <p>
-             * Here we have two possibilities: one is to set the interfaces to be used
-             * in the configuration file, the other is to let the PEP write inside the
-             * message which is the name of the interface it wants the request manager
-             * to call. Both possibilities have pros and cons
-             * </p>
-             */
             case REST_API:
-                String api = "";
-                if( message instanceof TryAccessResponse ) {
-                    api = tryAccessResponse;
-                } else if( message instanceof StartAccessResponse ) {
-                    api = startAccessResponse;
-                } else if( message instanceof EndAccessResponse ) {
-                    api = endAccessResponse;
-                }
+                Optional<String> api = getApi( message );
                 try {
                     RESTUtils.asyncPost(
-                        Utility.buildBaseUri( properties.getIp(), properties.getPort() ),
-                        api,
+                        uri.toString(),
+                        api.get(),
                         message );
                 } catch( Exception e ) {
                     log.severe( "Error posting message : " + api );
@@ -267,9 +170,18 @@ public class ProxyPEP extends Proxy implements PEPInterface {
         return "OK";
     }
 
-    /**
-     * Function to start the local PEP
-     */
+    private Optional<String> getApi( Message message ) {
+        if( message instanceof TryAccessResponse ) {
+            return Optional.of( properties.getApiTryAccessResponse() );
+        } else if( message instanceof StartAccessResponse ) {
+            return Optional.of( properties.getApiStartAccessResponse() );
+        } else if( message instanceof EndAccessResponse ) {
+            return Optional.of( properties.getApiEndAccessResponse() );
+        }
+
+        return Optional.empty();
+    }
+
     public void start() {
         switch( getConnection() ) {
             case API:
@@ -288,25 +200,9 @@ public class ProxyPEP extends Proxy implements PEPInterface {
         }
     }
 
-    /**
-     * Provided the name of the rest API to call, it builds up the complete url to
-     * be used to call that interface
-     *
-     * @param function
-     *          the name of the function
-     * @return the complete url to be used in the rest call
-     */
-    public String getURL() {
-        return url;
-    }
-
-    public String getPort() {
-        return port;
-    }
-
     @Override
     protected CONNECTION getConnection() {
-        return CONNECTION.valueOf( properties.getCommunication() );
+        return CONNECTION.valueOf( properties.getCommunicationType() );
     }
 
     @Override

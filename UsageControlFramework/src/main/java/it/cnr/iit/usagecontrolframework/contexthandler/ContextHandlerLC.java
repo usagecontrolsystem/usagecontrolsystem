@@ -27,10 +27,8 @@ import java.util.logging.Logger;
 
 import javax.xml.bind.JAXBException;
 
-import it.cnr.iit.ucs.configuration.ContextHandlerProperties;
-import it.cnr.iit.ucs.configuration.GeneralProperties;
 import it.cnr.iit.ucs.constants.STATUS;
-import it.cnr.iit.ucsinterface.contexthandler.AbstractContextHandler;
+import it.cnr.iit.ucs.properties.components.ContextHandlerProperties;
 import it.cnr.iit.ucsinterface.contexthandler.ContextHandlerConstants;
 import it.cnr.iit.ucsinterface.contexthandler.exceptions.RevokeException;
 import it.cnr.iit.ucsinterface.contexthandler.exceptions.SessionManagerException;
@@ -62,7 +60,7 @@ import oasis.names.tc.xacml.core.schema.wd_17.DecisionType;
 import oasis.names.tc.xacml.core.schema.wd_17.RequestType;
 
 /**
- * This is the class implementing a contexthandler with low concurrency.
+ * This is the class implementing a context-handler with low concurrency.
  * <p>
  * We will provide some different implementations of the context handler, so
  * that the user can pick up the most suitable to its case. This implementation
@@ -93,7 +91,7 @@ import oasis.names.tc.xacml.core.schema.wd_17.RequestType;
  * </p>
  *
  *
- * @author antonio
+ * @author Antonio La Marra, Alessandro Rosetti
  *
  */
 public final class ContextHandlerLC extends AbstractContextHandler {
@@ -116,12 +114,8 @@ public final class ContextHandlerLC extends AbstractContextHandler {
     // boolean variable that states if the thread has to run again or not
     private volatile boolean continueMonitoring = true;
 
-    /**
-     *
-     * @param properties
-     */
-    public ContextHandlerLC( GeneralProperties generalProperties, ContextHandlerProperties properties ) {
-        super( generalProperties, properties );
+    public ContextHandlerLC( ContextHandlerProperties chProperties ) {
+        super( chProperties );
     }
 
     /**
@@ -211,16 +205,15 @@ public final class ContextHandlerLC extends AbstractContextHandler {
              */
             insertInSessionManager( sessionId, policy, request, status,
                 tryAccess.getScheduled() ? tryAccess.getPepUri()
-                        : getIp() + PEP_ID_SEPARATOR + tryAccess.getSource(),
-                policyHelper, tryAccess.getScheduled() ? tryAccess.getSource() : getIp() );
+                        : uri.getHost() + PEP_ID_SEPARATOR + tryAccess.getSource(),
+                policyHelper, tryAccess.getScheduled() ? tryAccess.getSource() : uri.getHost() );
 
             log.log( Level.INFO, "[TIME] permit tryAccess ends at {0}", new Object[] { System.currentTimeMillis() } );
 
         }
-        // obligation
         getObligationManager().translateObligations( pdpEvaluation, sessionId, ContextHandlerConstants.TRY_STATUS );
 
-        TryAccessResponse tryAccessResponse = new TryAccessResponse( getIp(), tryAccess.getSource(), message.getID() );
+        TryAccessResponse tryAccessResponse = new TryAccessResponse( uri.getHost(), tryAccess.getSource(), message.getID() );
         TryAccessResponseContent tryAccessResponseContent = new TryAccessResponseContent();
         tryAccessResponseContent.setSessionId( sessionId );
         tryAccessResponseContent.setStatus( pdpResponse );
@@ -580,9 +573,6 @@ public final class ContextHandlerLC extends AbstractContextHandler {
         getRequestManagerToChInterface().sendMessageToOutside( response );
     }
 
-    // ---------------------------------------------------------------------------
-    // REVOKE
-    // ---------------------------------------------------------------------------
     /**
      * This is the code for the revoke. A revoke is always triggered by and
      * EndAccess, in this function, all the attributes are unsubscribed
@@ -746,9 +736,6 @@ public final class ContextHandlerLC extends AbstractContextHandler {
         return otherSessions;
     }
 
-    // ---------------------------------------------------------------------------
-    // END ACCESS
-    // ---------------------------------------------------------------------------
     @Override
     public void endAccess( Message message ) {
         // BEGIN parameter checking
@@ -826,9 +813,6 @@ public final class ContextHandlerLC extends AbstractContextHandler {
         }
     }
 
-    // ---------------------------------------------------------------------------
-    // ATTRIBUTE CHANGED
-    // ---------------------------------------------------------------------------
     /**
      * API offered by the context handler to the PIP in case some attribute gets
      * changed
@@ -845,9 +829,6 @@ public final class ContextHandlerLC extends AbstractContextHandler {
         attributesChanged.put( (MessagePipCh) message );
     }
 
-    // ---------------------------------------------------------------------------
-    // MESSAGE FOR PIP
-    // ---------------------------------------------------------------------------
     /**
      * This function gets triggered once a pip retrieval has asked for an
      * attribute that is under the control of this UCS.
@@ -911,14 +892,6 @@ public final class ContextHandlerLC extends AbstractContextHandler {
         return null;
     }
 
-    /****************************************************************************/
-    /**																																				 **/
-    /**																																				 **/
-    /****************************************************************************/
-
-    // ===========================================================================
-    // AttributeMonitor class
-    // ===========================================================================
     /**
      * This class represents the object in charge of performing reevaluation.
      * <p>
@@ -1122,8 +1095,8 @@ public final class ContextHandlerLC extends AbstractContextHandler {
                 policyHelper.getAttributesForCondition( STARTACCESS_POLICY );
                 log.log( Level.INFO, "[TIME] reevaluation scheduler starts at {0}", System.currentTimeMillis() );
                 ReevaluationMessage reevaluationMessage = new ReevaluationMessage(
-                    generalProperties.getIp(),
-                    generalProperties.getIp() );
+                    uri.getHost(),
+                    uri.getHost() );
                 reevaluationMessage.setSession( session );
                 log.log( Level.INFO, "[TIME] reevaluation starts at {0}", System.currentTimeMillis() );
                 reevaluate( reevaluationMessage );
@@ -1169,7 +1142,7 @@ public final class ContextHandlerLC extends AbstractContextHandler {
         String[] uriSplitted = session.getPEPUri().split( PEP_ID_SEPARATOR );
         destination = session.getPEPUri().split( PEP_ID_SEPARATOR )[0];
         log.log( Level.INFO, "DESTINATION: {0}\t{1}", new Object[] { destination, session.getStatus() } );
-        ReevaluationResponse chPepMessage = new ReevaluationResponse( getIp(), destination );
+        ReevaluationResponse chPepMessage = new ReevaluationResponse( uri.getHost(), destination );
         pdpEvaluation.setSessionId( session.getId() );
         chPepMessage.setPDPEvaluation( pdpEvaluation );
         chPepMessage.setPepID( uriSplitted[uriSplitted.length - 1] );

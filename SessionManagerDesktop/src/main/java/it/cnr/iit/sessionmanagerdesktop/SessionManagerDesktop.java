@@ -22,7 +22,7 @@ import com.j256.ormlite.stmt.QueryBuilder;
 import com.j256.ormlite.support.ConnectionSource;
 import com.j256.ormlite.table.TableUtils;
 
-import it.cnr.iit.ucs.configuration.session_manager.SessionManagerProperties;
+import it.cnr.iit.ucs.properties.components.SessionManagerProperties;
 import it.cnr.iit.ucsinterface.sessionmanager.OnGoingAttributesInterface;
 import it.cnr.iit.ucsinterface.sessionmanager.SessionInterface;
 import it.cnr.iit.ucsinterface.sessionmanager.SessionManagerInterface;
@@ -33,7 +33,7 @@ import it.cnr.iit.xacmlutilities.Attribute;
  * Handler Requests. It exploits OrmLite DAL to manage different relational
  * databases.
  *
- * @author Fabio Bindi and Filippo Lauria and Antonio La Marra
+ * @author Fabio Bindi and Filippo Lauria and Antonio La Marra and Alessandro Rosetti
  */
 public final class SessionManagerDesktop implements SessionManagerInterface {
 
@@ -65,12 +65,12 @@ public final class SessionManagerDesktop implements SessionManagerInterface {
 
     public SessionManagerDesktop( SessionManagerProperties properties ) {
         // BEGIN parameter checking
-        if( properties == null || properties.getDriver() == null ) {
+        if( properties == null || properties.getDbUri() == null ) {
             return;
         }
         // END parameter checking
         // TODO clean properties since only driver is used
-        databaseURL = properties.getDriver();
+        databaseURL = properties.getDbUri();
         sessionDao = null;
         attributesDao = null;
         initialized = true;

@@ -12,7 +12,7 @@ import it.cnr.iit.pip.piprole.table.DatabaseConfiguration;
 import it.cnr.iit.pip.piprole.table.UserTable;
 import it.cnr.iit.sqlmiddleware.SQLMiddleware;
 import it.cnr.iit.sqlmiddlewareinterface.SQLMiddlewarePIPInterface;
-import it.cnr.iit.ucs.configuration.pip.PipProperties;
+import it.cnr.iit.ucs.properties.components.PipProperties;
 import it.cnr.iit.ucsinterface.obligationmanager.ObligationInterface;
 import it.cnr.iit.ucsinterface.pip.PIPBase;
 import it.cnr.iit.ucsinterface.pip.exception.PIPException;
@@ -79,7 +79,7 @@ public class PIPRole extends PIPBase {
      */
     private boolean initialize( PipProperties properties ) {
         try {
-            Map<String, String> arguments = properties.getAttributes().get( 0 ).getArgs();
+            Map<String, String> arguments = properties.getAttributes().get( 0 );
             Attribute attribute = new Attribute();
             if( !attribute.createAttributeId( arguments.get( ATTRIBUTE_ID ) ) ) {
                 log.log( Level.SEVERE, "[PIPReader] wrong set Attribute" );

@@ -21,8 +21,8 @@ import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import it.cnr.iit.ucs.configuration.PdpProperties;
 import it.cnr.iit.ucs.constants.STATUS;
+import it.cnr.iit.ucs.properties.components.PdpProperties;
 import it.cnr.iit.ucsinterface.pdp.PDPEvaluation;
 import it.cnr.iit.usagecontrolframework.pdp.PolicyDecisionPoint;
 
