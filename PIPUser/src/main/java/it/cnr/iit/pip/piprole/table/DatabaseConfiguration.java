@@ -36,7 +36,7 @@ public class DatabaseConfiguration
         }
         // END parameter checking
         DatabaseConfiguration configuration = new DatabaseConfiguration();
-        Map<String, String> args = properties.getAttributes().get( 0 ).getArgs();
+        Map<String, String> args = properties.getAttributes().get( 0 );
         if( ( configuration.driver = args
             .get( HIBERNATE_CONFIGURATIONS.DRIVER_CLASS.getString() ) ) == null ) {
             return null;

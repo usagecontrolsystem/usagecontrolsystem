@@ -104,11 +104,11 @@ public abstract class AbstractContextHandler implements ContextHandlerInterface 
      */
     @Deprecated
     public void verify() {
-        final String[] checkObjectsNames = { "configuration", "sessionManager", "pipList/pipRetrieval",
-            "pap", "pdp", "requestManagerToCh", "ip", "port", "forwardingQueue", "obligationManager" };
-        final boolean[] checkObjects = { properties == null, sessionManagerInterface == null,
-            pipList == null && pipRetrieval == null, papInterface == null,
-            pdpInterface == null, requestManagerToChInterface == null,
+        final String[] checkObjectsNames = { "sessionManager", "pipList/pipRetrieval",
+            "pap", "pdp", "requestManagerToCh", "forwardingQueue", "obligationManager" };
+        final boolean[] checkObjects = {
+            sessionManagerInterface == null, pipList == null && pipRetrieval == null,
+            papInterface == null, pdpInterface == null, requestManagerToChInterface == null,
             forwardingQueue == null, obligationManager == null };
 
         StringBuilder sb = new StringBuilder();

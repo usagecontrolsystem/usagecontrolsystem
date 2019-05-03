@@ -16,6 +16,7 @@
 package it.cnr.iit.ucs.properties.components;
 
 import java.util.List;
+import java.util.Map;
 
 import it.cnr.iit.ucs.properties.base.IdProperties;
 import it.cnr.iit.ucs.properties.base.JournalProperties;
@@ -23,10 +24,8 @@ import it.cnr.iit.ucs.properties.base.PluginProperties;
 
 public interface PipProperties extends PluginProperties, IdProperties, JournalProperties {
 
-    public String getRetrieval();
+    public List<Map<String, String>> getAttributes();
 
-    public List<Attribute> getAttributes();
-
-    public boolean isMultiattribute();
+    public boolean isMultiAttribute();
 
 }

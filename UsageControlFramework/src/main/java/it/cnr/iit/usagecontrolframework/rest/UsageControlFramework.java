@@ -25,14 +25,13 @@ import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
-import it.cnr.iit.ucs.builders.ObligationManagerBuilder;
 import it.cnr.iit.ucs.builders.PIPBuilder;
 import it.cnr.iit.ucs.properties.components.ContextHandlerProperties;
 import it.cnr.iit.ucs.properties.components.GeneralProperties;
+import it.cnr.iit.ucs.properties.components.ObligationManagerProperties;
 import it.cnr.iit.ucs.properties.components.PepProperties;
 import it.cnr.iit.ucs.properties.components.PipProperties;
 import it.cnr.iit.ucs.properties.components.RequestManagerProperties;
@@ -127,11 +126,6 @@ public class UsageControlFramework implements UCSInterface {
     @Autowired
     private UCFProperties properties;
 
-    @Bean
-    public UCFProperties getUCFProperties() {
-        return new UCFProperties();
-    }
-
     @PostConstruct
     private void init() {
         if( buildComponents() ) {
@@ -152,10 +146,6 @@ public class UsageControlFramework implements UCSInterface {
             log.info( "Error in building the session manager" );
             return false;
         }
-        if( !buildObligationManager() ) {
-            log.info( "Error in building the obligation manager" );
-            return false;
-        }
         if( !buildProxyPDP() ) {
             log.info( "Error in building the pdp" );
             return false;
@@ -170,6 +160,10 @@ public class UsageControlFramework implements UCSInterface {
         }
         if( !buildPIPList() ) {
             log.info( "Error in building the pips" );
+            return false;
+        }
+        if( !buildObligationManager() ) {
+            log.info( "Error in building the obligation manager" );
             return false;
         }
 
@@ -249,22 +243,26 @@ public class UsageControlFramework implements UCSInterface {
         return failures == 0;
     }
 
+    private boolean buildObligationManager() {
+        try {
+            ObligationManagerProperties omProperties = properties.getObligationManager();
+            // TODO UCS-32 NOSONAR
+            Constructor<?> constructor = Class.forName( omProperties.getClassName() )
+                .getConstructor( ObligationManagerProperties.class );
+            obligationManager = (ObligationManagerInterface) constructor
+                .newInstance( omProperties );
+            obligationManager.setPIPs( new ArrayList<PIPOMInterface>( pipList ), pipRetrieval );
+            return true;
+        } catch( Exception exception ) {
+            log.severe( "Error building obligation manager : " + exception.getMessage() );
+            return false;
+        }
+    }
+
     private boolean buildProxySM() {
         proxySessionManager = new ProxySessionManager( properties.getSessionManager() );
         proxySessionManager.start();
         return proxySessionManager.isInitialized();
-    }
-
-    private boolean buildObligationManager() {
-        try {
-            obligationManager = ObligationManagerBuilder.build(
-                properties.getObligationManager(),
-                new ArrayList<PIPOMInterface>( pipList ), pipRetrieval );
-            return true;
-        } catch( Exception e ) {
-            log.severe( e.getMessage() );
-            return false;
-        }
     }
 
     private boolean buildProxyPDP() {

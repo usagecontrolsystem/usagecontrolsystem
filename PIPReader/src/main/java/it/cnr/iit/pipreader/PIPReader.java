@@ -61,9 +61,9 @@ public final class PIPReader extends PIPBase {
     /**
      * Whenever a PIP has to retrieve some informations related to an attribute
      * that is stored inside the request, it has to know in advance all the
-     * informations to retrieve that atrtribute. E.g. if this PIP has to retrieve
+     * informations to retrieve that attribute. E.g. if this PIP has to retrieve
      * the informations about the subject, it has to know in advance which is the
-     * attribute id qualifying the subject, its category and the datatype used,
+     * attribute id qualifying the subject, its category and the data-type used,
      * otherwise it is not able to retrieve the value of that attribute, hence it
      * would not be able to communicate with the AM properly
      */
@@ -102,27 +102,27 @@ public final class PIPReader extends PIPBase {
 
     private boolean initialise( PipProperties properties ) {
         try {
-            Map<String, String> arguments = properties.getAttributes().get( 0 ).getArgs();
+            Map<String, String> attributeMap = properties.getAttributes().get( 0 );
             Attribute attribute = new Attribute();
-            if( !attribute.createAttributeId( arguments.get( ATTRIBUTE_ID ) ) ) {
+            if( !attribute.createAttributeId( attributeMap.get( ATTRIBUTE_ID ) ) ) {
                 log.severe( "wrong attribute" );
                 return false;
             }
             if( !attribute
-                .setCategory( Category.toCATEGORY( arguments.get( CATEGORY ) ) ) ) {
-                log.severe( "wrong category " + arguments.get( CATEGORY ) );
+                .setCategory( Category.toCATEGORY( attributeMap.get( CATEGORY ) ) ) ) {
+                log.severe( "wrong category " + attributeMap.get( CATEGORY ) );
                 return false;
             }
             if( !attribute.setAttributeDataType(
-                DataType.toDATATYPE( arguments.get( DATA_TYPE ) ) ) ) {
+                DataType.toDATATYPE( attributeMap.get( DATA_TYPE ) ) ) ) {
                 log.severe( "wrong datatype" );
                 return false;
             }
-            if( attribute.getCategory() != Category.ENVIRONMENT && !setExpectedCategory( arguments.get( EXPECTED_CATEGORY ) ) ) {
+            if( attribute.getCategory() != Category.ENVIRONMENT && !setExpectedCategory( attributeMap.get( EXPECTED_CATEGORY ) ) ) {
                 return false;
             }
             addAttribute( attribute );
-            setFilePath( arguments.get( FILE_PATH ) );
+            setFilePath( attributeMap.get( FILE_PATH ) );
             configure( properties.getJournalDir() );
             return true;
         } catch( Exception e ) {

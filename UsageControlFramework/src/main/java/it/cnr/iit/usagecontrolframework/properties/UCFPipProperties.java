@@ -1,10 +1,10 @@
 package it.cnr.iit.usagecontrolframework.properties;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Value;
 
-import it.cnr.iit.ucs.properties.components.Attribute;
 import it.cnr.iit.ucs.properties.components.PipProperties;
 
 public class UCFPipProperties implements PipProperties {
@@ -21,8 +21,8 @@ public class UCFPipProperties implements PipProperties {
     @Value( "${journalDir}" )
     private String journalDir;
 
-    @Value( "#{new Boolean('${multiAttribute}')}" )
-    private boolean multiAttribute;
+    @Value( "${attributes}" )
+    private List<Map<String, String>> attributes;
 
     @Override
     public String getClassName() {
@@ -61,26 +61,17 @@ public class UCFPipProperties implements PipProperties {
     }
 
     @Override
-    public boolean isMultiattribute() {
-        return multiAttribute;
-    }
-
-    public void setMultiAttribute( boolean multiAttribute ) {
-        this.multiAttribute = multiAttribute;
+    public boolean isMultiAttribute() {
+        return attributes != null && attributes.size() > 1;
     }
 
     @Override
-    public String getRetrieval() {
-        return null;
+    public List<Map<String, String>> getAttributes() {
+        return attributes;
     }
 
-    public void setRetrieval( String retrieval ) {}
-
-    @Override
-    public List<Attribute> getAttributes() {
-        return null;
+    public void setAttributes( List<Map<String, String>> attributes ) {
+        this.attributes = attributes;
     }
-
-    public void setAttributes( List<Attribute> attributes ) {}
 
 }

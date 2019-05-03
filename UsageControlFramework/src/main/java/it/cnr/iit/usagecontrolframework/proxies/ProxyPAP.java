@@ -24,6 +24,7 @@ import it.cnr.iit.ucs.builders.PAPBuilder;
 import it.cnr.iit.ucs.constants.CONNECTION;
 import it.cnr.iit.ucs.properties.components.PapProperties;
 import it.cnr.iit.ucsinterface.pap.PAPInterface;
+import it.cnr.iit.utility.errorhandling.Reject;
 
 /**
  * This is the proxy to deal with the PAP.
@@ -68,13 +69,7 @@ public final class ProxyPAP extends Proxy implements PAPInterface {
      *          the configuration of the PAP
      */
     public ProxyPAP( PapProperties properties ) {
-        // BEGIN parameter checking
-        if( properties == null ) {
-            return;
-            // TODO throw exception
-        }
-        // END parameter checking
-
+        Reject.ifNull( properties );
         this.properties = properties;
 
         switch( getConnection() ) {
@@ -84,14 +79,8 @@ public final class ProxyPAP extends Proxy implements PAPInterface {
                 }
                 break;
             case SOCKET:
-                if( connectSocket( properties ) ) { // NOSONAR
-                    initialized = true;
-                }
-                break;
             case REST_API:
-                if( connectRest( properties ) ) { // NOSONAR
-                    initialized = true;
-                }
+                initialized = true;
                 break;
             default:
                 log.severe( "WRONG communication " + properties.getCommunicationType() );
@@ -114,14 +103,6 @@ public final class ProxyPAP extends Proxy implements PAPInterface {
             return true;
         }
 
-        return false;
-    }
-
-    private boolean connectSocket( PapProperties properties ) {
-        return false;
-    }
-
-    private boolean connectRest( PapProperties properties ) {
         return false;
     }
 
@@ -169,18 +150,13 @@ public final class ProxyPAP extends Proxy implements PAPInterface {
 
     @Override
     public List<String> listPolicies() {
-        // BEGIN parameter checking
-        if( !initialized ) {
-            return new ArrayList<>();
-        }
-        // END parameter checking
-        switch( getConnection() ) {
-            case API:
-                return papInterface.listPolicies();
-            case SOCKET:
-                return new ArrayList<>();
-            case REST_API:
-                return new ArrayList<>();
+        if( initialized ) {
+            switch( getConnection() ) {
+                case API:
+                    return papInterface.listPolicies();
+                default:
+                    break;
+            }
         }
         return new ArrayList<>();
     }
@@ -190,11 +166,6 @@ public final class ProxyPAP extends Proxy implements PAPInterface {
         return CONNECTION.valueOf( properties.getCommunicationType() );
     }
 
-    /**
-     * Checks if the proxy was correctly initialized
-     *
-     * @return the value of the initialized volatile variable
-     */
     @Override
     public boolean isInitialized() {
         return initialized;

@@ -86,7 +86,7 @@ public class PIPUDPSocket extends PIPBase {
      */
     private boolean initialize( PipProperties properties ) {
         try {
-            Map<String, String> arguments = properties.getAttributes().get( 0 ).getArgs();
+            Map<String, String> arguments = properties.getAttributes().get( 0 );
             Attribute attribute = new Attribute();
             if( !attribute.createAttributeId( arguments.get( ATTRIBUTE_ID ) ) ) {
                 log.severe( "[PIPReader] wrong set Attribute" );

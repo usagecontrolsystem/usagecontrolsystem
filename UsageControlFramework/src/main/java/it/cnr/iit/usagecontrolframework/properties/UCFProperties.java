@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
     prefix = "ucf",
     ignoreUnknownFields = true,
     ignoreInvalidFields = true )
-public class UCFProperties /*implements UCSProperties */ {
+public class UCFProperties {
 
     @NestedConfigurationProperty
     private UCFGeneralProperties general;

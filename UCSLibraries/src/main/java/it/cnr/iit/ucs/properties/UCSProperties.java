@@ -17,8 +17,8 @@ package it.cnr.iit.ucs.properties;
 
 import java.util.List;
 
-import it.cnr.iit.ucs.properties.components.GeneralProperties;
 import it.cnr.iit.ucs.properties.components.ContextHandlerProperties;
+import it.cnr.iit.ucs.properties.components.GeneralProperties;
 import it.cnr.iit.ucs.properties.components.ObligationManagerProperties;
 import it.cnr.iit.ucs.properties.components.PapProperties;
 import it.cnr.iit.ucs.properties.components.PdpProperties;
@@ -29,7 +29,7 @@ import it.cnr.iit.ucs.properties.components.SessionManagerProperties;
 
 public interface UCSProperties {
 
-    public GeneralProperties getBase();
+    public GeneralProperties getGeneral();
 
     public ContextHandlerProperties getContextHandler();
 
@@ -43,9 +43,9 @@ public interface UCSProperties {
 
     public ObligationManagerProperties getObligationManager();
 
-    public List<PipProperties> getPIPList();
+    public List<PipProperties> getPipList();
 
-    public List<PepProperties> getPEPList();
+    public List<PepProperties> getPepList();
 
     // public ProxiesProperties getProxies();
 
