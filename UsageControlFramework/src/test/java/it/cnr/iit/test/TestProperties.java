@@ -4,7 +4,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 @ConfigurationProperties( prefix = "ucftest" )
-public class TestConfiguration {
+public class TestProperties {
 
     @Value( "${policy-file}" )
     private String policyFile;

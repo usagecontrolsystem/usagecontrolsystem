@@ -3,3 +3,4 @@
 .classpath
 .directory
 target/
+UsageControlFramework/jgiven-reports/*.json

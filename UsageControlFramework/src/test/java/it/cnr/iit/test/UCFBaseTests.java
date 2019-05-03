@@ -71,7 +71,7 @@ public class UCFBaseTests {
     protected Logger log = Logger.getLogger( UCFBaseTests.class.getName() );
 
     @Autowired
-    TestConfiguration testconf;
+    TestProperties testProperties;
 
     /* Request Manager functions */
 

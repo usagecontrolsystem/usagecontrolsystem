@@ -5,7 +5,6 @@ import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathMatching;
 import static org.junit.Assert.assertNotNull;
 
-import java.io.File;
 import java.net.URI;
 import java.util.Optional;
 import java.util.UUID;
@@ -23,10 +22,9 @@ import com.tngtech.jgiven.annotation.Quoted;
 import com.tngtech.jgiven.annotation.ScenarioRule;
 import com.tngtech.jgiven.integration.spring.JGivenStage;
 
+import it.cnr.iit.ucs.properties.UCSProperties;
 import it.cnr.iit.ucs.testing.jgiven.rules.MockedHttpServiceTestRule;
-import it.cnr.iit.usagecontrolframework.properties.UCFProperties;
 import it.cnr.iit.usagecontrolframework.rest.UCFTestContext;
-import it.cnr.iit.utility.JsonUtility;
 import it.cnr.iit.utility.Utility;
 import it.cnr.iit.utility.errorhandling.Reject;
 
@@ -40,43 +38,30 @@ public class GivenPEPRestSimulator extends Stage<GivenPEPRestSimulator> {
     WireMock wireMockContextHandler;
 
     @ProvidedScenarioState
-    UCFProperties prop;
-
-    @ProvidedScenarioState
     String sessionId;
 
     private ResponseDefinitionBuilder aResponse;
     private MappingBuilder post;
 
     @Autowired
-    UCFTestContext conf;
+    UCSProperties properties;
+
+    @Autowired
+    UCFTestContext testconf;
 
     @BeforeScenario
     public void init() {
-        loadConfiguration();
-        Optional<URI> uri = Utility.parseUri( conf.getUcsUri() );
+        Optional<URI> uri = Utility.parseUri( properties.getGeneral().getBaseUri() );
         Reject.ifAbsent( uri );
         restSimulatorTestRule.start( uri.get().getPort() );
     }
 
-    private void loadConfiguration() {
-        if( prop == null ) {
-            File confFile = new File( this.getClass().getClassLoader().getResource( "conf.json" ).getFile() );
-            Optional<UCFProperties> optPEPRestConfiguration = JsonUtility.loadObjectFromJsonFile( confFile,
-                UCFProperties.class );
-            if( optPEPRestConfiguration.isPresent() ) {
-                prop = optPEPRestConfiguration.get();
-            }
-        }
-    }
-
     public GivenPEPRestSimulator a_test_configuration_for_request_with_policy() {
-        loadConfiguration();
         return self();
     }
 
     public GivenPEPRestSimulator a_mocked_PEPRest_for_$( @Quoted String operationUri ) {
-        Optional<URI> uri = Utility.parseUri( conf.getUcsUri() );
+        Optional<URI> uri = Utility.parseUri( properties.getGeneral().getBaseUri() );
         Reject.ifAbsent( uri );
 
         wireMockContextHandler = new WireMock( uri.get().getHost(), uri.get().getPort() );

@@ -40,7 +40,7 @@ import oasis.names.tc.xacml.core.schema.wd_17.DecisionType;
 @DirtiesContext( classMode = ClassMode.BEFORE_EACH_TEST_METHOD )
 @EnableAutoConfiguration
 @ComponentScan( basePackages = { "it.cnr.iit" } )
-@ContextConfiguration( classes = { UCFProperties.class, TestConfiguration.class } )
+@ContextConfiguration( classes = { UCFProperties.class, TestProperties.class } )
 @RunWith( SpringRunner.class )
 public class ContextHandlerCoverageTests extends UCFBaseTests {
 
@@ -53,8 +53,8 @@ public class ContextHandlerCoverageTests extends UCFBaseTests {
     @PostConstruct
     private void init() throws URISyntaxException, IOException, JAXBException {
         log.info( "Init tests " );
-        policy = readResourceFileAsString( testconf.getPolicyFile() );
-        request = readResourceFileAsString( testconf.getPolicyFile() );
+        policy = readResourceFileAsString( testProperties.getPolicyFile() );
+        request = readResourceFileAsString( testProperties.getPolicyFile() );
     }
 
     @Test
@@ -85,16 +85,16 @@ public class ContextHandlerCoverageTests extends UCFBaseTests {
         ContextHandlerLC contextHandler = getContextHandlerCorrectlyInitialized( properties, policy, request );
 
         /* tryAccess */
-        TryAccessMessage tryAccessMessage = buildTryAccessMessage( testconf.getPepId(), properties.getGeneral().getBaseUri(), policy,
+        TryAccessMessage tryAccessMessage = buildTryAccessMessage( testProperties.getPepId(), properties.getGeneral().getBaseUri(), policy,
             request );
         contextHandler.tryAccess( tryAccessMessage );
 
         /* startAccess */
         contextHandler.setSessionManagerInterface(
-            getSessionManagerForStatus( testconf.getSessionId(), policy, request, ContextHandlerConstants.TRY_STATUS ) );
+            getSessionManagerForStatus( testProperties.getSessionId(), policy, request, ContextHandlerConstants.TRY_STATUS ) );
         // this line makes the start access to take the deny path
         contextHandler.setPdpInterface( getMockedPDP( getMockedPDPEvaluation( DecisionType.DENY ) ) );
-        StartAccessMessage startAccessMessage = buildStartAccessMessage( testconf.getSessionId(), "", "" );
+        StartAccessMessage startAccessMessage = buildStartAccessMessage( testProperties.getSessionId(), "", "" );
         contextHandler.startAccess( startAccessMessage );
 
         contextHandler.stopMonitoringThread();
@@ -105,21 +105,21 @@ public class ContextHandlerCoverageTests extends UCFBaseTests {
         ContextHandlerLC contextHandler = getContextHandlerCorrectlyInitialized( properties, policy, request );
 
         /* tryAccess */
-        TryAccessMessage tryAccessMessage = buildTryAccessMessage( testconf.getPepId(), properties.getGeneral().getBaseUri(), policy,
+        TryAccessMessage tryAccessMessage = buildTryAccessMessage( testProperties.getPepId(), properties.getGeneral().getBaseUri(), policy,
             request );
         contextHandler.tryAccess( tryAccessMessage );
 
         /* startAccess */
         contextHandler.setSessionManagerInterface(
-            getSessionManagerForStatus( testconf.getSessionId(), policy, request, ContextHandlerConstants.TRY_STATUS ) );
-        StartAccessMessage startAccessMessage = buildStartAccessMessage( testconf.getSessionId(), "", "" );
+            getSessionManagerForStatus( testProperties.getSessionId(), policy, request, ContextHandlerConstants.TRY_STATUS ) );
+        StartAccessMessage startAccessMessage = buildStartAccessMessage( testProperties.getSessionId(), "", "" );
         contextHandler.startAccess( startAccessMessage );
 
         /* endAccess */
         contextHandler.setSessionManagerInterface(
-            getSessionManagerForStatus( testconf.getSessionId(), policy, request, ContextHandlerConstants.START_STATUS ) );
+            getSessionManagerForStatus( testProperties.getSessionId(), policy, request, ContextHandlerConstants.START_STATUS ) );
         contextHandler.setPdpInterface( getMockedPDP( getMockedPDPEvaluation( DecisionType.DENY ) ) );
-        EndAccessMessage endAccessMessage = buildEndAccessMessage( testconf.getSessionId(), "", "" );
+        EndAccessMessage endAccessMessage = buildEndAccessMessage( testProperties.getSessionId(), "", "" );
         contextHandler.endAccess( endAccessMessage );
 
         contextHandler.stopMonitoringThread();
@@ -130,29 +130,29 @@ public class ContextHandlerCoverageTests extends UCFBaseTests {
         ContextHandlerLC contextHandler = getContextHandlerCorrectlyInitialized( properties, policy, request );
 
         /* tryAccess */
-        TryAccessMessage tryAccessMessage = buildTryAccessMessage( testconf.getPepId(), properties.getGeneral().getBaseUri(), policy,
+        TryAccessMessage tryAccessMessage = buildTryAccessMessage( testProperties.getPepId(), properties.getGeneral().getBaseUri(), policy,
             request );
         contextHandler.tryAccess( tryAccessMessage );
 
         /* startAccess */
         contextHandler.setSessionManagerInterface(
-            getSessionManagerForStatus( testconf.getSessionId(), policy, request, ContextHandlerConstants.TRY_STATUS ) );
-        StartAccessMessage startAccessMessage = buildStartAccessMessage( testconf.getSessionId(), "", "" );
+            getSessionManagerForStatus( testProperties.getSessionId(), policy, request, ContextHandlerConstants.TRY_STATUS ) );
+        StartAccessMessage startAccessMessage = buildStartAccessMessage( testProperties.getSessionId(), "", "" );
         contextHandler.startAccess( startAccessMessage );
 
         /* reevaluate */
-        ReevaluationMessage reevaluationMessage = buildReevaluationMessage( testconf.getSessionId(), "", "" );
+        ReevaluationMessage reevaluationMessage = buildReevaluationMessage( testProperties.getSessionId(), "", "" );
         reevaluationMessage.setSession( getMockedSessionInterface( policy, request, ContextHandlerConstants.START_STATUS ) );
         contextHandler.reevaluate( reevaluationMessage );
 
-        MessagePipCh messagePipCh = buildPipChMessage( testconf.getSessionId(), "", "" );
+        MessagePipCh messagePipCh = buildPipChMessage( testProperties.getSessionId(), "", "" );
         messagePipCh.addAttribute( getNewAttribute( "virus", Category.ENVIRONMENT, DataType.INTEGER, "1" ) );
         contextHandler.attributeChanged( messagePipCh );
 
         /* endAccess */
         contextHandler.setSessionManagerInterface(
-            getSessionManagerForStatus( testconf.getSessionId(), policy, request, ContextHandlerConstants.START_STATUS ) );
-        EndAccessMessage endAccessMessage = buildEndAccessMessage( testconf.getSessionId(), "", "" );
+            getSessionManagerForStatus( testProperties.getSessionId(), policy, request, ContextHandlerConstants.START_STATUS ) );
+        EndAccessMessage endAccessMessage = buildEndAccessMessage( testProperties.getSessionId(), "", "" );
         contextHandler.endAccess( endAccessMessage );
 
         contextHandler.stopMonitoringThread();

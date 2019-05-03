@@ -16,8 +16,6 @@ import com.tngtech.jgiven.integration.spring.EnableJGiven;
 @TestPropertySource( properties = "application.properties" )
 @SpringBootConfiguration
 public class UCFTestContext {
-    @Value( "${ucs-config-file}" )
-    private String ucsConfigFile;
 
     @Value( "${policy-file}" )
     private String policyFile;
@@ -30,17 +28,6 @@ public class UCFTestContext {
 
     @Value( "${session-id}" )
     private String sessionId;
-
-    @Value( "${ucs-uri}" )
-    private String ucsUri;
-
-    public String getUcsConfigFile() {
-        return ucsConfigFile;
-    }
-
-    public void setUcsConfigFile( String ucsConfigFile ) {
-        this.ucsConfigFile = ucsConfigFile;
-    }
 
     public String getPolicyFile() {
         return policyFile;
@@ -74,11 +61,4 @@ public class UCFTestContext {
         this.sessionId = sessionId;
     }
 
-    public String getUcsUri() {
-        return ucsUri;
-    }
-
-    public void setUcsUri( String ucsUri ) {
-        this.ucsUri = ucsUri;
-    }
 }

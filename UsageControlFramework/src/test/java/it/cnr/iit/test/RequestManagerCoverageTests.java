@@ -28,7 +28,7 @@ import it.cnr.iit.usagecontrolframework.requestmanager.RequestManagerLC;
 @DirtiesContext( classMode = ClassMode.BEFORE_EACH_TEST_METHOD )
 @EnableAutoConfiguration
 @ComponentScan( basePackages = { "it.cnr.iit" } )
-@ContextConfiguration( classes = { UCFProperties.class, TestConfiguration.class } )
+@ContextConfiguration( classes = { UCFProperties.class, TestProperties.class } )
 @RunWith( SpringRunner.class )
 public class RequestManagerCoverageTests extends UCFBaseTests {
 

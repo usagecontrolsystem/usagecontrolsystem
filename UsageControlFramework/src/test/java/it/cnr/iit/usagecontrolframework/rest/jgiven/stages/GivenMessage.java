@@ -20,6 +20,7 @@ import com.tngtech.jgiven.annotation.BeforeScenario;
 import com.tngtech.jgiven.annotation.ProvidedScenarioState;
 import com.tngtech.jgiven.integration.spring.JGivenStage;
 
+import it.cnr.iit.ucs.properties.UCSProperties;
 import it.cnr.iit.ucs.properties.components.PepProperties;
 import it.cnr.iit.ucsinterface.message.MEAN;
 import it.cnr.iit.ucsinterface.message.Message;
@@ -36,19 +37,19 @@ public class GivenMessage extends Stage<GivenMessage> {
     private String request;
 
     @ProvidedScenarioState
-    UCFProperties prop;
+    @Autowired
+    UCSProperties properties;
 
     @Autowired
-    UCFTestContext conf;
+    UCFTestContext testconf;
 
     @ProvidedScenarioState
     Message message;
 
     @BeforeScenario
     public void init() throws URISyntaxException, IOException, JAXBException {
-        // prop = getUCSConfiguration( conf.getUcsConfigFile() );
-        policy = readResourceFileAsString( conf.getPolicyFile() );
-        request = readResourceFileAsString( conf.getRequestFile() );
+        policy = readResourceFileAsString( testconf.getPolicyFile() );
+        request = readResourceFileAsString( testconf.getRequestFile() );
     }
 
     public GivenMessage a_TryAccess_request() {
@@ -61,8 +62,8 @@ public class GivenMessage extends Stage<GivenMessage> {
     }
 
     protected TryAccessMessage buildTryAccessMessage() {
-        assertNotNull( prop );
-        PepProperties pepProps = prop.getPEPList().get( Integer.parseInt( conf.getPepId() ) );
+        assertNotNull( properties );
+        PepProperties pepProps = properties.getPepList().get( Integer.parseInt( testconf.getPepId() ) );
 
         TryAccessMessageBuilder tryAccessBuilder = new TryAccessMessageBuilder( pepProps.getId(), pepProps.getBaseUri() );
         tryAccessBuilder.setPepUri( buildOnGoingEvaluationInterface( pepProps ) )
