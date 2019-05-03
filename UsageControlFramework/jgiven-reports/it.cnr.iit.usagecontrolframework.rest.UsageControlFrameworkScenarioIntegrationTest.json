@@ -13,131 +13,31 @@
       "scenarioCases": [
         {
           "caseNr": 1,
-          "steps": [
-            {
-              "name": "a TryAccess request",
-              "words": [
-                {
-                  "value": "Given",
-                  "isIntroWord": true
-                },
-                {
-                  "value": "a TryAccess request"
-                }
-              ],
-              "status": "FAILED",
-              "durationInNanos": 2401081
-            },
-            {
-              "name": "a mocked PEPRest for $",
-              "words": [
-                {
-                  "value": "and",
-                  "isIntroWord": true
-                },
-                {
-                  "value": "a mocked PEPRest for"
-                },
-                {
-                  "value": "/tryAccessResponse",
-                  "argumentInfo": {
-                    "argumentName": "operationUri",
-                    "formattedValue": "\"/tryAccessResponse\""
-                  }
-                }
-              ],
-              "status": "SKIPPED",
-              "durationInNanos": 0
-            },
-            {
-              "name": "a success response status code of $",
-              "words": [
-                {
-                  "value": "and",
-                  "isIntroWord": true
-                },
-                {
-                  "value": "a success response status code of"
-                },
-                {
-                  "value": "200",
-                  "argumentInfo": {
-                    "argumentName": "status",
-                    "formattedValue": "\"200\""
-                  }
-                }
-              ],
-              "status": "SKIPPED",
-              "durationInNanos": 0
-            },
-            {
-              "name": "the UCF is executed for $",
-              "words": [
-                {
-                  "value": "When",
-                  "isIntroWord": true
-                },
-                {
-                  "value": "the UCF is executed for"
-                },
-                {
-                  "value": "/tryAccess",
-                  "argumentInfo": {
-                    "argumentName": "operationUri",
-                    "formattedValue": "\"/tryAccess\""
-                  }
-                }
-              ],
-              "status": "SKIPPED",
-              "durationInNanos": 0
-            },
-            {
-              "name": "the asynch post request for $ with decision $ was received by PEPRest",
-              "words": [
-                {
-                  "value": "Then",
-                  "isIntroWord": true
-                },
-                {
-                  "value": "the asynch post request for"
-                },
-                {
-                  "value": "/tryAccessResponse",
-                  "argumentInfo": {
-                    "argumentName": "operation",
-                    "formattedValue": "\"/tryAccessResponse\""
-                  }
-                },
-                {
-                  "value": "with decision"
-                },
-                {
-                  "value": "PERMIT",
-                  "argumentInfo": {
-                    "argumentName": "decision",
-                    "formattedValue": "\"PERMIT\""
-                  }
-                },
-                {
-                  "value": "was received by PEPRest"
-                }
-              ],
-              "status": "SKIPPED",
-              "durationInNanos": 0
-            }
-          ],
+          "steps": [],
           "explicitArguments": [],
           "derivedArguments": [],
           "status": "FAILED",
           "success": false,
-          "errorMessage": "java.lang.AssertionError: Index: 1, Size: 1",
+          "errorMessage": "java.lang.NullPointerException: null",
           "stackTrace": [
-            "org.junit.Assert.fail(Assert.java:88)",
-            "it.cnr.iit.usagecontrolframework.rest.jgiven.stages.GivenMessage.a_TryAccess_request(GivenMessage.java:58)",
-            "it.cnr.iit.usagecontrolframework.rest.jgiven.stages.GivenMessage$ByteBuddy$RS3tzCm7.a_TryAccess_request$accessor$lXBgiCvz(Unknown Source)",
-            "it.cnr.iit.usagecontrolframework.rest.jgiven.stages.GivenMessage$ByteBuddy$RS3tzCm7$auxiliary$GFBfUtpj.call(Unknown Source)",
-            "it.cnr.iit.usagecontrolframework.rest.jgiven.stages.GivenMessage$ByteBuddy$RS3tzCm7.a_TryAccess_request(Unknown Source)",
-            "it.cnr.iit.usagecontrolframework.rest.UsageControlFrameworkScenarioIntegrationTest.a_tryAccess_request_is_replied_with_tryAccessResponse_containg_Permit_decision(UsageControlFrameworkScenarioIntegrationTest.java:30)",
+            "it.cnr.iit.usagecontrolframework.rest.jgiven.stages.GivenPEPRestSimulator.loadConfiguration(GivenPEPRestSimulator.java:64)",
+            "it.cnr.iit.usagecontrolframework.rest.jgiven.stages.GivenPEPRestSimulator.init(GivenPEPRestSimulator.java:56)",
+            "it.cnr.iit.usagecontrolframework.rest.jgiven.stages.GivenPEPRestSimulator$ByteBuddy$AXCto1m3.init$accessor$RSdiRTrh(Unknown Source)",
+            "it.cnr.iit.usagecontrolframework.rest.jgiven.stages.GivenPEPRestSimulator$ByteBuddy$AXCto1m3$auxiliary$O3hvdVmJ.call(Unknown Source)",
+            "it.cnr.iit.usagecontrolframework.rest.jgiven.stages.GivenPEPRestSimulator$ByteBuddy$AXCto1m3.init(Unknown Source)",
+            "com.tngtech.jgiven.impl.util.ReflectionUtil.invokeMethod(ReflectionUtil.java:175)",
+            "com.tngtech.jgiven.impl.ScenarioExecutor$1.act(ScenarioExecutor.java:296)",
+            "com.tngtech.jgiven.impl.util.ReflectionUtil$2.act(ReflectionUtil.java:54)",
+            "com.tngtech.jgiven.impl.util.ReflectionUtil.forEachSuperClass(ReflectionUtil.java:67)",
+            "com.tngtech.jgiven.impl.util.ReflectionUtil.forEachSuperClass(ReflectionUtil.java:70)",
+            "com.tngtech.jgiven.impl.util.ReflectionUtil.forEachMethod(ReflectionUtil.java:49)",
+            "com.tngtech.jgiven.impl.ScenarioExecutor.executeAnnotatedMethods(ScenarioExecutor.java:293)",
+            "com.tngtech.jgiven.impl.ScenarioExecutor.executeBeforeScenarioMethods(ScenarioExecutor.java:330)",
+            "com.tngtech.jgiven.impl.ScenarioExecutor.ensureBeforeScenarioMethodsAreExecuted(ScenarioExecutor.java:273)",
+            "com.tngtech.jgiven.impl.ScenarioExecutor.access$200(ScenarioExecutor.java:48)",
+            "com.tngtech.jgiven.impl.ScenarioExecutor$StageTransitionHandlerImpl.enterStage(ScenarioExecutor.java:131)",
+            "it.cnr.iit.usagecontrolframework.rest.jgiven.stages.GivenMessage$ByteBuddy$FZIBtqAT.a_TryAccess_request(Unknown Source)",
+            "it.cnr.iit.usagecontrolframework.rest.UsageControlFrameworkScenarioIntegrationTest.a_tryAccess_request_is_replied_with_tryAccessResponse_containg_Permit_decision(UsageControlFrameworkScenarioIntegrationTest.java:32)",
             "org.junit.runners.model.FrameworkMethod$1.runReflectiveCall(FrameworkMethod.java:50)",
             "org.junit.internal.runners.model.ReflectiveCallable.run(ReflectiveCallable.java:12)",
             "org.junit.runners.model.FrameworkMethod.invokeExplosively(FrameworkMethod.java:47)",
@@ -171,10 +71,10 @@
             "org.eclipse.jdt.internal.junit.runner.RemoteTestRunner.run(RemoteTestRunner.java:463)",
             "org.eclipse.jdt.internal.junit.runner.RemoteTestRunner.main(RemoteTestRunner.java:209)"
           ],
-          "durationInNanos": 247684644
+          "durationInNanos": 9522714
         }
       ],
-      "durationInNanos": 247684644
+      "durationInNanos": 9522714
     }
   ],
   "tagMap": {}

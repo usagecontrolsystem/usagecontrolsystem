@@ -5,8 +5,6 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 
 @ConfigurationProperties( prefix = "ucftest" )
 public class TestConfiguration {
-    @Value( "${config-file}" )
-    private String ucsConfigFile;
 
     @Value( "${policy-file}" )
     private String policyFile;
@@ -19,17 +17,6 @@ public class TestConfiguration {
 
     @Value( "${session-id}" )
     private String sessionId;
-
-    @Value( "${ucs-uri}" )
-    private String ucsUri;
-
-    public String getUcsConfigFile() {
-        return ucsConfigFile;
-    }
-
-    public void setUcsConfigFile( String ucsConfigFile ) {
-        this.ucsConfigFile = ucsConfigFile;
-    }
 
     public String getPolicyFile() {
         return policyFile;
@@ -63,11 +50,4 @@ public class TestConfiguration {
         this.sessionId = sessionId;
     }
 
-    public String getUcsUri() {
-        return ucsUri;
-    }
-
-    public void setUcsUri( String ucsUri ) {
-        this.ucsUri = ucsUri;
-    }
 }

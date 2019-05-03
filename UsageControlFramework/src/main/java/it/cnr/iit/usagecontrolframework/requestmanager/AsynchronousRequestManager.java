@@ -75,7 +75,7 @@ public abstract class AsynchronousRequestManager
 
     protected AsynchronousRequestManager( GeneralProperties properties, RequestManagerProperties rmProperties ) {
         Reject.ifNull( rmProperties );
-        rmProperties = rmProperties;
+        this.rmProperties = rmProperties;
 
         Reject.ifNull( properties );
         nodeInterface = new NodeProxy( properties );
