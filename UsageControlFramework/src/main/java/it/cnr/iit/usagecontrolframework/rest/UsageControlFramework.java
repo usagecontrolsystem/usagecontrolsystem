@@ -29,6 +29,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 import it.cnr.iit.ucs.builders.PIPBuilder;
+import it.cnr.iit.ucs.properties.UCSProperties;
 import it.cnr.iit.ucs.properties.components.ContextHandlerProperties;
 import it.cnr.iit.ucs.properties.components.GeneralProperties;
 import it.cnr.iit.ucs.properties.components.ObligationManagerProperties;
@@ -54,7 +55,6 @@ import it.cnr.iit.ucsinterface.pip.PIPOMInterface;
 import it.cnr.iit.ucsinterface.pip.PIPRetrieval;
 import it.cnr.iit.ucsinterface.ucs.UCSInterface;
 import it.cnr.iit.usagecontrolframework.contexthandler.AbstractContextHandler;
-import it.cnr.iit.usagecontrolframework.properties.UCFProperties;
 import it.cnr.iit.usagecontrolframework.proxies.NodeProxy;
 import it.cnr.iit.usagecontrolframework.proxies.ProxyPAP;
 import it.cnr.iit.usagecontrolframework.proxies.ProxyPDP;
@@ -124,7 +124,7 @@ public class UsageControlFramework implements UCSInterface {
     private volatile boolean initialised = false;
 
     @Autowired
-    private UCFProperties properties;
+    private UCSProperties properties;
 
     @PostConstruct
     private void init() {

@@ -1,17 +1,22 @@
 package it.cnr.iit.usagecontrolframework.properties;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.NestedConfigurationProperty;
 import org.springframework.stereotype.Component;
 
+import it.cnr.iit.ucs.properties.UCSProperties;
+import it.cnr.iit.ucs.properties.components.PepProperties;
+import it.cnr.iit.ucs.properties.components.PipProperties;
+
 @Component
 @ConfigurationProperties(
     prefix = "ucf",
     ignoreUnknownFields = true,
     ignoreInvalidFields = true )
-public class UCFProperties {
+public class UCFProperties implements UCSProperties {
 
     @NestedConfigurationProperty
     private UCFGeneralProperties general;
@@ -40,6 +45,7 @@ public class UCFProperties {
     @NestedConfigurationProperty
     private List<UCFPepProperties> pepList;
 
+    @Override
     public UCFContextHandlerProperties getContextHandler() {
         return contextHandler;
     }
@@ -48,6 +54,7 @@ public class UCFProperties {
         this.contextHandler = contextHandler;
     }
 
+    @Override
     public UCFRequestManagerProperties getRequestManager() {
         return requestManager;
     }
@@ -56,6 +63,7 @@ public class UCFProperties {
         this.requestManager = requestManager;
     }
 
+    @Override
     public UCFGeneralProperties getGeneral() {
         return general;
     }
@@ -64,6 +72,7 @@ public class UCFProperties {
         this.general = general;
     }
 
+    @Override
     public UCFSessionManagerProperties getSessionManager() {
         return sessionManager;
     }
@@ -72,6 +81,7 @@ public class UCFProperties {
         this.sessionManager = sessionManager;
     }
 
+    @Override
     public UCFPapProperties getPolicyAdministrationPoint() {
         return policyAdministrationPoint;
     }
@@ -80,6 +90,7 @@ public class UCFProperties {
         this.policyAdministrationPoint = policyAdministrationPoint;
     }
 
+    @Override
     public UCFPdpProperties getPolicyDecisionPoint() {
         return policyDecisionPoint;
     }
@@ -88,6 +99,7 @@ public class UCFProperties {
         this.policyDecisionPoint = policyDecisionPoint;
     }
 
+    @Override
     public UCFObligationManagerProperties getObligationManager() {
         return obligationManager;
     }
@@ -96,16 +108,18 @@ public class UCFProperties {
         this.obligationManager = obligationManager;
     }
 
-    public List<UCFPipProperties> getPipList() {
-        return pipList;
+    @Override
+    public List<PipProperties> getPipList() {
+        return new ArrayList<>( pipList );
     }
 
     public void setPipList( List<UCFPipProperties> pipList ) {
         this.pipList = pipList;
     }
 
-    public List<UCFPepProperties> getPepList() {
-        return pepList;
+    @Override
+    public List<PepProperties> getPepList() {
+        return new ArrayList<>( pepList );
     }
 
     public void setPepList( List<UCFPepProperties> pepList ) {
