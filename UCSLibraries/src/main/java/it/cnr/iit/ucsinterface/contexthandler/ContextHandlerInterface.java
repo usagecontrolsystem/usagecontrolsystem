@@ -101,19 +101,4 @@ public interface ContextHandlerInterface extends ContextHandlerPIPInterface {
      */
     public void reevaluate( Message message );
 
-    /**
-     * This is the messageForPIP function.
-     * <p>
-     * In this function fall all the function related to requests performed by
-     * remote UCS to local PIP {remote and local with respect to the CH taken into
-     * consideration}. In this case the request will be sent to the various PIP
-     * and the response will be sent back as soon as available.
-     * </p>
-     *
-     * @param message
-     *          the message received by the RequestManager
-     * @return a message stating the response of the CH to the request
-     */
-    public Message messageForPIP( Message message );
-
 }

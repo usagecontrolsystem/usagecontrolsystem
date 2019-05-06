@@ -34,7 +34,6 @@ import it.cnr.iit.ucsinterface.contexthandler.exceptions.RevokeException;
 import it.cnr.iit.ucsinterface.contexthandler.exceptions.SessionManagerException;
 import it.cnr.iit.ucsinterface.contexthandler.exceptions.WrongOrderException;
 import it.cnr.iit.ucsinterface.message.Message;
-import it.cnr.iit.ucsinterface.message.PART;
 import it.cnr.iit.ucsinterface.message.endaccess.EndAccessMessage;
 import it.cnr.iit.ucsinterface.message.endaccess.EndAccessResponse;
 import it.cnr.iit.ucsinterface.message.reevaluation.ReevaluationMessage;
@@ -774,69 +773,6 @@ public final class ContextHandlerLC extends AbstractContextHandler {
     }
 
     /**
-     * This function gets triggered once a pip retrieval has asked for an
-     * attribute that is under the control of this UCS.
-     *
-     * <p>
-     * The purpose of this function is to trigger the PIP in order to retrieve
-     * the value and then return this value to the caller
-     * </p>
-     */
-    @Override
-    public Message messageForPIP( Message message ) {
-        /*MessagePipCh messagePipCh = (MessagePipCh) message; //NOSONAR
-        try {
-            if( messagePipCh.getAction() == ACTION.RETRIEVE_RESPONSE
-                    || messagePipCh.getAction() == ACTION.SUBSCRIBE_RESPONSE ) {
-                getPipRetrieval().messageArrived( messagePipCh );
-                return null;
-            }
-            // for each attribute in the list
-            for( Attribute attribute : messagePipCh.getAttributes() ) {
-                for( PIPCHInterface pip : getPipList() ) {
-                    // once you find the pip that manages that attribute,
-                    // perform the
-                    // right action
-                    LinkedList<String> searchList = new LinkedList<>( pip.getAttributeIds() );
-                    if( searchList.contains( attribute.getAttributeId() ) ) {
-        
-                        switch( messagePipCh.getAction() ) {
-                            case RETRIEVE:
-                                attribute.setValue( pip.getAttributesCharacteristics().get( attribute.getAttributeId() )
-                                    .getAttributeDataType(), pip.retrieve( attribute ) );
-                                // log.info("Attribute" + new
-                                // Gson().toJson(attribute));
-                                break;
-                            case SUBSCRIBE:
-                                attribute.setValue( attribute.getAttributeDataType(), pip.subscribe( attribute ) );
-                                break;
-                            default:
-                                break;
-                        }
-                    }
-                }
-            }
-            switch( messagePipCh.getAction() ) {
-                case UNSUBSCRIBE:
-                    for( PIPCHInterface pip : getPipList() ) {
-                        pip.unsubscribe( messagePipCh.getAttributes() );
-                    }
-                    MessagePipCh response = new MessagePipCh( getIp(), messagePipCh.getSource() );
-                    response.setPurpose( PURPOSE.ATTRIBUTE_RETRIEVAL_RESPONSE );
-                    response.setAction( ACTION.UNSUBSCRIBE_RESPONSE );
-                    return response;
-                default:
-                    break;
-            }
-            return messagePipCh;
-        } catch( PIPException pip ) {
-            pip.printStackTrace();
-            return null;
-        }*/
-        return null;
-    }
-
-    /**
      * This class represents the object in charge of performing reevaluation.
      * <p>
      * Basically this thread waits for notifications coming from PIPs, when it
@@ -869,8 +805,6 @@ public final class ContextHandlerLC extends AbstractContextHandler {
      */
     private final class AttributeMonitor implements Runnable {
 
-        private int sleepTime = 100;
-
         @Override
         public void run() {
             log.info( "Attribute monitor started" );
@@ -884,12 +818,8 @@ public final class ContextHandlerLC extends AbstractContextHandler {
                         continue;
                     }
 
-                    if( !manageChanges( attributes, !message.getDestination().equals( PART.CH.toString() ) ) ) {
+                    if( !manageChanges( attributes ) ) {
                         log.warning( "Unable to handle all the changes" );
-                    }
-
-                    if( sleepTime > 0 ) {
-                        Thread.sleep( sleepTime );
                     }
                 } catch( InterruptedException e ) {
                     log.severe( e.getMessage() );
@@ -898,9 +828,9 @@ public final class ContextHandlerLC extends AbstractContextHandler {
             }
         }
 
-        private boolean manageChanges( List<Attribute> attributes, boolean isRemote ) {
+        private boolean manageChanges( List<Attribute> attributes ) {
             for( Attribute attribute : attributes ) {
-                if( !reevaluateSessions( attribute, isRemote ) ) {
+                if( !reevaluateSessions( attribute ) ) {
                     return false;
                 }
             }
@@ -933,20 +863,12 @@ public final class ContextHandlerLC extends AbstractContextHandler {
          *            changed
          * @return true if everything goes ok, false if some exception occurs
          */
-        private boolean reevaluateSessions( Attribute attribute, boolean isRemote ) {
-
+        private boolean reevaluateSessions( Attribute attribute ) {
             try {
-                // retrieve the attribute retrieval object from the JSON
-                // retrieve the list of interested sessions
                 log.info( "reevaluateSessions attrId : " + attribute.getAttributeId() );
                 List<SessionInterface> interestedSessions = retrieveSessions( attribute );
                 if( interestedSessions == null || interestedSessions.isEmpty() ) {
-                    log.info( "There are no sessions" );
-                    return true;
-                }
-                if( isRemote && interestedSessions.isEmpty() ) {
-                    // if there aren't other sessions to be reevaluated, perform a notify
-                    log.info( "There are no other sessions" );
+                    log.info( "There are no sessions to be reevaluated" );
                     return true;
                 }
                 for( SessionInterface session : interestedSessions ) {
@@ -954,10 +876,9 @@ public final class ContextHandlerLC extends AbstractContextHandler {
                 }
                 return true;
             } catch( Exception e ) {
-                log.severe( "[Reevaluate sessions error] " + e.getMessage() );
-                log.severe( e.getMessage() );
-                return false;
+                log.severe( "Error in Reevaluate sessions : " + e.getMessage() );
             }
+            return false;
         }
 
         /**
