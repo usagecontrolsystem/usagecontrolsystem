@@ -22,8 +22,8 @@ public enum CONNECTION {
 
     private String string;
 
-    public static String MSG_ERR_INCORRECT = "Incorrect communication medium : {0}";
-    public static String MSG_ERR_UNIMPLEMENTED = "Unimplemented communication medium : {0}";
+    public static final String MSG_ERR_INCORRECT = "Incorrect communication medium : {0}";
+    public static final String MSG_ERR_UNIMPLEMENTED = "Unimplemented communication medium : {0}";
 
     private CONNECTION( String string ) {
         this.string = string;
