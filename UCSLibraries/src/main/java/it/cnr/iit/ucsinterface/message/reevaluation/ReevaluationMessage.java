@@ -16,6 +16,7 @@
 package it.cnr.iit.ucsinterface.message.reevaluation;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import it.cnr.iit.ucsinterface.message.Message;
 import it.cnr.iit.ucsinterface.message.PURPOSE;
@@ -46,7 +47,7 @@ public class ReevaluationMessage extends Message {
     private static final long serialVersionUID = 1L;
 
     // the session to be reevaluated
-    private ArrayList<String> sessionId;
+    private List<String> sessionId;
     private SessionInterface session;
 
     /**
@@ -64,11 +65,11 @@ public class ReevaluationMessage extends Message {
     // ---------------------------------------------------------------------------
     // GETTERS and SETTERS
     // ---------------------------------------------------------------------------
-    public ArrayList<String> getSessionId() {
+    public List<String> getSessionId() {
         return sessionId;
     }
 
-    public void setSessionId( ArrayList<String> sessionId ) {
+    public void setSessionId( List<String> sessionId ) {
         this.sessionId = sessionId;
     }
 

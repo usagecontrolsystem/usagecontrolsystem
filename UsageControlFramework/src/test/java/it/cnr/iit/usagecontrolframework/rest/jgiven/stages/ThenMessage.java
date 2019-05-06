@@ -125,4 +125,30 @@ public class ThenMessage extends Stage<ThenMessage> {
             }
         };
     }
+
+    public ThenMessage the_session_entry_is_deleted() {
+        assertNotNull( sessionId );
+        await().with().pollInterval( ONE_HUNDRED_MILLISECONDS )
+            .and().with().pollDelay( TWO_SECONDS )
+            .until( sessionForIdDeleted() );
+        return self();
+    }
+
+    private Callable<Boolean> sessionForIdDeleted() {
+        return new Callable<Boolean>() {
+            @Override
+            public Boolean call() throws Exception {
+                try {
+                    Optional<SessionInterface> sessionInterface = sessionManager.getSessionForId( sessionId );
+                    if( sessionInterface.isPresent() ) {
+                        log.warning( "Session Id is not yet deleted. Polling with 100ms interval for 10 seconds." );
+                        return false;
+                    }
+                } catch( Exception e ) {
+                    fail( e.getLocalizedMessage() );
+                }
+                return true;
+            }
+        };
+    }
 }
