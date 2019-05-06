@@ -29,7 +29,6 @@ import it.cnr.iit.ucsinterface.pdp.PDPEvaluation;
  * @author Antonio La Marra, Alessandro Rosetti
  *
  */
-
 @JsonIgnoreProperties( ignoreUnknown = true )
 public final class StartAccessResponse extends Message {
 

@@ -738,8 +738,7 @@ public final class ContextHandlerLC extends AbstractContextHandler {
 
             EndAccessResponse response = new EndAccessResponse( endAccessMessage.getDestination(),
                 endAccessMessage.getSource(), message.getMessageId() );
-            response.setResponse( pdpEvaluation );
-            response.setStatus( pdpEvaluation.getResult() );
+            response.setPDPEvaluation( pdpEvaluation );
 
             if( endAccessMessage.isScheduled() ) {
                 response.setUCSDestination();

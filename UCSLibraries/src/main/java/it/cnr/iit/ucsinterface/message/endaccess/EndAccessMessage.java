@@ -22,31 +22,26 @@ import it.cnr.iit.ucsinterface.message.PURPOSE;
 /**
  * Structure of the endaccess message
  *
- * @author antonio
+ * @author Antonio La Marra, Alessandro Rosetti
  *
  */
 public class EndAccessMessage extends Message {
 
     private static final long serialVersionUID = 1L;
-    // the session id
-    private String sessionId;
 
-    private volatile boolean initialized2 = false;
+    private String sessionId;
 
     /**
      * Constructor for an EndAccessMessage
      *
      * @param source
-     *          source of the message
+     *  source of the message
      * @param destination
-     *          destination of the message
+     *  destination of the message
      */
     public EndAccessMessage( String source, String destination ) {
         super( source, destination );
-        if( isInitialized() ) {
-            purpose = PURPOSE.ENDACCESS;
-            initialized2 = true;
-        }
+        purpose = PURPOSE.ENDACCESS;
     }
 
     /**
@@ -54,29 +49,14 @@ public class EndAccessMessage extends Message {
      */
     public EndAccessMessage() {
         super( PART.PEP.toString(), PART.CH.toString() );
-        if( isInitialized() ) {
-            purpose = PURPOSE.ENDACCESS;
-            initialized2 = true;
-        }
+        purpose = PURPOSE.ENDACCESS;
     }
 
-    public boolean setSessionId( String sessionId ) {
-        // BEGIN parameter checking
-        if( !initialized2 || sessionId == null || sessionId.isEmpty() ) {
-            initialized2 = false;
-            return false;
-        }
-        // END parameter checking
+    public void setSessionId( String sessionId ) {
         this.sessionId = sessionId;
-        return true;
     }
 
     public String getSessionId() {
-        // BEGIN parameter checking
-        if( !initialized2 ) {
-            return null;
-        }
-        // END parameter checking
         return sessionId;
     }
 

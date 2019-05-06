@@ -25,21 +25,19 @@ import it.cnr.iit.ucsinterface.pdp.PDPEvaluation;
 /**
  * This is the response provided by the UCS once it receives an endAccess
  *
- * @author antonio
+ * @author Antonio La Marra, Alessandro Rosetti
  *
  */
 public class EndAccessResponse extends Message {
 
     private static final long serialVersionUID = 1L;
-    // status of the startaccess
-    private String status;
-    // the evaluation provided by the PDP
+
     @JsonProperty
     private PDPEvaluation pdpEvaluation;
 
     public EndAccessResponse() {
         super( PART.CH.toString(), PART.PEP.toString() );
-        purpose = PURPOSE.TRYACCESS_RESPONSE;
+        purpose = PURPOSE.ENDACCESS_RESPONSE;
     }
 
     /**
@@ -47,49 +45,29 @@ public class EndAccessResponse extends Message {
      *
      * @param source      source of the message
      * @param destination destination of the message
-     * @param id          id of the message
+     * @param messageId          id of the message
      */
-    public EndAccessResponse( String source, String destination, String id ) {
-        super( source, destination, id );
+    public EndAccessResponse( String source, String destination, String messageId ) {
+        super( source, destination, messageId );
         purpose = PURPOSE.ENDACCESS_RESPONSE;
     }
 
     /**
      * Constructor for an EndAccessResponse
      *
-     * @param id the id of the message
+     * @param messageId the id of the message
      */
-    public EndAccessResponse( String id ) {
-        super( PART.CH.toString(), PART.PEP.toString(), id );
+    public EndAccessResponse( String messageId ) {
+        super( PART.CH.toString(), PART.PEP.toString(), messageId );
         purpose = PURPOSE.ENDACCESS_RESPONSE;
-    }
-
-    public boolean setStatus( String status ) {
-        // BEGIN parameter checking
-        if( status == null || status.isEmpty() ) {
-            return false;
-        }
-        // END parameter checking
-        this.status = status;
-        return true;
-    }
-
-    public String getStatus() {
-        return status;
     }
 
     public PDPEvaluation getPDPEvaluation() {
         return pdpEvaluation;
     }
 
-    public boolean setResponse( PDPEvaluation pdpEvaluation ) {
-        // BEGIN parameter checking
-        if( pdpEvaluation == null ) {
-            return false;
-        }
-        // END parameter checking
+    public void setPDPEvaluation( PDPEvaluation pdpEvaluation ) {
         this.pdpEvaluation = pdpEvaluation;
-        return true;
     }
 
 }

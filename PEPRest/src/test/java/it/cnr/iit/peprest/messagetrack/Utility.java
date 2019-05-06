@@ -57,7 +57,7 @@ public class Utility {
             DecisionType decisionType, String sessionId ) {
         PDPResponse pdpEvaluation = buildPDPResponse( decisionType );
         EndAccessResponse endAccessResponse = new EndAccessResponse( endAccessMessage.getMessageId() );
-        endAccessResponse.setResponse( pdpEvaluation );
+        endAccessResponse.setPDPEvaluation( pdpEvaluation );
         return endAccessResponse;
     }
 
