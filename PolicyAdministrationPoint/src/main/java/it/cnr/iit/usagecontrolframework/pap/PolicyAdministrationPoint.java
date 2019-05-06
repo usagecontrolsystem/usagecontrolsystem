@@ -56,13 +56,10 @@ public class PolicyAdministrationPoint implements PAPInterface {
 
     private static final String POLICY_FILE_EXTENSION = ".pol";
 
-    private static final String MSG_EX_NOT_INITIALISED = "PAP not initialised";
     private static final String MSG_ERR_POLICY_READ = "Error reading policy file : {0} -> {1}";
     private static final String MSG_ERR_POLICY_WRITE = "Error writing policy file : {0} -> {1}";
     private static final String MSG_ERR_POLICY_INVALID = "Invalid policy contents : {0}";
     private static final String MSG_WARN_POLICY_EXISTS = "Policy file already existent";
-
-    private volatile boolean initialized = false;
 
     /**
      * Constructor for the policy administration point
@@ -73,20 +70,16 @@ public class PolicyAdministrationPoint implements PAPInterface {
     public PolicyAdministrationPoint( PapProperties properties ) {
         Reject.ifNull( properties );
         this.properties = properties;
-        // TODO UCS-33 NOSONAR
-        initialized = true;
     }
 
     /**
      * retrieves the policy that has as id the policyId passed as parameter
      *
-     * @param the
-     *          policyid to be used
+     * @param the policyId to be used
      * @return the policy in string format
      */
     @Override
     public String retrievePolicy( String policyId ) {
-        Reject.ifFalse( initialized );
         Reject.ifBlank( policyId );
         Path path = getPolicyPath( policyId );
         try {
@@ -107,7 +100,6 @@ public class PolicyAdministrationPoint implements PAPInterface {
      */
     @Override
     public boolean addPolicy( String policy ) {
-        Reject.ifFalse( initialized );
         Reject.ifNull( policy );
 
         Optional<PolicyType> optPolicyType = getXACMLPolicyFromString( policy );
