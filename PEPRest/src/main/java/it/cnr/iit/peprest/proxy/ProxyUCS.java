@@ -44,7 +44,7 @@ public class ProxyUCS implements UCSCHInterface {
                 getApiNameFromPurpose( message.getPurpose() ),
                 message );
             if( response.isPresent() && response.get().getStatusCode().is2xxSuccessful() ) {
-                message.setDeliveredToDestination( true );
+                message.setDelivered( true );
             }
         } catch( Exception e ) {
             log.severe( "Error posting message : " + e.getMessage() );

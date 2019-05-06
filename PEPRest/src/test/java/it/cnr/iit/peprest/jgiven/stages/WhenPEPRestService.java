@@ -79,7 +79,7 @@ public class WhenPEPRestService extends Stage<WhenPEPRestService> {
             case ON_GOING_RESPONSE:
                 assertNotNull( message );
                 message = pepRest.onGoingEvaluation( message );
-                messageId = message.getID();
+                messageId = message.getMessageId();
                 break;
             default:
                 fail( "Unknown restOperation" );

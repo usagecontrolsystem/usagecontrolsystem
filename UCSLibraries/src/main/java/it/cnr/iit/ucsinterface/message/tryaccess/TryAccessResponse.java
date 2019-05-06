@@ -79,12 +79,6 @@ public final class TryAccessResponse extends Message {
         }
     }
 
-    @Override
-    public int compareTo( Message o ) {
-        // TODO Auto-generated method stub
-        return 0;
-    }
-
     @JsonIgnore
     public PDPEvaluation getPDPEvaluation() {
         if( tryAccessResponseContent != null ) {
@@ -110,8 +104,8 @@ public final class TryAccessResponse extends Message {
     }
 
     @Override
-    public void setId( String id ) {
-        super.setId( id );
+    public void setMessageId( String id ) {
+        super.setMessageId( id );
     }
 
     public void setTryAccessResponseContent( TryAccessResponseContent tryAccessResponseContent ) {

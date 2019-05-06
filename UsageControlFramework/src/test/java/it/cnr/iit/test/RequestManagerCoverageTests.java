@@ -63,14 +63,14 @@ public class RequestManagerCoverageTests extends UCFBaseTests {
             throws JAXBException, URISyntaxException, IOException, NoSuchMethodException, SecurityException,
             InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
         RequestManagerLC requestManager = getRequestManager( properties );
-        Message message = new Message( "", "" );
+        Message message = new Message( "a", "a", "a" );
         requestManager.setInterfaces( getMockedContextHandlerInterface(),
-            getMockedPEPMap( "", "" ),
+            getMockedPEPMap( "a", "" ),
             getMockedNodeInterface(),
             getMockedForwardingQueueToRMInterface( message ) );
 
         testRequestManager( requestManager );
-        message.setDestinationType();
+        message.setUCSDestination();
         testRequestManager( requestManager );
     }
 

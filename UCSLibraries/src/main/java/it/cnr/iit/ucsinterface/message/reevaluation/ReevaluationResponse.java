@@ -35,7 +35,7 @@ public class ReevaluationResponse extends Message {
     private static final Logger log = Logger.getLogger( ReevaluationResponse.class.getName() );
 
     private static final long serialVersionUID = 1L;
-    // flag that states the status of this class
+
     private volatile boolean chPepInitialized = false;
 
     // the PDP evaluation
@@ -96,11 +96,6 @@ public class ReevaluationResponse extends Message {
             purpose = PURPOSE.REEVALUATION_RESPONSE;
             chPepInitialized = true;
         }
-    }
-
-    @Override
-    public int compareTo( Message o ) {
-        return 0;
     }
 
     public void setPDPEvaluation( PDPEvaluation pdpEvaluation ) {

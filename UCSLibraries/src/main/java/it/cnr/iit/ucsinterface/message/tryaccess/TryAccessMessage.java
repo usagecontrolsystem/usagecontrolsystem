@@ -83,12 +83,6 @@ public final class TryAccessMessage extends Message {
         }
     }
 
-    @Override
-    public int compareTo( Message o ) {
-        // TODO Auto-generated method stub
-        return 0;
-    }
-
     public String getPepUri() {
         if( isInitialized ) {
             return content.getPepUri();

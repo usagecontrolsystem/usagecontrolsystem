@@ -31,7 +31,6 @@ public class EndAccessMessage extends Message {
     // the session id
     private String sessionId;
 
-    // flag that states if this class has been correctly initialized
     private volatile boolean initialized2 = false;
 
     /**
@@ -79,11 +78,6 @@ public class EndAccessMessage extends Message {
         }
         // END parameter checking
         return sessionId;
-    }
-
-    @Override
-    public int compareTo( Message o ) {
-        return 0;
     }
 
 }

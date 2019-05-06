@@ -82,11 +82,6 @@ public class EndAccessResponse extends Message {
         return pdpEvaluation;
     }
 
-    @Override
-    public int compareTo( Message o ) {
-        return 0;
-    }
-
     public boolean setResponse( PDPEvaluation pdpEvaluation ) {
         // BEGIN parameter checking
         if( pdpEvaluation == null ) {

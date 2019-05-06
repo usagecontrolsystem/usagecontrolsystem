@@ -62,7 +62,7 @@ public class GivenMessage extends Stage<GivenMessage> {
 
     public GivenMessage an_associated_messageId( @Hidden int index ) {
         assertNotNull( messageIds );
-        message.setId( messageIds.get( index ) );
+        message.setMessageId( messageIds.get( index ) );
         return self();
     }
 
@@ -75,7 +75,7 @@ public class GivenMessage extends Stage<GivenMessage> {
         pdpEvaluation.setSessionId( sessionId );
         ReevaluationResponse reevaluationResponse = new ReevaluationResponse( sessionId );
         reevaluationResponse.setPDPEvaluation( pdpEvaluation );
-        reevaluationResponse.setId( UUID.randomUUID().toString() );
+        reevaluationResponse.setMessageId( UUID.randomUUID().toString() );
         return reevaluationResponse;
     }
 
@@ -116,7 +116,7 @@ public class GivenMessage extends Stage<GivenMessage> {
         content.setPDPEvaluation( pdpEvaluation );
         TryAccessResponse tryAccessResponse = new TryAccessResponse( sessionId );
         tryAccessResponse.setTryAccessResponseContent( content );
-        tryAccessResponse.setId( messageId );
+        tryAccessResponse.setMessageId( messageId );
         return tryAccessResponse;
     }
 
@@ -127,7 +127,7 @@ public class GivenMessage extends Stage<GivenMessage> {
         PDPResponse pdpEvaluation = buildPDPResponse( decisionType );
         StartAccessResponse startAccessResponse = new StartAccessResponse( sessionId );
         startAccessResponse.setResponse( pdpEvaluation );
-        startAccessResponse.setId( messageId );
+        startAccessResponse.setMessageId( messageId );
         return startAccessResponse;
     }
 
@@ -138,11 +138,11 @@ public class GivenMessage extends Stage<GivenMessage> {
         PDPResponse pdpEvaluation = buildPDPResponse( decisionType );
         EndAccessResponse endAccessResponse = new EndAccessResponse( sessionId );
         endAccessResponse.setResponse( pdpEvaluation );
-        endAccessResponse.setId( messageId );
+        endAccessResponse.setMessageId( messageId );
         return endAccessResponse;
     }
 
     public String getMessageId() {
-        return message.getID();
+        return message.getMessageId();
     }
 }

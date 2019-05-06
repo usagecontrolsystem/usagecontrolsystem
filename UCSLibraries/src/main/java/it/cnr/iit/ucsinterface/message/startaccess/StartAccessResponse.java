@@ -86,11 +86,6 @@ public final class StartAccessResponse extends Message {
         return pdpEvaluation;
     }
 
-    @Override
-    public int compareTo( Message o ) {
-        return 0;
-    }
-
     public void setResponse( PDPEvaluation pdpEvaluation ) {
         this.pdpEvaluation = pdpEvaluation;
     }

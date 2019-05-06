@@ -40,8 +40,6 @@ public final class MessagePipCh extends Message {
 
     private static final long serialVersionUID = 1L;
 
-    public static final int ERROR_CODE = -10;
-
     private boolean isInitialized = false;
 
     private PipChContent content = new PipChContent();
@@ -83,14 +81,6 @@ public final class MessagePipCh extends Message {
             isInitialized = true;
             setMotivation( motivation );
         }
-    }
-
-    @Override
-    public int compareTo( Message o ) {
-        if( !isInitialized ) {
-            return ERROR_CODE;
-        }
-        return 0;
     }
 
     public void setMotivation( PipChContent content ) {

@@ -82,9 +82,9 @@ public class ExamplePEP implements PEPInterface {
         tryAccessBuilder.setPepUri( pepUri ).setPolicy( policy ).setRequest( request );
         TryAccessMessage tryAccessMessage = tryAccessBuilder.build();
         tryAccessMessage.setCallback( null, MEAN.API );
-        unanswered.put( tryAccessMessage.getID(), tryAccessMessage );
+        unanswered.put( tryAccessMessage.getMessageId(), tryAccessMessage );
         Message message = requestManager.sendMessageToCH( tryAccessMessage );
-        return tryAccessMessage.getID();
+        return tryAccessMessage.getMessageId();
 
         // return (TryAccessResponse) contextHandler.tryAccess(tryAccessMessage);
     }
@@ -94,14 +94,14 @@ public class ExamplePEP implements PEPInterface {
             PART.PEP.toString(), PART.CH.toString() );
         startAccessMessage.setSessionId( sessionId );
         startAccessMessage.setCallback( null, MEAN.API );
-        unanswered.put( startAccessMessage.getID(), startAccessMessage );
+        unanswered.put( startAccessMessage.getMessageId(), startAccessMessage );
         try {
             Message message = requestManager.sendMessageToCH( startAccessMessage );
         } catch( Exception e ) {
             log.severe( String.format( MSG_ERR_SEND_CH, e.getMessage() ) );
             return null;
         }
-        return startAccessMessage.getID();
+        return startAccessMessage.getMessageId();
     }
 
     private String endAccess( String sessionId ) {
@@ -109,14 +109,14 @@ public class ExamplePEP implements PEPInterface {
             PART.PEP.toString(), PART.CH.toString() );
         endAccessMessage.setSessionId( sessionId );
         endAccessMessage.setCallback( null, MEAN.API );
-        unanswered.put( endAccessMessage.getID(), endAccessMessage );
+        unanswered.put( endAccessMessage.getMessageId(), endAccessMessage );
         try {
             Message message = requestManager.sendMessageToCH( endAccessMessage );
         } catch( Exception e ) {
             log.severe( String.format( MSG_ERR_SEND_CH, e.getMessage() ) );
             return null;
         }
-        return endAccessMessage.getID();
+        return endAccessMessage.getMessageId();
     }
 
     /*
@@ -172,7 +172,7 @@ public class ExamplePEP implements PEPInterface {
 
     @Override
     public String receiveResponse( Message message ) {
-        responses.put( message.getID(), message );
+        responses.put( message.getMessageId(), message );
         return "";
     }
 

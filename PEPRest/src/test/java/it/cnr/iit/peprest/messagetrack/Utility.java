@@ -40,7 +40,7 @@ public class Utility {
         TryAccessResponseContent content = new TryAccessResponseContent();
         content.setSessionId( sessionId );
         content.setPDPEvaluation( pdpEvaluation );
-        TryAccessResponse tryAccessResponse = new TryAccessResponse( message.getID() );
+        TryAccessResponse tryAccessResponse = new TryAccessResponse( message.getMessageId() );
         tryAccessResponse.setTryAccessResponseContent( content );
         return tryAccessResponse;
     }
@@ -48,7 +48,7 @@ public class Utility {
     public static StartAccessResponse buildStartAccessResponse( StartAccessMessage startAccessMessage,
             DecisionType decisionType, String sessionId ) {
         PDPResponse pdpEvaluation = buildPDPResponse( decisionType );
-        StartAccessResponse startAccessResponse = new StartAccessResponse( startAccessMessage.getID() );
+        StartAccessResponse startAccessResponse = new StartAccessResponse( startAccessMessage.getMessageId() );
         startAccessResponse.setResponse( pdpEvaluation );
         return startAccessResponse;
     }
@@ -56,7 +56,7 @@ public class Utility {
     public static EndAccessResponse buildEndAccessResponse( EndAccessMessage endAccessMessage,
             DecisionType decisionType, String sessionId ) {
         PDPResponse pdpEvaluation = buildPDPResponse( decisionType );
-        EndAccessResponse endAccessResponse = new EndAccessResponse( endAccessMessage.getID() );
+        EndAccessResponse endAccessResponse = new EndAccessResponse( endAccessMessage.getMessageId() );
         endAccessResponse.setResponse( pdpEvaluation );
         return endAccessResponse;
     }

@@ -57,6 +57,7 @@ public class RequestManagerLC extends AsynchronousRequestManager {
 
     private static final Logger log = Logger.getLogger( RequestManagerLC.class.getName() );
 
+    private String host;
     /*
      * This is the pool of thread in charge of polling the queue to retrieve
      * messages coming to the CH
@@ -66,13 +67,19 @@ public class RequestManagerLC extends AsynchronousRequestManager {
     /*
      * This is the thread in charge of handling the operations requested from a
      * remote PIP except from reevaluation.
-
+    
     private ExecutorService attributeSupplier;
     */
 
     public RequestManagerLC( GeneralProperties properties, RequestManagerProperties rmProperties ) {
         super( properties, rmProperties );
-        initialize();
+
+        Optional<URI> uri = Utility.parseUri( properties.getBaseUri() );
+        Reject.ifAbsent( uri );
+        host = uri.get().getHost(); // NOSONAR
+        Reject.ifBlank( host );
+
+        initializeInquirers();
     }
 
     /**
@@ -80,7 +87,7 @@ public class RequestManagerLC extends AsynchronousRequestManager {
      *
      * @return true if everything goes fine, false in case of exceptions
     */
-    private boolean initialize() {
+    private boolean initializeInquirers() {
         try {
             inquirers = Executors.newFixedThreadPool( 2 );
             inquirers.submit( new ContextHandlerInquirer() );
@@ -123,16 +130,14 @@ public class RequestManagerLC extends AsynchronousRequestManager {
     }
 
     private void sendResponse( Message message ) {
-        Message original;
+        Message original = getForwardingQueue().getOriginalSource( message.getMessageId() );
 
         // Case in which we have to forward a response to a remote node
-        if( ( original = getForwardingQueue()
-            .getOriginalSource( message.getID() ) ) != null ) {
+        if( original != null ) {
             reswap( message, original );
-            getPEPInterface().get( message.getDestination() )
-                .receiveResponse( message );
+            getPEPInterface().get( message.getDestination() ).receiveResponse( message );
         } else {
-            if( message.getDestinationType() ) {
+            if( message.getUCSDestination() ) {
                 getNodeInterface().sendMessage( message );
             } else {
                 getPEPInterface().get( message.getDestination() )
@@ -143,16 +148,10 @@ public class RequestManagerLC extends AsynchronousRequestManager {
 
     private void reswap( Message message, Message original ) {
         message.setDestination( original.getSource() );
-        message.setSourcePort( original.getSourcePort() );
         message.setSource( original.getDestination() );
     }
 
     private void sendReevaluation( ReevaluationResponse reevaluation ) {
-        Optional<URI> uri = Utility.parseUri( properties.getBaseUri() );
-        Reject.ifAbsent( uri );
-        String host = uri.get().getHost(); // NOSONAR
-        Reject.ifBlank( host );
-
         log.log( Level.INFO, "[TIME] Effectively Sending on going evaluation {0}",
             System.currentTimeMillis() );
 
@@ -246,9 +245,9 @@ public class RequestManagerLC extends AsynchronousRequestManager {
      *
      * @author antonio
      *
-    
+
     private class AttributeSupplier implements Callable<Void> {
-    
+
     	@Override
     	public Void call() throws Exception {
     		while (true) {
@@ -295,7 +294,7 @@ public class RequestManagerLC extends AsynchronousRequestManager {
      * @param message
      *          the message returned by the context handler
      * @return the message to be used as response
-    
+
     private MessagePipCh createResponse(Message message) {
     	MessagePipCh chResponse = (MessagePipCh) message;
     	switch (chResponse.getAction()) {

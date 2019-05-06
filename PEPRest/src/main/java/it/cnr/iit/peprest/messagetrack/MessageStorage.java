@@ -63,18 +63,18 @@ public class MessageStorage implements MessageStorageInterface, MessagesPerSessi
             log.severe( "Message is null" );
             return false;
         }
-        if( messageFlow.containsKey( message.getID() ) ) {
+        if( messageFlow.containsKey( message.getMessageId() ) ) {
             return mergeMessages( message );
         } else if( message instanceof TryAccessMessage ) {
             return addNewMessage( message );
         } else if( message instanceof StartAccessMessage ) {
-            addMessageId( ( (StartAccessMessage) message ).getSessionId(), message.getID() );
+            addMessageId( ( (StartAccessMessage) message ).getSessionId(), message.getMessageId() );
             return addNewMessage( message );
         } else if( message instanceof EndAccessMessage ) {
-            addMessageId( ( (EndAccessMessage) message ).getSessionId(), message.getID() );
+            addMessageId( ( (EndAccessMessage) message ).getSessionId(), message.getMessageId() );
             return addNewMessage( message );
         } else if( message instanceof ReevaluationResponse ) {
-            addMessageId( ( (ReevaluationResponse) message ).getPDPEvaluation().getSessionId(), message.getID() );
+            addMessageId( ( (ReevaluationResponse) message ).getPDPEvaluation().getSessionId(), message.getMessageId() );
             return addNewMessage( message );
         } else {
             throw new IllegalArgumentException( "Invalid message" );
@@ -82,7 +82,7 @@ public class MessageStorage implements MessageStorageInterface, MessagesPerSessi
     }
 
     private boolean mergeMessages( Message message ) {
-        MessageInformations messageInformations = messageFlow.get( message.getID() );
+        MessageInformations messageInformations = messageFlow.get( message.getMessageId() );
         if( message instanceof TryAccessResponse ) {
             addMessagePerSession( (TryAccessResponse) message );
             messageInformations.merge( (TryAccessResponse) message );
@@ -135,7 +135,7 @@ public class MessageStorage implements MessageStorageInterface, MessagesPerSessi
     private void addMessagePerSession( TryAccessResponse message ) {
         if( message.getPDPEvaluation().getResult().equals( DecisionType.PERMIT.value() ) ) {
             messagesPerSession.put( message.getSessionId(), new LinkedList<>() );
-            addMessageId( message.getSessionId(), message.getID() );
+            addMessageId( message.getSessionId(), message.getMessageId() );
         }
     }
 

@@ -15,15 +15,13 @@
  ******************************************************************************/
 package it.cnr.iit.ucsinterface.message;
 
-import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.logging.Logger;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import it.cnr.iit.utility.JsonUtility;
+import it.cnr.iit.utility.errorhandling.Reject;
 
 /**
  * This is the class message.
@@ -57,13 +55,14 @@ import it.cnr.iit.utility.JsonUtility;
  */
 
 @JsonIgnoreProperties( ignoreUnknown = true )
-public class Message implements Comparable<Message>, Serializable {
-    private static final Logger log = Logger.getLogger( Message.class.getName() );
+public class Message {
+
+    // private static final Logger log = Logger.getLogger( Message.class.getName() );
 
     private static final long serialVersionUID = 1L;
 
     // source of the message
-    protected String sourceAddress;
+    protected String source;
     // port on which the source expects the reply
     protected String sourcePort;
     // destination of the message
@@ -76,8 +75,9 @@ public class Message implements Comparable<Message>, Serializable {
     protected Object callback;
     // mean on which we expect to receive the response to the message
     private MEAN mean;
-    // id of the message
-    private String id;
+
+    private String messageId;
+
     private boolean ucsDestination = false;
 
     // this field states if the message has already passed a scheduler or not
@@ -85,103 +85,42 @@ public class Message implements Comparable<Message>, Serializable {
 
     private volatile boolean initialized = false;
 
-    private boolean deliveredToDestination = false;
+    private boolean delivered = false;
 
-    /**
-     * Constructor for the message class.
-     *
-     * @param source
-     *          the source of the message
-     * @param destination
-     *          the destination of the message
-     * @param motivation
-     *          the motivation of the message
-     */
     public Message( String source, String destination ) {
-        id = "ID:" + UUID.randomUUID();
-        // BEGIN parameter checking
-        if( ( source == null ) || ( destination == null ) ) {
-            log.info( "[Message]" + source + "\t" + destination );
-            return;
-        }
-        // END parameter checking
-        this.sourceAddress = source;
+        Reject.ifBlank( source );
+        Reject.ifBlank( destination );
+        this.source = source;
         this.destination = destination;
+        setRandomMessageID();
         initialized = true;
     }
 
-    /**
-     * Constructor for the message class.
-     *
-     * @param source
-     *          the source of the message
-     * @param destination
-     *          the destination of the message
-     * @param motivation
-     *          the motivation of the message
-     */
-    public Message( String source, String destination, String id ) {
-        this.id = id;
-        // BEGIN parameter checking
-        if( ( source == null ) || ( destination == null ) ) {
-            log.severe( "[Message]" + source + "\t" + destination );
-            // TODO handle error
-            return;
-        }
-        // END parameter checking
-        this.sourceAddress = source;
-        this.destination = destination;
-        initialized = true;
+    public Message( String source, String destination, String messageId ) {
+        this( source, destination );
+        Reject.ifBlank( messageId );
+        this.messageId = messageId;
     }
 
     public Message() {
-        id = "ID:" + UUID.randomUUID();
+        setRandomMessageID();
         initialized = true;
     }
-
-    /**
-     * Constructor for a message class
-     *
-     * @param source
-     *          source of the message
-     * @param destination
-     *          destination of the message
-     * @param content
-     *          content of the message
-     * @param purpose
-     *          purpose of the message
-     */
-    public <T> Message( String source, String destination, T content, PURPOSE purpose ) {
-        id = "ID:" + UUID.randomUUID();
-        // BEGIN parameter checking
-        if( ( source == null ) || ( destination == null ) ) {
-            log.severe( "[Message]" + source + "\t" + destination );
-            return;
-        }
-        // END parameter checking
-        this.sourceAddress = source;
-        this.destination = destination;
-
-        Optional<String> optObj = JsonUtility.getJsonStringFromObject( content, false );
-        this.motivation = optObj.isPresent() ? optObj.get() : "";
-
-        initialized = true;
-    }
-
-    /* Getters */
 
     public final String getSource() {
-        if( !initialized ) {
-            return null;
-        }
-        return sourceAddress;
+        return source;
     }
 
     public final String getDestination() {
-        if( !initialized ) {
-            return null;
-        }
         return destination;
+    }
+
+    public void setSource( String source ) {
+        this.source = source;
+    }
+
+    public void setDestination( String destination ) {
+        this.destination = destination;
     }
 
     public <T> boolean setMotivation( T motivation ) {
@@ -203,30 +142,24 @@ public class Message implements Comparable<Message>, Serializable {
         return motivation;
     }
 
-    final protected boolean isInitialized() {
-        return initialized;
-    }
-
-    @Override
-    public int compareTo( Message o ) {
-        return 0;
-    }
-
     public PURPOSE getPurpose() {
         return purpose;
     }
 
-    /*
-     * public boolean setMotivation(String string) { // BEGIN parameter checking if
-     * (!initialized) { return false; } // END parameter checking motivation =
-     * string; return true; }
-     */
+    public void setPurpose( PURPOSE purpose2 ) {
+        this.purpose = purpose2;
+    }
 
-    public String getID() {
-        if( !initialized ) {
-            return null;
-        }
-        return id;
+    public String getMessageId() {
+        return messageId;
+    }
+
+    public void setMessageId( String id ) {
+        this.messageId = id;
+    }
+
+    private void setRandomMessageID() {
+        setMessageId( "ID:" + UUID.randomUUID() );
     }
 
     public void setCallback( Object callback, MEAN mean ) {
@@ -234,65 +167,40 @@ public class Message implements Comparable<Message>, Serializable {
         this.mean = mean;
     }
 
-    public MEAN getMean() {
-        return mean;
-    }
-
     public Object getCallback() {
         return callback;
     }
 
-    public void setId( String id ) {
-        this.id = id;
-    }
-
-    public void setPurpose( PURPOSE purpose2 ) {
-        this.purpose = purpose2;
-    }
-
-    public void setHops( ArrayList<String> buildRoute ) {
-        // TODO Auto-generated method stub
-
+    public MEAN getMean() {
+        return mean;
     }
 
     public void setScheduled() {
         scheduled = true;
     }
 
-    public boolean getScheduled() {
+    public boolean isScheduled() {
         return scheduled;
     }
 
-    public void setSource( String source ) {
-        this.sourceAddress = source;
-    }
-
-    public void setDestination( String destination ) {
-        this.destination = destination;
-    }
-
-    public String getSourcePort() {
-        return sourcePort;
-    }
-
-    public void setSourcePort( String sourcePort ) {
-        this.sourcePort = sourcePort;
-    }
-
-    public void setDestinationType() {
+    public void setUCSDestination() {
         ucsDestination = true;
     }
 
-    public boolean getDestinationType() {
+    public boolean getUCSDestination() {
         return ucsDestination;
     }
 
-    public boolean isDeliveredToDestination() {
-        return deliveredToDestination;
+    public boolean isDelivered() {
+        return delivered;
     }
 
-    public void setDeliveredToDestination( boolean deliveredToDestination ) {
-        this.deliveredToDestination = deliveredToDestination;
+    public void setDelivered( boolean delivered ) {
+        this.delivered = delivered;
+    }
+
+    final protected boolean isInitialized() {
+        return initialized;
     }
 
 }

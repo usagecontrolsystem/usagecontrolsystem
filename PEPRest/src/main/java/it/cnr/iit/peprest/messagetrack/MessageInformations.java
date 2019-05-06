@@ -56,7 +56,7 @@ public class MessageInformations {
 
     public static MessageInformations fromTryAccessMessage( TryAccessMessage message ) {
         MessageInformations messageInformations = new MessageInformations();
-        messageInformations.messageId = message.getID();
+        messageInformations.messageId = message.getMessageId();
         messageInformations.callerResponse = new CallerResponse();
         messageInformations.callerResponse.setStatus( STATUS.TRYACCESS_SENT );
         return messageInformations;
@@ -64,7 +64,7 @@ public class MessageInformations {
 
     public static MessageInformations fromStartAccessMessage( StartAccessMessage message ) {
         MessageInformations messageInformations = new MessageInformations();
-        messageInformations.messageId = message.getID();
+        messageInformations.messageId = message.getMessageId();
         messageInformations.callerResponse = new CallerResponse();
         messageInformations.callerResponse.setStatus( STATUS.STARTACCESS_SENT );
         messageInformations.callerResponse.setSessionId( message.getSessionId() );
@@ -73,7 +73,7 @@ public class MessageInformations {
 
     public static MessageInformations fromEndAccessMessage( EndAccessMessage message ) {
         MessageInformations messageInformations = new MessageInformations();
-        messageInformations.messageId = message.getID();
+        messageInformations.messageId = message.getMessageId();
         messageInformations.callerResponse = new CallerResponse();
         messageInformations.callerResponse.setStatus( STATUS.ENDACCESS_SENT );
         return messageInformations;
@@ -119,7 +119,7 @@ public class MessageInformations {
 
     public static MessageInformations fromReevaluationResponse( ReevaluationResponse message ) {
         MessageInformations messageInformations = new MessageInformations();
-        messageInformations.messageId = message.getID();
+        messageInformations.messageId = message.getMessageId();
         messageInformations.callerResponse = new CallerResponse();
         if( message.getPDPEvaluation().getResult().equals( DecisionType.PERMIT.value() ) ) {
             messageInformations.callerResponse.setStatus( STATUS.SESSION_RESUMED );

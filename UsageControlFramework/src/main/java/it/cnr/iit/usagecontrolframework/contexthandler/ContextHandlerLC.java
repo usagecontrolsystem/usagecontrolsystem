@@ -204,23 +204,23 @@ public final class ContextHandlerLC extends AbstractContextHandler {
              * this node
              */
             insertInSessionManager( sessionId, policy, request, status,
-                tryAccess.getScheduled() ? tryAccess.getPepUri()
+                tryAccess.isScheduled() ? tryAccess.getPepUri()
                         : uri.getHost() + PEP_ID_SEPARATOR + tryAccess.getSource(),
-                policyHelper, tryAccess.getScheduled() ? tryAccess.getSource() : uri.getHost() );
+                policyHelper, tryAccess.isScheduled() ? tryAccess.getSource() : uri.getHost() );
 
             log.log( Level.INFO, "[TIME] permit tryAccess ends at {0}", new Object[] { System.currentTimeMillis() } );
 
         }
         getObligationManager().translateObligations( pdpEvaluation, sessionId, ContextHandlerConstants.TRY_STATUS );
 
-        TryAccessResponse tryAccessResponse = new TryAccessResponse( uri.getHost(), tryAccess.getSource(), message.getID() );
+        TryAccessResponse tryAccessResponse = new TryAccessResponse( uri.getHost(), tryAccess.getSource(), message.getMessageId() );
         TryAccessResponseContent tryAccessResponseContent = new TryAccessResponseContent();
         tryAccessResponseContent.setSessionId( sessionId );
         tryAccessResponseContent.setStatus( pdpResponse );
         tryAccessResponseContent.setPDPEvaluation( pdpEvaluation );
         tryAccessResponse.setTryAccessResponseContent( tryAccessResponseContent );
-        if( tryAccess.getScheduled() ) {
-            tryAccessResponse.setDestinationType();
+        if( tryAccess.isScheduled() ) {
+            tryAccessResponse.setUCSDestination();
         }
         getRequestManagerToChInterface().sendMessageToOutside( tryAccessResponse );
     }
@@ -506,7 +506,7 @@ public final class ContextHandlerLC extends AbstractContextHandler {
         log.log( Level.INFO, "[TIME] startaccess begin scheduling at {0}", new Object[] { System.currentTimeMillis() } );
 
         StartAccessResponse response = new StartAccessResponse( startAccessMessage.getDestination(),
-            startAccessMessage.getSource(), message.getID() );
+            startAccessMessage.getSource(), message.getMessageId() );
 
         // check if there actually is a request to reevaluate for the received
         // session id
@@ -567,8 +567,8 @@ public final class ContextHandlerLC extends AbstractContextHandler {
                 "[Context Handler] Startaccess: Some problem occurred during execution of revokaccess for session "
                         + sessionId );
         }
-        if( startAccessMessage.getScheduled() ) {
-            response.setDestinationType();
+        if( startAccessMessage.isScheduled() ) {
+            response.setUCSDestination();
         }
         getRequestManagerToChInterface().sendMessageToOutside( response );
     }
@@ -794,12 +794,12 @@ public final class ContextHandlerLC extends AbstractContextHandler {
             getObligationManager().translateObligations( pdpEvaluation, sessionId, ContextHandlerConstants.END_STATUS );
 
             EndAccessResponse response = new EndAccessResponse( endAccessMessage.getDestination(),
-                endAccessMessage.getSource(), message.getID() );
+                endAccessMessage.getSource(), message.getMessageId() );
             response.setResponse( pdpEvaluation );
             response.setStatus( pdpEvaluation.getResult() );
 
-            if( endAccessMessage.getScheduled() ) {
-                response.setDestinationType();
+            if( endAccessMessage.isScheduled() ) {
+                response.setUCSDestination();
             }
 
             // access must be revoked

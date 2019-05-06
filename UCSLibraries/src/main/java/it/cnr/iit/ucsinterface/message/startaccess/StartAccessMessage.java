@@ -34,17 +34,8 @@ public final class StartAccessMessage extends Message {
     // id of the session that has to be started
     private String sessionId;
 
-    // initialized flag
     private volatile boolean isInitialized = false;
 
-    /**
-     * Constructor of the StartAccessMessage
-     *
-     * @param source
-     *          the source of the message
-     * @param destination
-     *          the destination of the message
-     */
     public StartAccessMessage( String source, String destination ) {
         super( source, destination );
         if( isInitialized() ) {
@@ -54,9 +45,6 @@ public final class StartAccessMessage extends Message {
 
     }
 
-    /**
-     * Default constructor of the StartAccessMessage
-     */
     public StartAccessMessage() {
         super( PART.PEP.toString(), PART.CH.toString() );
         if( isInitialized() ) {
@@ -66,9 +54,6 @@ public final class StartAccessMessage extends Message {
 
     }
 
-    // ---------------------------------------------------------------------------
-    // GETTERS and SETTERS
-    // ---------------------------------------------------------------------------
     public boolean setSessionId( String sessionId ) {
         // BEGIN parameter checking
         if( !isInitialized || sessionId == null || sessionId.isEmpty() ) {
@@ -87,11 +72,6 @@ public final class StartAccessMessage extends Message {
         }
         // END parameter checking
         return sessionId;
-    }
-
-    @Override
-    public int compareTo( Message o ) {
-        return 0;
     }
 
 }

@@ -95,7 +95,7 @@ public class ContextHandlerCoverageTests extends UCFBaseTests {
             getSessionManagerForStatus( testProperties.getSessionId(), policy, request, ContextHandlerConstants.TRY_STATUS ) );
         // this line makes the start access to take the deny path
         contextHandler.setPdpInterface( getMockedPDP( getMockedPDPEvaluation( DecisionType.DENY ) ) );
-        StartAccessMessage startAccessMessage = buildStartAccessMessage( testProperties.getSessionId(), "", "" );
+        StartAccessMessage startAccessMessage = buildStartAccessMessage( testProperties.getSessionId(), "a", "a" );
         contextHandler.startAccess( startAccessMessage );
 
         contextHandler.stopMonitoringThread();
@@ -113,14 +113,14 @@ public class ContextHandlerCoverageTests extends UCFBaseTests {
         /* startAccess */
         contextHandler.setSessionManagerInterface(
             getSessionManagerForStatus( testProperties.getSessionId(), policy, request, ContextHandlerConstants.TRY_STATUS ) );
-        StartAccessMessage startAccessMessage = buildStartAccessMessage( testProperties.getSessionId(), "", "" );
+        StartAccessMessage startAccessMessage = buildStartAccessMessage( testProperties.getSessionId(), "a", "a" );
         contextHandler.startAccess( startAccessMessage );
 
         /* endAccess */
         contextHandler.setSessionManagerInterface(
             getSessionManagerForStatus( testProperties.getSessionId(), policy, request, ContextHandlerConstants.START_STATUS ) );
         contextHandler.setPdpInterface( getMockedPDP( getMockedPDPEvaluation( DecisionType.DENY ) ) );
-        EndAccessMessage endAccessMessage = buildEndAccessMessage( testProperties.getSessionId(), "", "" );
+        EndAccessMessage endAccessMessage = buildEndAccessMessage( testProperties.getSessionId(), "a", "a" );
         contextHandler.endAccess( endAccessMessage );
 
         contextHandler.stopMonitoringThread();
@@ -138,22 +138,22 @@ public class ContextHandlerCoverageTests extends UCFBaseTests {
         /* startAccess */
         contextHandler.setSessionManagerInterface(
             getSessionManagerForStatus( testProperties.getSessionId(), policy, request, ContextHandlerConstants.TRY_STATUS ) );
-        StartAccessMessage startAccessMessage = buildStartAccessMessage( testProperties.getSessionId(), "", "" );
+        StartAccessMessage startAccessMessage = buildStartAccessMessage( testProperties.getSessionId(), "a", "a" );
         contextHandler.startAccess( startAccessMessage );
 
         /* reevaluate */
-        ReevaluationMessage reevaluationMessage = buildReevaluationMessage( testProperties.getSessionId(), "", "" );
+        ReevaluationMessage reevaluationMessage = buildReevaluationMessage( testProperties.getSessionId(), "a", "a" );
         reevaluationMessage.setSession( getMockedSessionInterface( policy, request, ContextHandlerConstants.START_STATUS ) );
         contextHandler.reevaluate( reevaluationMessage );
 
-        MessagePipCh messagePipCh = buildPipChMessage( testProperties.getSessionId(), "", "" );
+        MessagePipCh messagePipCh = buildPipChMessage( testProperties.getSessionId(), "a", "a" );
         messagePipCh.addAttribute( getNewAttribute( "virus", Category.ENVIRONMENT, DataType.INTEGER, "1" ) );
         contextHandler.attributeChanged( messagePipCh );
 
         /* endAccess */
         contextHandler.setSessionManagerInterface(
             getSessionManagerForStatus( testProperties.getSessionId(), policy, request, ContextHandlerConstants.START_STATUS ) );
-        EndAccessMessage endAccessMessage = buildEndAccessMessage( testProperties.getSessionId(), "", "" );
+        EndAccessMessage endAccessMessage = buildEndAccessMessage( testProperties.getSessionId(), "a", "a" );
         contextHandler.endAccess( endAccessMessage );
 
         contextHandler.stopMonitoringThread();
