@@ -17,7 +17,6 @@
 		<jclouds.version>1.9.1</jclouds.version>
 		<springfox.version>2.2.2</springfox.version>
 		<swagger.version>1.5.3</swagger.version>
-		<start-class>it.cnr.iit.usagecontrolframework.communication.Main</start-class>
 	</properties>
 
 	<parent>
