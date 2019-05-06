@@ -56,7 +56,7 @@ public class GivenPEPRestSimulator extends Stage<GivenPEPRestSimulator> {
         return self();
     }
 
-    public GivenPEPRestSimulator a_mocked_PEPRest_for_$( @Quoted String operationUri ) {
+    public GivenPEPRestSimulator a_mocked_PEPRest_listening_on_$( @Quoted String operationUri ) {
         Optional<URI> uri = Utility.parseUri( properties.getPepList().get( 0 ).getBaseUri() );
         Reject.ifAbsent( uri );
 

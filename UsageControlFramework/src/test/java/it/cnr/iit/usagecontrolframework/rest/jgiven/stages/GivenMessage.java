@@ -27,6 +27,7 @@ import it.cnr.iit.ucs.properties.UCSProperties;
 import it.cnr.iit.ucs.properties.components.PepProperties;
 import it.cnr.iit.ucsinterface.message.MEAN;
 import it.cnr.iit.ucsinterface.message.Message;
+import it.cnr.iit.ucsinterface.message.endaccess.EndAccessMessage;
 import it.cnr.iit.ucsinterface.message.startaccess.StartAccessMessage;
 import it.cnr.iit.ucsinterface.message.tryaccess.TryAccessMessage;
 import it.cnr.iit.ucsinterface.message.tryaccess.TryAccessMessageBuilder;
@@ -89,11 +90,22 @@ public class GivenMessage extends Stage<GivenMessage> {
             case START_ACCESS:
                 message = buildStartAccessMessage();
                 break;
+            case END_ACCESS:
+                message = buildEndAccessMessage();
+                break;
             default:
                 fail( "Unknown Message Type to build." );
                 break;
         }
         return self();
+    }
+
+    private Message buildEndAccessMessage() {
+        assertNotNull( sessionId );
+        EndAccessMessage endAccessMessage = new EndAccessMessage( pepProps.getId(), pepProps.getBaseUri() );
+        endAccessMessage.setSessionId( sessionId );
+        endAccessMessage.setCallback( buildResponseInterface( pepProps, "endAccessResponse" ), MEAN.REST );
+        return endAccessMessage;
     }
 
     public StartAccessMessage buildStartAccessMessage() {
