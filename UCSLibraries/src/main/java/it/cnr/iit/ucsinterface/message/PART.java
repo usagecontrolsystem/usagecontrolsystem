@@ -40,22 +40,4 @@ public enum PART {
         return value;
     }
 
-    public static PART fromString( String value ) {
-        if( value == null || value.equals( "" ) ) {
-            return null;
-        }
-        if( value.equals( PIP.toString() ) ) {
-            return PIP;
-        }
-        if( value.equals( PIPRetrieval.toString() ) ) {
-            return PIPRetrieval;
-        }
-        if( value.equals( CH.toString() ) ) {
-            return CH;
-        }
-        if( value.equals( PEP.toString() ) ) {
-            return PEP;
-        }
-        return null;
-    }
 }
