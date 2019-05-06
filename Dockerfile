@@ -23,7 +23,7 @@ RUN apt clean -y && rm -rf /var/lib/apt/lists/*
 RUN mkdir /usr/local/tomcat
 RUN wget https://www-eu.apache.org/dist/tomcat/tomcat-8/v8.5.40/bin/apache-tomcat-8.5.40.tar.gz -O /tmp/tomcat.tar.gz
 RUN cd /tmp && tar xvfz tomcat.tar.gz
-RUN cp -Rv /tmp/apache-tomcat-8.5.35/* /usr/local/tomcat/
+RUN cp -Rv /tmp/apache-tomcat-8.5.40/* /usr/local/tomcat/
 EXPOSE 8080
 
 ADD files /files
