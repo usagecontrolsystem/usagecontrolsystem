@@ -20,6 +20,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import it.cnr.iit.ucs.constants.CONNECTION;
@@ -77,10 +78,10 @@ public class ProxySessionManager extends Proxy implements SessionManagerInterfac
                 break;
             case SOCKET:
             case REST_API:
-                log.severe( "Unimplemented communication medium : " + properties.getCommunicationType() );
+                log.log( Level.WARNING, CONNECTION.MSG_ERR_UNIMPLEMENTED, properties.getCommunicationType() );
                 break;
             default:
-                log.severe( "Incorrect communication medium : " + properties.getCommunicationType() );
+                log.log( Level.SEVERE, CONNECTION.MSG_ERR_INCORRECT, properties.getCommunicationType() );
                 return;
         }
     }
@@ -130,7 +131,7 @@ public class ProxySessionManager extends Proxy implements SessionManagerInterfac
                 // TODO
                 return false;
             default:
-                log.severe( "Incorrect communication medium : " + properties.getCommunicationType() );
+                log.log( Level.SEVERE, CONNECTION.MSG_ERR_INCORRECT, properties.getCommunicationType() );
                 return false;
         }
     }
@@ -154,7 +155,7 @@ public class ProxySessionManager extends Proxy implements SessionManagerInterfac
                 // TODO
                 return false;
             default:
-                log.severe( "Incorrect communication medium : " + properties.getCommunicationType() );
+                log.log( Level.SEVERE, CONNECTION.MSG_ERR_INCORRECT, properties.getCommunicationType() );
                 return false;
         }
     }

@@ -32,6 +32,7 @@ import it.cnr.iit.ucs.constants.CONNECTION;
  *
  */
 public abstract class Proxy {
+
     public abstract boolean isInitialized();
 
     protected abstract CONNECTION getConnection();

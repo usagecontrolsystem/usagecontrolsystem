@@ -84,7 +84,7 @@ public final class ProxyPAP extends Proxy implements PAPInterface {
                 initialized = true;
                 break;
             default:
-                log.severe( "WRONG communication " + properties.getCommunicationType() );
+                log.log( Level.SEVERE, CONNECTION.MSG_ERR_INCORRECT, properties.getCommunicationType() );
                 return;
         }
     }

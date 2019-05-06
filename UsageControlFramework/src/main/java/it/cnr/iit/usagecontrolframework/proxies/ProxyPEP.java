@@ -20,6 +20,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.net.URI;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.google.common.base.Throwables;
@@ -80,10 +81,10 @@ public class ProxyPEP extends Proxy implements PEPInterface {
                 initialized = true;
                 break;
             case SOCKET:
-                log.severe( "Unimplemented communication medium : " + connectionType );
+                log.log( Level.SEVERE, CONNECTION.MSG_ERR_UNIMPLEMENTED, connectionType );
                 break;
             default:
-                log.severe( "Incorrect communication medium : " + connectionType );
+                log.log( Level.SEVERE, CONNECTION.MSG_ERR_INCORRECT, connectionType );
         }
     }
 
@@ -121,7 +122,7 @@ public class ProxyPEP extends Proxy implements PEPInterface {
             case SOCKET:
                 break;
             default:
-                log.severe( "Incorrect communication medium" );
+                log.log( Level.SEVERE, CONNECTION.MSG_ERR_INCORRECT, properties.getCommunicationType() );
                 break;
         }
 

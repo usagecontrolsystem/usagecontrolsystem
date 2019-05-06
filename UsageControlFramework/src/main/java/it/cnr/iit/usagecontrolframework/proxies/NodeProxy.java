@@ -54,13 +54,11 @@ public class NodeProxy implements NodeInterface {
 
     private static final Logger log = Logger.getLogger( NodeProxy.class.getName() );
 
-    private GeneralProperties properties;
     private CONNECTION connection = CONNECTION.REST_API;
     private URI uri;
 
     public NodeProxy( GeneralProperties properties ) {
         Reject.ifNull( properties );
-        this.properties = properties;
 
         Optional<URI> uri = Utility.parseUri( properties.getBaseUri() );
         Reject.ifAbsent( uri );
@@ -74,11 +72,8 @@ public class NodeProxy implements NodeInterface {
             case REST_API:
                 sendMessageViaREST( message );
                 break;
-            case API:
-                useApi( message ); // TODO
+            default:
                 break;
-            case SOCKET:
-                sendMessageViaSocket( message ); // TODO
         }
 
     }
@@ -130,14 +125,6 @@ public class NodeProxy implements NodeInterface {
             log.severe( "Error posting message : " + api.get() );
         }
 
-    }
-
-    private void sendMessageViaSocket( Message message ) {
-        // TODO Auto-generated method stub
-    }
-
-    private void useApi( Message message ) {
-        // TODO Auto-generated method stub
     }
 
 }

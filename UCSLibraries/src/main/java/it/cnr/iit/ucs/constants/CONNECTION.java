@@ -22,23 +22,12 @@ public enum CONNECTION {
 
     private String string;
 
+    public static String MSG_ERR_INCORRECT = "Incorrect communication medium : {0}";
+    public static String MSG_ERR_UNIMPLEMENTED = "Unimplemented communication medium : {0}";
+
     private CONNECTION( String string ) {
         this.string = string;
     }
-
-    /*
-    public static CONNECTION getCONNECTION( String string ) {
-        if( string.equals( API.toString() ) ) {
-            return API;
-        } else if( string.equals( REST_API.toString() ) ) {
-            return REST_API;
-        } else if( string.equals( SOCKET.toString() ) ) {
-            return SOCKET;
-        } else {
-            return null;
-        }
-    
-    }*/
 
     @Override
     public String toString() {
