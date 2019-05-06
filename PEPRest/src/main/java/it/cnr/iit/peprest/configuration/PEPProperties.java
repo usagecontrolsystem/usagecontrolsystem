@@ -36,8 +36,8 @@ public class PEPProperties {
     @Value( "${request-path}" )
     private String requestPath;
 
-    @Value( "${status-changed-api}" )
-    private String statusChangedApi;
+    @Value( "${api-status-changed}" )
+    private String apiStatusChanged;
 
     public String getId() {
         return id;
@@ -79,12 +79,12 @@ public class PEPProperties {
         this.requestPath = requestPath;
     }
 
-    public String getStatusChangedApi() {
-        return statusChangedApi;
+    public String getApiStatusChanged() {
+        return apiStatusChanged;
     }
 
-    public void setStatusChangedApi( String statusChangedApi ) {
-        this.statusChangedApi = statusChangedApi;
+    public void setApiStatusChanged( String apiStatusChanged ) {
+        this.apiStatusChanged = apiStatusChanged;
     }
 
 }

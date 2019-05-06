@@ -212,7 +212,7 @@ public class PEPRest implements PEPInterface {
         } catch( Exception e ) { // NOSONAR
             log.severe( "Error occured while evaluating the response: " + e.getLocalizedMessage() ); // NOSONAR
             throw Throwables.propagate( e );
-        }
+        }Api
     }
 
     private String handleResponse( Message message ) {
@@ -265,7 +265,7 @@ public class PEPRest implements PEPInterface {
     }
 
     private String buildOnGoingEvaluationInterface() {
-        return buildResponseInterface( pep.getStatusChangedApi() );
+        return buildResponseInterface( pep.getApiStatusChanged() );
     }
 
     public void end( String sessionId ) {
