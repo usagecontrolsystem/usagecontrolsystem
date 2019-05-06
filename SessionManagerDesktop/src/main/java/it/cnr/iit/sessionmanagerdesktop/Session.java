@@ -59,26 +59,6 @@ public final class Session implements SessionInterface {
     }
 
     /**
-     * Constructor
-     *
-     * @param id_              session ID
-     * @param policyOnGoing_   policy containing mutable attributes needed during
-     *                         the life-cycle of the session
-     * @param policyPost_      policy containing mutable attributes needed during
-     *                         the end-session operations
-     * @param originalRequest_ original XAML reqest containing informations about
-     *                         the subject/object
-     * @param status_          status of the session
-     * @param pepURI_          URI of the PEP that started the session
-     */
-    /*
-     * public Session(String id_, String policyOnGoing_, String policyPost_, String
-     * originalRequest_, String status_, String pepURI_) { id = id_; policyOnGoing =
-     * policyOnGoing_; policyPost = policyPost_; originalRequest = originalRequest_;
-     * status = status_; pepURI = pepURI_; }
-     */
-
-    /**
      *
      * @param id_              session ID
      * @param policySet_       policy containing all the mutable attributes needed
@@ -239,7 +219,6 @@ public final class Session implements SessionInterface {
 
             }
         }
-        // log.severe(s);
         return s;
     }
 

@@ -26,6 +26,7 @@ import it.cnr.iit.ucs.properties.components.SessionManagerProperties;
 import it.cnr.iit.ucsinterface.sessionmanager.OnGoingAttributesInterface;
 import it.cnr.iit.ucsinterface.sessionmanager.SessionInterface;
 import it.cnr.iit.ucsinterface.sessionmanager.SessionManagerInterface;
+import it.cnr.iit.utility.errorhandling.Reject;
 import it.cnr.iit.xacmlutilities.Attribute;
 
 /**
@@ -64,12 +65,8 @@ public final class SessionManagerDesktop implements SessionManagerInterface {
     }
 
     public SessionManagerDesktop( SessionManagerProperties properties ) {
-        // BEGIN parameter checking
-        if( properties == null || properties.getDbUri() == null ) {
-            return;
-        }
-        // END parameter checking
-        // TODO clean properties since only driver is used
+        Reject.ifNull( properties );
+        Reject.ifNull( properties.getDbUri() );
         databaseURL = properties.getDbUri();
         sessionDao = null;
         attributesDao = null;

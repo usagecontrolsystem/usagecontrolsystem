@@ -2,8 +2,6 @@ package it.cnr.iit.sessionmanagerdesktop.test;
 
 import static org.junit.Assert.assertTrue;
 
-import java.sql.Connection;
-import java.sql.Statement;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -13,11 +11,6 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
-import org.mockito.Matchers;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -32,7 +25,7 @@ import it.cnr.iit.ucsinterface.sessionmanager.OnGoingAttributesInterface;
 import it.cnr.iit.ucsinterface.sessionmanager.SessionInterface;
 
 @EnableConfigurationProperties
-@TestPropertySource( properties = "application-test.properties" )
+@TestPropertySource( properties = "application.properties" )
 @ActiveProfiles( "test" )
 @RunWith( SpringRunner.class )
 @SpringBootTest
@@ -92,17 +85,7 @@ public class SessionManagerTest {
     @Value( "${conf.failing}" )
     private String failingConf;
 
-    @InjectMocks
     private SessionManagerDesktop sessionManagerDesktop;
-    @Mock
-    private Connection mockConnection;
-    @Mock
-    private Statement mockStatement;
-
-    @Before
-    public void setUp() {
-        MockitoAnnotations.initMocks( this );
-    }
 
     @Before
     public void init() {
@@ -130,33 +113,15 @@ public class SessionManagerTest {
             }
         };
 
-        try {
-            sessionManagerDesktop = new SessionManagerDesktop( sessionManagerProperties );
-            // TODO do a test for failing conf
-            // properties = JAXBUtility.unmarshalToObject( XMLSessionManager.class, failingConf );
-        } catch( Exception e ) {
-            e.printStackTrace();
-        }
+        sessionManagerDesktop = new SessionManagerDesktop( sessionManagerProperties );
         sessionManagerDesktop.start();
     }
 
-    public SessionManagerTest() {
-        /*
-         * log.info(conf); try { //sessionManagerDesktop = new
-         * SessionManagerDesktop(JAXBUtility.unmarshalToObject(XMLSessionManager.class, conf)); } catch (JAXBException
-         * e) { // TODO Auto-generated catch block e.printStackTrace(); }
-         */
-    }
-
     @Test
-    public void testMockDBConnection() throws Exception {
-        // init();
-        Mockito.when( mockConnection.createStatement() ).thenReturn( mockStatement );
-        Mockito.when( mockConnection.createStatement().executeUpdate( Matchers.any() ) ).thenReturn( 1 );
+    public void testDBConnection() throws Exception {
         boolean status = sessionManagerDesktop.createEntry( sessionId, policy, request, null, null, null, null,
             tryStatus, pepuri, myip, subject, action, resource );
         Assert.assertEquals( status, true );
-        // Mockito.verify(mockConnection.createStatement(), Mockito.times(1));
         SessionInterface sessionInterface = sessionManagerDesktop.getSessionForId( sessionId ).get();
         Assert.assertNotNull( sessionInterface );
         log.info( sessionInterface.toString() );
@@ -164,13 +129,9 @@ public class SessionManagerTest {
 
     @Test
     public void testSameSessionId() throws Exception {
-        Mockito.when( mockConnection.createStatement() ).thenReturn( mockStatement );
-        Mockito.when( mockConnection.createStatement().executeUpdate( Matchers.any() ) ).thenReturn( 1 );
         boolean status = sessionManagerDesktop.createEntry( sessionId, policy, request, null, null, null, null,
             tryStatus, pepuri, myip, subject, action, resource );
         Assert.assertEquals( status, true );
-        Mockito.when( mockConnection.createStatement() ).thenReturn( mockStatement );
-        Mockito.when( mockConnection.createStatement().executeUpdate( Matchers.any() ) ).thenReturn( 1 );
         status = sessionManagerDesktop.createEntry( sessionId, policy, request, null, null, null, null, tryStatus,
             pepuri, myip, subject, resource, action );
         Assert.assertEquals( status, false );
