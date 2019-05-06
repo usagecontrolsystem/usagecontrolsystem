@@ -46,7 +46,6 @@ import it.cnr.iit.ucsinterface.message.tryaccess.TryAccessMessage;
 import it.cnr.iit.ucsinterface.message.tryaccess.TryAccessResponse;
 import it.cnr.iit.ucsinterface.message.tryaccess.TryAccessResponseContent;
 import it.cnr.iit.ucsinterface.pdp.PDPEvaluation;
-import it.cnr.iit.ucsinterface.pip.PIPCHInterface;
 import it.cnr.iit.ucsinterface.sessionmanager.OnGoingAttributesInterface;
 import it.cnr.iit.ucsinterface.sessionmanager.SessionInterface;
 import it.cnr.iit.utility.JAXBUtility;
@@ -101,8 +100,7 @@ public final class ContextHandlerLC extends AbstractContextHandler {
     private static final String TRYACCESS_POLICY = "pre";
     private static final String STARTACCESS_POLICY = "ongoing";
     private static final String ENDACCESS_POLICY = "post";
-    // this is the string that, in an URI separates the PEP from the node
-    // address
+    // this is the string that, in an URI separates the PEP from the node address
     public static final String PEP_ID_SEPARATOR = "#";
 
     // monitors if the value of an attribute changes
@@ -190,9 +188,6 @@ public final class ContextHandlerLC extends AbstractContextHandler {
 
         // policy = policyBuilder.toString();
 
-        // status of the incoming request
-        String status = ContextHandlerConstants.TRY_STATUS;
-
         String pdpResponse = pdpEvaluation.getResult();
         log.log( Level.INFO, "[TIME] tryaccess evaluated at {0} response: {1}", new Object[] { System.currentTimeMillis(), pdpResponse } );
 
@@ -203,7 +198,7 @@ public final class ContextHandlerLC extends AbstractContextHandler {
              * of the node that has the PEP attached, otherwise it is the URL of
              * this node
              */
-            insertInSessionManager( sessionId, policy, request, status,
+            insertInSessionManager( sessionId, policy, request, ContextHandlerConstants.TRY_STATUS,
                 tryAccess.isScheduled() ? tryAccess.getPepUri()
                         : uri.getHost() + PEP_ID_SEPARATOR + tryAccess.getSource(),
                 policyHelper, tryAccess.isScheduled() ? tryAccess.getSource() : uri.getHost() );
@@ -261,36 +256,18 @@ public final class ContextHandlerLC extends AbstractContextHandler {
     private RequestType makeRequestFull( RequestType requestType, List<Attribute> attributes,
             boolean complete, boolean isSubscription ) {
         List<Attribute> external = extractExternal( attributes, requestType );
+
         if( !isSubscription ) {
-            retrieveLocalAttributes( requestType );
+            pipRegistry.retrieve( requestType );
         } else {
-            subscribeLocalAttributes( requestType );
+            pipRegistry.subscribe( requestType );
         }
+
         if( !complete || !external.isEmpty() ) {
             log.warning( "Policy requires attributes that are not accessible!!" );
             return null;
         }
         return requestType;
-    }
-
-    private void retrieveLocalAttributes( RequestType requestType ) {
-        try {
-            for( PIPCHInterface pip : getPipList() ) {
-                pip.retrieve( requestType );
-            }
-        } catch( Exception e ) {
-            log.severe( e.getMessage() );
-        }
-    }
-
-    private void subscribeLocalAttributes( RequestType requestType ) {
-        try {
-            for( PIPCHInterface pip : getPipList() ) {
-                pip.subscribe( requestType );
-            }
-        } catch( Exception e ) {
-            log.severe( e.getMessage() );
-        }
     }
 
     /**
@@ -311,22 +288,12 @@ public final class ContextHandlerLC extends AbstractContextHandler {
         boolean found = false;
         for( Attribute attribute : attributes ) {
             attribute.getAttributeValueMap().clear();
-            found = findInsideInternalList( attribute ) || findInRequest( attribute, request );
+            found = pipRegistry.hasAttribute( attribute ) || findInRequest( attribute, request );
             if( !found ) {
                 externalAttributes.add( attribute );
             }
         }
         return externalAttributes;
-    }
-
-    private boolean findInsideInternalList( Attribute attribute ) {
-        for( PIPCHInterface pipBase : getPipList() ) {
-            LinkedList<String> searchList = new LinkedList<>( pipBase.getAttributeIds() );
-            if( searchList.contains( attribute.getAttributeId() ) ) {
-                return true;
-            }
-        }
-        return false;
     }
 
     private boolean findInRequest( Attribute attribute, RequestType request ) {
@@ -343,8 +310,7 @@ public final class ContextHandlerLC extends AbstractContextHandler {
     /**
      * It creates a new simple session id
      *
-     * @return session id to associate to the incoming session during the
-     *         tryaccess
+     * @return session id to associate to the incoming session during the tryaccess
      */
     private synchronized String createSessionId() {
         return UUID.randomUUID().toString();
@@ -444,9 +410,6 @@ public final class ContextHandlerLC extends AbstractContextHandler {
         return attributeIds;
     }
 
-    // ---------------------------------------------------------------------------
-    // START ACCESS
-    // ---------------------------------------------------------------------------
     /**
      * startaccess method invoked by PEP<br>
      * The following actions are performed:
@@ -578,14 +541,7 @@ public final class ContextHandlerLC extends AbstractContextHandler {
         otherSessions = attributesToUnsubscribe( session.getId(), (ArrayList<Attribute>) attributes );
 
         if( !otherSessions ) {
-            for( int i = 0; i < getPipList().size(); i++ ) {
-                try {
-                    getPipList().get( i ).unsubscribe( attributes );
-                } catch( Exception x ) {
-                    log.severe( x.getMessage() );
-                    return false;
-                }
-            }
+            pipRegistry.unsubscribe( attributes );
         }
 
         // database entry for the current must be deleted
@@ -843,7 +799,7 @@ public final class ContextHandlerLC extends AbstractContextHandler {
                     // right action
                     LinkedList<String> searchList = new LinkedList<>( pip.getAttributeIds() );
                     if( searchList.contains( attribute.getAttributeId() ) ) {
-
+        
                         switch( messagePipCh.getAction() ) {
                             case RETRIEVE:
                                 attribute.setValue( pip.getAttributesCharacteristics().get( attribute.getAttributeId() )
@@ -942,11 +898,6 @@ public final class ContextHandlerLC extends AbstractContextHandler {
             }
         }
 
-        /**
-         *
-         * @param attributes
-         * @return
-         */
         private boolean manageChanges( List<Attribute> attributes, boolean isRemote ) {
             for( Attribute attribute : attributes ) {
                 if( !reevaluateSessions( attribute, isRemote ) ) {
@@ -994,8 +945,7 @@ public final class ContextHandlerLC extends AbstractContextHandler {
                     return true;
                 }
                 if( isRemote && interestedSessions.isEmpty() ) {
-                    // if there aren't other sessions to be reevaluated, perform
-                    // a notify
+                    // if there aren't other sessions to be reevaluated, perform a notify
                     log.info( "There are no other sessions" );
                     return true;
                 }

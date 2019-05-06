@@ -16,7 +16,6 @@
 package it.cnr.iit.usagecontrolframework.contexthandler;
 
 import java.net.URI;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.logging.Level;
@@ -31,6 +30,7 @@ import it.cnr.iit.ucsinterface.pdp.PDPInterface;
 import it.cnr.iit.ucsinterface.pip.PIPCHInterface;
 import it.cnr.iit.ucsinterface.requestmanager.RequestManagerToCHInterface;
 import it.cnr.iit.ucsinterface.sessionmanager.SessionManagerInterface;
+import it.cnr.iit.usagecontrolframework.pipregistry.PIPRegistry;
 import it.cnr.iit.utility.Utility;
 import it.cnr.iit.utility.errorhandling.Reject;
 
@@ -58,10 +58,9 @@ public abstract class AbstractContextHandler implements ContextHandlerInterface 
 
     // interface to the session manager
     private SessionManagerInterface sessionManagerInterface;
-    // list of pips attached to this context handler
-    private List<PIPCHInterface> pipList = new ArrayList<>();
-    // pip retrieval used to query remote pips
-    // private PIPRMInterface pipRetrieval;
+
+    protected PIPRegistry pipRegistry;
+
     // interface to the pdp
     private PDPInterface pdpInterface;
     // interface to the pap
@@ -91,6 +90,7 @@ public abstract class AbstractContextHandler implements ContextHandlerInterface 
         Optional<URI> uri = Utility.parseUri( properties.getBaseUri() );
         Reject.ifAbsent( uri );
         this.uri = uri.get(); // NOSONAR
+        pipRegistry = new PIPRegistry();
     }
 
     protected final boolean isInitialized() {
@@ -103,10 +103,10 @@ public abstract class AbstractContextHandler implements ContextHandlerInterface 
     @Deprecated
     public void verify() {
         final String[] checkObjectsNames = {
-            "sessionManager", "pipList", "pap", "pdp",
+            "sessionManager", "pipRegistry", "pap", "pdp",
             "requestManagerToCh", "forwardingQueue", "obligationManager" };
         final boolean[] checkObjects = {
-            sessionManagerInterface == null, pipList == null,
+            sessionManagerInterface == null, pipRegistry == null,
             papInterface == null, pdpInterface == null, requestManagerToChInterface == null,
             forwardingQueue == null, obligationManager == null };
 
@@ -142,20 +142,6 @@ public abstract class AbstractContextHandler implements ContextHandlerInterface 
             return;
         }
         this.sessionManagerInterface = sessionManagerInterface;
-    }
-
-    protected final List<PIPCHInterface> getPipList() {
-        if( !initialized ) {
-            return new ArrayList<>();
-        }
-        return pipList;
-    }
-
-    public void addPip( PIPCHInterface pipInterface ) {
-        if( pipInterface == null ) {
-            return;
-        }
-        pipList.add( pipInterface );
     }
 
     protected final PDPInterface getPdpInterface() {
@@ -231,10 +217,10 @@ public abstract class AbstractContextHandler implements ContextHandlerInterface 
         this.setRequestManagerToChInterface( proxyRequestManager );
         this.setObligationManager( obligationManager );
         this.setForwardingQueue( forwardingQueue );
-        // add the pips to the context handler
-        for( PIPCHInterface pipInterface : pipList ) {
-            pipInterface.setContextHandlerInterface( this );
-            this.addPip( pipInterface );
+
+        for( PIPCHInterface pip : pipList ) {
+            pip.setContextHandlerInterface( this );
+            pipRegistry.addPIP( pip );
         }
 
         verify();
@@ -261,6 +247,14 @@ public abstract class AbstractContextHandler implements ContextHandlerInterface 
 
     protected final ForwardingQueueToCHInterface getForwardingQueue() {
         return forwardingQueue;
+    }
+
+    public PIPRegistry getPipRegistry() {
+        return pipRegistry;
+    }
+
+    protected void setPipRegistry( PIPRegistry pipRegistry ) {
+        this.pipRegistry = pipRegistry;
     }
 
 }

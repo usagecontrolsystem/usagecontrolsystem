@@ -270,12 +270,6 @@ public class UCFBaseTests {
         return pip;
     }
 
-    protected void addPips( UCSProperties prop, ContextHandlerLC contextHandler ) {
-        for( PIPCHInterface pip : getPIPS( prop ) ) {
-            contextHandler.addPip( pip );
-        }
-    }
-
     protected void addMockedPips( UCSProperties prop, ContextHandlerLC contextHandler ) {
         // TODO FIX THIS HACK
         String[] pips = { "virus", "telephone", "position", "role", "telephone", "time" };
@@ -285,7 +279,7 @@ public class UCFBaseTests {
         DataType[] pipDT = { DataType.INTEGER, DataType.INTEGER, DataType.STRING, DataType.STRING, DataType.INTEGER, DataType.STRING };
 
         for( int i = 0; i < pips.length; i++ ) {
-            contextHandler.addPip( getMockedPIPCHInterface( pips[i], pipCat[i], pipDT[i], pipVal[i] ) );
+            contextHandler.getPipRegistry().addPIP( getMockedPIPCHInterface( pips[i], pipCat[i], pipDT[i], pipVal[i] ) );
         }
     }
 
