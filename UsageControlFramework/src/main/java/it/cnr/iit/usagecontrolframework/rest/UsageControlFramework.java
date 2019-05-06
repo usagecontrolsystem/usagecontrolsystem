@@ -50,7 +50,6 @@ import it.cnr.iit.ucsinterface.node.NodeInterface;
 import it.cnr.iit.ucsinterface.obligationmanager.ObligationManagerInterface;
 import it.cnr.iit.ucsinterface.pep.PEPInterface;
 import it.cnr.iit.ucsinterface.pip.PIPBase;
-import it.cnr.iit.ucsinterface.pip.PIPCHInterface;
 import it.cnr.iit.ucsinterface.pip.PIPOMInterface;
 import it.cnr.iit.ucsinterface.pip.PIPRetrieval;
 import it.cnr.iit.ucsinterface.ucs.UCSInterface;
@@ -178,10 +177,9 @@ public class UsageControlFramework implements UCSInterface {
     }
 
     private boolean checkConnection() {
-        List<PIPCHInterface> pipchList = new ArrayList<>( pipList );
 
         contextHandler.setInterfaces( proxySessionManager, requestManager, proxyPDP,
-            proxyPAP, pipchList, pipRetrieval, obligationManager, forwardingQueue );
+            proxyPAP, new ArrayList<>( pipList ), obligationManager, forwardingQueue );
 
         try {
             contextHandler.startMonitoringThread();

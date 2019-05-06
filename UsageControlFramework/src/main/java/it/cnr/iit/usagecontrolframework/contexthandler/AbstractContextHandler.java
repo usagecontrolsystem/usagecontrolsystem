@@ -29,8 +29,6 @@ import it.cnr.iit.ucsinterface.obligationmanager.ObligationManagerInterface;
 import it.cnr.iit.ucsinterface.pap.PAPInterface;
 import it.cnr.iit.ucsinterface.pdp.PDPInterface;
 import it.cnr.iit.ucsinterface.pip.PIPCHInterface;
-import it.cnr.iit.ucsinterface.pip.PIPRMInterface;
-import it.cnr.iit.ucsinterface.pip.PIPRetrieval;
 import it.cnr.iit.ucsinterface.requestmanager.RequestManagerToCHInterface;
 import it.cnr.iit.ucsinterface.sessionmanager.SessionManagerInterface;
 import it.cnr.iit.utility.Utility;
@@ -63,7 +61,7 @@ public abstract class AbstractContextHandler implements ContextHandlerInterface 
     // list of pips attached to this context handler
     private List<PIPCHInterface> pipList = new ArrayList<>();
     // pip retrieval used to query remote pips
-    private PIPRMInterface pipRetrieval;
+    // private PIPRMInterface pipRetrieval;
     // interface to the pdp
     private PDPInterface pdpInterface;
     // interface to the pap
@@ -104,10 +102,11 @@ public abstract class AbstractContextHandler implements ContextHandlerInterface 
      */
     @Deprecated
     public void verify() {
-        final String[] checkObjectsNames = { "sessionManager", "pipList/pipRetrieval",
-            "pap", "pdp", "requestManagerToCh", "forwardingQueue", "obligationManager" };
+        final String[] checkObjectsNames = {
+            "sessionManager", "pipList", "pap", "pdp",
+            "requestManagerToCh", "forwardingQueue", "obligationManager" };
         final boolean[] checkObjects = {
-            sessionManagerInterface == null, pipList == null && pipRetrieval == null,
+            sessionManagerInterface == null, pipList == null,
             papInterface == null, pdpInterface == null, requestManagerToChInterface == null,
             forwardingQueue == null, obligationManager == null };
 
@@ -150,20 +149,6 @@ public abstract class AbstractContextHandler implements ContextHandlerInterface 
             return new ArrayList<>();
         }
         return pipList;
-    }
-
-    public void setPIPRetrieval( PIPRetrieval pipRetrieval ) {
-        if( pipRetrieval == null ) {
-            return;
-        }
-        this.pipRetrieval = pipRetrieval;
-    }
-
-    protected final PIPRMInterface getPipRetrieval() {
-        if( !initialized ) {
-            return null;
-        }
-        return pipRetrieval;
     }
 
     public void addPip( PIPCHInterface pipInterface ) {
@@ -238,7 +223,7 @@ public abstract class AbstractContextHandler implements ContextHandlerInterface 
     public final void setInterfaces( SessionManagerInterface proxySessionManager,
             RequestManagerToCHInterface proxyRequestManager, PDPInterface proxyPDP,
             PAPInterface proxyPAP, List<PIPCHInterface> pipList,
-            PIPRMInterface pipRetrieval, ObligationManagerInterface obligationManager,
+            ObligationManagerInterface obligationManager,
             ForwardingQueueToCHInterface forwardingQueue ) {
         this.setSessionManagerInterface( proxySessionManager );
         this.setPapInterface( proxyPAP );
@@ -252,11 +237,6 @@ public abstract class AbstractContextHandler implements ContextHandlerInterface 
             this.addPip( pipInterface );
         }
 
-        // add the pipRetrieval
-        if( pipRetrieval != null ) {
-            pipRetrieval.setContextHandlerInterface( this );
-        }
-        this.pipRetrieval = pipRetrieval;
         verify();
     }
 

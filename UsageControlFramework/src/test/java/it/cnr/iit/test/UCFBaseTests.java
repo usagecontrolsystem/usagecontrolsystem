@@ -95,7 +95,6 @@ public class UCFBaseTests {
         contextHandler.setSessionManagerInterface( getSessionManagerForStatus( "", "", "", ContextHandlerConstants.TRY_STATUS ) );
         contextHandler.setForwardingQueue( getMockedForwardingQueueToCHInterface() );
         contextHandler.setObligationManager( getMockedObligationManager() );
-        contextHandler.setPIPRetrieval( getMockedPipRetrieval() );
     }
 
     protected ContextHandlerLC getContextHandlerCorrectlyInitialized( UCSProperties prop,

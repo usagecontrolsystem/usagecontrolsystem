@@ -267,18 +267,8 @@ public final class ContextHandlerLC extends AbstractContextHandler {
             subscribeLocalAttributes( requestType );
         }
         if( !complete || !external.isEmpty() ) {
-            if( getPipRetrieval() != null ) {
-                log.log( Level.INFO, "[TIME] retrieve external starts at {0}", new Object[] { System.currentTimeMillis() } );
-                if( !isSubscription ) {
-                    getPipRetrieval().retrieve( requestType, external );
-                } else {
-                    getPipRetrieval().subscribe( requestType, external );
-                }
-                log.log( Level.INFO, "[TIME] retrieve external ends at {0}", new Object[] { System.currentTimeMillis() } );
-            } else {
-                log.warning( "Policy requires attributes that are not accessible!!" );
-                return null;
-            }
+            log.warning( "Policy requires attributes that are not accessible!!" );
+            return null;
         }
         return requestType;
     }
@@ -853,7 +843,7 @@ public final class ContextHandlerLC extends AbstractContextHandler {
                     // right action
                     LinkedList<String> searchList = new LinkedList<>( pip.getAttributeIds() );
                     if( searchList.contains( attribute.getAttributeId() ) ) {
-        
+
                         switch( messagePipCh.getAction() ) {
                             case RETRIEVE:
                                 attribute.setValue( pip.getAttributesCharacteristics().get( attribute.getAttributeId() )
