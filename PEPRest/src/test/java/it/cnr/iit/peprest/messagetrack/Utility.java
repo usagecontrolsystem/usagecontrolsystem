@@ -49,7 +49,7 @@ public class Utility {
             DecisionType decisionType, String sessionId ) {
         PDPResponse pdpEvaluation = buildPDPResponse( decisionType );
         StartAccessResponse startAccessResponse = new StartAccessResponse( startAccessMessage.getMessageId() );
-        startAccessResponse.setResponse( pdpEvaluation );
+        startAccessResponse.setPDPEvaluation( pdpEvaluation );
         return startAccessResponse;
     }
 

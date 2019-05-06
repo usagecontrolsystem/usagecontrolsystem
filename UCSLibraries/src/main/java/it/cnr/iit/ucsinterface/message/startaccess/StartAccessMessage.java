@@ -21,56 +21,32 @@ import it.cnr.iit.ucsinterface.message.PURPOSE;
 
 /**
  * Structure of the startaccess message.
- * <p>
- * This is the structure of the startaccess message.
- * </p>
+ * <p> This is the structure of the startaccess message.</p>
  *
- * @author antonio
+ * @author Antonio La Marra, Alessandro Rosetti
  *
  */
 public final class StartAccessMessage extends Message {
 
     private static final long serialVersionUID = 1L;
-    // id of the session that has to be started
-    private String sessionId;
 
-    private volatile boolean isInitialized = false;
+    private String sessionId;
 
     public StartAccessMessage( String source, String destination ) {
         super( source, destination );
-        if( isInitialized() ) {
-            purpose = PURPOSE.STARTACCESS;
-            isInitialized = true;
-        }
-
+        purpose = PURPOSE.STARTACCESS;
     }
 
     public StartAccessMessage() {
         super( PART.PEP.toString(), PART.CH.toString() );
-        if( isInitialized() ) {
-            purpose = PURPOSE.STARTACCESS;
-            isInitialized = true;
-        }
-
+        purpose = PURPOSE.STARTACCESS;
     }
 
-    public boolean setSessionId( String sessionId ) {
-        // BEGIN parameter checking
-        if( !isInitialized || sessionId == null || sessionId.isEmpty() ) {
-            isInitialized = false;
-            return false;
-        }
-        // END parameter checking
+    public void setSessionId( String sessionId ) {
         this.sessionId = sessionId;
-        return true;
     }
 
     public String getSessionId() {
-        // BEGIN parameter checking
-        if( !isInitialized ) {
-            return null;
-        }
-        // END parameter checking
         return sessionId;
     }
 

@@ -531,8 +531,7 @@ public final class ContextHandlerLC extends AbstractContextHandler {
 
         log.log( Level.INFO, "[TIME] startaccess ends at {0}", new Object[] { System.currentTimeMillis() } );
 
-        response.setStatus( pdpEvaluation.getResult() );
-        response.setResponse( pdpEvaluation );
+        response.setPDPEvaluation( pdpEvaluation );
 
         // PDP returns PERMIT
         if( pdpEvaluation.getResult().equalsIgnoreCase( DecisionType.PERMIT.value() ) ) {
@@ -545,7 +544,6 @@ public final class ContextHandlerLC extends AbstractContextHandler {
                 log.log( Level.WARNING, "[TIME] startaccess session {0} status not updated", sessionId );
             }
             log.log( Level.INFO, "[TIME] PERMIT startaccess ends at {0}", new Object[] { System.currentTimeMillis() } );
-            response.setStatus( pdpEvaluation.getResult() );
         } else {
             getObligationManager().translateObligations( pdpEvaluation, sessionId, ContextHandlerConstants.START_STATUS );
 

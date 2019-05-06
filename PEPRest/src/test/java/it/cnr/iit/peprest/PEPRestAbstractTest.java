@@ -96,7 +96,7 @@ public abstract class PEPRestAbstractTest {
     protected StartAccessResponse buildStartAccessResponsePermit() {
         PDPResponse pdpEvaluation = buildPDPResponse( DecisionType.PERMIT );
         StartAccessResponse startAccessResponse = new StartAccessResponse( SESSION_ID_01 );
-        startAccessResponse.setResponse( pdpEvaluation );
+        startAccessResponse.setPDPEvaluation( pdpEvaluation );
         return startAccessResponse;
     }
 

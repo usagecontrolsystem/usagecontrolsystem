@@ -51,8 +51,7 @@ public final class TryAccessResponse extends Message {
     /**
      * Constructor for a TryAccessResponse
      *
-     * @param id
-     *          the id of the request
+     * @param id the id of the request
      */
     public TryAccessResponse( String id ) {
         super( PART.CH.toString(), PART.PEP.toString(), id );

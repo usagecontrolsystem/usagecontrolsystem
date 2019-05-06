@@ -126,7 +126,7 @@ public class GivenMessage extends Stage<GivenMessage> {
         }
         PDPResponse pdpEvaluation = buildPDPResponse( decisionType );
         StartAccessResponse startAccessResponse = new StartAccessResponse( sessionId );
-        startAccessResponse.setResponse( pdpEvaluation );
+        startAccessResponse.setPDPEvaluation( pdpEvaluation );
         startAccessResponse.setMessageId( messageId );
         return startAccessResponse;
     }

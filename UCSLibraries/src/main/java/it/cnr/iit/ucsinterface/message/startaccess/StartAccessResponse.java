@@ -26,7 +26,7 @@ import it.cnr.iit.ucsinterface.pdp.PDPEvaluation;
 /**
  * This is the structure of a message used to response to a start access
  *
- * @author antonio
+ * @author Antonio La Marra, Alessandro Rosetti
  *
  */
 
@@ -34,10 +34,7 @@ import it.cnr.iit.ucsinterface.pdp.PDPEvaluation;
 public final class StartAccessResponse extends Message {
 
     private static final long serialVersionUID = 1L;
-    // status of the startaccess
-    private String status;
 
-    // the evaluation provided by the PDP
     @JsonProperty
     private PDPEvaluation pdpEvaluation;
 
@@ -51,42 +48,28 @@ public final class StartAccessResponse extends Message {
      *
      * @param source      the source
      * @param destination the destination
-     * @param id          the id of the message
+     * @param messageId          the id of the message
      */
-    public StartAccessResponse( String source, String destination, String id ) {
-        super( source, destination, id );
+    public StartAccessResponse( String source, String destination, String messageId ) {
+        super( source, destination, messageId );
         purpose = PURPOSE.STARTACCESS_RESPONSE;
     }
 
     /**
      * Constructor of the StartAccessResponse
      *
-     * @param id the id of the response
+     * @param messageId the id of the response
      */
-    public StartAccessResponse( String id ) {
-        super( PART.CH.toString(), PART.PEP.toString(), id );
+    public StartAccessResponse( String messageId ) {
+        super( PART.CH.toString(), PART.PEP.toString(), messageId );
         purpose = PURPOSE.STARTACCESS_RESPONSE;
-    }
-
-    public boolean setStatus( String status ) {
-        // BEGIN parameter checking
-        if( status == null || status.isEmpty() ) {
-            return false;
-        }
-        // END parameter checking
-        this.status = status;
-        return true;
-    }
-
-    public String getStatus() {
-        return status;
     }
 
     public PDPEvaluation getPDPEvaluation() {
         return pdpEvaluation;
     }
 
-    public void setResponse( PDPEvaluation pdpEvaluation ) {
+    public void setPDPEvaluation( PDPEvaluation pdpEvaluation ) {
         this.pdpEvaluation = pdpEvaluation;
     }
 

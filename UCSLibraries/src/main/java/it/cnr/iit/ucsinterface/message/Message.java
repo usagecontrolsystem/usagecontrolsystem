@@ -57,8 +57,6 @@ import it.cnr.iit.utility.errorhandling.Reject;
 @JsonIgnoreProperties( ignoreUnknown = true )
 public class Message {
 
-    // private static final Logger log = Logger.getLogger( Message.class.getName() );
-
     private static final long serialVersionUID = 1L;
 
     // source of the message
@@ -111,12 +109,12 @@ public class Message {
         return source;
     }
 
-    public final String getDestination() {
-        return destination;
-    }
-
     public void setSource( String source ) {
         this.source = source;
+    }
+
+    public final String getDestination() {
+        return destination;
     }
 
     public void setDestination( String destination ) {
@@ -124,15 +122,14 @@ public class Message {
     }
 
     public <T> boolean setMotivation( T motivation ) {
-        // BEGIN parameter checking
-        if( !initialized || motivation == null ) {
-            return false;
-        }
-        // END parameter checking
+        // Reject.ifNull( motivation );
         Optional<String> optObj = JsonUtility.getJsonStringFromObject( motivation, false );
-        this.motivation = optObj.isPresent() ? optObj.get() : "";
+        if( optObj.isPresent() ) {
+            this.motivation = optObj.get();
+            return true;
+        }
 
-        return true;
+        return false;
     }
 
     public String getMotivation() {
