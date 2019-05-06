@@ -21,7 +21,7 @@ RUN apt install -y mysql-server
 RUN apt clean -y && rm -rf /var/lib/apt/lists/*
 
 RUN mkdir /usr/local/tomcat
-RUN wget http://it.apache.contactlab.it/tomcat/tomcat-8/v8.5.35/bin/apache-tomcat-8.5.35.tar.gz -O /tmp/tomcat.tar.gz
+RUN wget https://www-eu.apache.org/dist/tomcat/tomcat-8/v8.5.40/bin/apache-tomcat-8.5.40.tar.gz -O /tmp/tomcat.tar.gz
 RUN cd /tmp && tar xvfz tomcat.tar.gz
 RUN cp -Rv /tmp/apache-tomcat-8.5.35/* /usr/local/tomcat/
 EXPOSE 8080
