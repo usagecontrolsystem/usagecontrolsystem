@@ -22,13 +22,10 @@
 		<module>UCSLibraries</module>
 		<module>ObligationManager</module>
 		<module>PIPReader</module>
-		<module>PIPUdpSocket</module>
 		<module>PolicyAdministrationPoint</module>
 		<module>PolicyDecisionPoint</module>
 		<module>SessionManagerDesktop</module>
 		<module>UsageControlFramework</module>
-		<module>SQLMiddleware</module>
-		<module>PIPUser</module>
 		<module>PEPRest</module>
 	</modules>
 
