@@ -9,7 +9,6 @@ import it.cnr.iit.ucsinterface.message.startaccess.StartAccessMessage;
 import it.cnr.iit.ucsinterface.message.startaccess.StartAccessResponse;
 import it.cnr.iit.ucsinterface.message.tryaccess.TryAccessMessage;
 import it.cnr.iit.ucsinterface.message.tryaccess.TryAccessResponse;
-import it.cnr.iit.ucsinterface.message.tryaccess.TryAccessResponseContent;
 import it.cnr.iit.ucsinterface.pdp.PDPResponse;
 
 import oasis.names.tc.xacml.core.schema.wd_17.DecisionType;
@@ -37,11 +36,9 @@ public class Utility {
     public static TryAccessResponse buildTryAccessResponse( TryAccessMessage message, DecisionType decisionType,
             String sessionId ) {
         PDPResponse pdpEvaluation = buildPDPResponse( decisionType );
-        TryAccessResponseContent content = new TryAccessResponseContent();
-        content.setSessionId( sessionId );
-        content.setPDPEvaluation( pdpEvaluation );
         TryAccessResponse tryAccessResponse = new TryAccessResponse( message.getMessageId() );
-        tryAccessResponse.setTryAccessResponseContent( content );
+        tryAccessResponse.setSessionId( sessionId );
+        tryAccessResponse.setPDPEvaluation( pdpEvaluation );
         return tryAccessResponse;
     }
 

@@ -43,7 +43,6 @@ import it.cnr.iit.ucsinterface.message.startaccess.StartAccessMessage;
 import it.cnr.iit.ucsinterface.message.startaccess.StartAccessResponse;
 import it.cnr.iit.ucsinterface.message.tryaccess.TryAccessMessage;
 import it.cnr.iit.ucsinterface.message.tryaccess.TryAccessResponse;
-import it.cnr.iit.ucsinterface.message.tryaccess.TryAccessResponseContent;
 import it.cnr.iit.ucsinterface.pdp.PDPEvaluation;
 import it.cnr.iit.ucsinterface.sessionmanager.OnGoingAttributesInterface;
 import it.cnr.iit.ucsinterface.sessionmanager.SessionInterface;
@@ -208,11 +207,8 @@ public final class ContextHandlerLC extends AbstractContextHandler {
         getObligationManager().translateObligations( pdpEvaluation, sessionId, ContextHandlerConstants.TRY_STATUS );
 
         TryAccessResponse tryAccessResponse = new TryAccessResponse( uri.getHost(), tryAccess.getSource(), message.getMessageId() );
-        TryAccessResponseContent tryAccessResponseContent = new TryAccessResponseContent();
-        tryAccessResponseContent.setSessionId( sessionId );
-        tryAccessResponseContent.setStatus( pdpResponse );
-        tryAccessResponseContent.setPDPEvaluation( pdpEvaluation );
-        tryAccessResponse.setTryAccessResponseContent( tryAccessResponseContent );
+        tryAccessResponse.setSessionId( sessionId );
+        tryAccessResponse.setPDPEvaluation( pdpEvaluation );
         if( tryAccess.isScheduled() ) {
             tryAccessResponse.setUCSDestination();
         }

@@ -40,7 +40,6 @@ import it.cnr.iit.ucsinterface.message.reevaluation.ReevaluationResponse;
 import it.cnr.iit.ucsinterface.message.startaccess.StartAccessMessage;
 import it.cnr.iit.ucsinterface.message.startaccess.StartAccessResponse;
 import it.cnr.iit.ucsinterface.message.tryaccess.TryAccessMessage;
-import it.cnr.iit.ucsinterface.message.tryaccess.TryAccessMessageBuilder;
 import it.cnr.iit.ucsinterface.message.tryaccess.TryAccessResponse;
 import it.cnr.iit.ucsinterface.node.NodeInterface;
 import it.cnr.iit.ucsinterface.obligationmanager.ObligationManagerInterface;
@@ -336,11 +335,9 @@ public class UCFBaseTests {
 
     protected TryAccessMessage buildTryAccessMessage( String pepId, String ucsUri, String policy, String request )
             throws URISyntaxException, IOException {
-        TryAccessMessageBuilder builder = new TryAccessMessageBuilder( pepId, ucsUri );
-        builder.setPolicy( policy );
-        builder.setRequest( request );
-
-        TryAccessMessage message = builder.build();
+        TryAccessMessage message = new TryAccessMessage( pepId, ucsUri );
+        message.setPolicy( policy );
+        message.setRequest( request );
 
         return message;
     }

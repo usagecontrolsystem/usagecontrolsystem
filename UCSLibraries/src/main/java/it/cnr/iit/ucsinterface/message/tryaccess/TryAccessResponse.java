@@ -15,8 +15,6 @@
  ******************************************************************************/
 package it.cnr.iit.ucsinterface.message.tryaccess;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
 import it.cnr.iit.ucsinterface.message.Message;
 import it.cnr.iit.ucsinterface.message.PART;
 import it.cnr.iit.ucsinterface.message.PURPOSE;
@@ -29,90 +27,45 @@ import it.cnr.iit.ucsinterface.pdp.PDPEvaluation;
  * which is the exit of the tryaccess it has performed
  * </p>
  *
- * @author antonio
+ * @author Antonio La Marra, Alessandro Rosetti
  *
  */
-
 public final class TryAccessResponse extends Message {
+
     private static final long serialVersionUID = 1L;
 
-    private TryAccessResponseContent tryAccessResponseContent;
+    private PDPEvaluation pdpEvaluation;
 
-    // states if the message has been correctly created
-    @JsonIgnore
-    private boolean responseInitialized = false;
+    private String sessionId;
 
     public TryAccessResponse() {
         super( PART.CH.toString(), PART.PEP.toString() );
-        responseInitialized = true;
         purpose = PURPOSE.TRYACCESS_RESPONSE;
     }
 
-    /**
-     * Constructor for a TryAccessResponse
-     *
-     * @param id the id of the request
-     */
-    public TryAccessResponse( String id ) {
-        super( PART.CH.toString(), PART.PEP.toString(), id );
-        if( isInitialized() ) {
-            responseInitialized = true;
-            purpose = PURPOSE.TRYACCESS_RESPONSE;
-        }
+    public TryAccessResponse( String messageId ) {
+        super( PART.CH.toString(), PART.PEP.toString(), messageId );
+        purpose = PURPOSE.TRYACCESS_RESPONSE;
     }
 
-    /**
-     * other faschion of the TryAccessResponse message
-     *
-     * @param source
-     *          the source of the message
-     * @param dest
-     *          the destination of the message
-     * @param id
-     *          the id of the request
-     */
-    public TryAccessResponse( String source, String dest, String id ) {
-        super( source, dest, id );
-        if( isInitialized() ) {
-            responseInitialized = true;
-        }
+    public TryAccessResponse( String source, String dest, String messageId ) {
+        super( source, dest, messageId );
     }
 
-    @JsonIgnore
+    public void setPDPEvaluation( PDPEvaluation pdpEvaluation ) {
+        this.pdpEvaluation = pdpEvaluation;
+    }
+
     public PDPEvaluation getPDPEvaluation() {
-        if( tryAccessResponseContent != null ) {
-            return tryAccessResponseContent.getPDPEvaluation();
-        }
-        return null;
+        return pdpEvaluation;
     }
 
-    @JsonIgnore
-    public String getStatus() {
-        if( tryAccessResponseContent != null ) {
-            return tryAccessResponseContent.getStatus();
-        }
-        return null;
+    public void setSessionId( String sessionId ) {
+        this.sessionId = sessionId;
     }
 
-    @JsonIgnore
     public String getSessionId() {
-        if( tryAccessResponseContent != null ) {
-            return tryAccessResponseContent.getSessionId();
-        }
-        return null;
-    }
-
-    @Override
-    public void setMessageId( String id ) {
-        super.setMessageId( id );
-    }
-
-    public void setTryAccessResponseContent( TryAccessResponseContent tryAccessResponseContent ) {
-        this.tryAccessResponseContent = tryAccessResponseContent;
-    }
-
-    public TryAccessResponseContent getTryAccessResponseContent() {
-        return tryAccessResponseContent;
+        return sessionId;
     }
 
 }

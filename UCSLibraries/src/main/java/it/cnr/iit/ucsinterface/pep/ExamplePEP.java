@@ -34,7 +34,6 @@ import it.cnr.iit.ucsinterface.message.reevaluation.ReevaluationResponse;
 import it.cnr.iit.ucsinterface.message.startaccess.StartAccessMessage;
 import it.cnr.iit.ucsinterface.message.startaccess.StartAccessResponse;
 import it.cnr.iit.ucsinterface.message.tryaccess.TryAccessMessage;
-import it.cnr.iit.ucsinterface.message.tryaccess.TryAccessMessageBuilder;
 import it.cnr.iit.ucsinterface.message.tryaccess.TryAccessResponse;
 import it.cnr.iit.ucsinterface.requestmanager.UCSCHInterface;
 import it.cnr.iit.utility.Utility;
@@ -77,11 +76,12 @@ public class ExamplePEP implements PEPInterface {
         String policy = Utility.readFileAbsPath( START_PATH + "/PolicyGiacomo.xml" );
         String pepUri = configuration.getBaseUri(); // TODO or host?
 
-        TryAccessMessageBuilder tryAccessBuilder = new TryAccessMessageBuilder(
-            PART.PEP.toString(), PART.CH.toString() );
-        tryAccessBuilder.setPepUri( pepUri ).setPolicy( policy ).setRequest( request );
-        TryAccessMessage tryAccessMessage = tryAccessBuilder.build();
+        TryAccessMessage tryAccessMessage = new TryAccessMessage( PART.PEP.toString(), PART.CH.toString() );
+        tryAccessMessage.setPepUri( pepUri );
+        tryAccessMessage.setPolicy( policy );
+        tryAccessMessage.setRequest( request );
         tryAccessMessage.setCallback( null, MEAN.API );
+
         unanswered.put( tryAccessMessage.getMessageId(), tryAccessMessage );
         Message message = requestManager.sendMessageToCH( tryAccessMessage );
         return tryAccessMessage.getMessageId();

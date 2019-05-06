@@ -19,7 +19,6 @@ import it.cnr.iit.ucsinterface.message.endaccess.EndAccessResponse;
 import it.cnr.iit.ucsinterface.message.reevaluation.ReevaluationResponse;
 import it.cnr.iit.ucsinterface.message.startaccess.StartAccessResponse;
 import it.cnr.iit.ucsinterface.message.tryaccess.TryAccessResponse;
-import it.cnr.iit.ucsinterface.message.tryaccess.TryAccessResponseContent;
 import it.cnr.iit.ucsinterface.pdp.PDPResponse;
 
 import oasis.names.tc.xacml.core.schema.wd_17.DecisionType;
@@ -111,12 +110,10 @@ public class GivenMessage extends Stage<GivenMessage> {
             messageId = UUID.randomUUID().toString();
         }
         PDPResponse pdpEvaluation = buildPDPResponse( decisionType );
-        TryAccessResponseContent content = new TryAccessResponseContent();
-        content.setSessionId( sessionId );
-        content.setPDPEvaluation( pdpEvaluation );
         TryAccessResponse tryAccessResponse = new TryAccessResponse( sessionId );
-        tryAccessResponse.setTryAccessResponseContent( content );
         tryAccessResponse.setMessageId( messageId );
+        tryAccessResponse.setSessionId( sessionId );
+        tryAccessResponse.setPDPEvaluation( pdpEvaluation );
         return tryAccessResponse;
     }
 

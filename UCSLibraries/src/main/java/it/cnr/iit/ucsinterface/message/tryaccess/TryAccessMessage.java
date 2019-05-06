@@ -15,11 +15,14 @@
  ******************************************************************************/
 package it.cnr.iit.ucsinterface.message.tryaccess;
 
-import java.util.logging.Logger;
-
 import it.cnr.iit.ucsinterface.message.Message;
 import it.cnr.iit.ucsinterface.message.PART;
 import it.cnr.iit.ucsinterface.message.PURPOSE;
+import it.cnr.iit.utility.JAXBUtility;
+import it.cnr.iit.utility.errorhandling.Reject;
+
+import oasis.names.tc.xacml.core.schema.wd_17.PolicyType;
+import oasis.names.tc.xacml.core.schema.wd_17.RequestType;
 
 /**
  * This is the whole object that arrives as a message to the tryaccess.
@@ -36,18 +39,17 @@ import it.cnr.iit.ucsinterface.message.PURPOSE;
  * all theses parts.
  * </p>
  *
- * @author antonio
+ * @author Antonio La Marra, Alessandro Rosetti
  *
  */
 public final class TryAccessMessage extends Message {
-    private static final Logger log = Logger.getLogger( TryAccessMessage.class.getName() );
 
     private static final long serialVersionUID = 1L;
 
-    // content of the tryaccess
-    private TryAccessMessageContent content = new TryAccessMessageContent();
-    // flag to state if the message has been correctly initialized
-    private volatile boolean isInitialized = false;
+    private String pepUri;
+    private String policyId;
+    private String policy;
+    private String request;
 
     /**
      * Constructor for a TryAccessMessage
@@ -59,61 +61,71 @@ public final class TryAccessMessage extends Message {
      */
     public TryAccessMessage( String source, String destination ) {
         super( source, destination );
-        if( isInitialized() ) {
-            isInitialized = true;
-            purpose = PURPOSE.TRYACCESS;
-            motivation = null;
-        } else {
-            log.severe( "ERROR IN MESSAGE creation" );
-        }
+        purpose = PURPOSE.TRYACCESS;
     }
 
-    /**
-     * Constructor for a TryAccessMessage
-     *
-     */
     public TryAccessMessage() {
         super( PART.PEP.toString(), PART.CH.toString() );
-        if( isInitialized() ) {
-            isInitialized = true;
-            purpose = PURPOSE.TRYACCESS;
-            motivation = null;
-        } else {
-            log.severe( "ERROR IN MESSAGE creation" );
-        }
+        purpose = PURPOSE.TRYACCESS;
+    }
+
+    public boolean setPepUri( String pepUri ) {
+        Reject.ifBlank( pepUri );
+        this.pepUri = pepUri;
+        return true;
     }
 
     public String getPepUri() {
-        if( isInitialized ) {
-            return content.getPepUri();
-        }
-        return null;
+        return pepUri;
     }
 
-    public String getPolicy() {
-        if( isInitialized ) {
-            return content.getPolicy();
+    /**
+     * Set the request to be sent to the UCS
+     *
+     * @param request
+     *          a string representing the request
+     * @return true if everything goes fine, false otherwise
+     */
+    public boolean setRequest( String request ) {
+        Reject.ifBlank( request );
+        try {
+            JAXBUtility.unmarshalToObject( RequestType.class, request );
+            this.request = request;
+            return true;
+        } catch( Exception exception ) {
+            return false;
         }
-        log.severe( "MESSAGE NOT INITIALIZED" );
-        return null;
-    }
-
-    public String getPolicyId() {
-        if( isInitialized ) {
-            return content.getPolicyId();
-        }
-        return null;
     }
 
     public String getRequest() {
-        if( isInitialized ) {
-            return content.getRequest();
-        }
-        return null;
+        return request;
     }
 
-    public TryAccessMessageContent getContent() {
-        return content;
+    /**
+     * Set the policy to be used, in this case instead of having the id of the
+     * policy we have the real policy.
+     *
+     * @param policy
+     *          the policy to be used
+     * @return true if everything goes fine, false otherwise
+     */
+    public void setPolicy( String policy ) {
+        try {
+            JAXBUtility.unmarshalToObject( PolicyType.class, policy );
+            this.policy = policy;
+        } catch( Exception exception ) {}
     }
 
+    public String getPolicy() {
+        return policy;
+    }
+
+    public boolean setPolicyId( String policyId ) {
+        this.policyId = policyId;
+        return true;
+    }
+
+    public String getPolicyId() {
+        return policyId;
+    }
 }

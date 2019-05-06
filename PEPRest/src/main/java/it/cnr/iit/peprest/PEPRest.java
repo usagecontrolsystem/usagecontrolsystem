@@ -42,7 +42,6 @@ import it.cnr.iit.ucsinterface.message.reevaluation.ReevaluationResponse;
 import it.cnr.iit.ucsinterface.message.startaccess.StartAccessMessage;
 import it.cnr.iit.ucsinterface.message.startaccess.StartAccessResponse;
 import it.cnr.iit.ucsinterface.message.tryaccess.TryAccessMessage;
-import it.cnr.iit.ucsinterface.message.tryaccess.TryAccessMessageBuilder;
 import it.cnr.iit.ucsinterface.message.tryaccess.TryAccessResponse;
 import it.cnr.iit.ucsinterface.pep.PEPInterface;
 import it.cnr.iit.ucsinterface.requestmanager.UCSCHInterface;
@@ -98,11 +97,11 @@ public class PEPRest implements PEPInterface {
         String request = Utility.readFileAbsPath( pep.getRequestPath() );
         String policy = Utility.readFileAbsPath( pep.getPolicyPath() );
 
-        TryAccessMessageBuilder tryAccessBuilder = new TryAccessMessageBuilder( pep.getId(),
+        TryAccessMessage tryAccessMessage = new TryAccessMessage( pep.getId(),
             pep.getBaseUri() );
-        tryAccessBuilder.setPepUri( buildOnGoingEvaluationInterface() )
-            .setPolicy( policy ).setRequest( request );
-        TryAccessMessage tryAccessMessage = tryAccessBuilder.build();
+        tryAccessMessage.setPepUri( buildOnGoingEvaluationInterface() );
+        tryAccessMessage.setPolicy( policy );
+        tryAccessMessage.setRequest( request );
         tryAccessMessage.setCallback( buildResponseInterface( "tryAccessResponse" ), MEAN.REST );
         log.log( Level.INFO, "[TIME] TRYACCESS {0} ", System.currentTimeMillis() );
         Message message = ucs.sendMessageToCH( tryAccessMessage );

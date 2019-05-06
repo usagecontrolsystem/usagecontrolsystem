@@ -23,7 +23,6 @@ import it.cnr.iit.ucsinterface.message.Message;
 import it.cnr.iit.ucsinterface.message.endaccess.EndAccessMessage;
 import it.cnr.iit.ucsinterface.message.startaccess.StartAccessMessage;
 import it.cnr.iit.ucsinterface.message.tryaccess.TryAccessMessage;
-import it.cnr.iit.ucsinterface.message.tryaccess.TryAccessMessageBuilder;
 import it.cnr.iit.usagecontrolframework.rest.UCFTestContext;
 
 @JGivenStage
@@ -111,11 +110,10 @@ public class GivenMessage extends Stage<GivenMessage> {
     }
 
     private TryAccessMessage buildTryAccessMessage() {
-        TryAccessMessageBuilder tryAccessBuilder = new TryAccessMessageBuilder( pepProps.getId(), pepProps.getBaseUri() );
-        tryAccessBuilder.setPepUri( buildOnGoingEvaluationInterface( pepProps ) )
-            .setPolicy( policy ).setRequest( request );
-
-        TryAccessMessage tryAccessMessage = tryAccessBuilder.build();
+        TryAccessMessage tryAccessMessage = new TryAccessMessage( pepProps.getId(), pepProps.getBaseUri() );
+        tryAccessMessage.setPepUri( buildOnGoingEvaluationInterface( pepProps ) );
+        tryAccessMessage.setPolicy( policy );
+        tryAccessMessage.setRequest( request );
         tryAccessMessage.setCallback( buildResponseInterface( pepProps, "tryAccessResponse" ), MEAN.REST );
         return tryAccessMessage;
     }

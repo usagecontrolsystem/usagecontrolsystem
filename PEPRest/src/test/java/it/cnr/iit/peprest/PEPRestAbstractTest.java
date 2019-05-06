@@ -22,7 +22,6 @@ import it.cnr.iit.peprest.proxy.ProxyUCS;
 import it.cnr.iit.ucsinterface.message.Message;
 import it.cnr.iit.ucsinterface.message.startaccess.StartAccessResponse;
 import it.cnr.iit.ucsinterface.message.tryaccess.TryAccessResponse;
-import it.cnr.iit.ucsinterface.message.tryaccess.TryAccessResponseContent;
 import it.cnr.iit.ucsinterface.pdp.PDPResponse;
 
 import oasis.names.tc.xacml.core.schema.wd_17.DecisionType;
@@ -85,11 +84,9 @@ public abstract class PEPRestAbstractTest {
 
     protected TryAccessResponse buildTryAccessResponseDeny() {
         PDPResponse pdpEvaluation = buildPDPResponse( DecisionType.DENY );
-        TryAccessResponseContent content = new TryAccessResponseContent();
-        content.setSessionId( SESSION_ID_01 );
-        content.setPDPEvaluation( pdpEvaluation );
         TryAccessResponse tryAccessResponse = new TryAccessResponse( SESSION_ID_01 );
-        tryAccessResponse.setTryAccessResponseContent( content );
+        tryAccessResponse.setSessionId( SESSION_ID_01 );
+        tryAccessResponse.setPDPEvaluation( pdpEvaluation );
         return tryAccessResponse;
     }
 
