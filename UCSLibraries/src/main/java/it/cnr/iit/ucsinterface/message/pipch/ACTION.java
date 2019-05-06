@@ -13,7 +13,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  ******************************************************************************/
-package it.cnr.iit.ucsinterface.message.remoteretrieval;
+package it.cnr.iit.ucsinterface.message.pipch;
 
 public enum ACTION {
     RETRIEVE,

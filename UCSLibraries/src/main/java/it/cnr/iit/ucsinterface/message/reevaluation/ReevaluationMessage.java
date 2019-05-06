@@ -40,37 +40,34 @@ import it.cnr.iit.ucsinterface.sessionmanager.SessionInterface;
  * policies.
  * </p>
  *
- * @author antonio
+ * @author Antonio La Marra, Alessandro Rosetti
  *
  */
 public class ReevaluationMessage extends Message {
+
     private static final long serialVersionUID = 1L;
 
-    // the session to be reevaluated
-    private List<String> sessionId;
+    private List<String> sessionIds;
     private SessionInterface session;
 
     /**
      * Constructor for the reevaluation message
      *
-     * @param source      is the ip of the source of the message
+     * @param source      is the source of the message
      * @param destination is the destination of the message
      */
     public ReevaluationMessage( String source, String destination ) {
         super( source, destination );
         purpose = PURPOSE.REEVALUATION;
-        sessionId = new ArrayList<>();
+        sessionIds = new ArrayList<>();
     }
 
-    // ---------------------------------------------------------------------------
-    // GETTERS and SETTERS
-    // ---------------------------------------------------------------------------
-    public List<String> getSessionId() {
-        return sessionId;
+    public List<String> getSessionIds() {
+        return sessionIds;
     }
 
-    public void setSessionId( List<String> sessionId ) {
-        this.sessionId = sessionId;
+    public void setSessionIds( List<String> sessionId ) {
+        this.sessionIds = sessionId;
     }
 
     public void setSession( SessionInterface session ) {

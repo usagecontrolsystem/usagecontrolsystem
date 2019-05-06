@@ -34,9 +34,9 @@ import it.cnr.iit.ucsinterface.forwardingqueue.ForwardingQueueToRMInterface;
 import it.cnr.iit.ucsinterface.message.Message;
 import it.cnr.iit.ucsinterface.message.endaccess.EndAccessMessage;
 import it.cnr.iit.ucsinterface.message.endaccess.EndAccessResponse;
+import it.cnr.iit.ucsinterface.message.pipch.PipChMessage;
 import it.cnr.iit.ucsinterface.message.reevaluation.ReevaluationMessage;
 import it.cnr.iit.ucsinterface.message.reevaluation.ReevaluationResponse;
-import it.cnr.iit.ucsinterface.message.remoteretrieval.MessagePipCh;
 import it.cnr.iit.ucsinterface.message.startaccess.StartAccessMessage;
 import it.cnr.iit.ucsinterface.message.startaccess.StartAccessResponse;
 import it.cnr.iit.ucsinterface.message.tryaccess.TryAccessMessage;
@@ -361,8 +361,8 @@ public class UCFBaseTests {
         return message;
     }
 
-    protected MessagePipCh buildPipChMessage( String sessionId, String src, String dest ) {
-        MessagePipCh message = new MessagePipCh( src, dest );
+    protected PipChMessage buildPipChMessage( String sessionId, String src, String dest ) {
+        PipChMessage message = new PipChMessage( src, dest );
         return message;
     }
 

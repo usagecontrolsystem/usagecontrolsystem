@@ -39,9 +39,9 @@ import it.cnr.iit.ucs.properties.components.RequestManagerProperties;
 import it.cnr.iit.ucsinterface.forwardingqueue.ForwardingQueue;
 import it.cnr.iit.ucsinterface.message.endaccess.EndAccessMessage;
 import it.cnr.iit.ucsinterface.message.endaccess.EndAccessResponse;
+import it.cnr.iit.ucsinterface.message.pipch.PipChMessage;
 import it.cnr.iit.ucsinterface.message.reevaluation.ReevaluationMessage;
 import it.cnr.iit.ucsinterface.message.reevaluation.ReevaluationResponse;
-import it.cnr.iit.ucsinterface.message.remoteretrieval.MessagePipCh;
 import it.cnr.iit.ucsinterface.message.startaccess.StartAccessMessage;
 import it.cnr.iit.ucsinterface.message.startaccess.StartAccessResponse;
 import it.cnr.iit.ucsinterface.message.tryaccess.TryAccessMessage;
@@ -359,14 +359,14 @@ public class UsageControlFramework implements UCSInterface {
 
     @Override
     @Async
-    public void retrieveRemote( MessagePipCh messagePipCh ) {
+    public void retrieveRemote( PipChMessage messagePipCh ) {
         // TODO check if sent
         requestManager.sendMessageToCH( messagePipCh );
     }
 
     @Override
     @Async
-    public void retrieveRemoteResponse( MessagePipCh messagePipCh ) {} // NOSONAR
+    public void retrieveRemoteResponse( PipChMessage messagePipCh ) {} // NOSONAR
 
     public boolean isInitialised() {
         return initialised;

@@ -42,7 +42,7 @@ import it.cnr.iit.utility.errorhandling.Reject;
  *
  * <p>
  * In the framework we want that all parties can communicate by passing JSONs,
- * because it is very simple to convert an object to a JSON and viceversa in
+ * because it is very simple to convert an object to a JSON and vice versa in
  * JAVA. Moreover JSONs are lighter than XML.
  * </p>
  *
@@ -50,7 +50,7 @@ import it.cnr.iit.utility.errorhandling.Reject;
  * TODO ASAP switch to this schema to builders for message!!
  * </p>
  *
- * @author antonio
+ * @author Antonio La Marra, Alessandro Rosetti
  *
  */
 
@@ -59,31 +59,25 @@ public class Message {
 
     private static final long serialVersionUID = 1L;
 
+    private String messageId;
     // source of the message
     protected String source;
-    // port on which the source expects the reply
-    protected String sourcePort;
     // destination of the message
     protected String destination;
     // motivation of the message
     protected String motivation = null;
-    // purpose (tryaccess)
+    // purpose
     protected PURPOSE purpose;
+
     // callback object if needed
     protected Object callback;
     // mean on which we expect to receive the response to the message
     private MEAN mean;
 
-    private String messageId;
-
-    private boolean ucsDestination = false;
-
-    // this field states if the message has already passed a scheduler or not
-    private boolean scheduled = false;
-
     private volatile boolean initialized = false;
-
+    private boolean scheduled = false;
     private boolean delivered = false;
+    private boolean ucsDestination = false;
 
     public Message( String source, String destination ) {
         Reject.ifBlank( source );

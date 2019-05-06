@@ -13,8 +13,9 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  ******************************************************************************/
-package it.cnr.iit.ucsinterface.message.remoteretrieval;
+package it.cnr.iit.ucsinterface.message.pipch;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.logging.Logger;
@@ -25,24 +26,22 @@ import it.cnr.iit.utility.JsonUtility;
 import it.cnr.iit.xacmlutilities.Attribute;
 
 /**
- * This is the message a PIP sends to a CH and viceversa.
+ * This is the message a PIP sends to a CH and vice versa.
  * <p>
  * We have defined a single class for both local and remote messages, in this
  * way it is a lot easier to pass messages from one source to the other. <br>
  *
  * </p>
  *
- * @author antonio
+ * @author Antonio La Marra, Alessandro Rosetti
  *
  */
-public final class MessagePipCh extends Message {
-    private static final Logger log = Logger.getLogger( MessagePipCh.class.getName() );
+public final class PipChMessage extends Message {
+    private static final Logger log = Logger.getLogger( PipChMessage.class.getName() );
 
     private static final long serialVersionUID = 1L;
 
-    private boolean isInitialized = false;
-
-    private PipChContent content = new PipChContent();
+    List<Attribute> attributes = new ArrayList<>();
 
     private ACTION action;
 
@@ -57,11 +56,8 @@ public final class MessagePipCh extends Message {
      *          motivation of the message (most likely it is a json describing the
      *          motivation)
      */
-    public MessagePipCh( String source, String destination ) {
+    public PipChMessage( String source, String destination ) {
         super( source, destination );
-        if( super.isInitialized() ) {
-            isInitialized = true;
-        }
     }
 
     /**
@@ -71,26 +67,25 @@ public final class MessagePipCh extends Message {
      *          source of the message
      * @param destination
      *          destination of the message
-     * @param motivation
-     *          motivation of the message (most likely it is a json describing the
+     * @param content
+     *          content of the message (most likely it is a json describing the
      *          motivation)
      */
-    public MessagePipCh( PART source, PART destination, PipChContent motivation ) {
+    public PipChMessage( PART source, PART destination, List<Attribute> attributes ) {
         super( source.toString(), destination.toString() );
         if( super.isInitialized() ) {
-            isInitialized = true;
-            setMotivation( motivation );
+            setAttributes( attributes );
         }
     }
 
-    public void setMotivation( PipChContent content ) {
-        if( content != null ) {
-            this.content = content;
-            isInitialized = true;
-        } else {
-            log.severe( "NULL content" );
-            return;
-        }
+    public void setAttributes( List<Attribute> attributes ) {
+        this.attributes = attributes;
+    }
+
+    @Override
+    public String getMotivation() {
+        Optional<String> optObj = JsonUtility.getJsonStringFromObject( attributes, false );
+        return optObj.isPresent() ? optObj.get() : "";
     }
 
     /**
@@ -101,24 +96,11 @@ public final class MessagePipCh extends Message {
      * @return true if everything goes ok, false otherwise
      */
     public boolean addAttribute( Attribute attribute ) {
-        if( !isInitialized || attribute == null ) {
-            return false;
-        }
-        return content.addAttribute( attribute );
+        return attributes.add( attribute );
     }
 
     public List<Attribute> getAttributes() {
-        if( !isInitialized ) {
-            log.severe( "Message not initialized" );
-            return null;
-        }
-        return content.getAttributes();
-    }
-
-    @Override
-    public String getMotivation() {
-        Optional<String> optObj = JsonUtility.getJsonStringFromObject( content, false );
-        return optObj.isPresent() ? optObj.get() : "";
+        return new ArrayList<>( attributes );
     }
 
     public void setAction( ACTION retrieve ) {

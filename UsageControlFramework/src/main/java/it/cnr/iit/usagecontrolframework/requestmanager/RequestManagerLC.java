@@ -28,9 +28,9 @@ import it.cnr.iit.ucs.properties.components.RequestManagerProperties;
 import it.cnr.iit.ucsinterface.message.Message;
 import it.cnr.iit.ucsinterface.message.endaccess.EndAccessMessage;
 import it.cnr.iit.ucsinterface.message.endaccess.EndAccessResponse;
+import it.cnr.iit.ucsinterface.message.pipch.PipChMessage;
 import it.cnr.iit.ucsinterface.message.reevaluation.ReevaluationMessage;
 import it.cnr.iit.ucsinterface.message.reevaluation.ReevaluationResponse;
-import it.cnr.iit.ucsinterface.message.remoteretrieval.MessagePipCh;
 import it.cnr.iit.ucsinterface.message.startaccess.StartAccessMessage;
 import it.cnr.iit.ucsinterface.message.startaccess.StartAccessResponse;
 import it.cnr.iit.ucsinterface.message.tryaccess.TryAccessMessage;
@@ -157,7 +157,7 @@ public class RequestManagerLC extends AsynchronousRequestManager {
 
         if( reevaluation.getDestination()
             .equals( host ) ) {
-            getPEPInterface().get( ( reevaluation ).getPepID() )
+            getPEPInterface().get( ( reevaluation ).getPepId() )
                 .onGoingEvaluation( reevaluation );
         } else {
             getNodeInterface().sendMessage( reevaluation );
@@ -174,8 +174,8 @@ public class RequestManagerLC extends AsynchronousRequestManager {
     @Override
     public synchronized Message sendMessageToCH( Message message ) {
         try {
-            if( message instanceof MessagePipCh ) {
-                getRetrieveRequestsQueue().put( (MessagePipCh) message );
+            if( message instanceof PipChMessage ) {
+                getRetrieveRequestsQueue().put( (PipChMessage) message );
             } else {
                 if( message instanceof TryAccessResponse
                         || message instanceof StartAccessResponse

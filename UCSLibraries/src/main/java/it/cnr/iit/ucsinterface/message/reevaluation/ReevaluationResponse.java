@@ -15,34 +15,28 @@
  ******************************************************************************/
 package it.cnr.iit.ucsinterface.message.reevaluation;
 
-import java.util.logging.Logger;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import it.cnr.iit.ucsinterface.message.Message;
 import it.cnr.iit.ucsinterface.message.PART;
 import it.cnr.iit.ucsinterface.message.PURPOSE;
 import it.cnr.iit.ucsinterface.pdp.PDPEvaluation;
+import it.cnr.iit.utility.errorhandling.Reject;
 
 /**
  * Structure of the message that the CH sends to the PEP in case of reevaluation
  *
- * @author antonio
+ * @author Antonio La Marra, Alessandro Rosetti
  *
  */
 public class ReevaluationResponse extends Message {
 
-    private static final Logger log = Logger.getLogger( ReevaluationResponse.class.getName() );
-
     private static final long serialVersionUID = 1L;
 
-    private volatile boolean chPepInitialized = false;
-
-    // the PDP evaluation
     @JsonProperty
     private PDPEvaluation pdpEvaluation;
 
-    private String pepID;
+    private String pepId;
 
     /**
      * Constructor for the message sent from the context handler to the pep
@@ -54,10 +48,7 @@ public class ReevaluationResponse extends Message {
      */
     public ReevaluationResponse( String source, String destination ) {
         super( source, destination );
-        if( isInitialized() ) {
-            chPepInitialized = true;
-            purpose = PURPOSE.REEVALUATION_RESPONSE;
-        }
+        purpose = PURPOSE.REEVALUATION_RESPONSE;
     }
 
     /**
@@ -67,57 +58,39 @@ public class ReevaluationResponse extends Message {
      *          source of the message
      * @param destination
      *          destination of the message
-     * @param id
+     * @param messageId
      *          the id to identify this message
      *
      */
-    public ReevaluationResponse( String source, String destination, String id ) {
-        super( source, destination, id );
-        if( isInitialized() ) {
-            purpose = PURPOSE.REEVALUATION_RESPONSE;
-            chPepInitialized = true;
-        }
+    public ReevaluationResponse( String source, String destination, String messageId ) {
+        super( source, destination, messageId );
+        purpose = PURPOSE.REEVALUATION_RESPONSE;
     }
 
-    /**
-     * Constructor for a ChPepMessage
-     */
     public ReevaluationResponse() {
         super( PART.CH.toString(), PART.PEP.toString() );
-        if( isInitialized() ) {
-            purpose = PURPOSE.REEVALUATION_RESPONSE;
-            chPepInitialized = true;
-        }
+        purpose = PURPOSE.REEVALUATION_RESPONSE;
     }
 
     public ReevaluationResponse( String id ) {
         super( PART.CH.toString(), PART.PEP.toString(), id );
-        if( isInitialized() ) {
-            purpose = PURPOSE.REEVALUATION_RESPONSE;
-            chPepInitialized = true;
-        }
+        purpose = PURPOSE.REEVALUATION_RESPONSE;
     }
 
     public void setPDPEvaluation( PDPEvaluation pdpEvaluation ) {
-        if( !chPepInitialized || pdpEvaluation == null ) {
-            log.severe( "Impossible to set the evaluation " + chPepInitialized + "\t" + ( pdpEvaluation == null ) );
-            return;
-        }
+        Reject.ifNull( pdpEvaluation );
         this.pdpEvaluation = pdpEvaluation;
     }
 
     public PDPEvaluation getPDPEvaluation() {
-        if( !chPepInitialized ) {
-            return null;
-        }
         return pdpEvaluation;
     }
 
-    public void setPepID( String pepId ) {
-        pepID = pepId;
+    public void setPepId( String pepId ) {
+        this.pepId = pepId;
     }
 
-    public String getPepID() {
-        return pepID;
+    public String getPepId() {
+        return pepId;
     }
 }

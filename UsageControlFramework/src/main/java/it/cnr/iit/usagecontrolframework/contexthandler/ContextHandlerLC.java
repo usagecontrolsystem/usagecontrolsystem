@@ -36,9 +36,9 @@ import it.cnr.iit.ucsinterface.contexthandler.exceptions.WrongOrderException;
 import it.cnr.iit.ucsinterface.message.Message;
 import it.cnr.iit.ucsinterface.message.endaccess.EndAccessMessage;
 import it.cnr.iit.ucsinterface.message.endaccess.EndAccessResponse;
+import it.cnr.iit.ucsinterface.message.pipch.PipChMessage;
 import it.cnr.iit.ucsinterface.message.reevaluation.ReevaluationMessage;
 import it.cnr.iit.ucsinterface.message.reevaluation.ReevaluationResponse;
-import it.cnr.iit.ucsinterface.message.remoteretrieval.MessagePipCh;
 import it.cnr.iit.ucsinterface.message.startaccess.StartAccessMessage;
 import it.cnr.iit.ucsinterface.message.startaccess.StartAccessResponse;
 import it.cnr.iit.ucsinterface.message.tryaccess.TryAccessMessage;
@@ -105,7 +105,7 @@ public final class ContextHandlerLC extends AbstractContextHandler {
     // monitors if the value of an attribute changes
     private AttributeMonitor attributeMonitor = new AttributeMonitor();
     // queue in charge of storing the changing in the attributes
-    private LinkedTransferQueue<MessagePipCh> attributesChanged = new LinkedTransferQueue<>();
+    private LinkedTransferQueue<PipChMessage> attributesChanged = new LinkedTransferQueue<>();
     // the thread object in charge of performing reevaluation
     private Thread thread = new Thread( attributeMonitor );
     // boolean variable that states if the thread has to run again or not
@@ -764,11 +764,11 @@ public final class ContextHandlerLC extends AbstractContextHandler {
     @Override
     public void attributeChanged( Message message ) {
         log.log( Level.INFO, "Attribute changed received {0}", System.currentTimeMillis() );
-        if( !( message instanceof MessagePipCh ) ) {
+        if( !( message instanceof PipChMessage ) ) {
             log.warning( "Invalid message provided" );
         }
         // non blocking insertion in the queue of attributes changed
-        attributesChanged.put( (MessagePipCh) message );
+        attributesChanged.put( (PipChMessage) message );
     }
 
     /**
@@ -809,7 +809,7 @@ public final class ContextHandlerLC extends AbstractContextHandler {
             log.info( "Attribute monitor started" );
             while( continueMonitoring ) {
                 try {
-                    MessagePipCh message = attributesChanged.take();
+                    PipChMessage message = attributesChanged.take();
                     List<Attribute> attributes = message.getAttributes();
 
                     if( attributes == null ) {
@@ -1003,7 +1003,7 @@ public final class ContextHandlerLC extends AbstractContextHandler {
         ReevaluationResponse chPepMessage = new ReevaluationResponse( uri.getHost(), destination );
         pdpEvaluation.setSessionId( session.getId() );
         chPepMessage.setPDPEvaluation( pdpEvaluation );
-        chPepMessage.setPepID( uriSplitted[uriSplitted.length - 1] );
+        chPepMessage.setPepId( uriSplitted[uriSplitted.length - 1] );
         getSessionManagerInterface().stopSession( session );
         if( ( session.getStatus().equals( ContextHandlerConstants.START_STATUS )
                 || session.getStatus().equals( ContextHandlerConstants.TRY_STATUS ) )

@@ -25,8 +25,8 @@ import it.cnr.iit.test.properties.TestProperties;
 import it.cnr.iit.ucs.properties.UCSProperties;
 import it.cnr.iit.ucsinterface.contexthandler.ContextHandlerConstants;
 import it.cnr.iit.ucsinterface.message.endaccess.EndAccessMessage;
+import it.cnr.iit.ucsinterface.message.pipch.PipChMessage;
 import it.cnr.iit.ucsinterface.message.reevaluation.ReevaluationMessage;
-import it.cnr.iit.ucsinterface.message.remoteretrieval.MessagePipCh;
 import it.cnr.iit.ucsinterface.message.startaccess.StartAccessMessage;
 import it.cnr.iit.ucsinterface.message.tryaccess.TryAccessMessage;
 import it.cnr.iit.usagecontrolframework.contexthandler.ContextHandlerLC;
@@ -146,7 +146,7 @@ public class ContextHandlerCoverageTests extends UCFBaseTests {
         reevaluationMessage.setSession( getMockedSessionInterface( policy, request, ContextHandlerConstants.START_STATUS ) );
         contextHandler.reevaluate( reevaluationMessage );
 
-        MessagePipCh messagePipCh = buildPipChMessage( testProperties.getSessionId(), "a", "a" );
+        PipChMessage messagePipCh = buildPipChMessage( testProperties.getSessionId(), "a", "a" );
         messagePipCh.addAttribute( getNewAttribute( "virus", Category.ENVIRONMENT, DataType.INTEGER, "1" ) );
         contextHandler.attributeChanged( messagePipCh );
 

@@ -17,6 +17,7 @@ package it.cnr.iit.pipreader;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Scanner;
 import java.util.TimerTask;
 import java.util.concurrent.BlockingQueue;
@@ -25,8 +26,7 @@ import java.util.logging.Logger;
 
 import it.cnr.iit.ucsinterface.contexthandler.ContextHandlerPIPInterface;
 import it.cnr.iit.ucsinterface.message.PART;
-import it.cnr.iit.ucsinterface.message.remoteretrieval.MessagePipCh;
-import it.cnr.iit.ucsinterface.message.remoteretrieval.PipChContent;
+import it.cnr.iit.ucsinterface.message.pipch.PipChMessage;
 import it.cnr.iit.ucsinterface.pip.exception.PIPException;
 import it.cnr.iit.utility.Utility;
 import it.cnr.iit.xacmlutilities.Attribute;
@@ -85,28 +85,28 @@ final class PRSubscriberTimer extends TimerTask {
 
     @Override
     public void run() {
-        for( Attribute entry : subscriptions ) {
-            Category category = entry.getCategory();
+        for( Attribute attribute : subscriptions ) {
+            Category category = attribute.getCategory();
             String newValue = "";
             log.log( Level.INFO, "[TIME] polling on value of the attribute for change." );
             if( category == Category.ENVIRONMENT ) {
                 newValue = read();
             } else {
-                newValue = read( entry.getAdditionalInformations() );
+                newValue = read( attribute.getAdditionalInformations() );
             }
 
             // if the attribute has not changed
-            if( !entry.getAttributeValues( entry.getAttributeDataType() ).get( 0 )
+            if( !attribute.getAttributeValues( attribute.getAttributeDataType() ).get( 0 )
                 .equals( newValue ) ) {
                 log.log( Level.INFO,
                     "[TIME] value of the attribute changed at {0}\t{1}\t{2}",
-                    new Object[] { System.currentTimeMillis(), newValue, entry.getAdditionalInformations() } );
-                entry.setValue( entry.getAttributeDataType(), newValue );
-                PipChContent pipChContent = new PipChContent();
-                pipChContent.addAttribute( entry );
-                MessagePipCh messagePipCh = new MessagePipCh( PART.PIP.toString(),
-                    PART.CH.toString() );
-                messagePipCh.setMotivation( pipChContent );
+                    new Object[] { System.currentTimeMillis(), newValue, attribute.getAdditionalInformations() } );
+                attribute.setValue( attribute.getAttributeDataType(), newValue );
+
+                PipChMessage messagePipCh = new PipChMessage( PART.PIP.toString(), PART.CH.toString() );
+                ArrayList<Attribute> attrList = new ArrayList<>();
+                attrList.add( attribute );
+                messagePipCh.setAttributes( attrList );
                 contextHandler.attributeChanged( messagePipCh );
             }
         }

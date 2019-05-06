@@ -26,7 +26,7 @@ import it.cnr.iit.ucs.properties.components.RequestManagerProperties;
 import it.cnr.iit.ucsinterface.contexthandler.ContextHandlerInterface;
 import it.cnr.iit.ucsinterface.forwardingqueue.ForwardingQueueToRMInterface;
 import it.cnr.iit.ucsinterface.message.Message;
-import it.cnr.iit.ucsinterface.message.remoteretrieval.MessagePipCh;
+import it.cnr.iit.ucsinterface.message.pipch.PipChMessage;
 import it.cnr.iit.ucsinterface.node.NodeInterface;
 import it.cnr.iit.ucsinterface.pep.PEPInterface;
 import it.cnr.iit.ucsinterface.requestmanager.InterfaceToPerformanceMonitor;
@@ -57,7 +57,7 @@ public abstract class AsynchronousRequestManager
     // queue of messages to be passed to the context handler
     private final BlockingQueue<Message> queueToCH = new LinkedBlockingQueue<>();
     // interface provided by the context handler
-    private final BlockingQueue<MessagePipCh> retrieveRequests = new LinkedBlockingQueue<>();
+    private final BlockingQueue<PipChMessage> retrieveRequests = new LinkedBlockingQueue<>();
 
     private ContextHandlerInterface contextHandler;
     // interface provided by the PEP
@@ -131,7 +131,7 @@ public abstract class AsynchronousRequestManager
         return queueToCH;
     }
 
-    protected final BlockingQueue<MessagePipCh> getRetrieveRequestsQueue() {
+    protected final BlockingQueue<PipChMessage> getRetrieveRequestsQueue() {
         Reject.ifInvalidObjectState( initialised, AsynchronousRequestManager.class.getName(), log );
         return retrieveRequests;
     }
