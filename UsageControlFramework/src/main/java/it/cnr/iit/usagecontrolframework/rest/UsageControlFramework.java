@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.annotation.PostConstruct;
@@ -28,7 +29,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
-import it.cnr.iit.ucs.builders.PIPBuilder;
 import it.cnr.iit.ucs.properties.UCSProperties;
 import it.cnr.iit.ucs.properties.components.ContextHandlerProperties;
 import it.cnr.iit.ucs.properties.components.GeneralProperties;
@@ -102,6 +102,8 @@ import it.cnr.iit.usagecontrolframework.requestmanager.AsynchronousRequestManage
 public class UsageControlFramework implements UCSInterface {
 
     private static final Logger log = Logger.getLogger( UsageControlFramework.class.getName() );
+
+    private static final String MSG_ERR_BUILD_PROP = "Error building PIPBase from properties : {0}";
 
     // local components
     private AbstractContextHandler contextHandler;
@@ -224,11 +226,24 @@ public class UsageControlFramework implements UCSInterface {
         }
     }
 
+    public static Optional<PIPBase> buildPIP( PipProperties properties ) {
+        try {
+            // TODO UCS-32 NOSONAR
+            Class<?> clazz = Class.forName( properties.getClassName() );
+            Constructor<?> constructor = clazz.getConstructor( PipProperties.class );
+            PIPBase pip = (PIPBase) constructor.newInstance( properties );
+            return Optional.of( pip );
+        } catch( Exception e ) {
+            log.log( Level.SEVERE, MSG_ERR_BUILD_PROP, e.getMessage() );
+        }
+        return Optional.empty();
+    }
+
     private boolean buildPIPList() {
         int failures = 0;
 
         for( PipProperties pip : properties.getPipList() ) {
-            Optional<PIPBase> optPip = PIPBuilder.build( pip );
+            Optional<PIPBase> optPip = buildPIP( pip );
 
             if( !optPip.isPresent() ) {
                 log.severe( "Error building pip" );

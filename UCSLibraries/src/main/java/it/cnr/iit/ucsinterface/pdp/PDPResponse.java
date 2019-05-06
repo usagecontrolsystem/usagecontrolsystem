@@ -24,7 +24,6 @@ import javax.xml.bind.JAXBException;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
-import it.cnr.iit.ucs.builders.PIPBuilder;
 import it.cnr.iit.utility.JAXBUtility;
 
 import oasis.names.tc.xacml.core.schema.wd_17.ObligationType;
@@ -45,7 +44,7 @@ import oasis.names.tc.xacml.core.schema.wd_17.ResponseType;
 @JsonIgnoreProperties( ignoreUnknown = true )
 public final class PDPResponse implements PDPEvaluation {
 
-    private static Logger log = Logger.getLogger( PIPBuilder.class.getName() );
+    private static Logger log = Logger.getLogger( PDPResponse.class.getName() );
 
     private static final String MSG_ERR_UNMARSHAL = "Error unmarshalling xml : {0}";
     private static final String MSG_ERR_MARSHAL = "Error marshalling to xml : {0}";

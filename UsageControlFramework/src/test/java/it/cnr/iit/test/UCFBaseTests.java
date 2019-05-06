@@ -24,7 +24,6 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import it.cnr.iit.test.properties.TestProperties;
-import it.cnr.iit.ucs.builders.PIPBuilder;
 import it.cnr.iit.ucs.constants.STATUS;
 import it.cnr.iit.ucs.properties.UCSProperties;
 import it.cnr.iit.ucs.properties.components.PipProperties;
@@ -59,6 +58,7 @@ import it.cnr.iit.usagecontrolframework.proxies.ProxyPAP;
 import it.cnr.iit.usagecontrolframework.proxies.ProxyPDP;
 import it.cnr.iit.usagecontrolframework.proxies.ProxySessionManager;
 import it.cnr.iit.usagecontrolframework.requestmanager.RequestManagerLC;
+import it.cnr.iit.usagecontrolframework.rest.UsageControlFramework;
 import it.cnr.iit.utility.JAXBUtility;
 import it.cnr.iit.xacmlutilities.Attribute;
 import it.cnr.iit.xacmlutilities.Category;
@@ -306,7 +306,7 @@ public class UCFBaseTests {
 
         for( PipProperties pipProp : prop.getPipList() ) {
             log.info( "Loading pip" );
-            PIPCHInterface pip = PIPBuilder.build( pipProp ).get();
+            PIPCHInterface pip = UsageControlFramework.buildPIP( pipProp ).get();
             assertNotNull( pip );
             pips.add( pip );
         }

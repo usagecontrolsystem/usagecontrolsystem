@@ -15,12 +15,13 @@
  ******************************************************************************/
 package it.cnr.iit.usagecontrolframework.proxies;
 
+import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import it.cnr.iit.ucs.builders.PAPBuilder;
 import it.cnr.iit.ucs.constants.CONNECTION;
 import it.cnr.iit.ucs.properties.components.PapProperties;
 import it.cnr.iit.ucsinterface.pap.PAPInterface;
@@ -88,6 +89,21 @@ public final class ProxyPAP extends Proxy implements PAPInterface {
         }
     }
 
+    private static final String MSG_ERR_BUILD_PROP = "Error building PAP from properties : {0}";
+
+    public static Optional<PAPInterface> buildFromProperties( PapProperties properties ) {
+        try {
+            // TODO UCS-32 NOSONAR
+            Class<?> clazz = Class.forName( properties.getClassName() );
+            Constructor<?> constructor = clazz.getConstructor( PapProperties.class );
+            PAPInterface pap = (PAPInterface) constructor.newInstance( properties );
+            return Optional.of( pap );
+        } catch( Exception e ) {
+            log.log( Level.SEVERE, MSG_ERR_BUILD_PROP, e.getMessage() );
+        }
+        return Optional.empty();
+    }
+
     /**
      * This is the implementation of the local PAP.
      *
@@ -96,7 +112,7 @@ public final class ProxyPAP extends Proxy implements PAPInterface {
      * @return true if everything goes ok, false otherwise
      */
     private boolean setLocalPAP( PapProperties properties ) {
-        Optional<PAPInterface> optPAP = PAPBuilder.buildFromProperties( properties );
+        Optional<PAPInterface> optPAP = buildFromProperties( properties );
 
         if( optPAP.isPresent() ) {
             papInterface = optPAP.get();
