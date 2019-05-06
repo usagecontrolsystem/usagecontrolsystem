@@ -1,15 +1,8 @@
 package it.cnr.iit.usagecontrolframework.rest.jgiven.stages;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
-
-import java.io.IOException;
-import java.net.URISyntaxException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-
-import javax.xml.bind.JAXBException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -36,6 +29,7 @@ import it.cnr.iit.usagecontrolframework.rest.UCFTestContext;
 @JGivenStage
 public class GivenMessage extends Stage<GivenMessage> {
 
+    private static final String MONITORED_VALUE_FOR_DENY = "55";
     private String policy;
     private String request;
 
@@ -57,10 +51,10 @@ public class GivenMessage extends Stage<GivenMessage> {
     PepProperties pepProps;
 
     @BeforeScenario
-    public void init() throws URISyntaxException, IOException, JAXBException {
+    public void init() {
 
-        policy = readResourceFileAsString( testContext.getPolicyFile() );
-        request = readResourceFileAsString( testContext.getRequestFile() );
+        policy = FileManipulationUtility.readResourceFileAsString( testContext.getPolicyFile() );
+        request = FileManipulationUtility.readResourceFileAsString( testContext.getRequestFile() );
 
         pepProps = properties.getPepList().get( Integer.parseInt( testContext.getPepId() ) );
 
@@ -140,11 +134,9 @@ public class GivenMessage extends Stage<GivenMessage> {
         return buildResponseInterface( pepProps, "onGoingEvaluation" );
     }
 
-    protected String readResourceFileAsString( String resource ) throws URISyntaxException, IOException {
-        ClassLoader classLoader = this.getClass().getClassLoader();
-
-        Path path = Paths.get( classLoader.getResource( resource ).toURI() );
-        byte[] data = Files.readAllBytes( path );
-        return new String( data );
+    public GivenMessage a_monitored_attribute_in_$_with_deny_state( @Quoted String resource ) {
+        FileManipulationUtility.updateResourceFileContent( resource, MONITORED_VALUE_FOR_DENY );
+        assertEquals( MONITORED_VALUE_FOR_DENY, FileManipulationUtility.readResourceFileAsString( resource ) );
+        return self();
     }
 }
