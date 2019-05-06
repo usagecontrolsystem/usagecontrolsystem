@@ -25,6 +25,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import it.cnr.iit.utility.JAXBUtility;
+import it.cnr.iit.utility.errorhandling.Reject;
 
 import oasis.names.tc.xacml.core.schema.wd_17.ObligationType;
 import oasis.names.tc.xacml.core.schema.wd_17.ResponseType;
@@ -58,42 +59,22 @@ public final class PDPResponse implements PDPEvaluation {
     // list of firing rules
     private ArrayList<Integer> firingRules = new ArrayList<>();
 
-    // states if the object has been correctly initialized
+    // states if the object has been correctly initialised
     @JsonIgnore
     private boolean initialized = false;
 
-    /**
-     * Constructor for the PDP response
-     *
-     */
-    public PDPResponse() {
+    public PDPResponse() {}
 
-    }
-
-    /**
-     * Constructor for the PDP response
-     *
-     * @param string the ResponseType in string format
-     */
     public PDPResponse( String string ) {
         convertXACMLStringToResponse( string );
-        check();
+        Reject.ifNull( responseType );
+        initialized = true;
     }
 
-    /**
-     * Constructor for the PDP response
-     *
-     * @param ResponseType
-     */
     public PDPResponse( ResponseType response ) {
         setResponseType( response );
-        check();
-    }
-
-    public void check() {
-        if( responseType != null ) {
-            initialized = true;
-        }
+        Reject.ifNull( responseType );
+        initialized = true;
     }
 
     /**
@@ -113,7 +94,8 @@ public final class PDPResponse implements PDPEvaluation {
 
     private void setResponseType( ResponseType responseType ) {
         this.responseType = responseType;
-        check();
+        Reject.ifNull( responseType );
+        initialized = true;
     }
 
     public ResponseType getResponseType() {
@@ -134,11 +116,7 @@ public final class PDPResponse implements PDPEvaluation {
     @Override
     @JsonIgnore
     public String getResult() {
-        // BEGIN parameter checking
-        if( !initialized ) {
-            return null;
-        }
-        // END parameter checking
+        Reject.ifFalse( initialized );
         return responseType.getResult().get( 0 ).getDecision().value();
     }
 
@@ -168,13 +146,6 @@ public final class PDPResponse implements PDPEvaluation {
         return obligations;
     }
 
-    // TODO delete this
-    @Override
-    @JsonIgnore
-    public Object getResponseAsObject() {
-        return responseType;
-    }
-
     public void setFiringRules( List<Integer> firingRules ) {
         this.firingRules = new ArrayList<>( firingRules );
     }
@@ -185,13 +156,8 @@ public final class PDPResponse implements PDPEvaluation {
     }
 
     @Override
-    public void setSessionId( String id ) {
-        // BEGIN parameter checking
-        if( id == null || id.isEmpty() ) {
-            return;
-        }
-        // END parameter checking
-        sessionId = id;
+    public void setSessionId( String sessionId ) {
+        this.sessionId = sessionId;
     }
 
     @Override

@@ -106,6 +106,7 @@ public abstract class PEPRestAbstractTest {
         ResponseType responseType = new ResponseType();
         responseType.setResult( Arrays.asList( resultType ) );
         PDPResponse pdpResponse = new PDPResponse( responseType );
+        pdpResponse.setSessionId( SESSION_ID_01 );
         return pdpResponse;
     }
 }

@@ -82,7 +82,5 @@ public interface PDPEvaluation {
 
     public String getSessionId();
 
-    public Object getResponseAsObject();
-
     public List<Integer> getFiringRules();
 }
