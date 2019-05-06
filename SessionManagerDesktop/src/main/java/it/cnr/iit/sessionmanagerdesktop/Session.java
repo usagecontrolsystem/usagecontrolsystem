@@ -7,6 +7,7 @@ package it.cnr.iit.sessionmanagerdesktop;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 
 import com.j256.ormlite.dao.ForeignCollection;
 import com.j256.ormlite.field.DataType;
@@ -25,6 +26,8 @@ import it.cnr.iit.ucsinterface.sessionmanager.SessionInterface;
  */
 @DatabaseTable( tableName = "sessions" )
 public final class Session implements SessionInterface {
+
+    private static Logger log = Logger.getLogger( Session.class.getName() );
 
     public static final String ID_FIELD_NAME = "id";
     public static final String POLICYSET_FIELD_NAME = "policy_set";
@@ -199,7 +202,6 @@ public final class Session implements SessionInterface {
      *
      * @return list of mutable attributes
      */
-    // @Override
     public ForeignCollection<OnGoingAttribute> getOnGoingAttributesAsForeign() {
         return onGoingAttributes;
     }
@@ -215,8 +217,8 @@ public final class Session implements SessionInterface {
                 for( OnGoingAttribute a : onGoingAttributes ) {
                     s += a.toString() + " ";
                 }
-            } catch( NullPointerException npe ) {
-
+            } catch( NullPointerException e ) {
+                log.warning( "Error null ongoing attributes" );
             }
         }
         return s;
