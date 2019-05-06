@@ -2,12 +2,15 @@ package it.cnr.iit.usagecontrolframework.rest.jgiven.stages;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.containing;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
+import static com.github.tomakehurst.wiremock.client.WireMock.exactly;
 import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static org.awaitility.Awaitility.await;
 import static org.awaitility.Duration.ONE_HUNDRED_MILLISECONDS;
 import static org.awaitility.Duration.TWO_SECONDS;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -30,6 +33,8 @@ import it.cnr.iit.ucsinterface.sessionmanager.SessionInterface;
 public class ThenMessage extends Stage<ThenMessage> {
 
     private static final Logger log = Logger.getLogger( ThenMessage.class.getName() );
+
+    private static final String MONITORED_VALUE_FOR_PERMIT = "0";
 
     @ExpectedScenarioState
     WireMock wireMockContextHandler;
@@ -151,4 +156,39 @@ public class ThenMessage extends Stage<ThenMessage> {
             }
         };
     }
+
+    public ThenMessage the_asynch_post_request_for_$_is_NOT_received_by_context_handler( @Quoted String operation ) {
+        wireMockContextHandler.verifyThat( exactly( 0 ), postRequestedFor( urlEqualTo( operation ) )
+            .withHeader( "Content-Type", equalTo( "application/json" ) ) );
+        return self();
+    }
+
+    public ThenMessage no_entry_for_session_with_status_$_is_persisted( @Quoted String status ) {
+        await().with().pollInterval( ONE_HUNDRED_MILLISECONDS )
+            .and().with().pollDelay( TWO_SECONDS )
+            .until( sessionForStatusNotFound( status ) );
+        return self();
+    }
+
+    private Callable<Boolean> sessionForStatusNotFound( String status ) {
+        return new Callable<Boolean>() {
+            @Override
+            public Boolean call() throws Exception {
+                try {
+                    sessionsList = sessionManager.getSessionsForStatus( status );
+                    assertNull( sessionManager.getSessionsForStatus( status ) );
+                } catch( Exception e ) {
+                    fail( e.getLocalizedMessage() );
+                }
+                return true;
+            }
+        };
+    }
+
+    public ThenMessage the_monitored_attribute_in_$_is_set_to_Permit_state( @Quoted String resource ) {
+        FileManipulationUtility.updateResourceFileContent( resource, MONITORED_VALUE_FOR_PERMIT );
+        assertEquals( MONITORED_VALUE_FOR_PERMIT, FileManipulationUtility.readResourceFileAsString( resource ) );
+        return self();
+    }
+
 }

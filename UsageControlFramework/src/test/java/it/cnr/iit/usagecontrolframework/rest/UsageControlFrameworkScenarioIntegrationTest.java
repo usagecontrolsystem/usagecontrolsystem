@@ -10,6 +10,7 @@ import static it.cnr.iit.ucsinterface.contexthandler.ContextHandlerConstants.STA
 import static it.cnr.iit.ucsinterface.contexthandler.ContextHandlerConstants.TRY_STATUS;
 
 import org.apache.http.HttpStatus;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.mock.web.MockServletContext;
@@ -36,7 +37,8 @@ public class UsageControlFrameworkScenarioIntegrationTest
     @Test
     public void a_tryAccess_request_sends_PEP_tryAccessResponse_containg_Permit_decision() {
         given().a_$_request( TRY_ACCESS );
-        givenPEPRestSimulator.and().a_mocked_PEPRest_listening_on_$( TRY_ACCESS_RESPONSE.getOperationUri() )
+        givenPEPRestSimulator
+            .and().a_mocked_PEPRest_listening_on_$( TRY_ACCESS_RESPONSE.getOperationUri() )
             .with().a_success_response_status_code_of_$( HttpStatus.SC_OK );
 
         when().the_UCF_is_executed_for_$( TRY_ACCESS.getOperationUri() );
@@ -52,7 +54,8 @@ public class UsageControlFrameworkScenarioIntegrationTest
         a_tryAccess_request_sends_PEP_tryAccessResponse_containg_Permit_decision();
 
         given().a_$_request( START_ACCESS );
-        givenPEPRestSimulator.and().a_mocked_PEPRest_listening_on_$( START_ACCESS_RESPONSE.getOperationUri() )
+        givenPEPRestSimulator
+            .and().a_mocked_PEPRest_listening_on_$( START_ACCESS_RESPONSE.getOperationUri() )
             .with().a_success_response_status_code_of_$( HttpStatus.SC_OK );
 
         when().the_UCF_is_executed_for_$( START_ACCESS.getOperationUri() );
@@ -68,7 +71,8 @@ public class UsageControlFrameworkScenarioIntegrationTest
         a_startAccess_request_preceeding_tryAccess_with_Permit_sends_PEP_startAccessResponse_containing_Permit_decision();
 
         given().a_$_request( END_ACCESS );
-        givenPEPRestSimulator.and().a_mocked_PEPRest_listening_on_$( END_ACCESS_RESPONSE.getOperationUri() )
+        givenPEPRestSimulator
+            .and().a_mocked_PEPRest_listening_on_$( END_ACCESS_RESPONSE.getOperationUri() )
             .with().a_success_response_status_code_of_$( HttpStatus.SC_OK );
 
         when().the_UCF_is_executed_for_$( END_ACCESS.getOperationUri() );
@@ -76,5 +80,21 @@ public class UsageControlFrameworkScenarioIntegrationTest
         then().the_session_entry_is_deleted()
             .and().the_asynch_post_request_for_$_with_decision_$_was_received_by_PEPRest(
                 END_ACCESS_RESPONSE.getOperationUri(), DECISION_PERMIT );
+    }
+
+    @Ignore
+    @Test
+    public void a_tryAccess_request_sends_PEP_tryAccessResponse_containg_Deny_decision() {
+        given().a_monitored_attribute_in_$_with_deny_state( "pips/virus.txt" )
+            .and().a_$_request( TRY_ACCESS );
+        givenPEPRestSimulator
+            .and().a_mocked_PEPRest_listening_on_$( TRY_ACCESS_RESPONSE.getOperationUri() )
+            .with().a_success_response_status_code_of_$( HttpStatus.SC_OK );
+
+        when().the_UCF_is_executed_for_$( TRY_ACCESS.getOperationUri() );
+
+        then().no_entry_for_session_with_status_$_is_persisted( TRY_STATUS )
+            .and().the_asynch_post_request_for_$_with_decision_$_was_received_by_PEPRest(
+                TRY_ACCESS_RESPONSE.getOperationUri(), DecisionType.DENY.toValue() );
     }
 }
