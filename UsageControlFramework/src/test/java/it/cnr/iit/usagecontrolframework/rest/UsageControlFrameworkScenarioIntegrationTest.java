@@ -10,7 +10,6 @@ import static it.cnr.iit.ucsinterface.contexthandler.ContextHandlerConstants.STA
 import static it.cnr.iit.ucsinterface.contexthandler.ContextHandlerConstants.TRY_STATUS;
 
 import org.apache.http.HttpStatus;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.mock.web.MockServletContext;
@@ -82,10 +81,9 @@ public class UsageControlFrameworkScenarioIntegrationTest
                 END_ACCESS_RESPONSE.getOperationUri(), DECISION_PERMIT );
     }
 
-    @Ignore
     @Test
     public void a_tryAccess_request_sends_PEP_tryAccessResponse_containg_Deny_decision() {
-        given().a_monitored_attribute_in_$_with_deny_state( "pips/virus.txt" )
+        given().a_policy_that_will_trigger_a_Deny_response()
             .and().a_$_request( TRY_ACCESS );
         givenPEPRestSimulator
             .and().a_mocked_PEPRest_listening_on_$( TRY_ACCESS_RESPONSE.getOperationUri() )

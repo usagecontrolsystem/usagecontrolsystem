@@ -8,9 +8,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static org.awaitility.Awaitility.await;
 import static org.awaitility.Duration.ONE_HUNDRED_MILLISECONDS;
 import static org.awaitility.Duration.TWO_SECONDS;
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -33,8 +31,6 @@ import it.cnr.iit.ucsinterface.sessionmanager.SessionInterface;
 public class ThenMessage extends Stage<ThenMessage> {
 
     private static final Logger log = Logger.getLogger( ThenMessage.class.getName() );
-
-    private static final String MONITORED_VALUE_FOR_PERMIT = "0";
 
     @ExpectedScenarioState
     WireMock wireMockContextHandler;
@@ -176,7 +172,10 @@ public class ThenMessage extends Stage<ThenMessage> {
             public Boolean call() throws Exception {
                 try {
                     sessionsList = sessionManager.getSessionsForStatus( status );
-                    assertNull( sessionManager.getSessionsForStatus( status ) );
+                    if( sessionsList == null ) {
+                        return false;
+                    }
+                    assertTrue( sessionManager.getSessionsForStatus( status ).isEmpty() );
                 } catch( Exception e ) {
                     fail( e.getLocalizedMessage() );
                 }
@@ -184,11 +183,4 @@ public class ThenMessage extends Stage<ThenMessage> {
             }
         };
     }
-
-    public ThenMessage the_monitored_attribute_in_$_is_set_to_Permit_state( @Quoted String resource ) {
-        FileManipulationUtility.updateResourceFileContent( resource, MONITORED_VALUE_FOR_PERMIT );
-        assertEquals( MONITORED_VALUE_FOR_PERMIT, FileManipulationUtility.readResourceFileAsString( resource ) );
-        return self();
-    }
-
 }

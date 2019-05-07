@@ -25,6 +25,9 @@ public class UCFTestContext {
     @Value( "${policy-file}" )
     private String policyFile;
 
+    @Value( "${policy-file-deny}" )
+    private String policyFileDeny;
+
     @Value( "${request-file}" )
     private String requestFile;
 
@@ -64,6 +67,14 @@ public class UCFTestContext {
 
     public void setSessionId( String sessionId ) {
         this.sessionId = sessionId;
+    }
+
+    public String getPolicyFileDeny() {
+        return policyFileDeny;
+    }
+
+    public void setPolicyFileDeny( String policyFileWithDeny ) {
+        this.policyFileDeny = policyFileWithDeny;
     }
 
 }

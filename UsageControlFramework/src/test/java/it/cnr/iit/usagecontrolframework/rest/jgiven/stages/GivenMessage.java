@@ -1,8 +1,12 @@
 package it.cnr.iit.usagecontrolframework.rest.jgiven.stages;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
+
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -28,7 +32,6 @@ import it.cnr.iit.usagecontrolframework.rest.UCFTestContext;
 @JGivenStage
 public class GivenMessage extends Stage<GivenMessage> {
 
-    private static final String MONITORED_VALUE_FOR_DENY = "55";
     private String policy;
     private String request;
 
@@ -49,11 +52,13 @@ public class GivenMessage extends Stage<GivenMessage> {
 
     PepProperties pepProps;
 
+    String monitoredResource;
+
     @BeforeScenario
     public void init() {
 
-        policy = FileManipulationUtility.readResourceFileAsString( testContext.getPolicyFile() );
-        request = FileManipulationUtility.readResourceFileAsString( testContext.getRequestFile() );
+        policy = readResourceFileAsString( testContext.getPolicyFile() );
+        request = readResourceFileAsString( testContext.getRequestFile() );
 
         pepProps = properties.getPepList().get( Integer.parseInt( testContext.getPepId() ) );
 
@@ -93,6 +98,11 @@ public class GivenMessage extends Stage<GivenMessage> {
         return self();
     }
 
+    public GivenMessage a_policy_that_will_trigger_a_Deny_response() {
+        policy = readResourceFileAsString( testContext.getPolicyFileDeny() );
+        return self();
+    }
+
     private Message buildEndAccessMessage() {
         assertNotNull( sessionId );
         EndAccessMessage endAccessMessage = new EndAccessMessage( pepProps.getId(), pepProps.getBaseUri() );
@@ -101,7 +111,7 @@ public class GivenMessage extends Stage<GivenMessage> {
         return endAccessMessage;
     }
 
-    public StartAccessMessage buildStartAccessMessage() {
+    private StartAccessMessage buildStartAccessMessage() {
         assertNotNull( sessionId );
         StartAccessMessage startAccessMessage = new StartAccessMessage( pepProps.getId(), pepProps.getBaseUri() );
         startAccessMessage.setSessionId( sessionId );
@@ -132,9 +142,13 @@ public class GivenMessage extends Stage<GivenMessage> {
         return buildResponseInterface( pepProps, "onGoingEvaluation" );
     }
 
-    public GivenMessage a_monitored_attribute_in_$_with_deny_state( @Quoted String resource ) {
-        FileManipulationUtility.updateResourceFileContent( resource, MONITORED_VALUE_FOR_DENY );
-        assertEquals( MONITORED_VALUE_FOR_DENY, FileManipulationUtility.readResourceFileAsString( resource ) );
-        return self();
+    private String readResourceFileAsString( String resource ) {
+        try {
+            byte[] data = Files.readAllBytes( Paths.get( this.getClass().getClassLoader().getResource( resource ).toURI() ) );
+            return new String( data );
+        } catch( URISyntaxException | IOException e ) {
+            fail( "Unable to read resource due to " + e.getLocalizedMessage() );
+            return null;
+        }
     }
 }
