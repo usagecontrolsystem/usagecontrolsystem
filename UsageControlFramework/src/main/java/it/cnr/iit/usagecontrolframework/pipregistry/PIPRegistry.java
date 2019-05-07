@@ -89,7 +89,7 @@ public class PIPRegistry implements PIPRegistryInterface {
 
     @Override
     public boolean hasAttribute( Attribute attribute ) {
-        return getByAttribute( attribute ) != null;
+        return getByAttribute( attribute ).isPresent();
     }
 
 }
