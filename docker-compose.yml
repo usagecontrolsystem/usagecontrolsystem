@@ -1,0 +1,10 @@
+version: '3'
+services:
+  ucs:
+    build: docker_ucs/
+    ports:
+     - "9998:9998"
+  pep:
+    build: docker_pep/
+    ports: 
+     - "9999:9999"
