@@ -28,4 +28,4 @@ COPY pep.jar pep.jar
 
 #RUN java -jar ucs.jar &
 #RUN java -jar pep.jar &
-ENTRYPOINT ["java", "-jar", "pep.jar", "&"]
+ENTRYPOINT ["java", "-jar", "pep.jar"]
