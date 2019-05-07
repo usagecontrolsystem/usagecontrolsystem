@@ -587,7 +587,7 @@ public final class ContextHandlerLC extends AbstractContextHandler {
         List<OnGoingAttributesInterface> onGoingAttributesForEnvironment = new LinkedList<>();
 
         // build attribute lists for subject, resource, action and environment
-        if( onGoingAttributes != null && onGoingAttributes.isEmpty() ) {
+        if( onGoingAttributes != null && !onGoingAttributes.isEmpty() ) {
             // fill the correspondent list of ongoingattributes
             for( OnGoingAttributesInterface attribute : onGoingAttributes ) {
                 if( attribute.getSubjectName() != null && !attribute.getSubjectName().equals( "null" ) ) {
@@ -606,7 +606,7 @@ public final class ContextHandlerLC extends AbstractContextHandler {
         }
 
         // builds up the JSON object that is needed to perform unsubscribe
-        if( onGoingAttributes != null && onGoingAttributes.isEmpty() ) {
+        if( onGoingAttributes != null && !onGoingAttributes.isEmpty() ) {
             // ongoingattributes for object
             for( OnGoingAttributesInterface attribute : onGoingAttributesForResource ) {
 
