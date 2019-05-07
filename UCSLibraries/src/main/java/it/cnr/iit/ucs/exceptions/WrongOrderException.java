@@ -13,12 +13,12 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  ******************************************************************************/
-package it.cnr.iit.ucsinterface.contexthandler.exceptions;
+package it.cnr.iit.ucs.exceptions;
 
-public class SessionManagerException extends Exception {
+public class WrongOrderException extends Exception {
     private static final long serialVersionUID = 1L;
 
-    public SessionManagerException( String string ) {
+    public WrongOrderException( String string ) {
         super( string );
     }
 }

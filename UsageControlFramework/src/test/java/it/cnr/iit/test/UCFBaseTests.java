@@ -278,7 +278,7 @@ public class UCFBaseTests {
         DataType[] pipDT = { DataType.INTEGER, DataType.INTEGER, DataType.STRING, DataType.STRING, DataType.INTEGER, DataType.STRING };
 
         for( int i = 0; i < pips.length; i++ ) {
-            contextHandler.getPipRegistry().addPIP( getMockedPIPCHInterface( pips[i], pipCat[i], pipDT[i], pipVal[i] ) );
+            contextHandler.getPipRegistry().add( getMockedPIPCHInterface( pips[i], pipCat[i], pipDT[i], pipVal[i] ) );
         }
     }
 

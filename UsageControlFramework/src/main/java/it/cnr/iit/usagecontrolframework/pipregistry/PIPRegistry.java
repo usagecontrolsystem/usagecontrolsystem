@@ -5,12 +5,13 @@ import java.util.List;
 import java.util.Optional;
 import java.util.logging.Logger;
 
+import it.cnr.iit.ucsinterface.contexthandler.pipregistry.PIPRegistryInterface;
 import it.cnr.iit.ucsinterface.pip.PIPCHInterface;
 import it.cnr.iit.xacmlutilities.Attribute;
 
 import oasis.names.tc.xacml.core.schema.wd_17.RequestType;
 
-public class PIPRegistry {
+public class PIPRegistry implements PIPRegistryInterface {
 
     private static final Logger log = Logger.getLogger( PIPRegistry.class.getName() );
 
@@ -21,11 +22,23 @@ public class PIPRegistry {
         pipList = new ArrayList<>();
     }
 
-    public boolean addPIP( PIPCHInterface pip ) {
+    @Override
+    public boolean add( PIPCHInterface pip ) {
         return pipList.add( pip );
     }
 
-    public void unsubscribe( List<Attribute> attributes ) {
+    @Override
+    public boolean remove( PIPCHInterface pip ) {
+        return pipList.remove( pip );
+    }
+
+    @Override
+    public void removeAll() {
+        pipList.clear();
+    }
+
+    @Override
+    public void unsubscribeAll( List<Attribute> attributes ) {
         for( PIPCHInterface pip : pipList ) {
             try {
                 pip.unsubscribe( attributes );
@@ -35,7 +48,8 @@ public class PIPRegistry {
         }
     }
 
-    public void subscribe( RequestType requestType ) {
+    @Override
+    public void subscribeAll( RequestType requestType ) {
         try {
             for( PIPCHInterface pip : pipList ) {
                 pip.subscribe( requestType );
@@ -45,7 +59,8 @@ public class PIPRegistry {
         }
     }
 
-    public void retrieve( RequestType requestType ) {
+    @Override
+    public void retrieveAll( RequestType requestType ) {
         try {
             for( PIPCHInterface pip : pipList ) {
                 pip.retrieve( requestType );
@@ -55,13 +70,15 @@ public class PIPRegistry {
         }
     }
 
-    public Optional<PIPCHInterface> getPIPByAttributeId( String attributeId ) {
+    @Override
+    public Optional<PIPCHInterface> getByAttributeId( String attributeId ) {
         Attribute attribute = new Attribute();
         attribute.createAttributeId( attributeId );
-        return getPIPByAttribute( attribute );
+        return getByAttribute( attribute );
     }
 
-    public Optional<PIPCHInterface> getPIPByAttribute( Attribute attribute ) {
+    @Override
+    public Optional<PIPCHInterface> getByAttribute( Attribute attribute ) {
         for( PIPCHInterface pip : pipList ) {
             if( pip.getAttributeIds().contains( attribute.getAttributeId() ) ) {
                 return Optional.of( pip );
@@ -70,8 +87,9 @@ public class PIPRegistry {
         return Optional.empty();
     }
 
+    @Override
     public boolean hasAttribute( Attribute attribute ) {
-        return getPIPByAttribute( attribute ) != null;
+        return getByAttribute( attribute ) != null;
     }
 
 }

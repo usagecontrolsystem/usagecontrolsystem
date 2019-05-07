@@ -220,7 +220,7 @@ public abstract class AbstractContextHandler implements ContextHandlerInterface 
 
         for( PIPCHInterface pip : pipList ) {
             pip.setContextHandlerInterface( this );
-            pipRegistry.addPIP( pip );
+            pipRegistry.add( pip );
         }
 
         verify();

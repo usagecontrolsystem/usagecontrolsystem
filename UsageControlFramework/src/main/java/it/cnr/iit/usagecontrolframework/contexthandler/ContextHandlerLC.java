@@ -28,11 +28,11 @@ import java.util.logging.Logger;
 import javax.xml.bind.JAXBException;
 
 import it.cnr.iit.ucs.constants.STATUS;
+import it.cnr.iit.ucs.exceptions.RevokeException;
+import it.cnr.iit.ucs.exceptions.SessionManagerException;
+import it.cnr.iit.ucs.exceptions.WrongOrderException;
 import it.cnr.iit.ucs.properties.components.ContextHandlerProperties;
 import it.cnr.iit.ucsinterface.contexthandler.ContextHandlerConstants;
-import it.cnr.iit.ucsinterface.contexthandler.exceptions.RevokeException;
-import it.cnr.iit.ucsinterface.contexthandler.exceptions.SessionManagerException;
-import it.cnr.iit.ucsinterface.contexthandler.exceptions.WrongOrderException;
 import it.cnr.iit.ucsinterface.message.Message;
 import it.cnr.iit.ucsinterface.message.endaccess.EndAccessMessage;
 import it.cnr.iit.ucsinterface.message.endaccess.EndAccessResponse;
@@ -253,9 +253,9 @@ public final class ContextHandlerLC extends AbstractContextHandler {
         List<Attribute> external = extractExternal( attributes, requestType );
 
         if( !isSubscription ) {
-            pipRegistry.retrieve( requestType );
+            pipRegistry.retrieveAll( requestType );
         } else {
-            pipRegistry.subscribe( requestType );
+            pipRegistry.subscribeAll( requestType );
         }
 
         if( !complete || !external.isEmpty() ) {
@@ -536,7 +536,7 @@ public final class ContextHandlerLC extends AbstractContextHandler {
         otherSessions = attributesToUnsubscribe( session.getId(), (ArrayList<Attribute>) attributes );
 
         if( !otherSessions ) {
-            pipRegistry.unsubscribe( attributes );
+            pipRegistry.unsubscribeAll( attributes );
         }
 
         // database entry for the current must be deleted

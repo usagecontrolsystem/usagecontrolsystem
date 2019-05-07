@@ -1,5 +1,6 @@
 /*
  * CNR - IIT (2015-2016)
+ * 
  * @authors Fabio Bindi and Filippo Lauria
  */
 package it.cnr.iit.xacmlutilities.exception;
@@ -10,15 +11,11 @@ package it.cnr.iit.xacmlutilities.exception;
  * @author Fabio Bindi and Filippo Lauria
  */
 public class MissingRequiredAttributeException extends XacmlException {
-    
-    /**
-	 * 
-	 */
-	private static final long serialVersionUID = 4467213839272976251L;
 
-	public MissingRequiredAttributeException(String attributeName) {
-        super("Required attribute " + attributeName + " is missing");
+    private static final long serialVersionUID = 4467213839272976251L;
+
+    public MissingRequiredAttributeException( String attributeName ) {
+        super( "Required attribute " + attributeName + " is missing" );
     }
-    
-    
+
 }
