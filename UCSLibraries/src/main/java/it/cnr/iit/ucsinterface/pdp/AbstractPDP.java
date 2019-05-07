@@ -55,9 +55,6 @@ public abstract class AbstractPDP implements PDPInterface {
         this.configuration = configuration;
     }
 
-    // ---------------------------------------------------------------------------
-    // GETTER and SETTERS
-    // ---------------------------------------------------------------------------
     protected final ObligationManagerInterface getObligationManager() {
         if( initialized ) {
             return obligationManagerInterface;

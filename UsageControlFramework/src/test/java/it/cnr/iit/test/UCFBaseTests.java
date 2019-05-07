@@ -48,7 +48,6 @@ import it.cnr.iit.ucsinterface.pdp.PDPEvaluation;
 import it.cnr.iit.ucsinterface.pdp.PDPInterface;
 import it.cnr.iit.ucsinterface.pep.PEPInterface;
 import it.cnr.iit.ucsinterface.pip.PIPCHInterface;
-import it.cnr.iit.ucsinterface.pip.PIPRetrieval;
 import it.cnr.iit.ucsinterface.requestmanager.RequestManagerToCHInterface;
 import it.cnr.iit.ucsinterface.sessionmanager.SessionInterface;
 import it.cnr.iit.ucsinterface.sessionmanager.SessionManagerInterface;
@@ -234,23 +233,6 @@ public class UCFBaseTests {
         PAPInterface pap = Mockito.mock( PAPInterface.class );
         Mockito.when( pap.retrievePolicy( ArgumentMatchers.anyString() ) ).thenReturn( policy );
         return pap;
-    }
-
-    /* mocked PipRetrieval */
-
-    protected PIPRetrieval getMockedPipRetrieval() {
-        PIPRetrieval pipRetrieval = Mockito.mock( PIPRetrieval.class );
-        Mockito.doAnswer( a -> {
-            RequestType requestType = a.getArgument( 0 );
-            // List<Attribute> attributeRetrievals = a.getArgument(1);
-            log.info( "pip retrieve!" );
-            requestType.addAttribute( Category.ENVIRONMENT.toString(), DataType.INTEGER.toString(), "virus", "1" );
-            requestType.addAttribute( Category.ENVIRONMENT.toString(), DataType.INTEGER.toString(), "telephone", "1" );
-            requestType.addAttribute( Category.ENVIRONMENT.toString(), DataType.STRING.toString(), "position", "Pisa" );
-
-            return null;
-        } ).when( pipRetrieval ).retrieve( ArgumentMatchers.<RequestType>any(), ArgumentMatchers.any() );
-        return pipRetrieval;
     }
 
     /* Mocked PIPs */

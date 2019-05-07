@@ -61,7 +61,6 @@ public interface ObligationManagerInterface {
      *          the eventual pip retrieval to be used
      * @return true if everything goes alright, false otherwise
      */
-    public boolean setPIPs( List<PIPOMInterface> pips,
-            PIPOMInterface pipRetrieval );
+    public boolean setPIPs( List<PIPOMInterface> pips );
 
 }

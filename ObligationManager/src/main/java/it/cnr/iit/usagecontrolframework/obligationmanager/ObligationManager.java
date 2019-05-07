@@ -61,7 +61,6 @@ public final class ObligationManager implements ObligationManagerInterface {
     private static final String MSG_ERR_DECODE_OBLIGATION = "Error decoding obligation : {0}";
 
     private List<PIPOMInterface> pipList;
-    private PIPOMInterface pipRetrieval;
     private ObligationManagerProperties properties; // NOSONAR
 
     public ObligationManager( ObligationManagerProperties properties ) {
@@ -70,22 +69,19 @@ public final class ObligationManager implements ObligationManagerInterface {
     }
 
     @Override
-    public final boolean setPIPs( List<PIPOMInterface> pips, PIPOMInterface pipRetrieval ) {
+    public final boolean setPIPs( List<PIPOMInterface> pips ) {
         if( ( pips == null || pips.isEmpty() ) ) {
             log.log( Level.SEVERE,
                 "Invalid provided PIPS : pips_null {0}\t"
-                        + "pips_empty {1}\t"
-                        + "pipRetreival_null {2}\t",
+                        + "pips_empty {1}\t",
                 new Object[] {
                     pips == null,
-                    pips != null ? pips.isEmpty() : Boolean.FALSE,
-                    pipRetrieval == null
+                    pips != null ? pips.isEmpty() : Boolean.FALSE
                 } );
             return false;
         }
 
         pipList = pips;
-        this.pipRetrieval = pipRetrieval;
         return true;
     }
 
@@ -132,10 +128,6 @@ public final class ObligationManager implements ObligationManagerInterface {
 
         for( PIPOMInterface pip : pipList ) {
             pip.performObligation( obligationMap.get( pipName.toString() ) );
-        }
-
-        if( pipRetrieval != null ) {
-            pipRetrieval.performObligation( obligationMap.get( "?" ) );
         }
 
         return null;

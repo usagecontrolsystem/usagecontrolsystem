@@ -51,7 +51,6 @@ import it.cnr.iit.ucsinterface.obligationmanager.ObligationManagerInterface;
 import it.cnr.iit.ucsinterface.pep.PEPInterface;
 import it.cnr.iit.ucsinterface.pip.PIPBase;
 import it.cnr.iit.ucsinterface.pip.PIPOMInterface;
-import it.cnr.iit.ucsinterface.pip.PIPRetrieval;
 import it.cnr.iit.ucsinterface.ucs.UCSInterface;
 import it.cnr.iit.usagecontrolframework.contexthandler.AbstractContextHandler;
 import it.cnr.iit.usagecontrolframework.proxies.NodeProxy;
@@ -108,7 +107,6 @@ public class UsageControlFramework implements UCSInterface {
     private AbstractContextHandler contextHandler;
     private AsynchronousRequestManager requestManager;
     private List<PIPBase> pipList = new ArrayList<>();
-    private PIPRetrieval pipRetrieval;
     private ObligationManagerInterface obligationManager;
 
     // proxy components
@@ -264,7 +262,7 @@ public class UsageControlFramework implements UCSInterface {
                 .getConstructor( ObligationManagerProperties.class );
             obligationManager = (ObligationManagerInterface) constructor
                 .newInstance( omProperties );
-            obligationManager.setPIPs( new ArrayList<PIPOMInterface>( pipList ), pipRetrieval );
+            obligationManager.setPIPs( new ArrayList<PIPOMInterface>( pipList ) );
             return true;
         } catch( Exception exception ) {
             log.severe( "Error building obligation manager : " + exception.getMessage() );
