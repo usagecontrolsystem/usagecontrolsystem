@@ -608,68 +608,92 @@ public final class ContextHandlerLC extends AbstractContextHandler {
         // builds up the JSON object that is needed to perform unsubscribe
         if( onGoingAttributes != null && !onGoingAttributes.isEmpty() ) {
             // ongoingattributes for object
-            for( OnGoingAttributesInterface attribute : onGoingAttributesForResource ) {
-
-                // retrieve all the active sessions which deal with the
-                // considered on
-                // going attribute
-                List<SessionInterface> tempList = getSessionManagerInterface()
-                    .getSessionsForResourceAttributes( resourceName, attribute.getAttributeId() );
-                // check if there are not any active sessions which deal with
-                // the
-                // attribute
-                if( tempList == null || tempList.isEmpty() || tempList.size() == 1 ) {
-                    otherSessions = false;
-                    Attribute tmpAttribute = new Attribute();
-                    tmpAttribute.createAttributeId( attribute.getAttributeId() );
-                    tmpAttribute.setAdditionalInformations( resourceName );
-                    attributes.add( tmpAttribute );
-                }
-            }
+            otherSessions = buildOnGoingAttributes( attributes, resourceName, otherSessions, onGoingAttributesForResource );
 
             // verify what subject attributes must be unsubscribed
-            for( OnGoingAttributesInterface attribute : onGoingAttributesForSubject ) {
-
-                // retrieve all the active sessions which deal with the
-                // considered on
-                // going attribute
-                List<SessionInterface> tempList = getSessionManagerInterface()
-                    .getSessionsForSubjectAttributes( subjectName, attribute.getAttributeId() );
-                // check if there are not any active sessions which deal with
-                // the
-                // attribute
-                if( tempList == null || tempList.isEmpty() || tempList.size() == 1 ) {
-                    otherSessions = false;
-                    Attribute tmpAttribute = new Attribute();
-                    tmpAttribute.createAttributeId( attribute.getAttributeId() );
-                    tmpAttribute.setAdditionalInformations( subjectName );
-                    attributes.add( tmpAttribute );
-                }
-            }
+            otherSessions = verifyAttributesToUnsubscribe( attributes, subjectName, otherSessions, onGoingAttributesForSubject );
 
             // on going attributes for action
-            for( OnGoingAttributesInterface attribute : onGoingAttributesForAction ) {
-                List<SessionInterface> tempList = getSessionManagerInterface()
-                    .getSessionsForActionAttributes( actionName, attribute.getAttributeId() );
-                if( tempList == null || tempList.isEmpty() || tempList.size() == 1 ) {
-                    otherSessions = false;
-                    Attribute tmpAttribute = new Attribute();
-                    tmpAttribute.createAttributeId( attribute.getAttributeId() );
-                    tmpAttribute.setAdditionalInformations( actionName );
-                    attributes.add( tmpAttribute );
-                }
-            }
+            otherSessions = buildOnGoingAttributesForAction( attributes, actionName, otherSessions, onGoingAttributesForAction );
 
             // on going attributes for environment
-            for( OnGoingAttributesInterface attribute : onGoingAttributesForEnvironment ) {
-                List<SessionInterface> tempList = getSessionManagerInterface()
-                    .getSessionsForEnvironmentAttributes( attribute.getAttributeId() );
-                if( tempList == null || tempList.isEmpty() || tempList.size() == 1 ) {
-                    otherSessions = false;
-                    Attribute tmpAttribute = new Attribute();
-                    tmpAttribute.createAttributeId( attribute.getAttributeId() );
-                    attributes.add( tmpAttribute );
-                }
+            otherSessions = buildOmGoingAttributesForEnvironment( attributes, otherSessions, onGoingAttributesForEnvironment );
+        }
+        return otherSessions;
+    }
+
+    private boolean buildOmGoingAttributesForEnvironment( ArrayList<Attribute> attributes, boolean otherSessions,
+            List<OnGoingAttributesInterface> onGoingAttributesForEnvironment ) {
+        for( OnGoingAttributesInterface attribute : onGoingAttributesForEnvironment ) {
+            List<SessionInterface> tempList = getSessionManagerInterface()
+                .getSessionsForEnvironmentAttributes( attribute.getAttributeId() );
+            if( tempList == null || tempList.isEmpty() || tempList.size() == 1 ) {
+                otherSessions = false;
+                Attribute tmpAttribute = new Attribute();
+                tmpAttribute.createAttributeId( attribute.getAttributeId() );
+                attributes.add( tmpAttribute );
+            }
+        }
+        return otherSessions;
+    }
+
+    private boolean buildOnGoingAttributesForAction( ArrayList<Attribute> attributes, String actionName, boolean otherSessions,
+            List<OnGoingAttributesInterface> onGoingAttributesForAction ) {
+        for( OnGoingAttributesInterface attribute : onGoingAttributesForAction ) {
+            List<SessionInterface> tempList = getSessionManagerInterface()
+                .getSessionsForActionAttributes( actionName, attribute.getAttributeId() );
+            if( tempList == null || tempList.isEmpty() || tempList.size() == 1 ) {
+                otherSessions = false;
+                Attribute tmpAttribute = new Attribute();
+                tmpAttribute.createAttributeId( attribute.getAttributeId() );
+                tmpAttribute.setAdditionalInformations( actionName );
+                attributes.add( tmpAttribute );
+            }
+        }
+        return otherSessions;
+    }
+
+    private boolean verifyAttributesToUnsubscribe( ArrayList<Attribute> attributes, String subjectName, boolean otherSessions,
+            List<OnGoingAttributesInterface> onGoingAttributesForSubject ) {
+        for( OnGoingAttributesInterface attribute : onGoingAttributesForSubject ) {
+
+            // retrieve all the active sessions which deal with the
+            // considered on
+            // going attribute
+            List<SessionInterface> tempList = getSessionManagerInterface()
+                .getSessionsForSubjectAttributes( subjectName, attribute.getAttributeId() );
+            // check if there are not any active sessions which deal with
+            // the
+            // attribute
+            if( tempList == null || tempList.isEmpty() || tempList.size() == 1 ) {
+                otherSessions = false;
+                Attribute tmpAttribute = new Attribute();
+                tmpAttribute.createAttributeId( attribute.getAttributeId() );
+                tmpAttribute.setAdditionalInformations( subjectName );
+                attributes.add( tmpAttribute );
+            }
+        }
+        return otherSessions;
+    }
+
+    private boolean buildOnGoingAttributes( ArrayList<Attribute> attributes, String resourceName, boolean otherSessions,
+            List<OnGoingAttributesInterface> onGoingAttributesForResource ) {
+        for( OnGoingAttributesInterface attribute : onGoingAttributesForResource ) {
+
+            // retrieve all the active sessions which deal with the
+            // considered on
+            // going attribute
+            List<SessionInterface> tempList = getSessionManagerInterface()
+                .getSessionsForResourceAttributes( resourceName, attribute.getAttributeId() );
+            // check if there are not any active sessions which deal with
+            // the
+            // attribute
+            if( tempList == null || tempList.isEmpty() || tempList.size() == 1 ) {
+                otherSessions = false;
+                Attribute tmpAttribute = new Attribute();
+                tmpAttribute.createAttributeId( attribute.getAttributeId() );
+                tmpAttribute.setAdditionalInformations( resourceName );
+                attributes.add( tmpAttribute );
             }
         }
         return otherSessions;
