@@ -29,7 +29,6 @@ import it.cnr.iit.ucsinterface.message.Message;
 import it.cnr.iit.ucsinterface.message.pipch.PipChMessage;
 import it.cnr.iit.ucsinterface.node.NodeInterface;
 import it.cnr.iit.ucsinterface.pep.PEPInterface;
-import it.cnr.iit.ucsinterface.requestmanager.InterfaceToPerformanceMonitor;
 import it.cnr.iit.ucsinterface.requestmanager.RequestManagerToCHInterface;
 import it.cnr.iit.ucsinterface.requestmanager.UCSCHInterface;
 import it.cnr.iit.usagecontrolframework.proxies.NodeProxy;
@@ -48,7 +47,7 @@ import it.cnr.iit.utility.errorhandling.Reject;
  *
  */
 public abstract class AsynchronousRequestManager
-        implements RequestManagerToCHInterface, UCSCHInterface, InterfaceToPerformanceMonitor {
+        implements RequestManagerToCHInterface, UCSCHInterface {
 
     protected static final Logger log = Logger.getLogger( AsynchronousRequestManager.class.getName() );
 
@@ -144,11 +143,6 @@ public abstract class AsynchronousRequestManager
     protected final ForwardingQueueToRMInterface getForwardingQueue() {
         Reject.ifInvalidObjectState( initialised, AsynchronousRequestManager.class.getName(), log );
         return forwardingQueue;
-    }
-
-    @Override
-    public final int getBackLogQueueLength() {
-        return queueToCH.size();
     }
 
 }
