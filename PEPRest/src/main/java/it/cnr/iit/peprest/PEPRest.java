@@ -29,11 +29,11 @@ import org.springframework.stereotype.Component;
 import com.google.common.base.Throwables;
 
 import it.cnr.iit.peprest.configuration.PEPProperties;
-import it.cnr.iit.peprest.configuration.UCSProperties;
+import it.cnr.iit.peprest.configuration.UCSProxyProperties;
 import it.cnr.iit.peprest.messagetrack.MessageStorage;
 import it.cnr.iit.peprest.messagetrack.MessageStorageInterface;
 import it.cnr.iit.peprest.messagetrack.MessagesPerSession;
-import it.cnr.iit.peprest.proxy.ProxyUCS;
+import it.cnr.iit.peprest.proxy.UCSProxy;
 import it.cnr.iit.ucsinterface.message.MEAN;
 import it.cnr.iit.ucsinterface.message.Message;
 import it.cnr.iit.ucsinterface.message.endaccess.EndAccessMessage;
@@ -84,13 +84,13 @@ public class PEPRest implements PEPInterface {
     }
 
     @Bean
-    public UCSProperties getUCSProperties() {
-        return new UCSProperties();
+    public UCSProxyProperties getUCSProxyProperties() {
+        return new UCSProxyProperties();
     }
 
     @Bean
     public UCSCHInterface getUCSInterface() {
-        return new ProxyUCS();
+        return new UCSProxy();
     }
 
     public String tryAccess() {

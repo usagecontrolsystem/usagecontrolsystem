@@ -22,19 +22,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
-import it.cnr.iit.peprest.configuration.UCSProperties;
+import it.cnr.iit.peprest.configuration.UCSProxyProperties;
 import it.cnr.iit.ucsinterface.message.Message;
 import it.cnr.iit.ucsinterface.message.PURPOSE;
 import it.cnr.iit.ucsinterface.requestmanager.UCSCHInterface;
 import it.cnr.iit.utility.RESTUtils;
 
 @Component
-public class ProxyUCS implements UCSCHInterface {
+public class UCSProxy implements UCSCHInterface {
 
-    private static final Logger log = Logger.getLogger( ProxyUCS.class.getName() );
+    private static final Logger log = Logger.getLogger( UCSProxy.class.getName() );
 
     @Autowired
-    private UCSProperties ucs;
+    private UCSProxyProperties ucs;
 
     @Override
     public Message sendMessageToCH( Message message ) {
@@ -56,11 +56,11 @@ public class ProxyUCS implements UCSCHInterface {
     private String getApiNameFromPurpose( PURPOSE purpose ) {
         switch( purpose ) {
             case TRYACCESS:
-                return ucs.getTryAccessApi();
+                return ucs.getApiTryAccess();
             case STARTACCESS:
-                return ucs.getStartAccessApi();
+                return ucs.getApiStartAccess();
             case ENDACCESS:
-                return ucs.getEndAccessApi();
+                return ucs.getApiEndAccess();
             default:
                 return "";
         }

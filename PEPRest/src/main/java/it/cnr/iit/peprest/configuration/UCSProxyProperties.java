@@ -19,19 +19,19 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 @ConfigurationProperties( prefix = "ucs" )
-public class UCSProperties {
+public class UCSProxyProperties {
 
     @Value( "${base-uri}" )
     private String baseUri;
 
-    @Value( "${try-access-api}" )
-    private String tryAccessApi;
+    @Value( "${api-try-access}" )
+    private String apiTryAccess;
 
-    @Value( "${start-access-api}" )
-    private String startAccessApi;
+    @Value( "${api-start-access}" )
+    private String apiStartAccess;
 
-    @Value( "${end-access-api}" )
-    private String endAccessApi;
+    @Value( "${api-end-access}" )
+    private String apiEndAccess;
 
     public String getBaseUri() {
         return baseUri;
@@ -41,28 +41,28 @@ public class UCSProperties {
         this.baseUri = baseUri;
     }
 
-    public String getTryAccessApi() {
-        return tryAccessApi;
+    public String getApiTryAccess() {
+        return apiTryAccess;
     }
 
-    public void setTryAccessApi( String tryAccessApi ) {
-        this.tryAccessApi = tryAccessApi;
+    public void setApiTryAccess( String apiTryAccess ) {
+        this.apiTryAccess = apiTryAccess;
     }
 
-    public String getStartAccessApi() {
-        return startAccessApi;
+    public String getApiStartAccess() {
+        return apiStartAccess;
     }
 
-    public void setStartAccessApi( String startAccessApi ) {
-        this.startAccessApi = startAccessApi;
+    public void setApiStartAccess( String apiStartAccess ) {
+        this.apiStartAccess = apiStartAccess;
     }
 
-    public String getEndAccessApi() {
-        return endAccessApi;
+    public String getApiEndAccess() {
+        return apiEndAccess;
     }
 
-    public void setEndAccessApi( String endAccessApi ) {
-        this.endAccessApi = endAccessApi;
+    public void setApiEndAccess( String apiEndAccess ) {
+        this.apiEndAccess = apiEndAccess;
     }
 
 }

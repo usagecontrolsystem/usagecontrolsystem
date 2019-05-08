@@ -47,6 +47,4 @@ public interface UCSProperties {
 
     public List<PepProperties> getPepList();
 
-    // public ProxiesProperties getProxies();
-
 }
