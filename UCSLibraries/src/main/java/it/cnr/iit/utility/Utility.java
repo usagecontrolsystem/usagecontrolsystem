@@ -96,6 +96,10 @@ public final class Utility {
         if( !isValidPath( relPath ) ) {
             return null;
         }
+        File file = new File( relPath );
+        if( file != null && file.exists() ) {
+            return relPath;
+        }
         try {
             ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
             URL input = classLoader.getResource( relPath );

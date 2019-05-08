@@ -25,7 +25,10 @@ EXPOSE 9999
 
 #COPY ../UsageControlFramework/target/*-SNAPSHOT.jar ucs.jar
 COPY pep.jar pep.jar
+COPY policies policies
+COPY requests requests
+COPY application.properties application.properties
 
 #RUN java -jar ucs.jar &
 #RUN java -jar pep.jar &
-ENTRYPOINT ["java", "-jar", "pep.jar"]
+ENTRYPOINT ["java", "-jar", "pep.jar", "-Dspring.config.location=./application.properties"]

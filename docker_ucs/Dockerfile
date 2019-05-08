@@ -24,8 +24,10 @@ RUN apt clean -y && rm -rf /var/lib/apt/lists/*
 EXPOSE 9998
 
 COPY ucs.jar ucs.jar
+COPY pips pips
+COPY application.properties application.properties
 #COPY PEPRest/target/*-SNAPSHOT.jar pep.jar
 
 #RUN java -jar ucs.jar &
 #RUN java -jar pep.jar &
-ENTRYPOINT ["java", "-jar", "ucs.jar"]
+ENTRYPOINT ["java", "-jar", "ucs.jar", "-Dspring.config.location=./application.properties"]
