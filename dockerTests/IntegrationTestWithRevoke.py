@@ -46,7 +46,7 @@ assert(len(statusObject['sessionId']) >  0)
 
 print("*****REVOKE*****")
 #docker exec -it usagecontrolsystem_ucs_1 bash -c 'echo 40.0 > pips/temperature.txt'
-os.system("docker exec -it continuousdevelopmentpipeline_ucs_1 bash -c 'echo 40.0 > pips/temperature.txt'")
+os.system("docker exec continuousdevelopmentpipeline_ucs_1 bash -c 'echo 40.0 > pips/temperature.txt'")
 #subprocess.call(["docker", "exec", "-it", "usagecontrolsystem_ucs_1", "bash", "-c", "'echo 40.0 > pips/temperature.txt'"])
 
 for i in range(0,15) :
@@ -69,6 +69,6 @@ statusObject = json.loads(flowResponse)
 #"status": "STARTACCESS_PERMIT"
 assert(statusObject['status'] == 'ENDACCESS_DENY')
 
-os.system("docker exec -it continuousdevelopmentpipeline_ucs_1 bash -c 'echo 20.0 > pips/temperature.txt'")
+os.system("docker exec continuousdevelopmentpipeline_ucs_1 bash -c 'echo 20.0 > pips/temperature.txt'")
 
 print("*****END*****")
