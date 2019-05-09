@@ -55,7 +55,7 @@ public class ContextHandlerCoverageTests extends UCFBaseTests {
     private void init() throws URISyntaxException, IOException, JAXBException {
         log.info( "Init tests " );
         policy = readResourceFileAsString( testProperties.getPolicyFile() );
-        request = readResourceFileAsString( testProperties.getPolicyFile() );
+        request = readResourceFileAsString( testProperties.getRequestFile() );
     }
 
     @Test
