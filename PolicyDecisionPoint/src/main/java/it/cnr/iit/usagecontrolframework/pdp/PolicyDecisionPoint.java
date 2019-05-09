@@ -22,8 +22,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.logging.Logger;
 
-import javax.xml.bind.JAXBException;
-
 import org.wso2.balana.AbstractPolicy;
 import org.wso2.balana.Balana;
 import org.wso2.balana.PDPConfig;
@@ -55,14 +53,11 @@ import it.cnr.iit.ucs.properties.components.PdpProperties;
 import it.cnr.iit.ucsinterface.pdp.AbstractPDP;
 import it.cnr.iit.ucsinterface.pdp.PDPEvaluation;
 import it.cnr.iit.ucsinterface.pdp.PDPResponse;
-import it.cnr.iit.utility.JAXBUtility;
 import it.cnr.iit.xacmlutilities.policy.PolicyHelper;
 
 import journal.io.api.Journal;
 import journal.io.api.Journal.WriteType;
 import journal.io.api.JournalBuilder;
-import oasis.names.tc.xacml.core.schema.wd_17.PolicyType;
-import oasis.names.tc.xacml.core.schema.wd_17.RuleType;
 
 /**
  * Implementation of the PDP.
@@ -155,206 +150,11 @@ public final class PolicyDecisionPoint extends AbstractPDP {
             journal.write( response.encode().getBytes(), WriteType.ASYNC );
             journal.sync();
             responses.add( response );
-            ArrayList<Integer> firingRules = new ArrayList<>();
-            PDPResponse pdpResponse = new PDPResponse( response.encode() );
-            if( response.getResults().iterator().next()
-                .getDecision() == AbstractResult.DECISION_PERMIT ) {
-                mergeFiringRules( firingRules, stringPolicy );
-            }
-            return pdpResponse;
+            return new PDPResponse( response.encode() );
         } catch( Exception e ) {
             log.severe( e.getMessage() );
         }
         return null;
-    }
-
-    /**
-     * This is the effective evaluation function.
-     */
-    @Deprecated
-    public PDPEvaluation evaluateSingleRules( String request, StringBuilder stringPolicy, // NOSONAR
-            STATUS status ) {
-        try {
-            String conditionName = extractFromStatus( status );
-            PolicyHelper policyHelper = PolicyHelper
-                .buildPolicyHelper( stringPolicy.toString() );
-            String policyToEvaluate = policyHelper
-                .getConditionForEvaluation( conditionName );
-            PolicyType policyType = JAXBUtility.unmarshalToObject( PolicyType.class,
-                policyToEvaluate );
-            ArrayList<PolicyType> policies = splitSingleRule( policyType,
-                policyToEvaluate );
-
-            ArrayList<ResponseCtx> responses = new ArrayList<>();
-
-            for( PolicyType policyTmp : policies ) {
-                String policyAsString = JAXBUtility.marshalToString( PolicyType.class,
-                    policyTmp, "Policy", JAXBUtility.SCHEMA );
-                PolicyFinder policyFinder = new PolicyFinder();
-                Set<PolicyFinderModule> policyFinderModules = new HashSet<>();
-                InputStreamBasedPolicyFinderModule dataUCONPolicyFinderModule = new InputStreamBasedPolicyFinderModule(
-                    policyAsString );
-                policyFinderModules.add( dataUCONPolicyFinderModule );
-                policyFinder.setModules( policyFinderModules );
-                policyFinder.init();
-                ResponseCtx response = evaluate( request, policyFinder );
-                log.info( response.encode() );
-                responses.add( response );
-            }
-            ArrayList<Integer> firingRules = new ArrayList<>();
-            ResponseCtx firingRule = checkFiringRule( responses,
-                policyType.getRuleCombiningAlgId(), firingRules );
-            PDPResponse pdpResponse = new PDPResponse( firingRule.encode() );
-            if( firingRule.getResults().iterator().next()
-                .getDecision() == AbstractResult.DECISION_PERMIT ) {
-                mergeFiringRules( firingRules, stringPolicy );
-            }
-            return pdpResponse;
-        } catch( Exception e ) {
-            log.severe( String.format( MSG_ERR_EVAL_RULES, e.getMessage() ) );
-        }
-        return null;
-    }
-
-    private void mergeFiringRules( ArrayList<Integer> firingRules,
-            StringBuilder stringPolicy ) throws JAXBException {
-        PolicyType policyType = new PolicyType();
-        PolicyType oldPolicy = JAXBUtility.unmarshalToObject( PolicyType.class,
-            stringPolicy.toString() );
-        ArrayList<PolicyType> policies = splitSingleRule( oldPolicy,
-            stringPolicy.toString() );
-
-        for( Integer i : firingRules ) {
-            PolicyType policy = policies.get( i );
-            policyType.setAdviceExpressions( policy.getAdviceExpressions() );
-            policyType.setPolicyId( policy.getPolicyId() );
-            policyType.setDescription( policy.getDescription() );
-            policyType.setMaxDelegationDepth( policy.getMaxDelegationDepth() );
-            policyType.setPolicyDefaults( policy.getPolicyDefaults() );
-            policyType.setObligationExpressions( policy.getObligationExpressions() );
-            policyType.setRuleCombiningAlgId( policy.getRuleCombiningAlgId() );
-            policyType.setTarget( policy.getTarget() );
-            policyType.setVersion( policy.getVersion() );
-            policyType
-                .getCombinerParametersOrRuleCombinerParametersOrVariableDefinition()
-                .addAll( policy
-                    .getCombinerParametersOrRuleCombinerParametersOrVariableDefinition() );
-        }
-        if( stringPolicy.length() > 0 ) {
-            stringPolicy.delete( 0, stringPolicy.length() );
-        }
-
-        try {
-            stringPolicy.append( JAXBUtility.marshalToString( PolicyType.class,
-                policyType, "PolicyType", JAXBUtility.SCHEMA ) );
-        } catch( Exception e ) {
-            log.severe( String.format( MSG_ERR_MARSHAL_POLICY, e.getMessage() ) );
-        }
-    }
-
-    /**
-     * Once retrieved all the set of responses based on the rules we have decided
-     * to apply, check which one is the firing rule
-     *
-     * @param responses
-     *          the list of responses to each single rule
-     * @param ruleCombining
-     *          the rule combining algorithm to be used
-     * @return the response
-     */
-    private ResponseCtx checkFiringRule( ArrayList<ResponseCtx> responses,
-            String ruleCombining, ArrayList<Integer> firingRules ) {
-        ResponseCtx firing = null;
-        if( ruleCombining.equals( RULE_COMBINING.DENY_UNLESS_PERMIT.getValue() ) ) {
-            int i = 0;
-            for( ResponseCtx response : responses ) {
-                if( response.getResults().iterator().next()
-                    .getDecision() == AbstractResult.DECISION_DENY ) {
-                    firing = response;
-                    break;
-                }
-                if( response.getResults().iterator().next()
-                    .getDecision() == AbstractResult.DECISION_PERMIT ) {
-                    firing = response;
-                    firingRules.add( i );
-                }
-                i += 1;
-            }
-        }
-        if( ruleCombining.equals( RULE_COMBINING.FIRST_APPLICABLE.getValue() ) ) {
-            int i = 0;
-            for( ResponseCtx response : responses ) {
-                if( response.getResults().iterator().next()
-                    .getDecision() == AbstractResult.DECISION_DENY ) {
-                    firing = response;
-                    break;
-                }
-                if( response.getResults().iterator().next()
-                    .getDecision() == AbstractResult.DECISION_PERMIT ) {
-                    firing = response;
-                    firingRules.add( i );
-                    break;
-                }
-                i += 1;
-            }
-        }
-        if( firing == null ) {
-            firing = new ResponseCtx( new Result( AbstractResult.DECISION_INDETERMINATE,
-                Status.getOkInstance() ) );
-        }
-        return firing;
-    }
-
-    /**
-     * Parses the actual policy passed as parameter in order to split it in many
-     * sub-policies all formed by a single rule, the eventual default deny rule is
-     * appended to all the other rules and is not considered alone.
-     *
-     * @param policyType
-     *          the policytype we are considering
-     * @param stringPolicy
-     *          the policy in string format
-     * @return the list of all the policies formed by the single rule plus the
-     *         eventual default-deny rule
-     * @throws JAXBException
-     */
-    private ArrayList<PolicyType> splitSingleRule( PolicyType policyType,
-            String stringPolicy ) throws JAXBException {
-        ArrayList<PolicyType> policies = new ArrayList<>();
-        ArrayList<Integer> rulesIndexes = new ArrayList<>();
-        for( int i = 0; i < policyType
-            .getCombinerParametersOrRuleCombinerParametersOrVariableDefinition()
-            .size(); i++ ) {
-            Object object = policyType
-                .getCombinerParametersOrRuleCombinerParametersOrVariableDefinition()
-                .get( i );
-            if( object instanceof RuleType && !( (RuleType) object ).getRuleId()
-                .equals( "urn:oasis:names:tc:xacml:3.0:defdeny" ) ) {
-                rulesIndexes.add( i );
-                policies.add(
-                    JAXBUtility.unmarshalToObject( PolicyType.class, stringPolicy ) );
-            }
-        }
-        int i = 0;
-        for( int p = 0; p < policies.size(); p++ ) {
-            PolicyType policyTmp = policies.get( p );
-            for( int j = rulesIndexes.size() - 1; j >= 0; ) {
-                if( j != i ) {
-                    int t = rulesIndexes.get( j );
-                    policyTmp
-                        .getCombinerParametersOrRuleCombinerParametersOrVariableDefinition()
-                        .remove( t );
-                    j -= 1;
-                } else {
-                    j -= 1;
-                }
-            }
-            i += 1;
-            if( i == rulesIndexes.size() ) {
-                break;
-            }
-        }
-        return policies;
     }
 
     /**
@@ -596,35 +396,4 @@ public final class PolicyDecisionPoint extends AbstractPDP {
         return null;
     }
 
-    @Deprecated
-    public PDPEvaluation evaluateSingleRule( String request, String policy ) { // NOSONAR
-        try {
-            PolicyType policyType = JAXBUtility.unmarshalToObject( PolicyType.class,
-                policy );
-            ArrayList<PolicyType> policies = splitSingleRule( policyType, policy );
-
-            ArrayList<ResponseCtx> responses = new ArrayList<>();
-
-            for( PolicyType policyTmp : policies ) {
-                String policyAsString = JAXBUtility.marshalToString( PolicyType.class,
-                    policyTmp, "Policy", JAXBUtility.SCHEMA );
-                PolicyFinder policyFinder = new PolicyFinder();
-                Set<PolicyFinderModule> policyFinderModules = new HashSet<>();
-                InputStreamBasedPolicyFinderModule dataUCONPolicyFinderModule = new InputStreamBasedPolicyFinderModule(
-                    policyAsString );
-                policyFinderModules.add( dataUCONPolicyFinderModule );
-                policyFinder.setModules( policyFinderModules );
-                policyFinder.init();
-                responses.add( evaluate( request, policyFinder ) );
-            }
-            ArrayList<Integer> firingRules = new ArrayList<>();
-            ResponseCtx firingRule = checkFiringRule( responses,
-                policyType.getRuleCombiningAlgId(), firingRules );
-            return new PDPResponse( firingRule.encode() );
-        } catch( Exception e ) {
-            log.severe( e.getMessage() );
-        }
-
-        return null;
-    }
 }
