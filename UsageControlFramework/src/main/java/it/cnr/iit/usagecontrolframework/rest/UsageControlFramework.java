@@ -59,6 +59,8 @@ import it.cnr.iit.usagecontrolframework.proxies.ProxyPDP;
 import it.cnr.iit.usagecontrolframework.proxies.ProxyPEP;
 import it.cnr.iit.usagecontrolframework.proxies.ProxySessionManager;
 import it.cnr.iit.usagecontrolframework.requestmanager.AsynchronousRequestManager;
+import it.cnr.iit.utility.errorhandling.Reject;
+import it.cnr.iit.utility.errorhandling.exception.PreconditionException;
 
 /**
  * This is the usage control framework class.
@@ -127,44 +129,25 @@ public class UsageControlFramework implements UCSInterface {
 
     @PostConstruct
     private void init() {
-        if( buildComponents() ) {
-            initialised = true;
+        try {
+            if( buildComponents() ) {
+                initialised = true;
+            }
+        } catch( PreconditionException e ) {
+            log.severe( e.getLocalizedMessage() );
+            Thread.currentThread().interrupt();
         }
     }
 
     private boolean buildComponents() {
-        if( !buildContextHandler() ) {
-            log.info( "Error in building the context handler" );
-            return false;
-        }
-        if( !buildRequestManager() ) {
-            log.info( "Error in building the request manager" );
-            return false;
-        }
-        if( !buildProxySM() ) {
-            log.info( "Error in building the session manager" );
-            return false;
-        }
-        if( !buildProxyPDP() ) {
-            log.info( "Error in building the pdp" );
-            return false;
-        }
-        if( !buildProxyPolicyAdministrationPoint() ) {
-            log.info( "Error in building the pap" );
-            return false;
-        }
-        if( !buildProxyPEPList() ) {
-            log.info( "Error in building the pep" );
-            return false;
-        }
-        if( !buildPIPList() ) {
-            log.info( "Error in building the pips" );
-            return false;
-        }
-        if( !buildObligationManager() ) {
-            log.info( "Error in building the obligation manager" );
-            return false;
-        }
+        Reject.ifFalse( buildContextHandler(), "Error in building the context handler" );
+        Reject.ifFalse( buildRequestManager(), "Error in building the request manager" );
+        Reject.ifFalse( buildProxySM(), "Error in building the session manager" );
+        Reject.ifFalse( buildProxyPDP(), "Error in building the pdp" );
+        Reject.ifFalse( buildProxyPolicyAdministrationPoint(), "Error in building the pap" );
+        Reject.ifFalse( buildProxyPEPList(), "Error in building the pep" );
+        Reject.ifFalse( buildPIPList(), "Error in building the pips" );
+        Reject.ifFalse( buildObligationManager(), "Error in building the obligation manager" );
 
         forwardingQueue = new ForwardingQueue();
         nodeInterface = new NodeProxy( properties.getGeneral() );
@@ -172,24 +155,6 @@ public class UsageControlFramework implements UCSInterface {
         log.info( "UCF components building done." );
 
         return checkConnection();
-    }
-
-    private boolean checkConnection() {
-
-        contextHandler.setInterfaces( proxySessionManager, requestManager, proxyPDP,
-            proxyPAP, new ArrayList<>( pipList ), obligationManager, forwardingQueue );
-
-        try {
-            contextHandler.startMonitoringThread();
-        } catch( Exception e ) {
-            log.severe( "Error starting context handler : " + e.getMessage() );
-            return false;
-        }
-
-        requestManager.setInterfaces( contextHandler, proxyPEPMap, nodeInterface, forwardingQueue );
-        proxyPDP.setInterfaces( proxyPAP );
-
-        return true;
     }
 
     private boolean buildContextHandler() {
@@ -222,17 +187,32 @@ public class UsageControlFramework implements UCSInterface {
         }
     }
 
-    public static Optional<PIPBase> buildPIP( PipProperties properties ) {
-        try {
-            // TODO UCS-32 NOSONAR
-            Class<?> clazz = Class.forName( properties.getClassName() );
-            Constructor<?> constructor = clazz.getConstructor( PipProperties.class );
-            PIPBase pip = (PIPBase) constructor.newInstance( properties );
-            return Optional.of( pip );
-        } catch( Exception e ) {
-            log.log( Level.SEVERE, MSG_ERR_BUILD_PROP, e.getMessage() );
+    private boolean buildProxySM() {
+        proxySessionManager = new ProxySessionManager( properties.getSessionManager() );
+        proxySessionManager.start();
+        return proxySessionManager.isInitialized();
+    }
+
+    private boolean buildProxyPDP() {
+        proxyPDP = new ProxyPDP( properties.getPolicyDecisionPoint() );
+        return proxyPDP.isInitialized();
+    }
+
+    private boolean buildProxyPolicyAdministrationPoint() {
+        proxyPAP = new ProxyPAP( properties.getPolicyAdministrationPoint() );
+        return proxyPAP.isInitialized();
+    }
+
+    private boolean buildProxyPEPList() {
+        for( PepProperties pep : properties.getPepList() ) {
+            ProxyPEP proxyPEP = new ProxyPEP( pep );
+            proxyPEP.setRequestManagerInterface( requestManager );
+            if( !proxyPEP.isInitialized() ) {
+                return false;
+            }
+            proxyPEPMap.put( pep.getId(), proxyPEP );
         }
-        return Optional.empty();
+        return true;
     }
 
     private boolean buildPIPList() {
@@ -270,31 +250,34 @@ public class UsageControlFramework implements UCSInterface {
         }
     }
 
-    private boolean buildProxySM() {
-        proxySessionManager = new ProxySessionManager( properties.getSessionManager() );
-        proxySessionManager.start();
-        return proxySessionManager.isInitialized();
-    }
-
-    private boolean buildProxyPDP() {
-        proxyPDP = new ProxyPDP( properties.getPolicyDecisionPoint() );
-        return proxyPDP.isInitialized();
-    }
-
-    private boolean buildProxyPolicyAdministrationPoint() {
-        proxyPAP = new ProxyPAP( properties.getPolicyAdministrationPoint() );
-        return proxyPAP.isInitialized();
-    }
-
-    private boolean buildProxyPEPList() {
-        for( PepProperties pep : properties.getPepList() ) {
-            ProxyPEP proxyPEP = new ProxyPEP( pep );
-            proxyPEP.setRequestManagerInterface( requestManager );
-            if( !proxyPEP.isInitialized() ) {
-                return false;
-            }
-            proxyPEPMap.put( pep.getId(), proxyPEP );
+    public static Optional<PIPBase> buildPIP( PipProperties properties ) {
+        try {
+            // TODO UCS-32 NOSONAR
+            Class<?> clazz = Class.forName( properties.getClassName() );
+            Constructor<?> constructor = clazz.getConstructor( PipProperties.class );
+            PIPBase pip = (PIPBase) constructor.newInstance( properties );
+            return Optional.of( pip );
+        } catch( Exception e ) {
+            log.log( Level.SEVERE, MSG_ERR_BUILD_PROP, e.getMessage() );
         }
+        return Optional.empty();
+    }
+
+    private boolean checkConnection() {
+
+        contextHandler.setInterfaces( proxySessionManager, requestManager, proxyPDP,
+            proxyPAP, new ArrayList<>( pipList ), obligationManager, forwardingQueue );
+
+        try {
+            contextHandler.startMonitoringThread();
+        } catch( Exception e ) {
+            log.severe( "Error starting context handler : " + e.getMessage() );
+            return false;
+        }
+
+        requestManager.setInterfaces( contextHandler, proxyPEPMap, nodeInterface, forwardingQueue );
+        proxyPDP.setInterfaces( proxyPAP );
+
         return true;
     }
 

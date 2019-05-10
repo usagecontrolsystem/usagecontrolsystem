@@ -27,7 +27,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import it.cnr.iit.ucsinterface.message.endaccess.EndAccessMessage;
-import it.cnr.iit.ucsinterface.message.reevaluation.ReevaluationMessage;
 import it.cnr.iit.ucsinterface.message.startaccess.StartAccessMessage;
 import it.cnr.iit.ucsinterface.message.tryaccess.TryAccessMessage;
 import it.cnr.iit.ucsinterface.node.NodeInterface;
@@ -97,18 +96,6 @@ public class UCFRestController {
         Reject.ifNull( message );
         log.log( Level.INFO, "Endaccess received {0}", System.currentTimeMillis() );
         ucs.endAccess( message );
-    }
-
-    @ApiOperation( httpMethod = "POST", value = "Receives request from PEP for endaccess operation" )
-    @ApiResponses( value = {
-        @ApiResponse( code = 500, message = "Invalid message received" ),
-        @ApiResponse( code = 200, message = "OK" ) } )
-    @PostMapping( value = NodeInterface.ONGOING_REST, consumes = MediaType.TEXT_PLAIN_VALUE )
-    // TODO UCS-34 NOSONAR
-    public void sendMessage( @RequestBody( ) ReevaluationMessage message ) {
-        Reject.ifNull( message );
-        log.log( Level.INFO, "Reevaluation received at {0}", System.currentTimeMillis() );
-        ucs.onGoingEvaluation( message );
     }
 
     @Bean
