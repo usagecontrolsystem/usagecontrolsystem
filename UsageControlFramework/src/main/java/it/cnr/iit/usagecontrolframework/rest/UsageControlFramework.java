@@ -281,8 +281,7 @@ public class UsageControlFramework implements UCSInterface {
 
     @Override
     @Async
-    public void onGoingEvaluationResponse(
-            ReevaluationResponse onGoingEvaluationResponse ) {
+    public void onGoingEvaluationResponse( ReevaluationResponse onGoingEvaluationResponse ) {
         // TODO check if sent
         requestManager.sendMessageToCH( onGoingEvaluationResponse );
     }

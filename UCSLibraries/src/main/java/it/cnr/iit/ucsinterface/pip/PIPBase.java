@@ -7,7 +7,6 @@ package it.cnr.iit.ucsinterface.pip;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.logging.Logger;
 
 import it.cnr.iit.ucs.properties.components.PipProperties;
 import it.cnr.iit.ucsinterface.contexthandler.ContextHandlerPIPInterface;
@@ -20,11 +19,9 @@ import it.cnr.iit.xacmlutilities.Attribute;
  * In provides basics implementations of getters function
  * </p>
  *
- * @author Fabio Bindi and Filippo Lauria and Antonio La Marra
+ * @author Fabio Bindi and Filippo Lauria and Antonio La Marra and Alessandro Rosetti
  */
 public abstract class PIPBase implements PIPCHInterface, PIPOMInterface {
-
-    private static final Logger log = Logger.getLogger( PIPBase.class.getName() );
 
     /**
      * Whenever a PIP has to retrieve some informations related to an attribute
@@ -42,36 +39,11 @@ public abstract class PIPBase implements PIPCHInterface, PIPOMInterface {
     public static final String ATTRIBUTE_ID = "ATTRIBUTE_ID";
     public static final String CATEGORY = "CATEGORY";
     public static final String DATA_TYPE = "DATA_TYPE";
-    // path to the file that has to be read
-    public static final String FILE_PATH = "FILE_PATH";
 
     protected ContextHandlerPIPInterface contextHandlerInterface;
     private HashMap<String, Attribute> attributes = new HashMap<>();
+    @SuppressWarnings( "unused" )
     private PipProperties properties;
-
-    private volatile boolean initialised = false;
-
-    public enum TAGS {
-        ENVIRONMENT( "environment" ),
-        SUBJECT( "subject" ),
-        RESOURCE( "resource" ),
-        ACTION( "action" );
-
-        private String tag;
-
-        TAGS( String t ) {
-            tag = t;
-        }
-
-        String getValue() {
-            return tag;
-        }
-
-        @Override
-        public String toString() {
-            return tag;
-        }
-    }
 
     /**
      * Basic constructor for a PIP
@@ -82,12 +54,10 @@ public abstract class PIPBase implements PIPCHInterface, PIPOMInterface {
     public PIPBase( PipProperties properties ) {
         Reject.ifNull( properties );
         this.properties = properties;
-        initialised = true;
     }
 
     @Override
     public final ArrayList<String> getAttributeIds() {
-        Reject.ifInvalidObjectState( initialised, PIPBase.class.getName(), log );
         ArrayList<String> arrayList = new ArrayList<>();
         arrayList.addAll( attributes.keySet() );
         return arrayList;
@@ -95,7 +65,6 @@ public abstract class PIPBase implements PIPCHInterface, PIPOMInterface {
 
     @Override
     public final ArrayList<Attribute> getAttributes() {
-        Reject.ifInvalidObjectState( initialised, PIPBase.class.getName(), log );
         ArrayList<Attribute> arrayList = new ArrayList<>();
         arrayList.addAll( attributes.values() );
         return arrayList;
@@ -106,19 +75,10 @@ public abstract class PIPBase implements PIPCHInterface, PIPOMInterface {
         return attributes;
     }
 
-    protected final PipProperties getProperties() {
-        return properties;
-    }
-
-    protected final boolean isInitialized() {
-        return initialised;
-    }
-
     @Override
     public boolean setContextHandlerInterface(
             ContextHandlerPIPInterface contextHandlerInterface ) {
         Reject.ifNull( contextHandlerInterface );
-        Reject.ifInvalidObjectState( initialised, PIPBase.class.getName(), log );
         this.contextHandlerInterface = contextHandlerInterface;
         return true;
     }
@@ -131,4 +91,5 @@ public abstract class PIPBase implements PIPCHInterface, PIPOMInterface {
         attributes.put( attribute.getAttributeId(), attribute );
         return true;
     }
+
 }
