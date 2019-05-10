@@ -280,7 +280,7 @@ public class UCFBaseTests {
 
         for( PipProperties pipProp : prop.getPipList() ) {
             log.info( "Loading pip" );
-            PIPCHInterface pip = UsageControlFramework.buildPIP( pipProp ).get();
+            PIPCHInterface pip = (PIPCHInterface) UsageControlFramework.buildComponent( pipProp ).get();
             assertNotNull( pip );
             pips.add( pip );
         }

@@ -15,8 +15,6 @@
  ******************************************************************************/
 package it.cnr.iit.usagecontrolframework.proxies;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 import java.net.URI;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
@@ -35,6 +33,7 @@ import it.cnr.iit.ucsinterface.message.tryaccess.TryAccessResponse;
 import it.cnr.iit.ucsinterface.pep.ExamplePEP;
 import it.cnr.iit.ucsinterface.pep.PEPInterface;
 import it.cnr.iit.ucsinterface.requestmanager.UCSCHInterface;
+import it.cnr.iit.usagecontrolframework.rest.UsageControlFramework;
 import it.cnr.iit.utility.RESTUtils;
 import it.cnr.iit.utility.Utility;
 import it.cnr.iit.utility.errorhandling.Reject;
@@ -48,7 +47,7 @@ import it.cnr.iit.utility.errorhandling.Reject;
  * is this one
  * </p>
  *
- * @author antonio
+ * @author Antonio La Marra, Alessandro Rosetti
  *
  */
 public class ProxyPEP extends Proxy implements PEPInterface {
@@ -57,7 +56,7 @@ public class ProxyPEP extends Proxy implements PEPInterface {
 
     private PepProperties properties;
     private URI uri;
-    private ExamplePEP abstractPEP; // TODO use interface
+    private ExamplePEP examplePEP; // TODO use interface
 
     private boolean initialized = false;
 
@@ -89,18 +88,13 @@ public class ProxyPEP extends Proxy implements PEPInterface {
     }
 
     private boolean buildLocalPep( PepProperties properties ) {
-        Reject.ifBlank( properties.getClassName() );
-        try {
-            // TODO UCS-32 NOSONAR
-            Constructor<?> constructor = Class.forName( properties.getClassName() )
-                .getConstructor( PepProperties.class );
-            abstractPEP = (ExamplePEP) constructor.newInstance( properties );
+        Optional<PEPInterface> optPEP = UsageControlFramework.buildComponent( properties );
+
+        if( optPEP.isPresent() ) {
+            examplePEP = (ExamplePEP) optPEP.get();
             return true;
-        } catch( InstantiationException | IllegalAccessException
-                | ClassNotFoundException | NoSuchMethodException | SecurityException
-                | IllegalArgumentException | InvocationTargetException e ) {
-            log.severe( e.getMessage() );
         }
+        log.severe( "Error building PAP" );
         return false;
     }
 
@@ -116,7 +110,7 @@ public class ProxyPEP extends Proxy implements PEPInterface {
             UCSCHInterface requestManager ) {
         switch( getConnection() ) {
             case API:
-                abstractPEP.setRequestManagerInterface( requestManager );
+                examplePEP.setRequestManagerInterface( requestManager );
                 break;
             case REST_API:
             case SOCKET:
@@ -132,7 +126,7 @@ public class ProxyPEP extends Proxy implements PEPInterface {
     public Message onGoingEvaluation( Message message ) {
         switch( getConnection() ) {
             case API:
-                return abstractPEP.onGoingEvaluation( message );
+                return examplePEP.onGoingEvaluation( message );
             case REST_API:
                 RESTUtils.asyncPost(
                     properties.getBaseUri(),
@@ -150,7 +144,7 @@ public class ProxyPEP extends Proxy implements PEPInterface {
     public String receiveResponse( Message message ) {
         switch( getConnection() ) {
             case API:
-                abstractPEP.receiveResponse( message );
+                examplePEP.receiveResponse( message );
                 break;
             case REST_API:
                 Optional<String> api = getApi( message );
@@ -187,7 +181,7 @@ public class ProxyPEP extends Proxy implements PEPInterface {
         switch( getConnection() ) {
             case API:
                 try {
-                    abstractPEP.start();
+                    examplePEP.start();
                 } catch( InterruptedException | ExecutionException e ) {
                     log.severe( e.getMessage() );
                     Thread.currentThread().interrupt();
