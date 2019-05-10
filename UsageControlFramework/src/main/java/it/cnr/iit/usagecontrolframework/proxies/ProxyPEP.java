@@ -94,7 +94,7 @@ public class ProxyPEP extends Proxy implements PEPInterface {
             examplePEP = (ExamplePEP) optPEP.get();
             return true;
         }
-        log.severe( "Error building PAP" );
+        log.severe( "Error building PEP" );
         return false;
     }
 

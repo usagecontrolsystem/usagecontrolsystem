@@ -222,7 +222,6 @@ public class UsageControlFramework implements UCSInterface {
             Class<?> propClass = properties.getClass().getInterfaces()[0];
             Constructor<?> constructor = Class.forName( properties.getClassName() )
                 .getConstructor( propClass );
-
             T obj = (T) constructor.newInstance( properties );
             return Optional.of( obj );
         } catch( Exception e ) {

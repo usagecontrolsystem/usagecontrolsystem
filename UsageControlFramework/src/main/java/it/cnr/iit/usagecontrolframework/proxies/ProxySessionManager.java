@@ -15,8 +15,6 @@
  ******************************************************************************/
 package it.cnr.iit.usagecontrolframework.proxies;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -25,9 +23,11 @@ import java.util.logging.Logger;
 
 import it.cnr.iit.ucs.constants.CONNECTION;
 import it.cnr.iit.ucs.properties.components.SessionManagerProperties;
+import it.cnr.iit.ucsinterface.pep.PEPInterface;
 import it.cnr.iit.ucsinterface.sessionmanager.OnGoingAttributesInterface;
 import it.cnr.iit.ucsinterface.sessionmanager.SessionInterface;
 import it.cnr.iit.ucsinterface.sessionmanager.SessionManagerInterface;
+import it.cnr.iit.usagecontrolframework.rest.UsageControlFramework;
 import it.cnr.iit.utility.errorhandling.Reject;
 import it.cnr.iit.xacmlutilities.Attribute;
 
@@ -96,39 +96,29 @@ public class ProxySessionManager extends Proxy implements SessionManagerInterfac
      * @return
      */
     private boolean buildLocalSessionManager( SessionManagerProperties properties ) {
-        Reject.ifBlank( properties.getClassName() );
-        try {
-            // TODO UCS-32 NOSONAR
-            Constructor<?> constructor = Class.forName( properties.getClassName() )
-                .getConstructor( SessionManagerProperties.class );
-            sessionManagerInterface = (SessionManagerInterface) constructor
-                .newInstance( properties );
+        Optional<PEPInterface> optPEP = UsageControlFramework.buildComponent( properties );
+
+        if( optPEP.isPresent() ) {
+            sessionManagerInterface = (SessionManagerInterface) optPEP.get();
             return true;
-        } catch( InstantiationException | IllegalAccessException
-                | ClassNotFoundException | NoSuchMethodException | SecurityException
-                | IllegalArgumentException | InvocationTargetException e ) {
-            log.severe( e.getMessage() );
         }
+        log.severe( "Error building Session Manager" );
         return false;
     }
 
     @Override
     public Boolean start() {
-        // BEGIN parameter checking
         if( initialized == false ) {
             return false;
         }
-        // END parameter checking
 
         switch( getConnection() ) {
             case API:
                 started = sessionManagerInterface.start();
                 return started;
             case SOCKET:
-                // TODO
                 return false;
             case REST_API:
-                // TODO
                 return false;
             default:
                 log.log( Level.SEVERE, CONNECTION.MSG_ERR_INCORRECT, properties.getCommunicationType() );
@@ -138,11 +128,9 @@ public class ProxySessionManager extends Proxy implements SessionManagerInterfac
 
     @Override
     public Boolean stop() {
-        // BEGIN parameter checking
         if( initialized == false ) {
             return false;
         }
-        // END parameter checking
 
         switch( getConnection() ) {
             case API:
