@@ -97,15 +97,11 @@ public class UsageControlFramework implements UCSInterface {
 
     private static final Logger log = Logger.getLogger( UsageControlFramework.class.getName() );
 
-    private static final String MSG_ERR_BUILD_PROP = "Error building PIPBase from properties : {0}";
-
-    // local components
     private AbstractContextHandler contextHandler;
     private AbstractRequestManager requestManager;
     private ObligationManagerInterface obligationManager;
     private List<PIPBase> pipList = new ArrayList<>();
 
-    // proxy components
     private HashMap<String, PEPInterface> proxyPEPMap = new HashMap<>();
     private ProxySessionManager proxySessionManager;
     private ProxyPDP proxyPDP;
@@ -226,6 +222,7 @@ public class UsageControlFramework implements UCSInterface {
             Class<?> propClass = properties.getClass().getInterfaces()[0];
             Constructor<?> constructor = Class.forName( properties.getClassName() )
                 .getConstructor( propClass );
+
             T obj = (T) constructor.newInstance( properties );
             return Optional.of( obj );
         } catch( Exception e ) {

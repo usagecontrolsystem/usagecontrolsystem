@@ -64,9 +64,9 @@ public class ProxyPEP extends Proxy implements PEPInterface {
         Reject.ifNull( properties );
         this.properties = properties;
 
-        Optional<URI> uri = Utility.parseUri( properties.getBaseUri() );
-        Reject.ifAbsent( uri );
-        this.uri = uri.get(); // NOSONAR
+        Optional<URI> optUri = Utility.parseUri( properties.getBaseUri() );
+        Reject.ifAbsent( optUri );
+        this.uri = optUri.get(); // NOSONAR
 
         String connectionType = properties.getCommunicationType();
         Reject.ifBlank( connectionType );

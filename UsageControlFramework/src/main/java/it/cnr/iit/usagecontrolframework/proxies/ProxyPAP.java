@@ -89,8 +89,6 @@ public final class ProxyPAP extends Proxy implements PAPInterface {
         }
     }
 
-    private static final String MSG_ERR_BUILD_PROP = "Error building PAP from properties : {0}";
-
     /**
      * This is the implementation of the local PAP.
      *

@@ -185,8 +185,6 @@ public final class ContextHandlerLC extends AbstractContextHandler {
         PDPEvaluation pdpEvaluation = getPdpInterface().evaluate( requestFull, policyBuilder.append( policy ),
             STATUS.TRYACCESS );
 
-        // policy = policyBuilder.toString();
-
         String pdpResponse = pdpEvaluation.getResult();
         log.log( Level.INFO, "[TIME] tryaccess evaluated at {0} response: {1}", new Object[] { System.currentTimeMillis(), pdpResponse } );
 
