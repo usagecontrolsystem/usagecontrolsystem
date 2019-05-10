@@ -46,27 +46,25 @@ public class RequestManagerCoverageTests extends UCFBaseTests {
     }
 
     @Test( expected = NullPointerException.class )
-    public void requestManagerCoverageTest()
+    public void requestManagerCoverageTestWithNullMessage()
             throws JAXBException, URISyntaxException, IOException, NoSuchMethodException, SecurityException,
             InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
         RequestManagerLC requestManager = getRequestManager( properties );
         requestManager.setInterfaces( getMockedContextHandlerInterface(),
             getMockedPEPMap( "", "" ),
-            getMockedNodeInterface(),
             getMockedForwardingQueueToRMInterface( null ) );
 
         testRequestManager( requestManager );
     }
 
     @Test
-    public void requestManagerCoverageTest2()
+    public void requestManagerCoverageTestFull()
             throws JAXBException, URISyntaxException, IOException, NoSuchMethodException, SecurityException,
             InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
         RequestManagerLC requestManager = getRequestManager( properties );
         Message message = new Message( "a", "a", "a" );
         requestManager.setInterfaces( getMockedContextHandlerInterface(),
             getMockedPEPMap( "a", "" ),
-            getMockedNodeInterface(),
             getMockedForwardingQueueToRMInterface( message ) );
 
         testRequestManager( requestManager );
@@ -79,7 +77,6 @@ public class RequestManagerCoverageTests extends UCFBaseTests {
             buildTryAccessResponse( "a", "a", "a" ),
             buildStartAccessResponse( "a", "a", "a" ),
             buildEndAccessResponse( "a", "a", "a" ),
-            buildReevaluationResponse( "a", "a", "a" ),
             buildPipChMessage( "a", "a", "a" ),
             buildTryAccessMessage( "a", "a", "a", "a" ),
             buildStartAccessMessage( "a", "a", "a" ),

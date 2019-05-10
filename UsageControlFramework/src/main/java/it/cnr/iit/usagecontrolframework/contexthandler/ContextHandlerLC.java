@@ -32,6 +32,7 @@ import it.cnr.iit.ucs.exceptions.RevokeException;
 import it.cnr.iit.ucs.exceptions.SessionManagerException;
 import it.cnr.iit.ucs.exceptions.WrongOrderException;
 import it.cnr.iit.ucs.properties.components.ContextHandlerProperties;
+import it.cnr.iit.ucsinterface.contexthandler.AbstractContextHandler;
 import it.cnr.iit.ucsinterface.contexthandler.ContextHandlerConstants;
 import it.cnr.iit.ucsinterface.message.Message;
 import it.cnr.iit.ucsinterface.message.endaccess.EndAccessMessage;

@@ -17,6 +17,7 @@ import org.springframework.mock.web.MockServletContext;
 import com.tngtech.jgiven.annotation.ScenarioStage;
 import com.tngtech.jgiven.integration.spring.SpringRuleScenarioTest;
 
+import it.cnr.iit.ucs.constants.OperationNames;
 import it.cnr.iit.usagecontrolframework.rest.jgiven.stages.GivenMessage;
 import it.cnr.iit.usagecontrolframework.rest.jgiven.stages.GivenPEPRestSimulator;
 import it.cnr.iit.usagecontrolframework.rest.jgiven.stages.ThenMessage;
@@ -37,14 +38,14 @@ public class UsageControlFrameworkScenarioIntegrationTest
     public void a_tryAccess_request_sends_PEP_tryAccessResponse_containg_Permit_decision() {
         given().a_$_request( TRY_ACCESS );
         givenPEPRestSimulator
-            .and().a_mocked_PEPRest_listening_on_$( TRY_ACCESS_RESPONSE.getOperationUri() )
+            .and().a_mocked_PEPRest_listening_on_$( OperationNames.TRYACCESSRESPONSE_REST )
             .with().a_success_response_status_code_of_$( HttpStatus.SC_OK );
 
         when().the_UCF_is_executed_for_$( TRY_ACCESS.getOperationUri() );
 
         then().an_entry_for_session_with_status_$_is_persisted( TRY_STATUS )
             .and().the_asynch_post_request_for_$_with_decision_$_was_received_by_PEPRest(
-                TRY_ACCESS_RESPONSE.getOperationUri(), DECISION_PERMIT );
+                OperationNames.TRYACCESSRESPONSE_REST, DECISION_PERMIT );
     }
 
     @Test

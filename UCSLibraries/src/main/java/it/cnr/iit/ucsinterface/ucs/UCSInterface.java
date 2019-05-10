@@ -208,14 +208,6 @@ public interface UCSInterface {
     public void retrieveRemote( PipChMessage messagePipCh );
 
     /**
-     * Response to a retrieveRemote
-     *
-     * @param messagePipCh
-     *          the message to be exchanged between PIP and CH
-     */
-    public void retrieveRemoteResponse( PipChMessage messagePipCh );
-
-    /**
      * Allows a PEP to register to this UCS.
      *
      * @param message

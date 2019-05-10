@@ -13,7 +13,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  ******************************************************************************/
-package it.cnr.iit.usagecontrolframework.contexthandler;
+package it.cnr.iit.ucsinterface.contexthandler;
 
 import java.net.URI;
 import java.util.List;
@@ -22,7 +22,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import it.cnr.iit.ucs.properties.components.ContextHandlerProperties;
-import it.cnr.iit.ucsinterface.contexthandler.ContextHandlerInterface;
+import it.cnr.iit.ucsinterface.contexthandler.pipregistry.PIPRegistry;
 import it.cnr.iit.ucsinterface.forwardingqueue.ForwardingQueueToCHInterface;
 import it.cnr.iit.ucsinterface.obligationmanager.ObligationManagerInterface;
 import it.cnr.iit.ucsinterface.pap.PAPInterface;
@@ -30,7 +30,6 @@ import it.cnr.iit.ucsinterface.pdp.PDPInterface;
 import it.cnr.iit.ucsinterface.pip.PIPCHInterface;
 import it.cnr.iit.ucsinterface.requestmanager.RequestManagerToCHInterface;
 import it.cnr.iit.ucsinterface.sessionmanager.SessionManagerInterface;
-import it.cnr.iit.usagecontrolframework.pipregistry.PIPRegistry;
 import it.cnr.iit.utility.Utility;
 import it.cnr.iit.utility.errorhandling.Reject;
 

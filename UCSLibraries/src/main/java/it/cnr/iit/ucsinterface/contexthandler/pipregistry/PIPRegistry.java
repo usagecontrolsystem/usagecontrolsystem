@@ -1,11 +1,10 @@
-package it.cnr.iit.usagecontrolframework.pipregistry;
+package it.cnr.iit.ucsinterface.contexthandler.pipregistry;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.logging.Logger;
 
-import it.cnr.iit.ucsinterface.contexthandler.pipregistry.PIPRegistryInterface;
 import it.cnr.iit.ucsinterface.pip.PIPCHInterface;
 import it.cnr.iit.xacmlutilities.Attribute;
 

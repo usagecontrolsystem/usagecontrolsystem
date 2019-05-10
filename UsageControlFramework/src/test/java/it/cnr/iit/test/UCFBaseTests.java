@@ -24,6 +24,7 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import it.cnr.iit.test.properties.TestProperties;
+import it.cnr.iit.ucs.constants.OperationNames;
 import it.cnr.iit.ucs.constants.STATUS;
 import it.cnr.iit.ucs.properties.UCSProperties;
 import it.cnr.iit.ucs.properties.components.PipProperties;
@@ -41,7 +42,6 @@ import it.cnr.iit.ucsinterface.message.startaccess.StartAccessMessage;
 import it.cnr.iit.ucsinterface.message.startaccess.StartAccessResponse;
 import it.cnr.iit.ucsinterface.message.tryaccess.TryAccessMessage;
 import it.cnr.iit.ucsinterface.message.tryaccess.TryAccessResponse;
-import it.cnr.iit.ucsinterface.node.NodeInterface;
 import it.cnr.iit.ucsinterface.obligationmanager.ObligationManagerInterface;
 import it.cnr.iit.ucsinterface.pap.PAPInterface;
 import it.cnr.iit.ucsinterface.pdp.PDPEvaluation;
@@ -75,7 +75,7 @@ public class UCFBaseTests {
     /* Request Manager functions */
 
     protected RequestManagerLC getRequestManager( UCSProperties prop ) {
-        RequestManagerLC requestManager = new RequestManagerLC( prop.getGeneral(), prop.getRequestManager() );
+        RequestManagerLC requestManager = new RequestManagerLC( prop.getRequestManager() );
         return requestManager;
     }
 
@@ -171,9 +171,9 @@ public class UCFBaseTests {
         return forwardingQueueToCHInterface;
     }
 
-    protected NodeInterface getMockedNodeInterface() {
-        NodeInterface nodeInterface = Mockito
-            .mock( NodeInterface.class );
+    protected OperationNames getMockedNodeInterface() {
+        OperationNames nodeInterface = Mockito
+            .mock( OperationNames.class );
 
         return nodeInterface;
     }

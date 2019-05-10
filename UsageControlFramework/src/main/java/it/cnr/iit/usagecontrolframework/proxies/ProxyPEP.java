@@ -26,12 +26,12 @@ import java.util.logging.Logger;
 import com.google.common.base.Throwables;
 
 import it.cnr.iit.ucs.constants.CONNECTION;
+import it.cnr.iit.ucs.constants.OperationNames;
 import it.cnr.iit.ucs.properties.components.PepProperties;
 import it.cnr.iit.ucsinterface.message.Message;
 import it.cnr.iit.ucsinterface.message.endaccess.EndAccessResponse;
 import it.cnr.iit.ucsinterface.message.startaccess.StartAccessResponse;
 import it.cnr.iit.ucsinterface.message.tryaccess.TryAccessResponse;
-import it.cnr.iit.ucsinterface.node.NodeInterface;
 import it.cnr.iit.ucsinterface.pep.ExamplePEP;
 import it.cnr.iit.ucsinterface.pep.PEPInterface;
 import it.cnr.iit.ucsinterface.requestmanager.UCSCHInterface;
@@ -136,7 +136,7 @@ public class ProxyPEP extends Proxy implements PEPInterface {
             case REST_API:
                 RESTUtils.asyncPost(
                     properties.getBaseUri(),
-                    NodeInterface.ONGOINGRESPONSE_REST,
+                    OperationNames.ONGOINGRESPONSE_REST,
                     message );
                 break;
             default:

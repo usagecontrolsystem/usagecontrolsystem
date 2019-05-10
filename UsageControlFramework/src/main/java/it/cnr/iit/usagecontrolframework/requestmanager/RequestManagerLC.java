@@ -15,36 +15,30 @@
  ******************************************************************************/
 package it.cnr.iit.usagecontrolframework.requestmanager;
 
-import java.net.URI;
-import java.util.Optional;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import it.cnr.iit.ucs.properties.components.GeneralProperties;
 import it.cnr.iit.ucs.properties.components.RequestManagerProperties;
 import it.cnr.iit.ucsinterface.message.Message;
 import it.cnr.iit.ucsinterface.message.endaccess.EndAccessMessage;
 import it.cnr.iit.ucsinterface.message.endaccess.EndAccessResponse;
-import it.cnr.iit.ucsinterface.message.pipch.PipChMessage;
-import it.cnr.iit.ucsinterface.message.reevaluation.ReevaluationMessage;
 import it.cnr.iit.ucsinterface.message.reevaluation.ReevaluationResponse;
 import it.cnr.iit.ucsinterface.message.startaccess.StartAccessMessage;
 import it.cnr.iit.ucsinterface.message.startaccess.StartAccessResponse;
 import it.cnr.iit.ucsinterface.message.tryaccess.TryAccessMessage;
 import it.cnr.iit.ucsinterface.message.tryaccess.TryAccessResponse;
-import it.cnr.iit.utility.Utility;
+import it.cnr.iit.ucsinterface.requestmanager.AbstractRequestManager;
 import it.cnr.iit.utility.errorhandling.Reject;
 
 /**
  * The request manager is an asynchronous component.
  * <p>
  * All the requests coming to the context handler have to reach the request
- * manager first. It will parse and prioritize them. <br>
+ * manager first. It will parse and prioritise them. <br>
  * It is an ASYNCHRONOUS component (otherwise it would be impossible to
- * prioritize requests). Once it is queried, it simply provides a dummy response
+ * prioritise requests). Once it is queried, it simply provides a dummy response
  * to the caller. Then it will call the interface of the PEP. As you know behind
  * this interface there is a Proxy that abstracts the real communication link
  * between the UCS and the PEP.
@@ -53,37 +47,19 @@ import it.cnr.iit.utility.errorhandling.Reject;
  * @author Antonio La Marra, Alessandro Rosetti
  *
  */
-public class RequestManagerLC extends AsynchronousRequestManager {
+public class RequestManagerLC extends AbstractRequestManager {
 
     private static final Logger log = Logger.getLogger( RequestManagerLC.class.getName() );
 
-    private String host;
-    /*
-     * This is the pool of thread in charge of polling the queue to retrieve
-     * messages coming to the CH
-     */
     private ExecutorService inquirers;
 
-    /*
-     * This is the thread in charge of handling the operations requested from a
-     * remote PIP except from reevaluation.
-
-    private ExecutorService attributeSupplier;
-    */
-
-    public RequestManagerLC( GeneralProperties properties, RequestManagerProperties rmProperties ) {
-        super( properties, rmProperties );
-
-        Optional<URI> uri = Utility.parseUri( properties.getBaseUri() );
-        Reject.ifAbsent( uri );
-        host = uri.get().getHost(); // NOSONAR
-        Reject.ifBlank( host );
-
+    public RequestManagerLC( RequestManagerProperties properties ) {
+        super( properties );
         initializeInquirers();
     }
 
     /**
-     * Initialises the request manager with a------ pool of threads
+     * Initialises the request manager with a pool of threads
      *
      * @return true if everything goes fine, false in case of exceptions
     */
@@ -100,68 +76,26 @@ public class RequestManagerLC extends AsynchronousRequestManager {
 
     @Override
     public synchronized void sendMessageToOutside( Message message ) {
-        // BEGIN parameter checking
-        if( !isInitialized() ) {
-            log.warning( "Invalid state of the request manager" );
-            throw new IllegalStateException( "RequestManager not initialized correctly" );
-        }
-        if( message == null ) {
-            log.warning( "Invalid message" );
-            throw new IllegalArgumentException( "Invalid message" );
-        }
-        // END parameter checking
+        Reject.ifNull( message, "Invalid message" );
 
-        // Case in which we have to forward a message to a remote node
-        if( message instanceof TryAccessMessage
-                || message instanceof StartAccessMessage
-                || message instanceof EndAccessMessage
-                || message instanceof ReevaluationMessage ) {
-            getNodeInterface().sendMessage( message );
-            return;
-        }
         if( message instanceof TryAccessResponse
                 || message instanceof StartAccessResponse
                 || message instanceof EndAccessResponse ) {
             sendResponse( message );
-
         } else if( message instanceof ReevaluationResponse ) {
             sendReevaluation( (ReevaluationResponse) message );
         }
     }
 
     private void sendResponse( Message message ) {
-        Message original = getForwardingQueue().getOriginalSource( message.getMessageId() );
-
-        // Case in which we have to forward a response to a remote node
-        if( original != null ) {
-            reswap( message, original );
-            getPEPInterface().get( message.getDestination() ).receiveResponse( message );
-        } else {
-            if( message.getUCSDestination() ) {
-                getNodeInterface().sendMessage( message );
-            } else {
-                getPEPInterface().get( message.getDestination() )
-                    .receiveResponse( message );
-            }
-        }
-    }
-
-    private void reswap( Message message, Message original ) {
-        message.setDestination( original.getSource() );
-        message.setSource( original.getDestination() );
+        getPEPInterface().get( message.getDestination() )
+            .receiveResponse( message );
     }
 
     private void sendReevaluation( ReevaluationResponse reevaluation ) {
-        log.log( Level.INFO, "[TIME] Effectively Sending on going evaluation {0}",
-            System.currentTimeMillis() );
-
-        if( reevaluation.getDestination()
-            .equals( host ) ) {
-            getPEPInterface().get( ( reevaluation ).getPepId() )
-                .onGoingEvaluation( reevaluation );
-        } else {
-            getNodeInterface().sendMessage( reevaluation );
-        }
+        log.info( "Sending on going reevaluation." );
+        getPEPInterface().get( ( reevaluation ).getPepId() )
+            .onGoingEvaluation( reevaluation );
     }
 
     /**
@@ -174,18 +108,7 @@ public class RequestManagerLC extends AsynchronousRequestManager {
     @Override
     public synchronized Message sendMessageToCH( Message message ) {
         try {
-            if( message instanceof PipChMessage ) {
-                getRetrieveRequestsQueue().put( (PipChMessage) message );
-            } else {
-                if( message instanceof TryAccessResponse
-                        || message instanceof StartAccessResponse
-                        || message instanceof EndAccessResponse
-                        || message instanceof ReevaluationResponse ) {
-                    sendMessageToOutside( message );
-                } else {
-                    getQueueToCH().put( message );
-                }
-            }
+            getQueueToCH().put( message );
         } catch( NullPointerException e ) {
             log.severe( e.getMessage() );
         } catch( InterruptedException e ) {
@@ -230,87 +153,4 @@ public class RequestManagerLC extends AsynchronousRequestManager {
         }
     }
 
-    /**
-     * This is the thread in charge of handling the messages coming from remote
-     * PIPS to this contextHnadler.
-     *
-     * <p>
-     * All the messages coming from a remote PIP must be forwarded by the
-     * ContextHandler to its local PIP, except the attribute changed message. In
-     * this case, in fact, the message wants to trigger a reevaluation.
-     * </p>
-     *
-     * @author antonio
-     *
-    
-    private class AttributeSupplier implements Callable<Void> {
-    
-    	@Override
-    	public Void call() throws Exception {
-    		while (true) {
-    			// BEGIN parameter checking
-    			if (!initialize) {
-    				log.log(Level.SEVERE, "Request Manager not initialized correctly");
-    				return null;
-    			}
-    			// END parameter checking
-    			MessagePipCh originalMessage = getRetrieveRequestsQueue().take();
-    			// System.out.println("Original Message: " + new
-    			// Gson().toJson(originalMessage));
-    			if (originalMessage.getAction() == ACTION.ATTRIBUTE_CHANGED) {
-    				getContextHandler().attributeChanged(originalMessage);
-    			} else {
-    				MessagePipCh answer = (MessagePipCh) getContextHandler()
-    				    .messageForPIP(originalMessage);
-    				if (answer != null) {
-    					MessagePipCh message = createResponse(answer);
-    					String response = buildRestResponseFunction(
-    					    originalMessage.getSource());
-    					// System.out
-    					// .println("Response Message: " + new Gson().toJson(message));
-    					RESTUtils.asyncPostAsString(response, message);
-    				}
-    			}
-    		}
-    	}
-     */
-
-    /**
-    	private String buildRestResponseFunction(String source) {
-    		StringBuilder string = new StringBuilder();
-    		string.append("http://" + source + ":8080");
-    		string.append(getXML().getRemoteResponse());
-    		return string.toString();
-    	}
-     */
-
-    /**
-     * Starting from the message returned by the context handler builds up the
-     * proper message to send as response to the pip retrieval
-     *
-     * @param message
-     *          the message returned by the context handler
-     * @return the message to be used as response
-    
-    private MessagePipCh createResponse(Message message) {
-    	MessagePipCh chResponse = (MessagePipCh) message;
-    	switch (chResponse.getAction()) {
-    		case RETRIEVE:
-    			chResponse.setAction(ACTION.RETRIEVE_RESPONSE);
-    			break;
-    		case SUBSCRIBE:
-    			chResponse.setAction(ACTION.SUBSCRIBE_RESPONSE);
-    			break;
-    		case UPDATE:
-    			chResponse.setAction(ACTION.UPDATE_RESPONSE);
-    			break;
-    		case UNSUBSCRIBE:
-    			chResponse.setAction(ACTION.UNSUBSCRIBE_RESPONSE);
-    			break;
-    		default:
-    			break;
-    	}
-    	return chResponse;
-    }
-     */
 }
