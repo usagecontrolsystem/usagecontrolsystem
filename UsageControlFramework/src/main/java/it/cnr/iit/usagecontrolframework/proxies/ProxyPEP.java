@@ -50,7 +50,7 @@ import it.cnr.iit.utility.errorhandling.Reject;
  * @author Antonio La Marra, Alessandro Rosetti
  *
  */
-public class ProxyPEP extends Proxy implements PEPInterface {
+public class ProxyPEP implements PEPInterface {
 
     private static final Logger log = Logger.getLogger( ProxyPEP.class.getName() );
 
@@ -140,7 +140,6 @@ public class ProxyPEP extends Proxy implements PEPInterface {
     }
 
     @Override
-    // TODO decide better return type, bool?
     public String receiveResponse( Message message ) {
         switch( getConnection() ) {
             case API:
@@ -195,12 +194,10 @@ public class ProxyPEP extends Proxy implements PEPInterface {
         }
     }
 
-    @Override
     protected CONNECTION getConnection() {
         return CONNECTION.valueOf( properties.getCommunicationType() );
     }
 
-    @Override
     public boolean isInitialized() {
         return initialized;
     }

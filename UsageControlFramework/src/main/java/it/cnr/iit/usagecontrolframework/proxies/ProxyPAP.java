@@ -42,7 +42,7 @@ import it.cnr.iit.utility.errorhandling.Reject;
  * @author antonio
  *
  */
-public final class ProxyPAP extends Proxy implements PAPInterface {
+public final class ProxyPAP implements PAPInterface {
 
     private static final Logger log = Logger.getLogger( ProxyPAP.class.getName() );
 
@@ -51,24 +51,6 @@ public final class ProxyPAP extends Proxy implements PAPInterface {
 
     private boolean initialized = false;
 
-    /**
-     * This is the constructor of the proxy to the PAP.
-     * <p>
-     * Basically here we have to distinguish between the various possibilities we
-     * have to implement the pap and act accordingli. There are 3 different
-     * options:
-     * <ol>
-     * <li>API: in this case the PAP is in the same virtual machine of the
-     * UCS</li>
-     * <li>REST_API: in this case the PAP can be queried using REST_API</li>
-     * <li>SOCKET: in this case the PAP can be queried by passing to it messages
-     * via socket</li>
-     * </ol>
-     * </p>
-     *
-     * @param properties
-     *          the configuration of the PAP
-     */
     public ProxyPAP( PapProperties properties ) {
         Reject.ifNull( properties );
         this.properties = properties;
@@ -89,13 +71,6 @@ public final class ProxyPAP extends Proxy implements PAPInterface {
         }
     }
 
-    /**
-     * This is the implementation of the local PAP.
-     *
-     * @param properties
-     *          the configuration of the PAP in xml format
-     * @return true if everything goes ok, false otherwise
-     */
     private boolean setLocalPAP( PapProperties properties ) {
         Optional<PAPInterface> optPAP = UsageControlFramework.buildComponent( properties );
 
@@ -109,14 +84,13 @@ public final class ProxyPAP extends Proxy implements PAPInterface {
 
     @Override
     public String retrievePolicy( String policyId ) {
-        // BEGIN parameter checking
         if( initialized != true ) {
             return null;
         }
         if( policyId == null || policyId.equals( "" ) ) {
             return null;
         }
-        // END parameter checking
+
         switch( getConnection() ) {
             case API:
                 return papInterface.retrievePolicy( policyId );
@@ -130,14 +104,13 @@ public final class ProxyPAP extends Proxy implements PAPInterface {
 
     @Override
     public boolean addPolicy( String policy ) {
-        // BEGIN parameter checking
         if( !initialized ) {
             return false;
         }
         if( policy == null || policy.equals( "" ) ) {
             return false;
         }
-        // END parameter checking
+
         switch( getConnection() ) {
             case API:
                 return papInterface.addPolicy( policy );
@@ -162,12 +135,10 @@ public final class ProxyPAP extends Proxy implements PAPInterface {
         return new ArrayList<>();
     }
 
-    @Override
     protected CONNECTION getConnection() {
         return CONNECTION.valueOf( properties.getCommunicationType() );
     }
 
-    @Override
     public boolean isInitialized() {
         return initialized;
     }

@@ -34,7 +34,7 @@ import it.cnr.iit.utility.errorhandling.Reject;
  * @author Antonio La Marra, Alessandro Rosetti
  *
  */
-public final class ProxyPDP extends Proxy implements PDPInterface {
+public final class ProxyPDP implements PDPInterface {
 
     private static final Logger log = Logger.getLogger( ProxyPDP.class.getName() );
 
@@ -103,12 +103,10 @@ public final class ProxyPDP extends Proxy implements PDPInterface {
         return null;
     }
 
-    @Override
     protected CONNECTION getConnection() {
         return CONNECTION.valueOf( properties.getCommunicationType() );
     }
 
-    @Override
     public boolean isInitialized() {
         return initialized;
     }
