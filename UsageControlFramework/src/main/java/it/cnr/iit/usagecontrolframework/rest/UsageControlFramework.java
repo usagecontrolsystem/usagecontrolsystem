@@ -133,11 +133,11 @@ public class UsageControlFramework implements UCSInterface {
     private boolean buildComponents() {
         Optional<AbstractContextHandler> optCH = buildComponent( properties.getContextHandler() );
         Reject.ifAbsent( optCH, "Error in building the context handler" );
-        contextHandler = optCH.get();
+        contextHandler = optCH.get(); // NOSONAR
 
         Optional<AbstractRequestManager> optRM = buildComponent( properties.getRequestManager() );
         Reject.ifAbsent( optRM, "Error in building the request manager" );
-        requestManager = optRM.get();
+        requestManager = optRM.get(); // NOSONAR
 
         Reject.ifFalse( buildProxySM(), "Error in building the session manager" );
         Reject.ifFalse( buildProxyPDP(), "Error in building the pdp" );
@@ -147,7 +147,7 @@ public class UsageControlFramework implements UCSInterface {
 
         Optional<ObligationManagerInterface> optOM = buildComponent( properties.getObligationManager() );
         Reject.ifAbsent( optOM, "Error in building the request manager" );
-        obligationManager = optOM.get();
+        obligationManager = optOM.get(); // NOSONAR
         obligationManager.setPIPs( new ArrayList<PIPOMInterface>( pipList ) );
 
         log.info( "UCF components building done." );
