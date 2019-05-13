@@ -148,9 +148,13 @@ public final class Utility {
 
     public static boolean createPathIfNotExists( String path ) {
         Reject.ifNull( path );
-        File dir = new File( path );
-        if( !dir.exists() ) {
-            return dir.mkdir();
+        return createPathIfNotExists( new File( path ) );
+    }
+
+    public static boolean createPathIfNotExists( File file ) {
+        Reject.ifNull( file );
+        if( !file.exists() ) {
+            return file.mkdir();
         }
         return true;
     }

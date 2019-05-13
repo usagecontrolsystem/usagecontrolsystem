@@ -246,7 +246,6 @@ public class UCFBaseTests {
 
         Mockito.when( pip.getAttributes() ).thenReturn( attributeList );
         Mockito.when( pip.getAttributeIds() ).thenReturn( attributeIdList );
-        Mockito.when( pip.setContextHandlerInterface( ArgumentMatchers.<ContextHandlerLC>any() ) ).thenReturn( true );
 
         return pip;
     }
@@ -388,10 +387,9 @@ public class UCFBaseTests {
     }
 
     protected String readResourceFileAsString( String resource ) throws URISyntaxException, IOException {
-        ClassLoader classLoader = this.getClass().getClassLoader();
-
         log.info( "Loading resource file : " + resource );
-        Path path = Paths.get( classLoader.getResource( resource ).toURI() );
+        ClassLoader classLoader = this.getClass().getClassLoader();
+        Path path = Paths.get( classLoader.getResource( resource ).getFile() );
         byte[] data = Files.readAllBytes( path );
         return new String( data );
     }

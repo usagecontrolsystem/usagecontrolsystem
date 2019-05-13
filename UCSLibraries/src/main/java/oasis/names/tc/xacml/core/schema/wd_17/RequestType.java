@@ -35,6 +35,7 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 
+import it.cnr.iit.xacmlutilities.Attribute;
 import it.cnr.iit.xacmlutilities.Category;
 
 /**
@@ -231,6 +232,12 @@ public final class RequestType {
         }
 
         return res;
+    }
+
+    public boolean addAttribute( Attribute attribute, String value ) {
+        return addAttribute( attribute.getCategory().toString(),
+            attribute.getAttributeDataType().toString(),
+            attribute.getAttributeId(), value );
     }
 
     public boolean addAttribute( String category, String dataType,

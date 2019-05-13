@@ -40,9 +40,9 @@ public abstract class PIPBase implements PIPCHInterface, PIPOMInterface {
     public static final String CATEGORY = "CATEGORY";
     public static final String DATA_TYPE = "DATA_TYPE";
 
-    protected ContextHandlerPIPInterface contextHandlerInterface;
-    private HashMap<String, Attribute> attributes = new HashMap<>();
-    @SuppressWarnings( "unused" )
+    protected ContextHandlerPIPInterface contextHandler;
+    private HashMap<String, Attribute> attributesMap = new HashMap<>();
+
     private PipProperties properties;
 
     /**
@@ -59,36 +59,34 @@ public abstract class PIPBase implements PIPCHInterface, PIPOMInterface {
     @Override
     public final ArrayList<String> getAttributeIds() {
         ArrayList<String> arrayList = new ArrayList<>();
-        arrayList.addAll( attributes.keySet() );
+        arrayList.addAll( attributesMap.keySet() );
         return arrayList;
     }
 
     @Override
     public final ArrayList<Attribute> getAttributes() {
         ArrayList<Attribute> arrayList = new ArrayList<>();
-        arrayList.addAll( attributes.values() );
+        arrayList.addAll( attributesMap.values() );
         return arrayList;
     }
 
     @Override
     public final HashMap<String, Attribute> getAttributesCharacteristics() {
-        return attributes;
+        return attributesMap;
     }
 
     @Override
-    public boolean setContextHandlerInterface(
-            ContextHandlerPIPInterface contextHandlerInterface ) {
-        Reject.ifNull( contextHandlerInterface );
-        this.contextHandlerInterface = contextHandlerInterface;
-        return true;
+    public void setContextHandler( ContextHandlerPIPInterface contextHandler ) {
+        Reject.ifNull( contextHandler );
+        this.contextHandler = contextHandler;
     }
 
     protected final boolean addAttribute( Attribute attribute ) {
         Reject.ifNull( attribute );
-        if( attributes.containsKey( attribute.getAttributeId() ) ) {
+        if( attributesMap.containsKey( attribute.getAttributeId() ) ) {
             return false;
         }
-        attributes.put( attribute.getAttributeId(), attribute );
+        attributesMap.put( attribute.getAttributeId(), attribute );
         return true;
     }
 

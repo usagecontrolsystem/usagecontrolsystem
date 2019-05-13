@@ -15,17 +15,24 @@
  ******************************************************************************/
 package it.cnr.iit.pipreader;
 
-import java.io.File;
+import java.io.BufferedReader;
+import java.io.FileReader;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.Scanner;
-import java.util.Timer;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import it.cnr.iit.ucs.properties.components.PipProperties;
+import it.cnr.iit.ucsinterface.message.PART;
+import it.cnr.iit.ucsinterface.message.pipch.PipChMessage;
 import it.cnr.iit.ucsinterface.obligationmanager.ObligationInterface;
 import it.cnr.iit.ucsinterface.pip.PIPBase;
 import it.cnr.iit.ucsinterface.pip.exception.PIPException;
@@ -35,28 +42,28 @@ import it.cnr.iit.xacmlutilities.Attribute;
 import it.cnr.iit.xacmlutilities.Category;
 import it.cnr.iit.xacmlutilities.DataType;
 
-import journal.io.api.Journal;
-import journal.io.api.Journal.WriteType;
-import journal.io.api.JournalBuilder;
 import oasis.names.tc.xacml.core.schema.wd_17.RequestType;
 
 /**
- * This is a PIPReader.
+ * This is the PIPReader.
  * <p>
- * It is the first NEW PIP designed from the structure stated in the
- * UCSInterface project. The only task this PIP will perform is to read some
- * informations from a file. The Path to reach the file is passed as parameter
- * to the pip. <br>
- * <b>This attributeID has a single value</b>
+ * The only task this PIP will perform is to read data from a file.
+ * The Path to reach the file is passed as parameter to the pip.
  * </p>
  *
- * @author antonio
+ * @author Antonio La Marra, Alessandro Rosetti
  *
  */
 public final class PIPReader extends PIPBase {
 
     private static Logger log = Logger.getLogger( PIPReader.class.getName() );
-    private Journal journal;
+    private PIPJournalHelper journal;
+
+    // list that stores the attributes on which a subscribe has been performed
+    protected final BlockingQueue<Attribute> subscriptions = new LinkedBlockingQueue<>();
+
+    // the subscriber timer in charge of performing the polling of the values
+    private PIPReaderSubscriberTimer subscriberTimer;
 
     /**
      * Whenever a PIP has to retrieve some informations related to an attribute
@@ -69,80 +76,62 @@ public final class PIPReader extends PIPBase {
      */
     private Category expectedCategory;
 
-    // path to the file that has to be read
+    private static final String ATTRIBUTE_SEPARATOR = "\t";
+
     public static final String FILE_PATH = "FILE_PATH";
-    // this is the attribute manager of this pip
     private String filePath;
-
-    private volatile boolean initialised = false;
-
-    // list that stores the attributes on which a subscribe has been performed
-    protected final BlockingQueue<Attribute> subscriptions = new LinkedBlockingQueue<>();
-
-    // the subscriber timer in charge of performing the polling of the values
-    private PRSubscriberTimer subscriberTimer;
-    // timer to be used to instantiate the subscriber timer
-    private Timer timer = new Timer();
 
     public PIPReader( PipProperties properties ) {
         super( properties );
-
-        if( initialise( properties ) ) {
-            log.info( "initialising PIPReader" );
-            initialised = true;
-            subscriberTimer = new PRSubscriberTimer( contextHandlerInterface,
-                subscriptions, filePath );
-
-            subscriberTimer.setJournal( journal );
-            timer.scheduleAtFixedRate( subscriberTimer, 0, 10L * 1000 );
-        } else {
-            log.severe( "error initialising PIPReader" );
-            throw new IllegalStateException( "PIPReader not initialised correctly" );
-        }
+        Reject.ifFalse( init( properties ),
+            "Error initialising pip : " + properties.getId() );
+        subscriberTimer = new PIPReaderSubscriberTimer( this );
+        subscriberTimer.start();
+        log.info( "PIPReader " + properties.getId() + " initialised" );
     }
 
-    private boolean initialise( PipProperties properties ) {
+    private boolean init( PipProperties properties ) {
         try {
             Map<String, String> attributeMap = properties.getAttributes().get( 0 );
             Attribute attribute = new Attribute();
+
             if( !attribute.createAttributeId( attributeMap.get( ATTRIBUTE_ID ) ) ) {
-                log.severe( "wrong attribute" );
+                log.severe( "Wrong attributeId : " + attributeMap.get( ATTRIBUTE_ID ) );
                 return false;
             }
+
             if( !attribute
                 .setCategory( Category.toCATEGORY( attributeMap.get( CATEGORY ) ) ) ) {
-                log.severe( "wrong category " + attributeMap.get( CATEGORY ) );
+                log.severe( "Wrong category : " + attributeMap.get( CATEGORY ) );
                 return false;
             }
+
             if( !attribute.setAttributeDataType(
                 DataType.toDATATYPE( attributeMap.get( DATA_TYPE ) ) ) ) {
-                log.severe( "wrong datatype" );
+                log.severe( "Wrong datatype : " + attributeMap.get( DATA_TYPE ) );
                 return false;
             }
-            if( attribute.getCategory() != Category.ENVIRONMENT && !setExpectedCategory( attributeMap.get( EXPECTED_CATEGORY ) ) ) {
-                return false;
-            }
-            addAttribute( attribute );
-            setFilePath( attributeMap.get( FILE_PATH ) );
-            configure( properties.getJournalDir() );
-            return true;
-        } catch( Exception e ) {
-            log.severe( "error initialise : " + e.getMessage() );
-            return false;
-        }
-    }
 
-    private boolean configure( String journalDir ) {
-        Reject.ifBlank( journalDir );
-        try {
-            // TODO UCS-33 NOSONAR
-            if( !Utility.createPathIfNotExists( journalDir ) ) {
+            if( attribute.getCategory() != Category.ENVIRONMENT ) {
+                expectedCategory = Category.toCATEGORY( attributeMap.get( EXPECTED_CATEGORY ) );
+                if( expectedCategory == null ) {
+                    return false;
+                }
+            }
+
+            if( attributeMap.containsKey( FILE_PATH ) ) {
+                setFilePath( attributeMap.get( FILE_PATH ) );
+            } else {
+                log.severe( "Missing PIPReader file path" );
                 return false;
             }
-            journal = JournalBuilder.of( new File( journalDir ) ).open();
+
+            addAttribute( attribute );
+            journal = new PIPJournalHelper( properties.getJournalDir() );
             return true;
         } catch( Exception e ) {
-            throw new IllegalStateException( "Error while initialising the journaling dir" + e.getMessage() );
+            log.severe( "Error in PIP initialization : " + e.getMessage() );
+            return false;
         }
     }
 
@@ -154,27 +143,31 @@ public final class PIPReader extends PIPBase {
      * that value has been retrieved, the PIP will fatten the request.
      * </p>
      *
-     * @param accessRequest
+     * @param request
      *          this is an in/out parameter
      */
     @Override
-    public void retrieve( RequestType accessRequest ) throws PIPException {
-        Reject.ifInvalidObjectState( initialised, PIPReader.class.getName(), log );
-        Reject.ifNull( accessRequest );
+    public void retrieve( RequestType request ) throws PIPException {
+        Reject.ifNull( request );
 
-        String value;
+        Attribute attribute = getAttributes().get( 0 );
+        addAdditionalInformation( request, attribute );
+        String value = retrieve( attribute );
 
-        if( getAttributes().get( 0 ).getCategory() == Category.ENVIRONMENT ) {
-            value = read();
+        request.addAttribute( attribute, value );
+    }
+
+    /**
+     * This is the function called by the context handler whenever we have a
+     * remote retrieve request
+     */
+    @Override
+    public String retrieve( Attribute attribute ) throws PIPException {
+        if( isEnvironmentCategory( attribute ) ) {
+            return read();
         } else {
-            String filter = accessRequest.extractValue( expectedCategory );
-            value = read( filter );
+            return read( attribute.getAdditionalInformations() );
         }
-
-        accessRequest.addAttribute( getAttributes().get( 0 ).getCategory().toString(),
-            getAttributes().get( 0 ).getAttributeDataType().toString(),
-            getAttributes().get( 0 ).getAttributeId(), value );
-
     }
 
     /**
@@ -183,47 +176,38 @@ public final class PIPReader extends PIPBase {
      * signal to the thread in charge of performing the polling that it has to
      * poll a new attribute
      *
-     * @param accessRequest
+     * @param request
      *          IN/OUT parameter
      */
     @Override
-    public void subscribe( RequestType accessRequest ) throws PIPException {
-        Reject.ifInvalidObjectState( initialised, PIPReader.class.getName(), log );
-        Reject.ifNull( accessRequest );
-        Reject.ifNull( contextHandlerInterface );
+    public void subscribe( RequestType request ) throws PIPException {
+        Reject.ifNull( request );
+        Reject.ifNull( contextHandler );
 
-        subscriberTimer.setContextHandlerInterface( contextHandlerInterface );
-
-        // create the new attribute
         Attribute attribute = getAttributes().get( 0 );
+        addAdditionalInformation( request, attribute );
 
-        String value;
-        String filter;
-        // read the value of the attribute, if necessary extract the additional info
-        if( attribute.getCategory() == Category.ENVIRONMENT ) {
-            value = read();
-        } else {
-            filter = accessRequest.extractValue( expectedCategory );
-            attribute.setAdditionalInformations( filter );
-            value = read( filter );
-        }
-        attribute.setValue( attribute.getAttributeDataType(), value );
+        String value = subscribe( attribute );
 
-        // add the attribute to the access request
-        accessRequest.addAttribute( getAttributes().get( 0 ).getCategory().toString(),
-            getAttributes().get( 0 ).getAttributeDataType().toString(),
-            getAttributes().get( 0 ).getAttributeId(), value );
-
-        // add the attribute to the subscription list
-        if( !subscriptions.contains( attribute ) ) {
-            subscriptions.add( attribute );
-        }
-
+        request.addAttribute( attribute, value );
     }
 
+    /**
+     * This is the function called by the context handler whenever we have a
+     * remote retrieve request
+     */
     @Override
-    public void updateAttribute( String json ) throws PIPException {
-        // TODO Auto-generated method stub NOSONAR
+    public String subscribe( Attribute attribute ) throws PIPException {
+        Reject.ifNull( attribute );
+        Reject.ifNull( contextHandler );
+
+        String value = retrieve( attribute );
+        DataType dataType = attribute.getAttributeDataType();
+        attribute.setValue( dataType, value );
+        addSubscription( attribute );
+
+        return value;
+
     }
 
     /**
@@ -235,15 +219,13 @@ public final class PIPReader extends PIPBase {
      */
     @Override
     public boolean unsubscribe( List<Attribute> attributes ) throws PIPException {
-        Reject.ifInvalidObjectState( initialised, PIPReader.class.getName(), log );
         Reject.ifEmpty( attributes );
-
         for( Attribute attribute : attributes ) {
             if( attribute.getAttributeId().equals( getAttributeIds().get( 0 ) ) ) {
-                for( Attribute attributeS : subscriptions ) {
-                    if( attributeS.getAdditionalInformations()
+                for( Attribute subscribedAttribute : subscriptions ) {
+                    if( subscribedAttribute.getAdditionalInformations()
                         .equals( attribute.getAdditionalInformations() ) ) {
-                        if( !subscriptions.remove( attributeS ) ) {
+                        if( !subscriptions.remove( subscribedAttribute ) ) {
                             throw new IllegalStateException( "Unable to remove attribute from list" );
                         }
                         return true;
@@ -254,101 +236,35 @@ public final class PIPReader extends PIPBase {
         return false;
     }
 
-    /**
-     * This is the function called by the context handler whenever we have a
-     * remote retrieve request
-     */
-    @Override
-    public String retrieve( Attribute attributeRetrievals ) throws PIPException {
-        String value;
+    private void addAdditionalInformation( RequestType request, Attribute attribute ) {
+        String filter = request.extractValue( expectedCategory );
+        attribute.setAdditionalInformations( filter );
+    }
 
-        if( getAttributes().get( 0 ).getCategory() == Category.ENVIRONMENT ) {
-            value = read();
-        } else {
-            String filter = attributeRetrievals.getAdditionalInformations();
-            value = read( filter );
-        }
-        return value;
+    public boolean isEnvironmentCategory( Attribute attribute ) {
+        return attribute.getCategory() == Category.ENVIRONMENT;
     }
 
     /**
-     * This is the function called by the context handler whenever we have a
-     * remote retrieve request
-     */
-    @Override
-    public String subscribe( Attribute attributeRetrieval ) throws PIPException {
-        Reject.ifInvalidObjectState( initialised, PIPReader.class.getName(), log );
-        Reject.ifNull( attributeRetrieval );
-        Reject.ifNull( contextHandlerInterface );
-
-        subscriberTimer.setContextHandlerInterface( contextHandlerInterface );
-
-        String value;
-        if( getAttributes().get( 0 ).getCategory() == Category.ENVIRONMENT ) {
-            value = read();
-        } else {
-            String filter = attributeRetrieval.getAdditionalInformations();
-            value = read( filter );
-        }
-        attributeRetrieval.setValue( getAttributes().get( 0 ).getAttributeDataType(),
-            value );
-        if( !subscriptions.contains( attributeRetrieval ) ) {
-            subscriptions.add( attributeRetrieval );
-        }
-        return value;
-
-    }
-
-    @Override
-    public void retrieve( RequestType request,
-            List<Attribute> attributeRetrievals ) {
-        log.severe( "Wrong method called" );
-    }
-
-    @Override
-    public void subscribe( RequestType request,
-            List<Attribute> attributeRetrieval ) {
-        log.severe( "Wrong method called" );
-    }
-
-    @Override
-    public void performObligation( ObligationInterface obligation ) {
-        // TODO Auto-generated method stub NOSONAR
-    }
-
-    /**
-     * Effective retrieval of the monitored value, before this retrieval many
-     * checks may have to be performed
+     * Effective retrieval of the monitored value.
      *
-     * @return the requested string
+     * @return the requested value
      * @throws PIPException
      */
-    private String read() {
-        String value = Utility.readFileAbsPath( filePath );
-        journalLog( value );
-        return value;
-    }
-
-    private void journalLog( String... string ) {
-        Reject.ifNull( string );
-        StringBuilder logLineBuilder = new StringBuilder();
-        logLineBuilder.append( "VALUE READ: " );
-        logLineBuilder.append( string[0] );
-
-        if( string.length > 1 ) {
-            logLineBuilder.append( " FOR FILTER: " + string[1] );
-        }
-        logLineBuilder.append( "\t AT: " + System.currentTimeMillis() );
+    private String read() throws PIPException {
         try {
-            journal.write( logLineBuilder.toString().getBytes(), WriteType.SYNC );
+            Path path = Paths.get( filePath );
+            // TODO UCS-33 NOSONAR
+            String value = new String( Files.readAllBytes( path ) );
+            journal.logReadOperation( value );
+            return value;
         } catch( IOException e ) {
-            log.severe( e.getMessage() );
+            throw new PIPException( "Attribute Manager error : " + e.getMessage() );
         }
     }
 
     /**
-     * Reads the file looking for the line containing the filter we are passing as
-     * argument and the role stated as other parameter
+     * Effective retrieval of the monitored value looking for the line containing a filter.
      *
      * <br>
      * NOTE we suppose that in the file each line has the following structure:
@@ -356,41 +272,23 @@ public final class PIPReader extends PIPBase {
      *
      * @param filter
      *          the string to be used to search for the item we're interested into
-     * @param role
-     *          the role of the string
-     * @return the string or null
-     *
-     *
+     * @return the requested value
      * @throws PIPException
-     */
+    */
     private String read( String filter ) throws PIPException {
         // TODO UCS-33 NOSONAR
-        try (Scanner fileInputStream = new Scanner( new File( filePath ) )) {
-            String line = "";
-            while( fileInputStream.hasNextLine() ) {
-                String tmp = fileInputStream.nextLine();
-                if( tmp.contains( filter ) ) {
-                    line = tmp;
-                    break;
+        try (BufferedReader br = new BufferedReader( new FileReader( filePath ) )) {
+            for( String line; ( line = br.readLine() ) != null; ) {
+                if( line.contains( filter ) ) {
+                    String value = line.split( ATTRIBUTE_SEPARATOR )[1];
+                    journal.logReadOperation( value, filter );
+                    return value;
                 }
             }
-            String value = line.split( "\t" )[1];
-            journalLog( value, filter );
-            return value;
-        } catch( IOException ioException ) {
-            throw new PIPException( ioException.getMessage() );
+        } catch( Exception e ) {
+            throw new PIPException( "Attribute Manager error : " + e.getMessage() );
         }
-    }
-
-    private final boolean setExpectedCategory( String category ) {
-        Reject.ifBlank( category );
-        Category categoryObj = Category.toCATEGORY( category );
-        if( categoryObj == null ) {
-            initialised = false;
-            return false;
-        }
-        expectedCategory = categoryObj;
-        return true;
+        throw new PIPException( "Attribute Manager error : no value for this filter : " + filter );
     }
 
     private final void setFilePath( String filePath ) {
@@ -403,7 +301,69 @@ public final class PIPReader extends PIPBase {
         }
     }
 
-    public boolean isInitialised() {
-        return initialised;
+    @Override
+    public void update( String data ) throws PIPException {
+        try {
+            Path path = Paths.get( filePath );
+            Files.write( path, data.getBytes() );
+        } catch( IOException e ) {
+            log.severe( "Error updating attribute : " + e.getMessage() );
+        }
+    }
+
+    @Override
+    public void retrieve( RequestType request,
+            List<Attribute> attributeRetrievals ) {
+        log.severe( "Multiple retrieve is unimplemented" );
+    }
+
+    @Override
+    public void subscribe( RequestType request,
+            List<Attribute> attributeRetrieval ) {
+        log.severe( "Multiple subscribe is unimplemented" );
+    }
+
+    @Override
+    public void performObligation( ObligationInterface obligation ) {
+        log.severe( "Perform obligation is unimplemented" );
+    }
+
+    public void addSubscription( Attribute attribute ) {
+        if( !subscriptions.contains( attribute ) ) {
+            subscriptions.add( attribute );
+        }
+    }
+
+    // TODO interface for timer?
+    public void checkSubscriptions() {
+        for( Attribute attribute : subscriptions ) {
+            String value = "";
+            log.log( Level.INFO, "Polling on value of the attribute " + attribute.getAttributeId() + "for change." );
+
+            try {
+                value = retrieve( attribute );
+            } catch( PIPException e ) {
+                log.log( Level.WARNING, "Error reading attribute " + attribute.getAttributeId() );
+                return;
+            }
+
+            String oldValue = attribute.getAttributeValues( attribute.getAttributeDataType() ).get( 0 );
+            if( !oldValue.equals( value ) ) { // if the attribute has changed
+                log.log( Level.INFO,
+                    "Attribute {0}={1}:{2} changed at {1}",
+                    new Object[] { attribute.getAttributeId(), value,
+                        attribute.getAdditionalInformations(),
+                        System.currentTimeMillis() } );
+                attribute.setValue( attribute.getAttributeDataType(), value );
+                notifyContextHandler( attribute );
+            }
+        }
+    }
+
+    public void notifyContextHandler( Attribute attribute ) {
+        PipChMessage pipchMessage = new PipChMessage( PART.PIP.toString(), PART.CH.toString() );
+        ArrayList<Attribute> attrList = new ArrayList<>( Arrays.asList( attribute ) );
+        pipchMessage.setAttributes( attrList );
+        contextHandler.attributeChanged( pipchMessage );
     }
 }

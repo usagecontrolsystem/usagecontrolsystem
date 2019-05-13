@@ -37,7 +37,7 @@ public interface PIPOMInterface extends PIPBaseInterface {
      *          a JSON string containing the user and his updated attributes
      * @throws PIPException
      */
-    public void updateAttribute( String json ) throws PIPException;
+    public void update( String json ) throws PIPException;
 
     /**
      * Function to be used by the ObligationManager when it needs to ask the PIP

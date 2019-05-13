@@ -192,7 +192,7 @@ public class UsageControlFramework implements UCSInterface {
             }
 
             PIPBase pipBase = optPip.get();
-            pipBase.setContextHandlerInterface( contextHandler );
+            pipBase.setContextHandler( contextHandler );
             pipList.add( pipBase );
         }
         return failures == 0;
