@@ -116,7 +116,6 @@ public class Message {
     }
 
     public <T> boolean setMotivation( T motivation ) {
-        // Reject.ifNull( motivation );
         Optional<String> optObj = JsonUtility.getJsonStringFromObject( motivation, false );
         if( optObj.isPresent() ) {
             this.motivation = optObj.get();
@@ -190,7 +189,7 @@ public class Message {
         this.delivered = delivered;
     }
 
-    final protected boolean isInitialized() {
+    protected final boolean isInitialized() {
         return initialized;
     }
 

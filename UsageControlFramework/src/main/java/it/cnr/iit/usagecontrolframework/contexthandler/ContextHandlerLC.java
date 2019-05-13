@@ -44,6 +44,7 @@ import it.cnr.iit.ucsinterface.message.startaccess.StartAccessResponse;
 import it.cnr.iit.ucsinterface.message.tryaccess.TryAccessMessage;
 import it.cnr.iit.ucsinterface.message.tryaccess.TryAccessResponse;
 import it.cnr.iit.ucsinterface.pdp.PDPEvaluation;
+import it.cnr.iit.ucsinterface.sessionmanager.CreateEntryParameterBuilder;
 import it.cnr.iit.ucsinterface.sessionmanager.OnGoingAttributesInterface;
 import it.cnr.iit.ucsinterface.sessionmanager.SessionInterface;
 import it.cnr.iit.utility.JAXBUtility;
@@ -357,22 +358,25 @@ public final class ContextHandlerLC extends AbstractContextHandler {
             RequestType requestType = JAXBUtility.unmarshalToObject( RequestType.class, request );
 
             // retrieve the id of ongoing attributes
+            CreateEntryParameterBuilder createEntryParameterBuilder = new CreateEntryParameterBuilder();
+
             List<Attribute> onGoingAttributes = policyHelper.getAttributesForCondition( STARTACCESS_POLICY );
-            List<String> onGoingAttributesForSubject = getAttributesForCategory( onGoingAttributes, Category.SUBJECT );
-            List<String> onGoingAttributesForResource = getAttributesForCategory( onGoingAttributes, Category.RESOURCE );
-            List<String> onGoingAttributesForAction = getAttributesForCategory( onGoingAttributes, Category.ACTION );
-            List<String> onGoingAttributesForEnvironment = getAttributesForCategory( onGoingAttributes,
-                Category.ENVIRONMENT );
+            createEntryParameterBuilder.setOnGoingAttributesForSubject( getAttributesForCategory( onGoingAttributes, Category.SUBJECT ) )
+                .setOnGoingAttributesForAction( getAttributesForCategory( onGoingAttributes, Category.ACTION ) )
+                .setOnGoingAttributesForResource( getAttributesForCategory( onGoingAttributes, Category.RESOURCE ) )
+                .setOnGoingAttributesForEnvironment( getAttributesForCategory( onGoingAttributes, Category.ENVIRONMENT ) );
+
+            createEntryParameterBuilder.setSubjectName( requestType.extractValue( Category.SUBJECT ) )
+                .setResourceName( requestType.extractValue( Category.RESOURCE ) )
+                .setActionName( requestType.extractValue( Category.ACTION ) );
+
+            createEntryParameterBuilder.setSessionId( sessionId ).setPolicySet( uxacmlPol ).setOriginalRequest( request )
+                .setStatus( status ).setPepURI( pepUri ).setMyIP( ip );
 
             // retrieve the values of attributes in the request
-            String subjectName = requestType.extractValue( Category.SUBJECT );
-            String resourceName = requestType.extractValue( Category.RESOURCE );
-            String actionName = requestType.extractValue( Category.ACTION );
 
             // insert all the values inside the session manager
-            if( !getSessionManagerInterface().createEntry( sessionId, uxacmlPol, request, onGoingAttributesForSubject,
-                onGoingAttributesForResource, onGoingAttributesForAction, onGoingAttributesForEnvironment, status,
-                pepUri, ip, subjectName, resourceName, actionName ) ) {
+            if( !getSessionManagerInterface().createEntry( createEntryParameterBuilder.build() ) ) {
                 log.log( Level.SEVERE, "[Context Handler] TryAccess: some error occurred, session {0} has not been stored correctly",
                     sessionId );
             }

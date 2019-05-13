@@ -120,11 +120,7 @@ public class UCFBaseTests {
         // TODO add ongoing attributes
         Mockito.when( sessionManagerInterface.getOnGoingAttributes( ArgumentMatchers.anyString() ) ).thenReturn( null );
         Mockito.when( sessionManagerInterface.deleteEntry( ArgumentMatchers.anyString() ) ).thenReturn( true );
-        Mockito.when( sessionManagerInterface.createEntry( ArgumentMatchers.anyString(), ArgumentMatchers.anyString(),
-            ArgumentMatchers.anyString(), ArgumentMatchers.<List<String>>any(), ArgumentMatchers.<List<String>>any(),
-            ArgumentMatchers.<List<String>>any(), ArgumentMatchers.<List<String>>any(), ArgumentMatchers.anyString(),
-            ArgumentMatchers.anyString(), ArgumentMatchers.anyString(), ArgumentMatchers.anyString(), ArgumentMatchers.anyString(),
-            ArgumentMatchers.anyString() ) ).thenReturn( true );
+        Mockito.when( sessionManagerInterface.createEntry( ArgumentMatchers.any() ) ).thenReturn( true );
 
         List<SessionInterface> sessionInterfaceList = new ArrayList<>( Arrays.asList( new SessionInterface[] { sessionInterface } ) );
         Mockito.when( sessionManagerInterface.getSessionsForSubjectAttributes(

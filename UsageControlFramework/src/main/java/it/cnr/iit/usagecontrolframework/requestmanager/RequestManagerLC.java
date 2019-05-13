@@ -28,8 +28,6 @@ import it.cnr.iit.ucs.properties.components.RequestManagerProperties;
 import it.cnr.iit.ucsinterface.message.Message;
 import it.cnr.iit.ucsinterface.message.endaccess.EndAccessMessage;
 import it.cnr.iit.ucsinterface.message.endaccess.EndAccessResponse;
-import it.cnr.iit.ucsinterface.message.pipch.PipChMessage;
-import it.cnr.iit.ucsinterface.message.reevaluation.ReevaluationMessage;
 import it.cnr.iit.ucsinterface.message.reevaluation.ReevaluationResponse;
 import it.cnr.iit.ucsinterface.message.startaccess.StartAccessMessage;
 import it.cnr.iit.ucsinterface.message.startaccess.StartAccessResponse;
@@ -67,7 +65,7 @@ public class RequestManagerLC extends AsynchronousRequestManager {
     /*
      * This is the thread in charge of handling the operations requested from a
      * remote PIP except from reevaluation.
-
+    
     private ExecutorService attributeSupplier;
     */
 
@@ -112,13 +110,13 @@ public class RequestManagerLC extends AsynchronousRequestManager {
         // END parameter checking
 
         // Case in which we have to forward a message to a remote node
-        if( message instanceof TryAccessMessage
+        /*if( message instanceof TryAccessMessage
                 || message instanceof StartAccessMessage
                 || message instanceof EndAccessMessage
                 || message instanceof ReevaluationMessage ) {
             getNodeInterface().sendMessage( message );
             return;
-        }
+        }*/
         if( message instanceof TryAccessResponse
                 || message instanceof StartAccessResponse
                 || message instanceof EndAccessResponse ) {
@@ -130,38 +128,38 @@ public class RequestManagerLC extends AsynchronousRequestManager {
     }
 
     private void sendResponse( Message message ) {
-        Message original = getForwardingQueue().getOriginalSource( message.getMessageId() );
+        // Message original = getForwardingQueue().getOriginalSource( message.getMessageId() );
 
         // Case in which we have to forward a response to a remote node
-        if( original != null ) {
+        /*if( original != null ) {
             reswap( message, original );
             getPEPInterface().get( message.getDestination() ).receiveResponse( message );
         } else {
             if( message.getUCSDestination() ) {
-                getNodeInterface().sendMessage( message );
-            } else {
-                getPEPInterface().get( message.getDestination() )
-                    .receiveResponse( message );
-            }
-        }
+                // getNodeInterface().sendMessage( message );
+            } else {*/
+        getPEPInterface().get( message.getDestination() )
+            .receiveResponse( message );
+        // }
+        // }
     }
 
-    private void reswap( Message message, Message original ) {
+    /*private void reswap( Message message, Message original ) {
         message.setDestination( original.getSource() );
         message.setSource( original.getDestination() );
-    }
+    }*/
 
     private void sendReevaluation( ReevaluationResponse reevaluation ) {
         log.log( Level.INFO, "[TIME] Effectively Sending on going evaluation {0}",
             System.currentTimeMillis() );
 
-        if( reevaluation.getDestination()
-            .equals( host ) ) {
-            getPEPInterface().get( ( reevaluation ).getPepId() )
-                .onGoingEvaluation( reevaluation );
-        } else {
-            getNodeInterface().sendMessage( reevaluation );
-        }
+        // if( reevaluation.getDestination()
+        // .equals( host ) ) {
+        getPEPInterface().get( ( reevaluation ).getPepId() )
+            .onGoingEvaluation( reevaluation );
+        // } else {
+        // getNodeInterface().sendMessage( reevaluation );
+        // }
     }
 
     /**
@@ -174,7 +172,7 @@ public class RequestManagerLC extends AsynchronousRequestManager {
     @Override
     public synchronized Message sendMessageToCH( Message message ) {
         try {
-            if( message instanceof PipChMessage ) {
+            /*if( message instanceof PipChMessage ) {
                 getRetrieveRequestsQueue().put( (PipChMessage) message );
             } else {
                 if( message instanceof TryAccessResponse
@@ -182,10 +180,10 @@ public class RequestManagerLC extends AsynchronousRequestManager {
                         || message instanceof EndAccessResponse
                         || message instanceof ReevaluationResponse ) {
                     sendMessageToOutside( message );
-                } else {
-                    getQueueToCH().put( message );
-                }
-            }
+                } else {*/
+            getQueueToCH().put( message );
+            // }
+            // }
         } catch( NullPointerException e ) {
             log.severe( e.getMessage() );
         } catch( InterruptedException e ) {
@@ -242,9 +240,9 @@ public class RequestManagerLC extends AsynchronousRequestManager {
      *
      * @author antonio
      *
-    
+
     private class AttributeSupplier implements Callable<Void> {
-    
+
     	@Override
     	public Void call() throws Exception {
     		while (true) {
@@ -291,7 +289,7 @@ public class RequestManagerLC extends AsynchronousRequestManager {
      * @param message
      *          the message returned by the context handler
      * @return the message to be used as response
-    
+
     private MessagePipCh createResponse(Message message) {
     	MessagePipCh chResponse = (MessagePipCh) message;
     	switch (chResponse.getAction()) {
