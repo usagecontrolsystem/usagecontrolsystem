@@ -21,6 +21,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import it.cnr.iit.sessionmanagerdesktop.SessionManagerDesktop;
 import it.cnr.iit.ucs.properties.components.SessionManagerProperties;
+import it.cnr.iit.ucsinterface.sessionmanager.CreateEntryParameterBuilder;
 import it.cnr.iit.ucsinterface.sessionmanager.OnGoingAttributesInterface;
 import it.cnr.iit.ucsinterface.sessionmanager.SessionInterface;
 
@@ -119,8 +120,10 @@ public class SessionManagerTest {
 
     @Test
     public void testDBConnection() throws Exception {
-        boolean status = sessionManagerDesktop.createEntry( sessionId, policy, request, null, null, null, null,
-            tryStatus, pepuri, myip, subject, action, resource );
+        boolean status = sessionManagerDesktop.createEntry( new CreateEntryParameterBuilder().setSessionId( sessionId )
+            .setPolicySet( policy )
+            .setOriginalRequest( request ).setStatus( tryStatus )
+            .setPepURI( pepuri ).setMyIP( myip ).setActionName( action ).setSubjectName( subject ).setResourceName( resource ).build() );
         Assert.assertEquals( true, status );
         SessionInterface sessionInterface = sessionManagerDesktop.getSessionForId( sessionId ).get();
         Assert.assertNotNull( sessionInterface );
@@ -129,11 +132,15 @@ public class SessionManagerTest {
 
     @Test
     public void testSameSessionId() throws Exception {
-        boolean status = sessionManagerDesktop.createEntry( sessionId, policy, request, null, null, null, null,
-            tryStatus, pepuri, myip, subject, action, resource );
+        boolean status = sessionManagerDesktop.createEntry( new CreateEntryParameterBuilder().setSessionId( sessionId )
+            .setPolicySet( policy )
+            .setOriginalRequest( request ).setStatus( tryStatus )
+            .setPepURI( pepuri ).setMyIP( myip ).setActionName( action ).setSubjectName( subject ).setResourceName( resource ).build() );
         Assert.assertEquals( true, status );
-        status = sessionManagerDesktop.createEntry( sessionId, policy, request, null, null, null, null, tryStatus,
-            pepuri, myip, subject, resource, action );
+        status = sessionManagerDesktop.createEntry( new CreateEntryParameterBuilder().setSessionId( sessionId )
+            .setPolicySet( policy )
+            .setOriginalRequest( request ).setStatus( tryStatus )
+            .setPepURI( pepuri ).setMyIP( myip ).setActionName( action ).setSubjectName( subject ).setResourceName( resource ).build() );
         Assert.assertEquals( false, status );
     }
 

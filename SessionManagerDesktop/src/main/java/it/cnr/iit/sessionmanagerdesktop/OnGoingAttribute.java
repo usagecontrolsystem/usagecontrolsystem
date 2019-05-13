@@ -5,6 +5,8 @@
  */
 package it.cnr.iit.sessionmanagerdesktop;
 
+import java.util.UUID;
+
 /**
  *
  * The class representing an on going attribute in the database.
@@ -12,7 +14,6 @@ package it.cnr.iit.sessionmanagerdesktop;
  * We have kept the OrmLite annotations since this kind of object has to easily
  * represent an entry in a SQL database. <br>
  * Names of the fields have been changed a little. <br>
- * TODO: comment more
  * </p>
  *
  * @author Fabio Bindi and Filippo Lauria and Antonio La Marra
@@ -21,9 +22,14 @@ import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 
 import it.cnr.iit.ucsinterface.sessionmanager.OnGoingAttributesInterface;
+import it.cnr.iit.utility.errorhandling.Reject;
 
 @DatabaseTable( tableName = "on_going_attributes" )
 public class OnGoingAttribute implements OnGoingAttributesInterface {
+
+    public enum COLUMN {
+        SUBJECT, RESOURCE, ACTION, ENVIRONMENT;
+    }
 
     public static final String ID_FIELD_NAME = "id";
 
@@ -74,12 +80,48 @@ public class OnGoingAttribute implements OnGoingAttributesInterface {
      * @param resourceName
      *          object ID (null if it's a subject attribute)
      */
-    public OnGoingAttribute( String attributeId, String subjectName, String resourceName,
+    private OnGoingAttribute( String attributeId, String subjectName, String resourceName,
             String actionName ) {
+        setId( UUID.randomUUID().toString() );
         setAttributeId( attributeId );
         setSubjectName( subjectName );
         setResourceName( resourceName );
         setActionName( actionName );
+    }
+
+    public static OnGoingAttribute createOnGoingAttribute( String attributeId, String name, COLUMN column ) {
+        Reject.ifBlank( attributeId );
+        if( column != COLUMN.ENVIRONMENT ) {
+            Reject.ifBlank( name );
+        }
+        OnGoingAttribute onGoingAttribute = new OnGoingAttribute();
+        onGoingAttribute.setAttributeId( attributeId );
+        switch( column ) {
+            case SUBJECT:
+                onGoingAttribute.setSubjectName( name );
+                break;
+            case ACTION:
+                onGoingAttribute.setActionName( name );
+                break;
+            case RESOURCE:
+                onGoingAttribute.setResourceName( name );
+                break;
+            default:
+                break;
+        }
+        return onGoingAttribute;
+    }
+
+    public static OnGoingAttribute createOnGoingAttributeForAction( String attributeId, String actionName ) {
+        Reject.ifBlank( attributeId );
+        Reject.ifBlank( actionName );
+        return new OnGoingAttribute( attributeId, null, null, actionName );
+    }
+
+    public static OnGoingAttribute createOnGoingAttributeForResource( String attributeId, String resourceName ) {
+        Reject.ifBlank( attributeId );
+        Reject.ifBlank( resourceName );
+        return new OnGoingAttribute( attributeId, null, null, resourceName );
     }
 
     @Override

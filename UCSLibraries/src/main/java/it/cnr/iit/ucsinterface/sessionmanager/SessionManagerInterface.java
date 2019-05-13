@@ -110,42 +110,13 @@ public interface SessionManagerInterface extends ReevaluationTableInterface {
      * Creates an entry for a session. This is the general function, in this case
      * the request has ongoingattributes related to the subject, the
      * object/resource, the action and the environment
-     *
-     * @param sessionId
-     *          the id of the session
-     * @param policySet
-     *          the policy set used in the evaluation
-     * @param originalRequest
-     *          the original request
-     * @param onGoingAttributesForSubject
-     *          the on going attributes related to the subject
-     * @param onGoingAttributesForResource
-     *          the on going attributes related to the object
-     * @param onGoingAttributesForAction
-     *          the on going attributes related to the action
-     * @param onGoingAttributesForEnvironment
-     *          the on going attributes related to the environment
-     * @param status
-     *          the status of the session
-     * @param pepURI
-     *          the uri of the pep
-     * @param myIP
-     *          the ip of the contexthandler that has evaluated the request
-     * @param subjectName
-     *          the name of the subject to which the attributes are related
+     * @param parameterObject TODO
      * @param resourceName
      *          the name of the object to which the attributes are related
-     * @param actionName
-     *          the name of the action to which the attribute are related
+     *
      * @return true if everything goes fine, false otherwise
      */
-    public Boolean createEntry( String sessionId, String policySet,
-            String originalRequest, List<String> onGoingAttributesForSubject,
-            List<String> onGoingAttributesForResource,
-            List<String> onGoingAttributesForAction,
-            List<String> onGoingAttributesForEnvironment, String status,
-            String pepURI, String myIP, String subjectName, String ResourceName,
-            String actionName );
+    public Boolean createEntry( CreateEntryParameter parameterObject );
 
     /**
      * Creates an entry for a session in which there are on going attributes for

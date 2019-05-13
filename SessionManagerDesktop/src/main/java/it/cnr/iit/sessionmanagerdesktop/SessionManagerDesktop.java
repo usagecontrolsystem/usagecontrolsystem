@@ -10,7 +10,6 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 import java.util.logging.Logger;
 
 import com.google.common.base.Throwables;
@@ -22,7 +21,10 @@ import com.j256.ormlite.stmt.QueryBuilder;
 import com.j256.ormlite.support.ConnectionSource;
 import com.j256.ormlite.table.TableUtils;
 
+import it.cnr.iit.sessionmanagerdesktop.OnGoingAttribute.COLUMN;
 import it.cnr.iit.ucs.properties.components.SessionManagerProperties;
+import it.cnr.iit.ucsinterface.sessionmanager.CreateEntryParameter;
+import it.cnr.iit.ucsinterface.sessionmanager.CreateEntryParameterBuilder;
 import it.cnr.iit.ucsinterface.sessionmanager.OnGoingAttributesInterface;
 import it.cnr.iit.ucsinterface.sessionmanager.SessionInterface;
 import it.cnr.iit.ucsinterface.sessionmanager.SessionManagerInterface;
@@ -200,9 +202,9 @@ public final class SessionManagerDesktop implements SessionManagerInterface {
         // BEGIN parameter checking
         validStateAndArguments( sessionId, policySet, originalRequest, onGoingAttributesForSubject, status, pepURI, myIP, subjectName );
         // END parameter checking
-        return createEntry( sessionId, policySet, originalRequest,
-            onGoingAttributesForSubject, null, null, null, status, pepURI, myIP,
-            subjectName, null, null );
+        return createEntry( new CreateEntryParameterBuilder().setSessionId( sessionId ).setPolicySet( policySet )
+            .setOriginalRequest( originalRequest ).setOnGoingAttributesForSubject( onGoingAttributesForSubject ).setStatus( status )
+            .setPepURI( pepURI ).setMyIP( myIP ).setSubjectName( subjectName ).build() );
     }
 
     /**
@@ -234,9 +236,9 @@ public final class SessionManagerDesktop implements SessionManagerInterface {
         // BEGIN parameter checking
         validStateAndArguments( sessionId, policySet, originalRequest, onGoingAttributesForResource, status, pepURI, myIP, resourceName );
         // END parameter checking
-        return createEntry( sessionId, policySet, originalRequest, null,
-            onGoingAttributesForResource, null, null, status, pepURI, myIP, null,
-            resourceName, null );
+        return createEntry( new CreateEntryParameterBuilder().setSessionId( sessionId ).setPolicySet( policySet )
+            .setOriginalRequest( originalRequest ).setOnGoingAttributesForResource( onGoingAttributesForResource ).setStatus( status )
+            .setPepURI( pepURI ).setMyIP( myIP ).setResourceName( resourceName ).build() );
     }
 
     /**
@@ -268,9 +270,9 @@ public final class SessionManagerDesktop implements SessionManagerInterface {
         // BEGIN parameter checking
         validStateAndArguments( sessionId, status, policySet, originalRequest, onGoingAttributesForAction, pepURI, myIP, actionName );
         // END parameter checking
-        return createEntry( sessionId, policySet, originalRequest, null, null,
-            onGoingAttributesForAction, null, status, pepURI, myIP, null, null,
-            actionName );
+        return createEntry( new CreateEntryParameterBuilder().setSessionId( sessionId ).setPolicySet( policySet )
+            .setOriginalRequest( originalRequest ).setOnGoingAttributesForAction( onGoingAttributesForAction ).setStatus( status )
+            .setPepURI( pepURI ).setMyIP( myIP ).setActionName( actionName ).build() );
     }
 
     /**
@@ -299,92 +301,56 @@ public final class SessionManagerDesktop implements SessionManagerInterface {
             String status, String pepURI, String myIP ) {
         validStateAndArguments( sessionId, policySet, originalRequest, onGoingAttributesForEnvironment, status, pepURI, myIP );
         // END parameter checking
-        return createEntry( sessionId, policySet, originalRequest, null, null, null,
-            onGoingAttributesForEnvironment, status, pepURI, myIP, null, null,
-            null );
+        return createEntry( new CreateEntryParameterBuilder().setSessionId( sessionId ).setPolicySet( policySet )
+            .setOriginalRequest( originalRequest ).setOnGoingAttributesForEnvironment( onGoingAttributesForEnvironment ).setStatus( status )
+            .setPepURI( pepURI ).setMyIP( myIP ).build() );
     }
 
     /**
      * Creates an entry for a session. This is the general function, in this case
      * the request has ongoingattributes related to the subject, the
      * object/resource, the action and the environment
-     *
-     * @param sessionId
-     *          the id of the session
-     * @param policySet
-     *          the policy set used in the evaluation
-     * @param originalRequest
-     *          the original request
-     * @param onGoingAttributesForSubject
-     *          the on going attributes related to the subject
-     * @param onGoingAttributesForResource
-     *          the on going attributes related to the object
-     * @param onGoingAttributesForAction
-     *          the on going attributes related to the action
-     * @param onGoingAttributesForEnvironment
-     *          the on going attributes related to the environment
-     * @param status
-     *          the status of the session
-     * @param pepURI
-     *          the uri of the pep
-     * @param myIP
-     *          the ip of the contexthandler that has evaluated the request
-     * @param subjectName
-     *          the name of the subject to which the attributes are related
      * @param resourceName
      *          the name of the object to which the attributes are related
-     * @param actionName
-     *          the name of the action to which the attribute are related
+     *
      * @return true if everything goes fine, false otherwise
      */
     @Override
-    public Boolean createEntry( String sessionId, String policySet,
-            String originalRequest, List<String> onGoingAttributesForSubject,
-            List<String> onGoingAttributesForResource,
-            List<String> onGoingAttributesForAction,
-            List<String> onGoingAttributesForEnvironment, String status,
-            String pepURI, String myIP, String subjectName, String resourceName,
-            String actionName ) {
+    public Boolean createEntry( CreateEntryParameter parameterObject ) {
+        Reject.ifNull( parameterObject );
         try {
-            Session s = new Session( sessionId, policySet, originalRequest, status,
-                pepURI, myIP );
+            Session s = prepareSession( parameterObject );
             // IMPORTANTE
-            if( sessionDao.idExists( sessionId ) ) {
+            if( sessionDao.idExists( parameterObject.getSessionId() ) ) {
                 log.severe( "ID already exists" );
                 return false;
             }
             sessionDao.create( s );
-            Session sessionResult = sessionDao.queryForId( sessionId );
+            Session sessionResult = sessionDao.queryForId( parameterObject.getSessionId() );
             ForeignCollection<OnGoingAttribute> attributes = sessionResult
                 .getOnGoingAttributesAsForeign();
-            if( onGoingAttributesForSubject != null ) {
-                for( String attr : onGoingAttributesForSubject ) {
-                    OnGoingAttribute a = new OnGoingAttribute( attr, subjectName, null,
-                        null );
-                    a.setId( UUID.randomUUID().toString() );
+            if( parameterObject.getOnGoingAttributesForSubject() != null ) {
+                for( String attr : parameterObject.getOnGoingAttributesForSubject() ) {
+                    OnGoingAttribute a = OnGoingAttribute.createOnGoingAttribute( attr, parameterObject.getSubjectName(), COLUMN.SUBJECT );
                     attributes.add( a );
                 }
             }
-            if( onGoingAttributesForResource != null ) {
-                for( String attr : onGoingAttributesForResource ) {
-                    OnGoingAttribute a = new OnGoingAttribute( attr, null, resourceName,
-                        null );
-                    a.setId( UUID.randomUUID().toString() );
+            if( parameterObject.getOnGoingAttributesForResource() != null ) {
+                for( String attr : parameterObject.getOnGoingAttributesForResource() ) {
+                    OnGoingAttribute a = OnGoingAttribute.createOnGoingAttribute( attr, parameterObject.getResourceName(),
+                        COLUMN.RESOURCE );
                     attributes.add( a );
                 }
             }
-            if( onGoingAttributesForAction != null ) {
-                for( String attr : onGoingAttributesForAction ) {
-                    OnGoingAttribute a = new OnGoingAttribute( attr, null, null,
-                        actionName );
-                    a.setId( UUID.randomUUID().toString() );
+            if( parameterObject.getOnGoingAttributesForAction() != null ) {
+                for( String attr : parameterObject.getOnGoingAttributesForAction() ) {
+                    OnGoingAttribute a = OnGoingAttribute.createOnGoingAttribute( attr, parameterObject.getActionName(), COLUMN.ACTION );
                     attributes.add( a );
                 }
             }
-            if( onGoingAttributesForEnvironment != null ) {
-                for( String attr : onGoingAttributesForEnvironment ) {
-                    OnGoingAttribute a = new OnGoingAttribute( attr, null, null, null );
-                    a.setId( UUID.randomUUID().toString() );
+            if( parameterObject.getOnGoingAttributesForEnvironment() != null ) {
+                for( String attr : parameterObject.getOnGoingAttributesForEnvironment() ) {
+                    OnGoingAttribute a = OnGoingAttribute.createOnGoingAttribute( attr, "", COLUMN.ENVIRONMENT );
                     attributes.add( a );
                 }
             }
@@ -393,6 +359,12 @@ public final class SessionManagerDesktop implements SessionManagerInterface {
             return false;
         }
         return true;
+    }
+
+    private Session prepareSession( CreateEntryParameter parameterObject ) {
+        return new Session( parameterObject.getSessionId(), parameterObject.getPolicySet(), parameterObject.getOriginalRequest(),
+            parameterObject.getStatus(),
+            parameterObject.getPepURI(), parameterObject.getMyIP() );
     }
 
     /**

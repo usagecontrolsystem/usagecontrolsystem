@@ -23,7 +23,7 @@ import java.util.logging.Logger;
 
 import it.cnr.iit.ucs.constants.CONNECTION;
 import it.cnr.iit.ucs.properties.components.SessionManagerProperties;
-import it.cnr.iit.ucsinterface.pep.PEPInterface;
+import it.cnr.iit.ucsinterface.sessionmanager.CreateEntryParameter;
 import it.cnr.iit.ucsinterface.sessionmanager.OnGoingAttributesInterface;
 import it.cnr.iit.ucsinterface.sessionmanager.SessionInterface;
 import it.cnr.iit.ucsinterface.sessionmanager.SessionManagerInterface;
@@ -96,10 +96,10 @@ public class ProxySessionManager implements SessionManagerInterface {
      * @return
      */
     private boolean buildLocalSessionManager( SessionManagerProperties properties ) {
-        Optional<PEPInterface> optPEP = UsageControlFramework.buildComponent( properties );
+        Optional<SessionManagerProperties> optSm = UsageControlFramework.buildComponent( properties );
 
-        if( optPEP.isPresent() ) {
-            sessionManagerInterface = (SessionManagerInterface) optPEP.get();
+        if( optSm.isPresent() ) {
+            sessionManagerInterface = (SessionManagerInterface) optSm.get();
             return true;
         }
         log.severe( "Error building Session Manager" );
@@ -108,7 +108,7 @@ public class ProxySessionManager implements SessionManagerInterface {
 
     @Override
     public Boolean start() {
-        if( initialized == false ) {
+        if( !initialized ) {
             return false;
         }
 
@@ -190,33 +190,21 @@ public class ProxySessionManager implements SessionManagerInterface {
     }
 
     @Override
-    public Boolean createEntry( String sessionId, String policySet,
-            String originalRequest, List<String> onGoingAttributesForSubject,
-            List<String> onGoingAttributesForObject,
-            List<String> onGoingAttributesForAction,
-            List<String> onGoingAttributesForEnvironment, String status,
-            String pepURI, String myIP, String subjectName, String objectName,
-            String actionName ) {
+    public Boolean createEntry( CreateEntryParameter parameterObject ) {
+        // BEGIN parameter checking
         if( !initialized || !started ) {
             return false;
         }
 
         switch( getConnection() ) {
             case API:
-                return sessionManagerInterface.createEntry( sessionId, policySet,
-                    originalRequest, onGoingAttributesForSubject,
-                    onGoingAttributesForObject, onGoingAttributesForAction,
-                    onGoingAttributesForEnvironment, status, pepURI, myIP, subjectName,
-                    objectName, actionName );
+                return sessionManagerInterface.createEntry( parameterObject );
             case SOCKET:
             case REST_API:
                 return false;
             default:
-                return sessionManagerInterface.createEntry( sessionId, policySet,
-                    originalRequest, onGoingAttributesForSubject,
-                    onGoingAttributesForObject, onGoingAttributesForAction,
-                    onGoingAttributesForEnvironment, status, pepURI, myIP, subjectName,
-                    objectName, actionName );
+                return sessionManagerInterface
+                    .createEntry( parameterObject );
         }
     }
 
