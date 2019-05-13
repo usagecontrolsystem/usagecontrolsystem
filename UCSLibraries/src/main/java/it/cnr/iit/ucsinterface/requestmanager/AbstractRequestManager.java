@@ -13,7 +13,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  ******************************************************************************/
-package it.cnr.iit.usagecontrolframework.requestmanager;
+package it.cnr.iit.ucsinterface.requestmanager;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -21,17 +21,12 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.logging.Logger;
 
-import it.cnr.iit.ucs.properties.components.GeneralProperties;
 import it.cnr.iit.ucs.properties.components.RequestManagerProperties;
 import it.cnr.iit.ucsinterface.contexthandler.ContextHandlerInterface;
 import it.cnr.iit.ucsinterface.forwardingqueue.ForwardingQueueToRMInterface;
 import it.cnr.iit.ucsinterface.message.Message;
 import it.cnr.iit.ucsinterface.message.pipch.PipChMessage;
-import it.cnr.iit.ucsinterface.node.NodeInterface;
 import it.cnr.iit.ucsinterface.pep.PEPInterface;
-import it.cnr.iit.ucsinterface.requestmanager.RequestManagerToCHInterface;
-import it.cnr.iit.ucsinterface.requestmanager.UCSCHInterface;
-import it.cnr.iit.usagecontrolframework.proxies.NodeProxy;
 import it.cnr.iit.utility.errorhandling.Reject;
 
 /**
@@ -46,10 +41,10 @@ import it.cnr.iit.utility.errorhandling.Reject;
  * @author Antonio La Marra, Alessandro Rosetti
  *
  */
-public abstract class AsynchronousRequestManager
+public abstract class AbstractRequestManager
         implements RequestManagerToCHInterface, UCSCHInterface {
 
-    protected static final Logger log = Logger.getLogger( AsynchronousRequestManager.class.getName() );
+    protected static final Logger log = Logger.getLogger( AbstractRequestManager.class.getName() );
 
     // queue of messages received from the context handler
     private final BlockingQueue<Message> queueFromCH = new LinkedBlockingQueue<>();
@@ -61,28 +56,15 @@ public abstract class AsynchronousRequestManager
     private ContextHandlerInterface contextHandler;
     // interface provided by the PEP
     private HashMap<String, PEPInterface> pep;
-    // flag that states if the request manager has been correctly initialised
-    private volatile boolean initialised = false;
 
     private ForwardingQueueToRMInterface forwardingQueue;
 
-    protected GeneralProperties properties;
-    protected RequestManagerProperties rmProperties;
+    protected RequestManagerProperties properties;
 
-    // interface used to communicate with other nodes
-    private NodeInterface nodeInterface;
-
-    protected AsynchronousRequestManager( GeneralProperties properties, RequestManagerProperties rmProperties ) {
-        Reject.ifNull( rmProperties );
-        this.rmProperties = rmProperties;
-
+    protected AbstractRequestManager( RequestManagerProperties properties ) {
         Reject.ifNull( properties );
-        nodeInterface = new NodeProxy( properties );
         this.properties = properties;
-
         pep = new HashMap<>();
-
-        initialised = true;
     }
 
     /**
@@ -96,52 +78,35 @@ public abstract class AsynchronousRequestManager
      *          the interface provided by the nodes for a distributes system
      */
     public final void setInterfaces( ContextHandlerInterface contextHandler,
-            Map<String, PEPInterface> proxyPEPMap, NodeInterface nodeInterface,
+            Map<String, PEPInterface> proxyPEPMap,
             ForwardingQueueToRMInterface forwardingQueue ) {
-        Reject.ifInvalidObjectState( initialised, AsynchronousRequestManager.class.getName(), log );
-        Reject.ifNull( contextHandler, proxyPEPMap, forwardingQueue, nodeInterface );
+        Reject.ifNull( contextHandler, proxyPEPMap, forwardingQueue );
         this.contextHandler = contextHandler;
         pep.putAll( proxyPEPMap );
         this.forwardingQueue = forwardingQueue;
-        this.nodeInterface = nodeInterface;
-    }
-
-    protected boolean isInitialized() {
-        return initialised;
     }
 
     protected ContextHandlerInterface getContextHandler() {
-        Reject.ifInvalidObjectState( initialised, AsynchronousRequestManager.class.getName(), log );
         return contextHandler;
     }
 
     protected HashMap<String, PEPInterface> getPEPInterface() {
-        Reject.ifInvalidObjectState( initialised, AsynchronousRequestManager.class.getName(), log );
         return pep;
     }
 
     protected BlockingQueue<Message> getQueueFromCH() {
-        Reject.ifInvalidObjectState( initialised, AsynchronousRequestManager.class.getName(), log );
         return queueFromCH;
     }
 
     protected BlockingQueue<Message> getQueueToCH() {
-        Reject.ifInvalidObjectState( initialised, AsynchronousRequestManager.class.getName(), log );
         return queueToCH;
     }
 
     protected final BlockingQueue<PipChMessage> getRetrieveRequestsQueue() {
-        Reject.ifInvalidObjectState( initialised, AsynchronousRequestManager.class.getName(), log );
         return retrieveRequests;
     }
 
-    protected final NodeInterface getNodeInterface() {
-        Reject.ifInvalidObjectState( initialised, AsynchronousRequestManager.class.getName(), log );
-        return nodeInterface;
-    }
-
     protected final ForwardingQueueToRMInterface getForwardingQueue() {
-        Reject.ifInvalidObjectState( initialised, AsynchronousRequestManager.class.getName(), log );
         return forwardingQueue;
     }
 

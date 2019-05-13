@@ -15,8 +15,6 @@
  ******************************************************************************/
 package it.cnr.iit.usagecontrolframework.proxies;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -26,9 +24,11 @@ import java.util.logging.Logger;
 import it.cnr.iit.ucs.constants.CONNECTION;
 import it.cnr.iit.ucs.properties.components.SessionManagerProperties;
 import it.cnr.iit.ucsinterface.sessionmanager.CreateEntryParameter;
+import it.cnr.iit.ucsinterface.pep.PEPInterface;
 import it.cnr.iit.ucsinterface.sessionmanager.OnGoingAttributesInterface;
 import it.cnr.iit.ucsinterface.sessionmanager.SessionInterface;
 import it.cnr.iit.ucsinterface.sessionmanager.SessionManagerInterface;
+import it.cnr.iit.usagecontrolframework.rest.UsageControlFramework;
 import it.cnr.iit.utility.errorhandling.Reject;
 import it.cnr.iit.xacmlutilities.Attribute;
 
@@ -55,7 +55,7 @@ import it.cnr.iit.xacmlutilities.Attribute;
  * @author Antonio La Marra, Alessandro Rosetti
  *
  */
-public class ProxySessionManager extends Proxy implements SessionManagerInterface {
+public class ProxySessionManager implements SessionManagerInterface {
 
     private static final Logger log = Logger.getLogger( ProxySessionManager.class.getName() );
 
@@ -97,39 +97,28 @@ public class ProxySessionManager extends Proxy implements SessionManagerInterfac
      * @return
      */
     private boolean buildLocalSessionManager( SessionManagerProperties properties ) {
-        Reject.ifBlank( properties.getClassName() );
-        try {
-            // TODO UCS-32 NOSONAR
-            Constructor<?> constructor = Class.forName( properties.getClassName() )
-                .getConstructor( SessionManagerProperties.class );
-            sessionManagerInterface = (SessionManagerInterface) constructor
-                .newInstance( properties );
+        Optional<PEPInterface> optPEP = UsageControlFramework.buildComponent( properties );
+
+        if( optPEP.isPresent() ) {
+            sessionManagerInterface = (SessionManagerInterface) optPEP.get();
             return true;
-        } catch( InstantiationException | IllegalAccessException
-                | ClassNotFoundException | NoSuchMethodException | SecurityException
-                | IllegalArgumentException | InvocationTargetException e ) {
-            log.severe( e.getMessage() );
         }
+        log.severe( "Error building Session Manager" );
         return false;
     }
 
     @Override
     public Boolean start() {
-        // BEGIN parameter checking
         if( initialized == false ) {
             return false;
         }
-        // END parameter checking
 
         switch( getConnection() ) {
             case API:
                 started = sessionManagerInterface.start();
                 return started;
             case SOCKET:
-                // TODO
-                return false;
             case REST_API:
-                // TODO
                 return false;
             default:
                 log.log( Level.SEVERE, CONNECTION.MSG_ERR_INCORRECT, properties.getCommunicationType() );
@@ -139,21 +128,16 @@ public class ProxySessionManager extends Proxy implements SessionManagerInterfac
 
     @Override
     public Boolean stop() {
-        // BEGIN parameter checking
         if( initialized == false ) {
             return false;
         }
-        // END parameter checking
 
         switch( getConnection() ) {
             case API:
                 started = !sessionManagerInterface.stop();
                 return !started;
             case SOCKET:
-                // TODO
-                return false;
             case REST_API:
-                // TODO
                 return false;
             default:
                 log.log( Level.SEVERE, CONNECTION.MSG_ERR_INCORRECT, properties.getCommunicationType() );
@@ -165,11 +149,9 @@ public class ProxySessionManager extends Proxy implements SessionManagerInterfac
     public Boolean createEntryForSubject( String sessionId, String policySet,
             String originalRequest, List<String> onGoingAttributesForSubject,
             String status, String pepURI, String myIP, String subjectName ) {
-        // BEGIN parameter checking
         if( !initialized || !started ) {
             return false;
         }
-        // END parameter checking
 
         switch( getConnection() ) {
             case API:
@@ -177,10 +159,7 @@ public class ProxySessionManager extends Proxy implements SessionManagerInterfac
                     policySet, originalRequest, onGoingAttributesForSubject, status,
                     pepURI, myIP, subjectName );
             case SOCKET:
-                // TODO
-                return false;
             case REST_API:
-                // TODO
                 return false;
             default:
                 return sessionManagerInterface.createEntryForSubject( sessionId,
@@ -193,11 +172,9 @@ public class ProxySessionManager extends Proxy implements SessionManagerInterfac
     public Boolean createEntryForResource( String sessionId, String policySet,
             String originalRequest, List<String> onGoingAttributesForObject,
             String status, String pepURI, String myIP, String objectName ) {
-        // BEGIN parameter checking
         if( !initialized || !started ) {
             return false;
         }
-        // END parameter checking
 
         switch( getConnection() ) {
             case API:
@@ -205,10 +182,7 @@ public class ProxySessionManager extends Proxy implements SessionManagerInterfac
                     policySet, originalRequest, onGoingAttributesForObject, status,
                     pepURI, myIP, objectName );
             case SOCKET:
-                // TODO
-                return false;
             case REST_API:
-                // TODO
                 return false;
             default:
                 log.severe( "Incorrect communication medium : " + properties.getCommunicationType() );
@@ -222,16 +196,12 @@ public class ProxySessionManager extends Proxy implements SessionManagerInterfac
         if( !initialized || !started ) {
             return false;
         }
-        // END parameter checking
 
         switch( getConnection() ) {
             case API:
                 return sessionManagerInterface.createEntry( parameterObject );
             case SOCKET:
-                // TODO
-                return false;
             case REST_API:
-                // TODO
                 return false;
             default:
                 return sessionManagerInterface
@@ -243,11 +213,9 @@ public class ProxySessionManager extends Proxy implements SessionManagerInterfac
     public Boolean createEntryForAction( String sessionId, String policySet,
             String originalRequest, List<String> onGoingAttributesForAction,
             String status, String pepURI, String myIP, String actionName ) {
-        // BEGIN parameter checking
         if( !initialized || !started ) {
             return false;
         }
-        // END parameter checking
 
         switch( getConnection() ) {
             case API:
@@ -255,10 +223,7 @@ public class ProxySessionManager extends Proxy implements SessionManagerInterfac
                     policySet, originalRequest, onGoingAttributesForAction, status,
                     pepURI, myIP, actionName );
             case SOCKET:
-                // TODO
-                return false;
             case REST_API:
-                // TODO
                 return false;
             default:
                 return sessionManagerInterface.createEntryForAction( sessionId,
@@ -271,11 +236,9 @@ public class ProxySessionManager extends Proxy implements SessionManagerInterfac
     public Boolean createEntryForEnvironment( String sessionId, String policySet,
             String originalRequest, List<String> onGoingAttributesForEnvironment,
             String status, String pepURI, String myIP ) {
-        // BEGIN parameter checking
         if( !initialized || !started ) {
             return false;
         }
-        // END parameter checking
 
         switch( getConnection() ) {
             case API:
@@ -283,10 +246,7 @@ public class ProxySessionManager extends Proxy implements SessionManagerInterfac
                     policySet, originalRequest, onGoingAttributesForEnvironment, status,
                     pepURI, myIP );
             case SOCKET:
-                // TODO
-                return false;
             case REST_API:
-                // TODO
                 return false;
             default:
                 return sessionManagerInterface.createEntryForEnvironment( sessionId,
@@ -297,20 +257,15 @@ public class ProxySessionManager extends Proxy implements SessionManagerInterfac
 
     @Override
     public Boolean updateEntry( String sessionId, String status ) {
-        // BEGIN parameter checking
         if( !initialized || !started ) {
             return false;
         }
-        // END parameter checking
 
         switch( getConnection() ) {
             case API:
                 return sessionManagerInterface.updateEntry( sessionId, status );
             case SOCKET:
-                // TODO
-                return false;
             case REST_API:
-                // TODO
                 return false;
             default:
                 return sessionManagerInterface.updateEntry( sessionId, status );
@@ -319,20 +274,15 @@ public class ProxySessionManager extends Proxy implements SessionManagerInterfac
 
     @Override
     public Boolean deleteEntry( String sessionId ) {
-        // BEGIN parameter checking
         if( !initialized || !started ) {
             return false;
         }
-        // END parameter checking
 
         switch( getConnection() ) {
             case API:
                 return sessionManagerInterface.deleteEntry( sessionId );
             case SOCKET:
-                // TODO
-                return false;
             case REST_API:
-                // TODO
                 return false;
             default:
                 return sessionManagerInterface.deleteEntry( sessionId );
@@ -341,20 +291,15 @@ public class ProxySessionManager extends Proxy implements SessionManagerInterfac
 
     @Override
     public List<SessionInterface> getSessionsForAttribute( String attributeId ) {
-        // BEGIN parameter checking
         if( !initialized || !started ) {
             return new ArrayList<>();
         }
-        // END parameter checking
 
         switch( getConnection() ) {
             case API:
                 return sessionManagerInterface.getSessionsForAttribute( attributeId );
             case SOCKET:
-                // TODO
-                return new ArrayList<>();
             case REST_API:
-                // TODO
                 return new ArrayList<>();
             default:
                 return sessionManagerInterface.getSessionsForAttribute( attributeId );
@@ -364,21 +309,16 @@ public class ProxySessionManager extends Proxy implements SessionManagerInterfac
     @Override
     public List<SessionInterface> getSessionsForSubjectAttributes(
             String subjectName, String attributeId ) {
-        // BEGIN parameter checking
         if( !initialized || !started ) {
             return new ArrayList<>();
         }
-        // END parameter checking
 
         switch( getConnection() ) {
             case API:
                 return sessionManagerInterface
                     .getSessionsForSubjectAttributes( subjectName, attributeId );
             case SOCKET:
-                // TODO
-                return new ArrayList<>();
             case REST_API:
-                // TODO
                 return new ArrayList<>();
             default:
                 return sessionManagerInterface
@@ -389,21 +329,16 @@ public class ProxySessionManager extends Proxy implements SessionManagerInterfac
     @Override
     public List<SessionInterface> getSessionsForResourceAttributes(
             String objectName, String attributeId ) {
-        // BEGIN parameter checking
         if( !initialized || !started ) {
             return new ArrayList<>();
         }
-        // END parameter checking
 
         switch( getConnection() ) {
             case API:
                 return sessionManagerInterface
                     .getSessionsForResourceAttributes( objectName, attributeId );
             case SOCKET:
-                // TODO
-                return new ArrayList<>();
             case REST_API:
-                // TODO
                 return new ArrayList<>();
             default:
                 return sessionManagerInterface
@@ -414,21 +349,16 @@ public class ProxySessionManager extends Proxy implements SessionManagerInterfac
     @Override
     public List<SessionInterface> getSessionsForActionAttributes(
             String actionName, String attributeId ) {
-        // BEGIN parameter checking
         if( !initialized || !started ) {
             return new ArrayList<>();
         }
-        // END parameter checking
 
         switch( getConnection() ) {
             case API:
                 return sessionManagerInterface
                     .getSessionsForActionAttributes( actionName, attributeId );
             case SOCKET:
-                // TODO
-                return new ArrayList<>();
             case REST_API:
-                // TODO
                 return new ArrayList<>();
             default:
                 return sessionManagerInterface
@@ -438,17 +368,14 @@ public class ProxySessionManager extends Proxy implements SessionManagerInterfac
 
     @Override
     public Optional<SessionInterface> getSessionForId( String sessionId ) {
-        // BEGIN parameter checking
         if( !initialized || !started ) {
             return Optional.empty();
         }
-        // END parameter checking
 
         switch( getConnection() ) {
             case API:
                 return sessionManagerInterface.getSessionForId( sessionId );
             case SOCKET:
-                return Optional.empty();
             case REST_API:
                 return Optional.empty();
             default:
@@ -458,20 +385,15 @@ public class ProxySessionManager extends Proxy implements SessionManagerInterfac
 
     @Override
     public List<SessionInterface> getSessionsForStatus( String status ) {
-        // BEGIN parameter checking
         if( !initialized || !started ) {
             return new ArrayList<>();
         }
-        // END parameter checking
 
         switch( getConnection() ) {
             case API:
                 return sessionManagerInterface.getSessionsForStatus( status );
             case SOCKET:
-                // TODO
-                return new ArrayList<>();
             case REST_API:
-                // TODO
                 return new ArrayList<>();
             default:
                 return sessionManagerInterface.getSessionsForStatus( status );
@@ -481,21 +403,16 @@ public class ProxySessionManager extends Proxy implements SessionManagerInterfac
     @Override
     public List<SessionInterface> getSessionsForEnvironmentAttributes(
             String attributeId ) {
-        // BEGIN parameter checking
         if( !initialized || !started ) {
             return new ArrayList<>();
         }
-        // END parameter checking
 
         switch( getConnection() ) {
             case API:
                 return sessionManagerInterface
                     .getSessionsForEnvironmentAttributes( attributeId );
             case SOCKET:
-                // TODO
-                return new ArrayList<>();
             case REST_API:
-                // TODO
                 return new ArrayList<>();
             default:
                 return sessionManagerInterface
@@ -505,20 +422,15 @@ public class ProxySessionManager extends Proxy implements SessionManagerInterfac
 
     @Override
     public List<OnGoingAttributesInterface> getOnGoingAttributes( String sessionId ) {
-        // BEGIN parameter checking
         if( !initialized || !started ) {
             return new ArrayList<>();
         }
-        // END parameter checking
 
         switch( getConnection() ) {
             case API:
                 return sessionManagerInterface.getOnGoingAttributes( sessionId );
             case SOCKET:
-                // TODO
-                return new ArrayList<>();
             case REST_API:
-                // TODO
                 return new ArrayList<>();
             default:
                 return sessionManagerInterface.getOnGoingAttributes( sessionId );
@@ -527,20 +439,15 @@ public class ProxySessionManager extends Proxy implements SessionManagerInterfac
 
     @Override
     public STATUS checkSession( String sessionId, Attribute attribute ) {
-        // BEGIN parameter checking
         if( !initialized || !started ) {
             return null;
         }
-        // END parameter checking
 
         switch( getConnection() ) {
             case API:
                 return sessionManagerInterface.checkSession( sessionId, attribute );
             case SOCKET:
-                // TODO
-                return null;
             case REST_API:
-                // TODO
                 return null;
             default:
                 return sessionManagerInterface.checkSession( sessionId, attribute );
@@ -549,20 +456,15 @@ public class ProxySessionManager extends Proxy implements SessionManagerInterfac
 
     @Override
     public boolean insertSession( SessionInterface session, Attribute attribute ) {
-        // BEGIN parameter checking
         if( !initialized || !started ) {
             return false;
         }
-        // END parameter checking
 
         switch( getConnection() ) {
             case API:
                 return sessionManagerInterface.insertSession( session, attribute );
             case SOCKET:
-                // TODO
-                return false;
             case REST_API:
-                // TODO
                 return false;
             default:
                 return sessionManagerInterface.insertSession( session, attribute );
@@ -571,20 +473,15 @@ public class ProxySessionManager extends Proxy implements SessionManagerInterfac
 
     @Override
     public boolean stopSession( SessionInterface session ) {
-        // BEGIN parameter checking
         if( !initialized || !started ) {
             return false;
         }
-        // END parameter checking
 
         switch( getConnection() ) {
             case API:
                 return sessionManagerInterface.stopSession( session );
             case SOCKET:
-                // TODO
-                return false;
             case REST_API:
-                // TODO
                 return false;
             default:
                 return sessionManagerInterface.stopSession( session );
@@ -596,7 +493,6 @@ public class ProxySessionManager extends Proxy implements SessionManagerInterfac
         return initialized;
     }
 
-    @Override
     protected CONNECTION getConnection() {
         return CONNECTION.valueOf( properties.getCommunicationType() );
     }

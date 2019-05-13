@@ -69,6 +69,8 @@ public final class PIPReader extends PIPBase {
      */
     private Category expectedCategory;
 
+    // path to the file that has to be read
+    public static final String FILE_PATH = "FILE_PATH";
     // this is the attribute manager of this pip
     private String filePath;
 
@@ -84,7 +86,6 @@ public final class PIPReader extends PIPBase {
 
     public PIPReader( PipProperties properties ) {
         super( properties );
-        Reject.ifInvalidObjectState( isInitialized(), PIPReader.class.getName(), log );
 
         if( initialise( properties ) ) {
             log.info( "initialising PIPReader" );
@@ -158,7 +159,6 @@ public final class PIPReader extends PIPBase {
      */
     @Override
     public void retrieve( RequestType accessRequest ) throws PIPException {
-        Reject.ifInvalidObjectState( isInitialized(), PIPReader.class.getName(), log );
         Reject.ifInvalidObjectState( initialised, PIPReader.class.getName(), log );
         Reject.ifNull( accessRequest );
 
@@ -188,7 +188,6 @@ public final class PIPReader extends PIPBase {
      */
     @Override
     public void subscribe( RequestType accessRequest ) throws PIPException {
-        Reject.ifInvalidObjectState( isInitialized(), PIPReader.class.getName(), log );
         Reject.ifInvalidObjectState( initialised, PIPReader.class.getName(), log );
         Reject.ifNull( accessRequest );
         Reject.ifNull( contextHandlerInterface );
@@ -236,7 +235,6 @@ public final class PIPReader extends PIPBase {
      */
     @Override
     public boolean unsubscribe( List<Attribute> attributes ) throws PIPException {
-        Reject.ifInvalidObjectState( isInitialized(), PIPReader.class.getName(), log );
         Reject.ifInvalidObjectState( initialised, PIPReader.class.getName(), log );
         Reject.ifEmpty( attributes );
 
@@ -279,7 +277,6 @@ public final class PIPReader extends PIPBase {
      */
     @Override
     public String subscribe( Attribute attributeRetrieval ) throws PIPException {
-        Reject.ifInvalidObjectState( isInitialized(), PIPReader.class.getName(), log );
         Reject.ifInvalidObjectState( initialised, PIPReader.class.getName(), log );
         Reject.ifNull( attributeRetrieval );
         Reject.ifNull( contextHandlerInterface );
@@ -386,7 +383,6 @@ public final class PIPReader extends PIPBase {
     }
 
     private final boolean setExpectedCategory( String category ) {
-        Reject.ifFalse( isInitialized() );
         Reject.ifBlank( category );
         Category categoryObj = Category.toCATEGORY( category );
         if( categoryObj == null ) {
@@ -398,7 +394,6 @@ public final class PIPReader extends PIPBase {
     }
 
     private final void setFilePath( String filePath ) {
-        Reject.ifInvalidObjectState( isInitialized(), PIPReader.class.getName(), log );
         Reject.ifBlank( filePath );
         String absFilePath = Utility.findFileAbsPathUsingClassLoader( filePath );
         if( absFilePath != null ) {

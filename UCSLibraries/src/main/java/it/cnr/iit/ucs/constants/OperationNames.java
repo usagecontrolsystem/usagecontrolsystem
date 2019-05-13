@@ -13,27 +13,17 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  ******************************************************************************/
-package it.cnr.iit.usagecontrolframework.proxies;
+package it.cnr.iit.ucs.constants;
 
-import it.cnr.iit.ucs.constants.CONNECTION;
+public final class OperationNames {
 
-/**
- * This is the proxy abstract object.
- * <p>
- * With this object we basically provide a skeleton for a proxy. A proxy is
- * basically a wrapper around the real implementation of the object and helps us
- * in dealing with the real object. <br>
- * The only functionality a Proxy abstract object <b>MUST</b> provide is a isValid
- * function. The isValid function is used to understand if the wrapped object has
- * been correctly initalized and if the wrapped object is ready.
- * </p>
- *
- * @author antonio
- *
- */
-public abstract class Proxy {
+    public static final String TRYACCESS_REST = "/tryAccess";
+    public static final String STARTACCESS_REST = "/startAccess";
+    public static final String ENDACCESS_REST = "/endAccess";
+    public static final String ONGOING_REST = "/onGoing";
+    public static final String TRYACCESSRESPONSE_REST = "/tryAccessResponse";
+    public static final String STARTACCESSRESPONSE_REST = "/startAccessResponse";
+    public static final String ENDACCESSRESPONSE_REST = "/endAccessResponse";
+    public static final String ONGOINGRESPONSE_REST = "/onGoingResponse";
 
-    public abstract boolean isInitialized();
-
-    protected abstract CONNECTION getConnection();
 }

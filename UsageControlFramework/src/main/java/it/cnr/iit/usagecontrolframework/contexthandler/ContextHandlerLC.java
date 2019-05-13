@@ -32,6 +32,7 @@ import it.cnr.iit.ucs.exceptions.RevokeException;
 import it.cnr.iit.ucs.exceptions.SessionManagerException;
 import it.cnr.iit.ucs.exceptions.WrongOrderException;
 import it.cnr.iit.ucs.properties.components.ContextHandlerProperties;
+import it.cnr.iit.ucsinterface.contexthandler.AbstractContextHandler;
 import it.cnr.iit.ucsinterface.contexthandler.ContextHandlerConstants;
 import it.cnr.iit.ucsinterface.message.Message;
 import it.cnr.iit.ucsinterface.message.endaccess.EndAccessMessage;
@@ -184,8 +185,6 @@ public final class ContextHandlerLC extends AbstractContextHandler {
         StringBuilder policyBuilder = new StringBuilder();
         PDPEvaluation pdpEvaluation = getPdpInterface().evaluate( requestFull, policyBuilder.append( policy ),
             STATUS.TRYACCESS );
-
-        // policy = policyBuilder.toString();
 
         String pdpResponse = pdpEvaluation.getResult();
         log.log( Level.INFO, "[TIME] tryaccess evaluated at {0} response: {1}", new Object[] { System.currentTimeMillis(), pdpResponse } );

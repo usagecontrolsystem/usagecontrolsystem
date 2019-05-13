@@ -20,7 +20,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.annotation.PostConstruct;
@@ -30,12 +29,10 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 import it.cnr.iit.ucs.properties.UCSProperties;
-import it.cnr.iit.ucs.properties.components.ContextHandlerProperties;
-import it.cnr.iit.ucs.properties.components.GeneralProperties;
-import it.cnr.iit.ucs.properties.components.ObligationManagerProperties;
+import it.cnr.iit.ucs.properties.base.PluginProperties;
 import it.cnr.iit.ucs.properties.components.PepProperties;
 import it.cnr.iit.ucs.properties.components.PipProperties;
-import it.cnr.iit.ucs.properties.components.RequestManagerProperties;
+import it.cnr.iit.ucsinterface.contexthandler.AbstractContextHandler;
 import it.cnr.iit.ucsinterface.forwardingqueue.ForwardingQueue;
 import it.cnr.iit.ucsinterface.message.endaccess.EndAccessMessage;
 import it.cnr.iit.ucsinterface.message.endaccess.EndAccessResponse;
@@ -46,19 +43,16 @@ import it.cnr.iit.ucsinterface.message.startaccess.StartAccessMessage;
 import it.cnr.iit.ucsinterface.message.startaccess.StartAccessResponse;
 import it.cnr.iit.ucsinterface.message.tryaccess.TryAccessMessage;
 import it.cnr.iit.ucsinterface.message.tryaccess.TryAccessResponse;
-import it.cnr.iit.ucsinterface.node.NodeInterface;
 import it.cnr.iit.ucsinterface.obligationmanager.ObligationManagerInterface;
 import it.cnr.iit.ucsinterface.pep.PEPInterface;
 import it.cnr.iit.ucsinterface.pip.PIPBase;
 import it.cnr.iit.ucsinterface.pip.PIPOMInterface;
+import it.cnr.iit.ucsinterface.requestmanager.AbstractRequestManager;
 import it.cnr.iit.ucsinterface.ucs.UCSInterface;
-import it.cnr.iit.usagecontrolframework.contexthandler.AbstractContextHandler;
-import it.cnr.iit.usagecontrolframework.proxies.NodeProxy;
 import it.cnr.iit.usagecontrolframework.proxies.ProxyPAP;
 import it.cnr.iit.usagecontrolframework.proxies.ProxyPDP;
 import it.cnr.iit.usagecontrolframework.proxies.ProxyPEP;
 import it.cnr.iit.usagecontrolframework.proxies.ProxySessionManager;
-import it.cnr.iit.usagecontrolframework.requestmanager.AsynchronousRequestManager;
 import it.cnr.iit.utility.errorhandling.Reject;
 import it.cnr.iit.utility.errorhandling.exception.PreconditionException;
 
@@ -103,24 +97,17 @@ public class UsageControlFramework implements UCSInterface {
 
     private static final Logger log = Logger.getLogger( UsageControlFramework.class.getName() );
 
-    private static final String MSG_ERR_BUILD_PROP = "Error building PIPBase from properties : {0}";
-
-    // local components
     private AbstractContextHandler contextHandler;
-    private AsynchronousRequestManager requestManager;
-    private List<PIPBase> pipList = new ArrayList<>();
+    private AbstractRequestManager requestManager;
     private ObligationManagerInterface obligationManager;
+    private List<PIPBase> pipList = new ArrayList<>();
 
-    // proxy components
     private HashMap<String, PEPInterface> proxyPEPMap = new HashMap<>();
     private ProxySessionManager proxySessionManager;
     private ProxyPDP proxyPDP;
     private ProxyPAP proxyPAP;
 
-    private ForwardingQueue forwardingQueue;
-
-    // the only component not initialised here
-    private NodeInterface nodeInterface;
+    private ForwardingQueue forwardingQueue = new ForwardingQueue();
 
     private volatile boolean initialised = false;
 
@@ -140,51 +127,28 @@ public class UsageControlFramework implements UCSInterface {
     }
 
     private boolean buildComponents() {
-        Reject.ifFalse( buildContextHandler(), "Error in building the context handler" );
-        Reject.ifFalse( buildRequestManager(), "Error in building the request manager" );
+        Optional<AbstractContextHandler> optCH = buildComponent( properties.getContextHandler() );
+        Reject.ifAbsent( optCH, "Error in building the context handler" );
+        contextHandler = optCH.get(); // NOSONAR
+
+        Optional<AbstractRequestManager> optRM = buildComponent( properties.getRequestManager() );
+        Reject.ifAbsent( optRM, "Error in building the request manager" );
+        requestManager = optRM.get(); // NOSONAR
+
         Reject.ifFalse( buildProxySM(), "Error in building the session manager" );
         Reject.ifFalse( buildProxyPDP(), "Error in building the pdp" );
         Reject.ifFalse( buildProxyPolicyAdministrationPoint(), "Error in building the pap" );
         Reject.ifFalse( buildProxyPEPList(), "Error in building the pep" );
         Reject.ifFalse( buildPIPList(), "Error in building the pips" );
-        Reject.ifFalse( buildObligationManager(), "Error in building the obligation manager" );
 
-        forwardingQueue = new ForwardingQueue();
-        nodeInterface = new NodeProxy( properties.getGeneral() );
+        Optional<ObligationManagerInterface> optOM = buildComponent( properties.getObligationManager() );
+        Reject.ifAbsent( optOM, "Error in building the request manager" );
+        obligationManager = optOM.get(); // NOSONAR
+        obligationManager.setPIPs( new ArrayList<PIPOMInterface>( pipList ) );
 
         log.info( "UCF components building done." );
 
         return checkConnection();
-    }
-
-    private boolean buildContextHandler() {
-        try {
-            ContextHandlerProperties chProperties = properties.getContextHandler();
-            // TODO UCS-32 NOSONAR
-            Constructor<?> constructor = Class.forName( chProperties.getClassName() )
-                .getConstructor( ContextHandlerProperties.class );
-            contextHandler = (AbstractContextHandler) constructor
-                .newInstance( chProperties );
-            return true;
-        } catch( Exception e ) {
-            log.severe( "build ContextHandler failed : " + e.getMessage() );
-            return false;
-        }
-    }
-
-    private boolean buildRequestManager() {
-        try {
-            RequestManagerProperties rmProperties = properties.getRequestManager();
-            // TODO UCS-32 NOSONAR
-            Constructor<?> constructor = Class.forName( rmProperties.getClassName() )
-                .getConstructor( GeneralProperties.class, RequestManagerProperties.class );
-            requestManager = (AsynchronousRequestManager) constructor
-                .newInstance( properties.getGeneral(), rmProperties );
-            return true;
-        } catch( Exception exception ) {
-            log.severe( "build RequestManager failed : " + exception.getMessage() );
-            return false;
-        }
     }
 
     private boolean buildProxySM() {
@@ -219,7 +183,7 @@ public class UsageControlFramework implements UCSInterface {
         int failures = 0;
 
         for( PipProperties pip : properties.getPipList() ) {
-            Optional<PIPBase> optPip = buildPIP( pip );
+            Optional<PIPBase> optPip = buildComponent( pip );
 
             if( !optPip.isPresent() ) {
                 log.severe( "Error building pip" );
@@ -234,35 +198,6 @@ public class UsageControlFramework implements UCSInterface {
         return failures == 0;
     }
 
-    private boolean buildObligationManager() {
-        try {
-            ObligationManagerProperties omProperties = properties.getObligationManager();
-            // TODO UCS-32 NOSONAR
-            Constructor<?> constructor = Class.forName( omProperties.getClassName() )
-                .getConstructor( ObligationManagerProperties.class );
-            obligationManager = (ObligationManagerInterface) constructor
-                .newInstance( omProperties );
-            obligationManager.setPIPs( new ArrayList<PIPOMInterface>( pipList ) );
-            return true;
-        } catch( Exception exception ) {
-            log.severe( "Error building obligation manager : " + exception.getMessage() );
-            return false;
-        }
-    }
-
-    public static Optional<PIPBase> buildPIP( PipProperties properties ) {
-        try {
-            // TODO UCS-32 NOSONAR
-            Class<?> clazz = Class.forName( properties.getClassName() );
-            Constructor<?> constructor = clazz.getConstructor( PipProperties.class );
-            PIPBase pip = (PIPBase) constructor.newInstance( properties );
-            return Optional.of( pip );
-        } catch( Exception e ) {
-            log.log( Level.SEVERE, MSG_ERR_BUILD_PROP, e.getMessage() );
-        }
-        return Optional.empty();
-    }
-
     private boolean checkConnection() {
 
         contextHandler.setInterfaces( proxySessionManager, requestManager, proxyPDP,
@@ -275,10 +210,24 @@ public class UsageControlFramework implements UCSInterface {
             return false;
         }
 
-        requestManager.setInterfaces( contextHandler, proxyPEPMap, nodeInterface, forwardingQueue );
+        requestManager.setInterfaces( contextHandler, proxyPEPMap, forwardingQueue );
         proxyPDP.setInterfaces( proxyPAP );
 
         return true;
+    }
+
+    public static <T> Optional<T> buildComponent( PluginProperties properties ) {
+        try {
+            // TODO UCS-32 NOSONAR
+            Class<?> propClass = properties.getClass().getInterfaces()[0];
+            Constructor<?> constructor = Class.forName( properties.getClassName() )
+                .getConstructor( propClass );
+            T obj = (T) constructor.newInstance( properties );
+            return Optional.of( obj );
+        } catch( Exception e ) {
+            log.severe( "build " + properties.getClassName() + " failed : " + e.getMessage() );
+            return Optional.empty();
+        }
     }
 
     @Override
@@ -332,8 +281,7 @@ public class UsageControlFramework implements UCSInterface {
 
     @Override
     @Async
-    public void onGoingEvaluationResponse(
-            ReevaluationResponse onGoingEvaluationResponse ) {
+    public void onGoingEvaluationResponse( ReevaluationResponse onGoingEvaluationResponse ) {
         // TODO check if sent
         requestManager.sendMessageToCH( onGoingEvaluationResponse );
     }
@@ -344,10 +292,6 @@ public class UsageControlFramework implements UCSInterface {
         // TODO check if sent
         requestManager.sendMessageToCH( messagePipCh );
     }
-
-    @Override
-    @Async
-    public void retrieveRemoteResponse( PipChMessage messagePipCh ) {} // NOSONAR
 
     public boolean isInitialised() {
         return initialised;

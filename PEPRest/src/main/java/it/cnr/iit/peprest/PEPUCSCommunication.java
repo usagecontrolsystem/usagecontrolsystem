@@ -10,11 +10,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import it.cnr.iit.ucs.constants.OperationNames;
 import it.cnr.iit.ucsinterface.message.endaccess.EndAccessResponse;
 import it.cnr.iit.ucsinterface.message.reevaluation.ReevaluationResponse;
 import it.cnr.iit.ucsinterface.message.startaccess.StartAccessResponse;
 import it.cnr.iit.ucsinterface.message.tryaccess.TryAccessResponse;
-import it.cnr.iit.ucsinterface.node.NodeInterface;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiOperation;
@@ -34,7 +34,7 @@ public class PEPUCSCommunication {
     @ApiResponses( value = {
         @ApiResponse( code = 500, message = "Invalid message received" ),
         @ApiResponse( code = 200, message = "OK" ) } )
-    @PostMapping( value = NodeInterface.ONGOINGRESPONSE_REST, consumes = MediaType.APPLICATION_JSON_VALUE )
+    @PostMapping( value = OperationNames.ONGOINGRESPONSE_REST, consumes = MediaType.APPLICATION_JSON_VALUE )
     // TODO UCS-34 NOSONAR
     public void onGoingEvaluation( @RequestBody( ) ReevaluationResponse message ) {
         pepRest.onGoingEvaluation( message );

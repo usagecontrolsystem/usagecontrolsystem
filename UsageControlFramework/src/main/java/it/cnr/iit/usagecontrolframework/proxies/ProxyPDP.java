@@ -15,8 +15,7 @@
  ******************************************************************************/
 package it.cnr.iit.usagecontrolframework.proxies;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
+import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -26,6 +25,7 @@ import it.cnr.iit.ucs.properties.components.PdpProperties;
 import it.cnr.iit.ucsinterface.pdp.AbstractPDP;
 import it.cnr.iit.ucsinterface.pdp.PDPEvaluation;
 import it.cnr.iit.ucsinterface.pdp.PDPInterface;
+import it.cnr.iit.usagecontrolframework.rest.UsageControlFramework;
 import it.cnr.iit.utility.errorhandling.Reject;
 
 /**
@@ -34,7 +34,7 @@ import it.cnr.iit.utility.errorhandling.Reject;
  * @author Antonio La Marra, Alessandro Rosetti
  *
  */
-public final class ProxyPDP extends Proxy implements PDPInterface {
+public final class ProxyPDP implements PDPInterface {
 
     private static final Logger log = Logger.getLogger( ProxyPDP.class.getName() );
 
@@ -63,19 +63,12 @@ public final class ProxyPDP extends Proxy implements PDPInterface {
     }
 
     private boolean buildLocalPdp( PdpProperties properties ) {
-        Reject.ifBlank( properties.getClassName() );
-
-        try {
-            // TODO UCS-32 NOSONAR
-            Constructor<?> constructor = Class.forName( properties.getClassName() )
-                .getConstructor( PdpProperties.class );
-            pdp = (AbstractPDP) constructor.newInstance( properties );
+        Optional<AbstractPDP> optPDP = UsageControlFramework.buildComponent( properties );
+        if( optPDP.isPresent() ) {
+            pdp = optPDP.get();
             return true;
-        } catch( InstantiationException | IllegalAccessException
-                | ClassNotFoundException | NoSuchMethodException | SecurityException
-                | IllegalArgumentException | InvocationTargetException e ) {
-            log.severe( "Error building PDP : " + e.getMessage() );
         }
+        log.severe( "Error building PDP" );
         return false;
     }
 
@@ -110,12 +103,10 @@ public final class ProxyPDP extends Proxy implements PDPInterface {
         return null;
     }
 
-    @Override
     protected CONNECTION getConnection() {
         return CONNECTION.valueOf( properties.getCommunicationType() );
     }
 
-    @Override
     public boolean isInitialized() {
         return initialized;
     }

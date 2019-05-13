@@ -92,16 +92,16 @@
 			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
 
-        <dependency>
-            <groupId>org.wso2.balana</groupId>
-            <artifactId>org.wso2.balana</artifactId>
-            <version>${balana.version}</version>
-        </dependency>
+		<dependency>
+			<groupId>org.wso2.balana</groupId>
+			<artifactId>org.wso2.balana</artifactId>
+			<version>${balana.version}</version>
+		</dependency>
 
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-web</artifactId>
-        </dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-web</artifactId>
+		</dependency>
 
 		<dependency>
 			<groupId>io.springfox</groupId>
@@ -167,6 +167,28 @@
 			<groupId>com.github.sbtourist</groupId>
 			<artifactId>journalio</artifactId>
 			<version>1.4.2</version>
+		</dependency>
+
+		<!-- JAVA > 11 compatibility -->
+		<dependency>
+			<groupId>javax.xml.bind</groupId>
+			<artifactId>jaxb-api</artifactId>
+			<version>2.3.0</version>
+		</dependency>
+		<dependency>
+			<groupId>com.sun.xml.bind</groupId>
+			<artifactId>jaxb-core</artifactId>
+			<version>2.3.0</version>
+		</dependency>
+		<dependency>
+			<groupId>com.sun.xml.bind</groupId>
+			<artifactId>jaxb-impl</artifactId>
+			<version>2.3.0</version>
+		</dependency>
+		<dependency>
+			<groupId>javax.activation</groupId>
+			<artifactId>activation</artifactId>
+			<version>1.1</version>
 		</dependency>
 	</dependencies>
 

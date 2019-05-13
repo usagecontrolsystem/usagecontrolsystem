@@ -26,10 +26,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import it.cnr.iit.ucs.constants.OperationNames;
 import it.cnr.iit.ucsinterface.message.endaccess.EndAccessMessage;
 import it.cnr.iit.ucsinterface.message.startaccess.StartAccessMessage;
 import it.cnr.iit.ucsinterface.message.tryaccess.TryAccessMessage;
-import it.cnr.iit.ucsinterface.node.NodeInterface;
 import it.cnr.iit.ucsinterface.ucs.UCSInterface;
 import it.cnr.iit.utility.LogProfiler;
 import it.cnr.iit.utility.errorhandling.Reject;
@@ -48,14 +48,13 @@ import io.swagger.annotations.ApiResponses;
  * lot easier to perform task as prioritising between the queues and so on.
  * </p>
  *
- * @author antonio
+ * @author Antonio La Marra, Alessandro Rosetti
  *
  */
 @ApiModel( value = "UCSFramework", description = "Usage Control Framework enforcement engine REST API" )
 @RestController
 @RequestMapping( "/" )
 public class UCFRestController {
-
     private static final Logger log = Logger.getLogger( UCFRestController.class.getName() );
 
     @Autowired
@@ -65,7 +64,7 @@ public class UCFRestController {
     @ApiResponses( value = {
         @ApiResponse( code = 500, message = "Invalid message received" ),
         @ApiResponse( code = 200, message = "OK" ) } )
-    @PostMapping( value = NodeInterface.TRYACCESS_REST, consumes = MediaType.APPLICATION_JSON_VALUE )
+    @PostMapping( value = OperationNames.TRYACCESS_REST, consumes = MediaType.APPLICATION_JSON_VALUE )
     // TODO UCS-34 NOSONAR
     public void sendMessage( @RequestBody( ) TryAccessMessage message ) {
         Reject.ifNull( message );
@@ -78,7 +77,7 @@ public class UCFRestController {
     @ApiResponses( value = {
         @ApiResponse( code = 500, message = "Invalid message received" ),
         @ApiResponse( code = 200, message = "OK" ) } )
-    @PostMapping( value = NodeInterface.STARTACCESS_REST, consumes = MediaType.APPLICATION_JSON_VALUE )
+    @PostMapping( value = OperationNames.STARTACCESS_REST, consumes = MediaType.APPLICATION_JSON_VALUE )
     // TODO UCS-34 NOSONAR
     public void sendMessage( @RequestBody( ) StartAccessMessage message ) {
         Reject.ifNull( message );
@@ -90,7 +89,7 @@ public class UCFRestController {
     @ApiResponses( value = {
         @ApiResponse( code = 500, message = "Invalid message received" ),
         @ApiResponse( code = 200, message = "OK" ) } )
-    @PostMapping( value = NodeInterface.ENDACCESS_REST, consumes = MediaType.APPLICATION_JSON_VALUE )
+    @PostMapping( value = OperationNames.ENDACCESS_REST, consumes = MediaType.APPLICATION_JSON_VALUE )
     // TODO UCS-34 NOSONAR
     public void sendMessage( @RequestBody( ) EndAccessMessage message ) {
         Reject.ifNull( message );
