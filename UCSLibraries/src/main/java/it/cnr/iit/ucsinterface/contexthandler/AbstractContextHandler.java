@@ -55,25 +55,19 @@ public abstract class AbstractContextHandler implements ContextHandlerInterface 
 
     private static final Logger log = Logger.getLogger( AbstractContextHandler.class.getName() );
 
-    // interface to the session manager
-    private SessionManagerInterface sessionManagerInterface;
-
     protected PIPRegistry pipRegistry;
 
-    // interface to the pdp
-    private PDPInterface pdpInterface;
-    // interface to the pap
-    private PAPInterface papInterface;
-    // interface to the request manager
+    private SessionManagerInterface sessionManagerInterface;
     private RequestManagerToCHInterface requestManagerToChInterface;
-    // obligation manager
     private ObligationManagerInterface obligationManager;
-    // forwarding queue interface
+    private PDPInterface pdpInterface;
+    private PAPInterface papInterface;
     private ForwardingQueueToCHInterface forwardingQueue;
 
     protected ContextHandlerProperties properties;
     protected URI uri;
 
+    @Deprecated
     private volatile boolean initialized = false;
 
     /**
@@ -86,14 +80,12 @@ public abstract class AbstractContextHandler implements ContextHandlerInterface 
     protected AbstractContextHandler( ContextHandlerProperties properties ) {
         Reject.ifNull( properties );
         this.properties = properties;
+
         Optional<URI> uri = Utility.parseUri( properties.getBaseUri() );
         Reject.ifAbsent( uri );
         this.uri = uri.get(); // NOSONAR
-        pipRegistry = new PIPRegistry();
-    }
 
-    protected final boolean isInitialized() {
-        return initialized;
+        pipRegistry = new PIPRegistry();
     }
 
     /**
@@ -129,61 +121,71 @@ public abstract class AbstractContextHandler implements ContextHandlerInterface 
     public abstract boolean startMonitoringThread() throws Exception;
 
     protected final SessionManagerInterface getSessionManagerInterface() {
-        if( !initialized ) {
-            return null;
-        }
         return sessionManagerInterface;
     }
 
     public void setSessionManagerInterface(
             SessionManagerInterface sessionManagerInterface ) {
-        if( sessionManagerInterface == null ) {
-            return;
-        }
         this.sessionManagerInterface = sessionManagerInterface;
     }
 
     protected final PDPInterface getPdpInterface() {
-        if( !initialized ) {
-            return null;
-        }
         return pdpInterface;
     }
 
     public void setPdpInterface( PDPInterface pdpInterface ) {
-        if( pdpInterface == null ) {
-            return;
-        }
         this.pdpInterface = pdpInterface;
     }
 
     protected final PAPInterface getPapInterface() {
-        if( !initialized ) {
-            return null;
-        }
         return papInterface;
     }
 
     public void setPapInterface( PAPInterface papInterface ) {
-        if( papInterface == null ) {
-            return;
-        }
         this.papInterface = papInterface;
     }
 
     protected final RequestManagerToCHInterface getRequestManagerToChInterface() {
-        if( !initialized ) {
-            return null;
-        }
         return requestManagerToChInterface;
     }
 
     public void setRequestManagerToChInterface(
             RequestManagerToCHInterface requestManagerToChInterface ) {
-        if( requestManagerToChInterface == null ) {
-            return;
-        }
         this.requestManagerToChInterface = requestManagerToChInterface;
+    }
+
+    public void setPIPs( List<PIPCHInterface> pipList ) {
+        for( PIPCHInterface pip : pipList ) {
+            pip.setContextHandler( this );
+            pipRegistry.add( pip );
+        }
+    }
+
+    public PIPRegistry getPipRegistry() {
+        return pipRegistry;
+    }
+
+    protected void setPipRegistry( PIPRegistry pipRegistry ) {
+        this.pipRegistry = pipRegistry;
+    }
+
+    public void setObligationManager( ObligationManagerInterface obligationManager ) {
+        // Reject.ifNull( obligationManager );
+        this.obligationManager = obligationManager;
+    }
+
+    protected final ObligationManagerInterface getObligationManager() {
+        return obligationManager;
+    }
+
+    public void setForwardingQueue( ForwardingQueueToCHInterface forwardingQueue ) {
+        if( forwardingQueue != null ) {
+            this.forwardingQueue = forwardingQueue;
+        }
+    }
+
+    protected final ForwardingQueueToCHInterface getForwardingQueue() {
+        return forwardingQueue;
     }
 
     /**
@@ -205,55 +207,23 @@ public abstract class AbstractContextHandler implements ContextHandlerInterface 
      * @param obligationManager
      *          the interface to the obligation manager
      */
+    @Deprecated
     public final void setInterfaces( SessionManagerInterface proxySessionManager,
             RequestManagerToCHInterface proxyRequestManager, PDPInterface proxyPDP,
             PAPInterface proxyPAP, List<PIPCHInterface> pipList,
             ObligationManagerInterface obligationManager,
             ForwardingQueueToCHInterface forwardingQueue ) {
-        this.setSessionManagerInterface( proxySessionManager );
-        this.setPapInterface( proxyPAP );
-        this.setPdpInterface( proxyPDP );
-        this.setRequestManagerToChInterface( proxyRequestManager );
-        this.setObligationManager( obligationManager );
-        this.setForwardingQueue( forwardingQueue );
-
-        for( PIPCHInterface pip : pipList ) {
-            pip.setContextHandlerInterface( this );
-            pipRegistry.add( pip );
-        }
-
+        setSessionManagerInterface( proxySessionManager );
+        setPapInterface( proxyPAP );
+        setPdpInterface( proxyPDP );
+        setRequestManagerToChInterface( proxyRequestManager );
+        setObligationManager( obligationManager );
+        setForwardingQueue( forwardingQueue );
+        setPIPs( pipList );
         verify();
     }
 
-    public void setObligationManager( ObligationManagerInterface obligationManager ) {
-        if( obligationManager != null ) {
-            this.obligationManager = obligationManager;
-        }
+    protected final boolean isInitialized() {
+        return initialized;
     }
-
-    protected final ObligationManagerInterface getObligationManager() {
-        if( !initialized ) {
-            return null;
-        }
-        return obligationManager;
-    }
-
-    public void setForwardingQueue( ForwardingQueueToCHInterface forwardingQueue ) {
-        if( forwardingQueue != null ) {
-            this.forwardingQueue = forwardingQueue;
-        }
-    }
-
-    protected final ForwardingQueueToCHInterface getForwardingQueue() {
-        return forwardingQueue;
-    }
-
-    public PIPRegistry getPipRegistry() {
-        return pipRegistry;
-    }
-
-    protected void setPipRegistry( PIPRegistry pipRegistry ) {
-        this.pipRegistry = pipRegistry;
-    }
-
 }

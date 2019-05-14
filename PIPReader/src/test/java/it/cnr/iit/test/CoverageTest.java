@@ -4,8 +4,10 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import java.io.File;
-import java.io.FileWriter;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.logging.Logger;
 
@@ -25,6 +27,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import it.cnr.iit.pipreader.PIPReader;
 import it.cnr.iit.properties.UCFPipProperties;
 import it.cnr.iit.ucsinterface.contexthandler.ContextHandlerInterface;
+import it.cnr.iit.ucsinterface.pip.exception.PIPException;
 import it.cnr.iit.utility.JAXBUtility;
 import it.cnr.iit.utility.JsonUtility;
 import it.cnr.iit.utility.errorhandling.exception.PreconditionException;
@@ -104,12 +107,11 @@ public class CoverageTest {
             resourceAttributePip = new PIPReader( getPropertiesFromString( resourcePip ) );
             actionAttributePip = new PIPReader( getPropertiesFromString( actionPip ) );
             environmentAttributePip = new PIPReader( getPropertiesFromString( environmentPip ) );
-            assertTrue( subjectAttributePip.isInitialised() );
             initAttributes();
-            subjectAttributePip.setContextHandlerInterface( contextHandler );
-            resourceAttributePip.setContextHandlerInterface( contextHandler );
-            actionAttributePip.setContextHandlerInterface( contextHandler );
-            environmentAttributePip.setContextHandlerInterface( contextHandler );
+            subjectAttributePip.setContextHandler( contextHandler );
+            resourceAttributePip.setContextHandler( contextHandler );
+            actionAttributePip.setContextHandler( contextHandler );
+            environmentAttributePip.setContextHandler( contextHandler );
         } catch( Exception e ) {
             e.printStackTrace();
         }
@@ -144,7 +146,6 @@ public class CoverageTest {
     @Test
     public void test() {
         init();
-        testInitialization();
         testRetrieve();
         testSubscribe();
         try {
@@ -162,36 +163,34 @@ public class CoverageTest {
         return JsonUtility.loadObjectFromJsonString( properties, UCFPipProperties.class ).get();
     }
 
-    public void testInitialization() {
-        try {
-            fault = new PIPReader( getPropertiesFromString( missingCategory ) );
-        } catch( Exception e ) {}
-        assertFalse( fault != null && fault.isInitialised() );
-        try {
-            fault = new PIPReader( getPropertiesFromString( missingAttributeId ) );
-        } catch( Exception e ) {}
-        assertFalse( fault != null && fault.isInitialised() );
-        try {
-            fault = new PIPReader( getPropertiesFromString( missingExpectedCategory ) );
-        } catch( Exception e ) {}
-        assertFalse( fault != null && fault.isInitialised() );
-        try {
-            fault = new PIPReader( getPropertiesFromString( missingDataType ) );
-        } catch( Exception e ) {}
-        assertFalse( fault != null && fault.isInitialised() );
-        try {
-            fault = new PIPReader( getPropertiesFromString( missingFilePath ) );
-        } catch( Exception e ) {}
-        assertFalse( fault != null && fault.isInitialised() );
-
-        // fault = new PIPReader( PIPBuilder.getPipPropertiesFromString(malformedInput).get() );
-        // assertEquals( fault.initialized, false );
+    @Test( expected = PreconditionException.class )
+    public void testMissingCategory() throws PIPException {
+        PIPReader missingCatPIP = new PIPReader( getPropertiesFromString( missingCategory ) );
     }
 
     @Test( expected = PreconditionException.class )
-    public void testNullProperties() {
-        fault = new PIPReader( null );
-        assertFalse( fault.isInitialised() );
+    public void testMissingAttributeId() throws PIPException {
+        PIPReader missingAttIdPIP = new PIPReader( getPropertiesFromString( missingAttributeId ) );
+    }
+
+    @Test( expected = PreconditionException.class )
+    public void testMissingExpCat() throws PIPException {
+        PIPReader missingExpCatPIP = new PIPReader( getPropertiesFromString( missingExpectedCategory ) );
+    }
+
+    @Test( expected = PreconditionException.class )
+    public void testMissingDataType() throws PIPException {
+        PIPReader missingDataTypePIP = new PIPReader( getPropertiesFromString( missingDataType ) );
+    }
+
+    @Test( expected = PreconditionException.class )
+    public void testMissingFilePath() throws PIPException {
+        PIPReader missingDataTypePIP = new PIPReader( getPropertiesFromString( missingFilePath ) );
+    }
+
+    @Test( expected = PreconditionException.class )
+    public void testNull() throws PIPException {
+        PIPReader nullPIP = new PIPReader( null );
     }
 
     public void testRetrieve() {
@@ -252,9 +251,7 @@ public class CoverageTest {
     private void testRetrieveAndEnrichment( RequestType requestType, PIPReader pipReader ) {
         try {
             pipReader.retrieve( requestType );
-        } catch( Exception e ) {
-            // e.printStackTrace();
-        }
+        } catch( Exception e ) {}
     }
 
     public void testSubscribe() {
@@ -294,7 +291,6 @@ public class CoverageTest {
             pipReader.subscribe( requestType );
         } catch( Exception e ) {
             log.severe( e.getMessage() );
-            // e.printStackTrace();
         }
     }
 
@@ -311,8 +307,7 @@ public class CoverageTest {
 
     private String testSubscribeAttribute( Attribute attribute, PIPReader pipReader ) {
         try {
-            String value = pipReader.subscribe( attribute );
-            return value;
+            return pipReader.subscribe( attribute );
         } catch( Exception e ) {
             log.severe( e.getMessage() );
         }
@@ -328,10 +323,10 @@ public class CoverageTest {
     }
 
     private void write( String string ) {
-        try (FileWriter fileWriter = new FileWriter( new File( environmentFilePath ) )) {
-            fileWriter.write( string );
-            fileWriter.flush();
-        } catch( Exception e ) {
+        try {
+            Path path = Paths.get( environmentFilePath );
+            Files.write( path, string.getBytes() );
+        } catch( IOException e ) {
             e.printStackTrace();
         }
     }
@@ -339,34 +334,30 @@ public class CoverageTest {
     public void testUnsubscribe() {
         try {
             log.info( "*****************BEGIN UNSUBSCRIBE TEST*******************" );
-            unsubscribeTest();
+            boolean value = testUnsubscribeAttribute( subjectAttribute, subjectAttributePip );
+            assertTrue( value );
+            value = testUnsubscribeAttribute( resourceAttribute, resourceAttributePip );
+            assertTrue( value );
+            value = testUnsubscribeAttribute( actionAttribute, actionAttributePip );
+            assertTrue( value );
+            value = testUnsubscribeAttribute( environmentAttribute, environmentAttributePip );
+            assertTrue( value );
+            value = testUnsubscribeAttribute( subjectAttribute, fault );
+            assertFalse( value );
+            value = testUnsubscribeAttribute( subjectAttribute, resourceAttributePip );
+            value = testUnsubscribeAttribute( subjectAttribute, fault );
+            assertFalse( value );
+            value = testUnsubscribeAttribute( subjectAttribute, resourceAttributePip );
+            assertFalse( value );
             log.info( "*****************END UNSUBSCRIBE TEST*******************" );
         } catch( Exception e ) {
             log.severe( e.getMessage() );
         }
     }
 
-    public void unsubscribeTest() {
-        boolean value = testUnsubscribeAttribute( subjectAttribute, subjectAttributePip );
-        assertTrue( value );
-        value = testUnsubscribeAttribute( resourceAttribute, resourceAttributePip );
-        assertTrue( value );
-        value = testUnsubscribeAttribute( actionAttribute, actionAttributePip );
-        assertTrue( value );
-        value = testUnsubscribeAttribute( environmentAttribute, environmentAttributePip );
-        assertTrue( value );
-        value = testUnsubscribeAttribute( subjectAttribute, fault );
-        assertFalse( value );
-        value = testUnsubscribeAttribute( subjectAttribute, resourceAttributePip );
-        value = testUnsubscribeAttribute( subjectAttribute, fault );
-        assertFalse( value );
-        value = testUnsubscribeAttribute( subjectAttribute, resourceAttributePip );
-        assertFalse( value );
-    }
-
     private boolean testUnsubscribeAttribute( Attribute attribute, PIPReader pipReader ) {
+        ArrayList<Attribute> list = new ArrayList<>();
         try {
-            ArrayList<Attribute> list = new ArrayList<>();
             list.add( attribute );
             boolean value = pipReader.unsubscribe( list );
             return value;

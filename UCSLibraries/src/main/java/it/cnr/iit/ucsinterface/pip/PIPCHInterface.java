@@ -129,13 +129,12 @@ public interface PIPCHInterface extends PIPBaseInterface {
             List<Attribute> attributeRetrieval );
 
     /**
-     * Sets the context handler to whcih the PIPs have to communicate
+     * Sets the context handler to which the PIPs have to communicate to
      *
      * @param contextHandler
      *          the context handler to which the pip have to communicate
      */
-    public boolean setContextHandlerInterface(
-            ContextHandlerPIPInterface contextHandler );
+    public void setContextHandler( ContextHandlerPIPInterface contextHandler );
 
     @Override
     public List<String> getAttributeIds();
