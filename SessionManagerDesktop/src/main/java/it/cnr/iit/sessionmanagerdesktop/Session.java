@@ -208,20 +208,21 @@ public final class Session implements SessionInterface {
 
     @Override
     public String toString() {
-        String s = "SessionId = " + id + "\nPolicySet = " + policySet + "\n";
-        s += "OriginalRequest = " + originalRequest + "\n";
-        s += "Status = " + status + "\npepURI = " + pepURI + "\n";
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append( "SessionId = " + id + "\nPolicySet = " + policySet + "\n" );
+        stringBuilder.append( "OriginalRequest = " + originalRequest + "\n" );
+        stringBuilder.append( "Status = " + status + "\npepURI = " + pepURI + "\n" );
         if( onGoingAttributes != null ) {
-            s += "OnGoingAttributes = ";
+            stringBuilder.append( "OnGoingAttributes = " );
             try {
                 for( OnGoingAttribute a : onGoingAttributes ) {
-                    s += a.toString() + " ";
+                    stringBuilder.append( a.toString() + " " );
                 }
             } catch( NullPointerException e ) {
                 log.warning( "Error null ongoing attributes" );
             }
         }
-        return s;
+        return stringBuilder.toString();
     }
 
     @Override
