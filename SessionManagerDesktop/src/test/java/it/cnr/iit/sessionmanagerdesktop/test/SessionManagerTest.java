@@ -265,7 +265,7 @@ public class SessionManagerTest {
         List<SessionInterface> list = null;
         try {
             status = sessionManagerDesktop.updateEntry( null, startStatus );
-        } catch( IllegalArgumentException e ) {
+        } catch( Exception e ) {
             status = false;
         }
         status = sessionManagerDesktop.updateEntry( sessionId, startStatus );

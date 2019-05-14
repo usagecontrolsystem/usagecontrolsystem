@@ -82,11 +82,7 @@ public final class SessionManagerDesktop implements SessionManagerInterface {
      */
     @Override
     public Boolean start() {
-        // BEGIN parameter checking
-        if( !isInitialized() ) {
-            Throwables.propagate( new IllegalStateException( "SessionManager was not correctly initialized" ) );
-        }
-        // END parameter checking
+        isInitialized();
         try {
             connection = new JdbcConnectionSource( databaseURL );
             sessionDao = DaoManager.createDao( connection, Session.class );
@@ -109,11 +105,9 @@ public final class SessionManagerDesktop implements SessionManagerInterface {
      */
     @Override
     public Boolean stop() {
-        // BEGIN parameter checking
         if( !isInitialized() ) {
             Throwables.propagate( new IllegalStateException( "SessionManager was not correctly initialized" ) );
         }
-        // END parameter checking
         try {
             connection.close();
         } catch( SQLException e ) {
@@ -136,9 +130,8 @@ public final class SessionManagerDesktop implements SessionManagerInterface {
      */
     @Override
     public Boolean updateEntry( String sessionId, String status ) {
-        // BEGIN parameter checking
-        validStateAndArguments( sessionId, status );
-        // END parameter checking
+        Reject.ifBlank( status );
+        Reject.ifBlank( sessionId );
         try {
             Session s = sessionDao.queryForId( sessionId );
             s.setStatus( status );
@@ -159,9 +152,7 @@ public final class SessionManagerDesktop implements SessionManagerInterface {
      */
     @Override
     public Boolean deleteEntry( String sessionId ) {
-        // BEGIN parameter checking
         validStateAndArguments( sessionId );
-        // END parameter checking
         try {
             ForeignCollection<OnGoingAttribute> a = sessionDao.queryForId( sessionId )
                 .getOnGoingAttributesAsForeign();
@@ -199,9 +190,7 @@ public final class SessionManagerDesktop implements SessionManagerInterface {
     public Boolean createEntryForSubject( String sessionId, String policySet,
             String originalRequest, List<String> onGoingAttributesForSubject,
             String status, String pepURI, String myIP, String subjectName ) {
-        // BEGIN parameter checking
         validStateAndArguments( sessionId, policySet, originalRequest, onGoingAttributesForSubject, status, pepURI, myIP, subjectName );
-        // END parameter checking
         return createEntry( new CreateEntryParameterBuilder().setSessionId( sessionId ).setPolicySet( policySet )
             .setOriginalRequest( originalRequest ).setOnGoingAttributesForSubject( onGoingAttributesForSubject ).setStatus( status )
             .setPepURI( pepURI ).setMyIP( myIP ).setSubjectName( subjectName ).build() );
@@ -233,9 +222,7 @@ public final class SessionManagerDesktop implements SessionManagerInterface {
     public Boolean createEntryForResource( String sessionId, String policySet,
             String originalRequest, List<String> onGoingAttributesForResource,
             String status, String pepURI, String myIP, String resourceName ) {
-        // BEGIN parameter checking
         validStateAndArguments( sessionId, policySet, originalRequest, onGoingAttributesForResource, status, pepURI, myIP, resourceName );
-        // END parameter checking
         return createEntry( new CreateEntryParameterBuilder().setSessionId( sessionId ).setPolicySet( policySet )
             .setOriginalRequest( originalRequest ).setOnGoingAttributesForResource( onGoingAttributesForResource ).setStatus( status )
             .setPepURI( pepURI ).setMyIP( myIP ).setResourceName( resourceName ).build() );
@@ -267,9 +254,7 @@ public final class SessionManagerDesktop implements SessionManagerInterface {
     public Boolean createEntryForAction( String sessionId, String policySet,
             String originalRequest, List<String> onGoingAttributesForAction,
             String status, String pepURI, String myIP, String actionName ) {
-        // BEGIN parameter checking
         validStateAndArguments( sessionId, status, policySet, originalRequest, onGoingAttributesForAction, pepURI, myIP, actionName );
-        // END parameter checking
         return createEntry( new CreateEntryParameterBuilder().setSessionId( sessionId ).setPolicySet( policySet )
             .setOriginalRequest( originalRequest ).setOnGoingAttributesForAction( onGoingAttributesForAction ).setStatus( status )
             .setPepURI( pepURI ).setMyIP( myIP ).setActionName( actionName ).build() );
@@ -300,7 +285,6 @@ public final class SessionManagerDesktop implements SessionManagerInterface {
             String originalRequest, List<String> onGoingAttributesForEnvironment,
             String status, String pepURI, String myIP ) {
         validStateAndArguments( sessionId, policySet, originalRequest, onGoingAttributesForEnvironment, status, pepURI, myIP );
-        // END parameter checking
         return createEntry( new CreateEntryParameterBuilder().setSessionId( sessionId ).setPolicySet( policySet )
             .setOriginalRequest( originalRequest ).setOnGoingAttributesForEnvironment( onGoingAttributesForEnvironment ).setStatus( status )
             .setPepURI( pepURI ).setMyIP( myIP ).build() );
@@ -376,9 +360,7 @@ public final class SessionManagerDesktop implements SessionManagerInterface {
      */
     @Override
     public List<SessionInterface> getSessionsForAttribute( String attributeId ) {
-        // BEGIN parameter checking
         validStateAndArguments( attributeId );
-        // END parameter checking
         try {
             QueryBuilder<OnGoingAttribute, String> qbAttributes = attributesDao
                 .queryBuilder();
@@ -416,9 +398,7 @@ public final class SessionManagerDesktop implements SessionManagerInterface {
     @Override
     public List<SessionInterface> getSessionsForSubjectAttributes(
             String subjectName, String attributeId ) {
-        // BEGIN parameter checking
         validStateAndArguments( subjectName, attributeId );
-        // END parameter checking
         try {
             QueryBuilder<OnGoingAttribute, String> qbAttributes = attributesDao
                 .queryBuilder();
@@ -464,9 +444,7 @@ public final class SessionManagerDesktop implements SessionManagerInterface {
     @Override
     public List<SessionInterface> getSessionsForResourceAttributes(
             String resourceName, String attributeId ) {
-        // BEGIN parameter checking
         validStateAndArguments( resourceName, attributeId );
-        // END parameter checking
         try {
             QueryBuilder<OnGoingAttribute, String> qbAttributes = attributesDao
                 .queryBuilder();
@@ -508,9 +486,7 @@ public final class SessionManagerDesktop implements SessionManagerInterface {
     @Override
     public List<SessionInterface> getSessionsForActionAttributes(
             String actionName, String attributeId ) {
-        // BEGIN parameter checking
         validStateAndArguments( actionName, attributeId );
-        // END parameter checking
         try {
             QueryBuilder<OnGoingAttribute, String> qbAttributes = attributesDao
                 .queryBuilder();
@@ -546,9 +522,7 @@ public final class SessionManagerDesktop implements SessionManagerInterface {
      */
     @Override
     public Optional<SessionInterface> getSessionForId( String sessionId ) {
-        // BEGIN parameter checking
         validStateAndArguments( sessionId );
-        // END parameter checking
         try {
             return Optional.ofNullable( sessionDao.queryForId( sessionId ) );
         } catch( SQLException e ) {
@@ -566,9 +540,7 @@ public final class SessionManagerDesktop implements SessionManagerInterface {
      */
     @Override
     public List<SessionInterface> getSessionsForStatus( String status ) {
-        // BEGIN parameter checking
         validStateAndArguments( status );
-        // END parameter checking
         try {
             QueryBuilder<Session, String> qbSessions = sessionDao.queryBuilder();
             List<Session> list = qbSessions.where()
@@ -595,9 +567,7 @@ public final class SessionManagerDesktop implements SessionManagerInterface {
     @Override
     public List<SessionInterface> getSessionsForEnvironmentAttributes(
             String attributeId ) {
-        // BEGIN parameter checking
         validStateAndArguments( attributeId );
-        // END parameter checking
         try {
             QueryBuilder<OnGoingAttribute, String> qbAttributes = attributesDao
                 .queryBuilder();
@@ -625,11 +595,8 @@ public final class SessionManagerDesktop implements SessionManagerInterface {
 
     @Override
     public List<OnGoingAttributesInterface> getOnGoingAttributes( String sessionId ) {
-        // BEGIN parameter checking
         validStateAndArguments( sessionId );
-        // END parameter checking
         try {
-            // select * from sessions where session_id == 'sessionId'
             Session session = sessionDao.queryForId( sessionId );
             return session.getOnGoingAttribute();
         } catch( Exception e ) {
@@ -640,46 +607,28 @@ public final class SessionManagerDesktop implements SessionManagerInterface {
 
     @Override
     public STATUS checkSession( String sessionId, Attribute attribute ) {
-        // TODO Auto-generated method stub
         return null;
     }
 
     @Override
     public boolean insertSession( SessionInterface session, Attribute attribute ) {
-        // TODO Auto-generated method stub
         return false;
     }
 
     @Override
     public boolean stopSession( SessionInterface session ) {
-        // TODO Auto-generated method stub
         return false;
     }
 
     private void validStateAndArguments( Object... objects ) {
-        if( !isInitialized() ) {
-            Throwables.propagateIfPossible( new IllegalStateException( "SessionManager was not correctly initialized" ) );
-        }
-        if( !checkObjectsNotNull( objects ) ) {
-            Throwables.propagateIfPossible( new IllegalArgumentException( "Passed objects are not valid" ) );
-        }
+        isInitialized();
+        checkObjectsNotNull( objects );
     }
 
     @Override
     public boolean isInitialized() {
+        Reject.ifFalse( initialized, "SessionManager was not correctly initialized" );
         return initialized;
-    }
-
-    private boolean checkStringsNotNullAndNotEmpty( String... strings ) {
-        if( strings == null ) {
-            return false;
-        }
-        for( String string : strings ) {
-            if( string == null || string.isEmpty() ) {
-                return false;
-            }
-        }
-        return true;
     }
 
     private boolean checkObjectsNotNull( Object... objects ) {
@@ -691,9 +640,7 @@ public final class SessionManagerDesktop implements SessionManagerInterface {
                 return false;
             }
             if( object instanceof String ) {
-                if( !checkStringsNotNullAndNotEmpty( (String) object ) ) {
-                    return false;
-                }
+                Reject.ifBlank( (String) object );
             }
         }
         return true;

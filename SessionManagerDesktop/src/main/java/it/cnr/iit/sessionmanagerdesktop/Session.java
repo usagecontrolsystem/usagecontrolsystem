@@ -71,13 +71,13 @@ public final class Session implements SessionInterface {
      * @param status_          status of the session
      * @param pepURI_          URI of the PEP that started the session
      */
-    public Session( String id_, String policySet_, String originalRequest_, String status_, String pepURI_,
+    public Session( String id, String policySet, String originalRequest, String status, String pepURI,
             String myIP ) {
-        id = id_;
-        policySet = policySet_;
-        originalRequest = originalRequest_;
-        status = status_;
-        pepURI = pepURI_;
+        this.id = id;
+        this.policySet = policySet;
+        this.originalRequest = originalRequest;
+        this.status = status;
+        this.pepURI = pepURI;
         this.myIP = myIP;
     }
 
@@ -96,8 +96,8 @@ public final class Session implements SessionInterface {
      *
      * @param id_ session ID to be set
      */
-    public void setId( String id_ ) {
-        id = id_;
+    public void setId( String id ) {
+        this.id = id;
     }
 
     /**
@@ -115,8 +115,8 @@ public final class Session implements SessionInterface {
      *
      * @param policySet_ policySet to set
      */
-    public void setPolicySet( String policySet_ ) {
-        policySet = policySet_;
+    public void setPolicySet( String policySet ) {
+        this.policySet = policySet;
     }
 
     /**
@@ -134,8 +134,8 @@ public final class Session implements SessionInterface {
      *
      * @param originalRequest_ originalRequest to be set
      */
-    public void setOriginalRequest( String originalRequest_ ) {
-        originalRequest = originalRequest_;
+    public void setOriginalRequest( String originalRequest ) {
+        this.originalRequest = originalRequest;
     }
 
     /**
@@ -153,8 +153,8 @@ public final class Session implements SessionInterface {
      *
      * @param status_ status to be set
      */
-    public void setStatus( String status_ ) {
-        status = status_;
+    public void setStatus( String status ) {
+        this.status = status;
     }
 
     /**
@@ -162,8 +162,8 @@ public final class Session implements SessionInterface {
      *
      * @param pepURI_ URI of the PEP to be set
      */
-    public void setPepURI( String pepURI_ ) {
-        pepURI = pepURI_;
+    public void setPepURI( String pepURI ) {
+        this.pepURI = pepURI;
     }
 
     public void setMyIP( String ip ) {
