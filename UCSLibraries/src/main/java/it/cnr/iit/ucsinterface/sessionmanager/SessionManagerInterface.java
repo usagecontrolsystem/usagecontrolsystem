@@ -116,7 +116,7 @@ public interface SessionManagerInterface extends ReevaluationTableInterface {
      *
      * @return true if everything goes fine, false otherwise
      */
-    public Boolean createEntry( CreateEntryParameter parameterObject );
+    public Boolean createEntry( SessionAttributes parameterObject );
 
     /**
      * Creates an entry for a session in which there are on going attributes for

@@ -23,8 +23,8 @@ import com.j256.ormlite.table.TableUtils;
 
 import it.cnr.iit.sessionmanagerdesktop.OnGoingAttribute.COLUMN;
 import it.cnr.iit.ucs.properties.components.SessionManagerProperties;
-import it.cnr.iit.ucsinterface.sessionmanager.CreateEntryParameter;
-import it.cnr.iit.ucsinterface.sessionmanager.CreateEntryParameterBuilder;
+import it.cnr.iit.ucsinterface.sessionmanager.SessionAttributes;
+import it.cnr.iit.ucsinterface.sessionmanager.SessionAttributesBuilder;
 import it.cnr.iit.ucsinterface.sessionmanager.OnGoingAttributesInterface;
 import it.cnr.iit.ucsinterface.sessionmanager.SessionInterface;
 import it.cnr.iit.ucsinterface.sessionmanager.SessionManagerInterface;
@@ -202,7 +202,7 @@ public final class SessionManagerDesktop implements SessionManagerInterface {
         // BEGIN parameter checking
         validStateAndArguments( sessionId, policySet, originalRequest, onGoingAttributesForSubject, status, pepURI, myIP, subjectName );
         // END parameter checking
-        return createEntry( new CreateEntryParameterBuilder().setSessionId( sessionId ).setPolicySet( policySet )
+        return createEntry( new SessionAttributesBuilder().setSessionId( sessionId ).setPolicySet( policySet )
             .setOriginalRequest( originalRequest ).setOnGoingAttributesForSubject( onGoingAttributesForSubject ).setStatus( status )
             .setPepURI( pepURI ).setMyIP( myIP ).setSubjectName( subjectName ).build() );
     }
@@ -236,7 +236,7 @@ public final class SessionManagerDesktop implements SessionManagerInterface {
         // BEGIN parameter checking
         validStateAndArguments( sessionId, policySet, originalRequest, onGoingAttributesForResource, status, pepURI, myIP, resourceName );
         // END parameter checking
-        return createEntry( new CreateEntryParameterBuilder().setSessionId( sessionId ).setPolicySet( policySet )
+        return createEntry( new SessionAttributesBuilder().setSessionId( sessionId ).setPolicySet( policySet )
             .setOriginalRequest( originalRequest ).setOnGoingAttributesForResource( onGoingAttributesForResource ).setStatus( status )
             .setPepURI( pepURI ).setMyIP( myIP ).setResourceName( resourceName ).build() );
     }
@@ -270,7 +270,7 @@ public final class SessionManagerDesktop implements SessionManagerInterface {
         // BEGIN parameter checking
         validStateAndArguments( sessionId, status, policySet, originalRequest, onGoingAttributesForAction, pepURI, myIP, actionName );
         // END parameter checking
-        return createEntry( new CreateEntryParameterBuilder().setSessionId( sessionId ).setPolicySet( policySet )
+        return createEntry( new SessionAttributesBuilder().setSessionId( sessionId ).setPolicySet( policySet )
             .setOriginalRequest( originalRequest ).setOnGoingAttributesForAction( onGoingAttributesForAction ).setStatus( status )
             .setPepURI( pepURI ).setMyIP( myIP ).setActionName( actionName ).build() );
     }
@@ -301,7 +301,7 @@ public final class SessionManagerDesktop implements SessionManagerInterface {
             String status, String pepURI, String myIP ) {
         validStateAndArguments( sessionId, policySet, originalRequest, onGoingAttributesForEnvironment, status, pepURI, myIP );
         // END parameter checking
-        return createEntry( new CreateEntryParameterBuilder().setSessionId( sessionId ).setPolicySet( policySet )
+        return createEntry( new SessionAttributesBuilder().setSessionId( sessionId ).setPolicySet( policySet )
             .setOriginalRequest( originalRequest ).setOnGoingAttributesForEnvironment( onGoingAttributesForEnvironment ).setStatus( status )
             .setPepURI( pepURI ).setMyIP( myIP ).build() );
     }
@@ -316,7 +316,7 @@ public final class SessionManagerDesktop implements SessionManagerInterface {
      * @return true if everything goes fine, false otherwise
      */
     @Override
-    public Boolean createEntry( CreateEntryParameter parameterObject ) {
+    public Boolean createEntry( SessionAttributes parameterObject ) {
         Reject.ifNull( parameterObject );
         try {
             Session s = prepareSession( parameterObject );
@@ -361,7 +361,7 @@ public final class SessionManagerDesktop implements SessionManagerInterface {
         return true;
     }
 
-    private Session prepareSession( CreateEntryParameter parameterObject ) {
+    private Session prepareSession( SessionAttributes parameterObject ) {
         return new Session( parameterObject.getSessionId(), parameterObject.getPolicySet(), parameterObject.getOriginalRequest(),
             parameterObject.getStatus(),
             parameterObject.getPepURI(), parameterObject.getMyIP() );

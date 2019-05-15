@@ -2,7 +2,7 @@ package it.cnr.iit.ucsinterface.sessionmanager;
 
 import java.util.List;
 
-public class CreateEntryParameter {
+public class SessionAttributes {
     private String sessionId;
     private String policySet;
     private String originalRequest;
@@ -17,7 +17,7 @@ public class CreateEntryParameter {
     private String resourceName;
     private String actionName;
 
-    public CreateEntryParameter() {}
+    public SessionAttributes() {}
 
     public String getSessionId() {
         return sessionId;

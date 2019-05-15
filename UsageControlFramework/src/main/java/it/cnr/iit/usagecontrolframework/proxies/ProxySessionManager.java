@@ -23,7 +23,7 @@ import java.util.logging.Logger;
 
 import it.cnr.iit.ucs.constants.CONNECTION;
 import it.cnr.iit.ucs.properties.components.SessionManagerProperties;
-import it.cnr.iit.ucsinterface.sessionmanager.CreateEntryParameter;
+import it.cnr.iit.ucsinterface.sessionmanager.SessionAttributes;
 import it.cnr.iit.ucsinterface.sessionmanager.OnGoingAttributesInterface;
 import it.cnr.iit.ucsinterface.sessionmanager.SessionInterface;
 import it.cnr.iit.ucsinterface.sessionmanager.SessionManagerInterface;
@@ -190,7 +190,7 @@ public class ProxySessionManager implements SessionManagerInterface {
     }
 
     @Override
-    public Boolean createEntry( CreateEntryParameter parameterObject ) {
+    public Boolean createEntry( SessionAttributes parameterObject ) {
         // BEGIN parameter checking
         if( !initialized || !started ) {
             return false;
