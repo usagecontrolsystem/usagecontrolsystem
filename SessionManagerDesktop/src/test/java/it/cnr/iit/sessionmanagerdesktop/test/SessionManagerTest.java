@@ -265,12 +265,12 @@ public class SessionManagerTest {
         List<SessionInterface> list = null;
         try {
             status = sessionManagerDesktop.updateEntry( null, startStatus );
-        } catch( IllegalArgumentException e ) {
+        } catch( Exception e ) {
             status = false;
         }
         status = sessionManagerDesktop.updateEntry( sessionId, startStatus );
         list = sessionManagerDesktop.getSessionsForSubjectAttributes( subject, "dasda" );
-        Assert.assertEquals( list.size(), 0 );
+        Assert.assertEquals( 0, list.size() );
         Optional<SessionInterface> sessionInterface = sessionManagerDesktop.getSessionForId( "dasdsa" );
         Assert.assertFalse( sessionInterface.isPresent() );
         log.info( "*******END TESTING OGA PER SUBJECT****" );
