@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.logging.Logger;
 
+import com.google.common.base.Throwables;
+
 import it.cnr.iit.ucsinterface.pip.PIPCHInterface;
 import it.cnr.iit.xacmlutilities.Attribute;
 
@@ -55,6 +57,7 @@ public class PIPRegistry implements PIPRegistryInterface {
             }
         } catch( Exception e ) {
             log.severe( "Error subscribe : " + e.getMessage() );
+            Throwables.throwIfUnchecked( new RuntimeException( "Error subscribe : " + e.getMessage() ) );
         }
     }
 
@@ -66,6 +69,7 @@ public class PIPRegistry implements PIPRegistryInterface {
             }
         } catch( Exception e ) {
             log.severe( "Error retrieve : " + e.getMessage() );
+            Throwables.throwIfUnchecked( new RuntimeException( "Error retrieve : " + e.getMessage() ) );
         }
     }
 
