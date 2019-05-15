@@ -136,13 +136,13 @@ public class RequestManagerLC extends AbstractRequestManager {
                 while( ( message = getQueueToCH().take() ) != null ) {
 
                     if( message instanceof TryAccessMessage ) {
-                        getContextHandler().tryAccess( message );
+                        getContextHandler().tryAccess( (TryAccessMessage) message );
                     }
                     if( message instanceof StartAccessMessage ) {
-                        getContextHandler().startAccess( message );
+                        getContextHandler().startAccess( (StartAccessMessage) message );
                     }
                     if( message instanceof EndAccessMessage ) {
-                        getContextHandler().endAccess( message );
+                        getContextHandler().endAccess( (EndAccessMessage) message );
                     }
                 }
             } catch( Exception e ) {

@@ -46,6 +46,7 @@ import it.cnr.iit.ucsinterface.message.tryaccess.TryAccessResponse;
 import it.cnr.iit.ucsinterface.obligationmanager.ObligationManagerInterface;
 import it.cnr.iit.ucsinterface.pep.PEPInterface;
 import it.cnr.iit.ucsinterface.pip.PIPBase;
+import it.cnr.iit.ucsinterface.pip.PIPCHInterface;
 import it.cnr.iit.ucsinterface.pip.PIPOMInterface;
 import it.cnr.iit.ucsinterface.requestmanager.AbstractRequestManager;
 import it.cnr.iit.ucsinterface.ucs.UCSInterface;
@@ -109,7 +110,7 @@ public class UsageControlFramework implements UCSInterface {
 
     private ForwardingQueue forwardingQueue = new ForwardingQueue();
 
-    private volatile boolean initialised = false;
+    private boolean initialised = false;
 
     @Autowired
     private UCSProperties properties;
@@ -117,9 +118,8 @@ public class UsageControlFramework implements UCSInterface {
     @PostConstruct
     private void init() {
         try {
-            if( buildComponents() ) {
-                initialised = true;
-            }
+            buildComponents();
+            initialised = true;
         } catch( PreconditionException e ) {
             log.severe( e.getLocalizedMessage() );
             Thread.currentThread().interrupt();
@@ -148,7 +148,7 @@ public class UsageControlFramework implements UCSInterface {
 
         log.info( "UCF components building done." );
 
-        return checkConnection();
+        return setupInterfaces();
     }
 
     private boolean buildProxySM() {
@@ -198,20 +198,24 @@ public class UsageControlFramework implements UCSInterface {
         return failures == 0;
     }
 
-    private boolean checkConnection() {
-
-        contextHandler.setInterfaces( proxySessionManager, requestManager, proxyPDP,
-            proxyPAP, new ArrayList<>( pipList ), obligationManager, forwardingQueue );
-
+    private boolean setupInterfaces() {
         try {
+            contextHandler.setSessionManager( proxySessionManager );
+            contextHandler.setRequestManager( requestManager );
+            contextHandler.setPap( proxyPAP );
+            contextHandler.setPdp( proxyPDP );
+            contextHandler.setObligationManager( obligationManager );
+            contextHandler.setForwardingQueue( forwardingQueue );
+            contextHandler.setPIPs( new ArrayList<PIPCHInterface>( pipList ) );
+            contextHandler.verify();
+
             contextHandler.startMonitoringThread();
+            requestManager.setInterfaces( contextHandler, proxyPEPMap, forwardingQueue );
+            proxyPDP.setInterfaces( proxyPAP );
         } catch( Exception e ) {
             log.severe( "Error starting context handler : " + e.getMessage() );
             return false;
         }
-
-        requestManager.setInterfaces( contextHandler, proxyPEPMap, forwardingQueue );
-        proxyPDP.setInterfaces( proxyPAP );
 
         return true;
     }

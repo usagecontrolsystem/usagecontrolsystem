@@ -61,6 +61,7 @@ import it.cnr.iit.utility.JAXBUtility;
 import it.cnr.iit.xacmlutilities.Attribute;
 import it.cnr.iit.xacmlutilities.Category;
 import it.cnr.iit.xacmlutilities.DataType;
+import it.cnr.iit.xacmlutilities.wrappers.PolicyWrapper;
 
 import oasis.names.tc.xacml.core.schema.wd_17.DecisionType;
 import oasis.names.tc.xacml.core.schema.wd_17.PolicyType;
@@ -87,26 +88,26 @@ public class UCFBaseTests {
     }
 
     protected void initContextHandler( ContextHandlerLC contextHandler ) {
-        contextHandler.setPdpInterface( getMockedPDP( getMockedPDPEvaluation( DecisionType.PERMIT ) ) );
-        contextHandler.setPapInterface( getMockedPAP( null ) );
-        contextHandler.setRequestManagerToChInterface( getMockedRequestManagerToChInterface() );
-        contextHandler.setSessionManagerInterface( getSessionManagerForStatus( "", "", "", ContextHandlerConstants.TRY_STATUS ) );
+        contextHandler.setPdp( getMockedPDP( getMockedPDPEvaluation( DecisionType.PERMIT ) ) );
+        contextHandler.setPap( getMockedPAP( null ) );
+        contextHandler.setRequestManager( getMockedRequestManagerToChInterface() );
+        contextHandler.setSessionManager( getSessionManagerForStatus( "", "", "", ContextHandlerConstants.TRY_STATUS ) );
         contextHandler.setForwardingQueue( getMockedForwardingQueueToCHInterface() );
         contextHandler.setObligationManager( getMockedObligationManager() );
     }
 
     protected ContextHandlerLC getContextHandlerCorrectlyInitialized( UCSProperties prop,
             String policy,
-            String request ) {
+            String request ) throws Exception {
         ContextHandlerLC contextHandler = getContextHandler( prop );
         initContextHandler( contextHandler );
-        contextHandler.setSessionManagerInterface(
+        contextHandler.setSessionManager(
             getSessionManagerForStatus( "", policy, request, ContextHandlerConstants.TRY_STATUS ) );
 
         contextHandler.verify();
         /* must be called after initialisation */
         addMockedPips( prop, contextHandler );
-        assertTrue( contextHandler.startMonitoringThread() );
+        contextHandler.startMonitoringThread();
 
         return contextHandler;
     }
@@ -210,7 +211,7 @@ public class UCFBaseTests {
 
     protected PDPInterface getMockedPDP( PDPEvaluation pdpEval ) {
         PDPInterface pdp = Mockito.mock( PDPInterface.class );
-        Mockito.when( pdp.evaluate( ArgumentMatchers.anyString(), ArgumentMatchers.<StringBuilder>any(), ArgumentMatchers.<STATUS>any() ) )
+        Mockito.when( pdp.evaluate( ArgumentMatchers.anyString(), ArgumentMatchers.<PolicyWrapper>any(), ArgumentMatchers.<STATUS>any() ) )
             .thenReturn( pdpEval );
         Mockito.when( pdp.evaluate( ArgumentMatchers.anyString(), ArgumentMatchers.anyString() ) ).thenReturn( pdpEval );
         assertNotNull( pdp );
@@ -263,9 +264,9 @@ public class UCFBaseTests {
 
     protected Attribute getNewAttribute( String id, Category category, DataType type, String val ) {
         Attribute attr = new Attribute();
-        attr.createAttributeId( id );
-        attr.createAttributeValues( type, val );
-        attr.setAttributeDataType( type );
+        attr.setAttributeId( id );
+        attr.setAttributeValues( type, val );
+        attr.setDataType( type );
         attr.setCategory( category );
         return attr;
     }

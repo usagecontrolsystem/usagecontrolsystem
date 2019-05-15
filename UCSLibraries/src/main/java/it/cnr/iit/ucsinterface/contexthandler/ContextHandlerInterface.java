@@ -15,7 +15,10 @@
  ******************************************************************************/
 package it.cnr.iit.ucsinterface.contexthandler;
 
-import it.cnr.iit.ucsinterface.message.Message;
+import it.cnr.iit.ucsinterface.message.endaccess.EndAccessMessage;
+import it.cnr.iit.ucsinterface.message.reevaluation.ReevaluationMessage;
+import it.cnr.iit.ucsinterface.message.startaccess.StartAccessMessage;
+import it.cnr.iit.ucsinterface.message.tryaccess.TryAccessMessage;
 
 /**
  * This is the interface provided by the ContextHandler.
@@ -47,7 +50,7 @@ import it.cnr.iit.ucsinterface.message.Message;
  * </ol>
  * </p>
  *
- * @author antonio
+ * @author Antonio La Marra
  *
  */
 public interface ContextHandlerInterface extends ContextHandlerPIPInterface {
@@ -62,7 +65,7 @@ public interface ContextHandlerInterface extends ContextHandlerPIPInterface {
      *          message received by the RequestManager
      * @return a message stating the response of the PDP to the request.
      */
-    public void tryAccess( Message message );
+    public void tryAccess( TryAccessMessage message );
 
     /**
      * This is the startAccess function. In this case a tryAccess has already been
@@ -76,7 +79,7 @@ public interface ContextHandlerInterface extends ContextHandlerPIPInterface {
      * @return a message stating the response of the PDP to the request
      * @throws Exception
      */
-    public void startAccess( Message message ) throws Exception;
+    public void startAccess( StartAccessMessage message ) throws Exception;
 
     /**
      * This is the endAcces function. In this case the PEP doesn't require the
@@ -89,7 +92,7 @@ public interface ContextHandlerInterface extends ContextHandlerPIPInterface {
      *          the message received by the RequestManager
      * @return a message stating the response of the PDP to the request
      */
-    public void endAccess( Message message );
+    public void endAccess( EndAccessMessage message );
 
     /**
      * This is the reevaluation function. This function is triggered by a remote
@@ -99,6 +102,6 @@ public interface ContextHandlerInterface extends ContextHandlerPIPInterface {
      * @param message
      *          the reevaluation message
      */
-    public void reevaluate( Message message );
+    public void reevaluate( ReevaluationMessage message );
 
 }

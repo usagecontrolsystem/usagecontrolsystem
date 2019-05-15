@@ -53,7 +53,7 @@ import it.cnr.iit.ucs.properties.components.PdpProperties;
 import it.cnr.iit.ucsinterface.pdp.AbstractPDP;
 import it.cnr.iit.ucsinterface.pdp.PDPEvaluation;
 import it.cnr.iit.ucsinterface.pdp.PDPResponse;
-import it.cnr.iit.xacmlutilities.policy.PolicyHelper;
+import it.cnr.iit.xacmlutilities.wrappers.PolicyWrapper;
 
 import journal.io.api.Journal;
 import journal.io.api.Journal.WriteType;
@@ -125,14 +125,11 @@ public final class PolicyDecisionPoint extends AbstractPDP {
      * This is the effective evaluation function.
      */
     @Override
-    public PDPEvaluation evaluate( String request, StringBuilder stringPolicy,
+    public PDPEvaluation evaluate( String request, PolicyWrapper policyHelper,
             STATUS status ) {
         try {
             String conditionName = extractFromStatus( status );
-            PolicyHelper policyHelper = PolicyHelper
-                .buildPolicyHelper( stringPolicy.toString() );
-            String policyToEvaluate = policyHelper
-                .getConditionForEvaluation( conditionName );
+            String policyToEvaluate = policyHelper.getConditionForEvaluation( conditionName );
 
             ArrayList<ResponseCtx> responses = new ArrayList<>();
 

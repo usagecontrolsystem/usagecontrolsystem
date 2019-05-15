@@ -23,7 +23,7 @@ import it.cnr.iit.utility.errorhandling.Reject;
  * Creates an Attribute object compliant with the XACML standard Embeds
  * AttributeDesignator and AttributeValue.
  *
- * @author Fabio Bindi and Filippo Lauria and Antonio La Marra
+ * @author Fabio Bindi and Filippo Lauria and Antonio La Marra and Alesasndro Rosetti
  */
 public final class Attribute implements Cloneable {
     private final Logger log = Logger.getLogger( Attribute.class.getName() );
@@ -42,50 +42,24 @@ public final class Attribute implements Cloneable {
 
     private String additionalInformations = "";
 
-    /**
-     * Constructor
-     */
     public Attribute() {
         attributeValueMap = new HashMap<>();
     }
 
-    /**
-     * Retrieves the Attribute ID of the attribute
-     *
-     * @return attribute ID
-     */
     public String getAttributeId() {
         return attributeId;
     }
 
-    /**
-     * Creates the attribute ID for an attribute
-     *
-     * @param attributeId_
-     *          Attribute ID
-     */
-    public boolean createAttributeId( String attributeId ) {
+    public void setAttributeId( String attributeId ) {
         Reject.ifBlank( attributeId );
         this.attributeId = attributeId;
-        return true;
     }
 
-    /**
-     * Retrieves the value of the Issuer element of the attribute
-     *
-     * @return Issuer element value (true or false)
-     */
     public String getIssuer() {
         return issuer;
     }
 
-    /**
-     * Creates the Issuer element of the attribute
-     *
-     * @param issuer_
-     *          Issuer element value (true or false)
-     */
-    public void createIssuer( String issuer ) {
+    public void setIssuer( String issuer ) {
         this.issuer = issuer;
     }
 
@@ -104,12 +78,12 @@ public final class Attribute implements Cloneable {
      * @param includeInResult_
      *          Issuer element value (true or false)
      */
-    public void createIncludeInResult( boolean includeInResult ) {
+    public void setIncludeInResult( boolean includeInResult ) {
         this.includeInResult = includeInResult;
     }
 
     /**
-     * Retrieves attibute values of a certain type
+     * Retrieves attribute values of a certain type
      *
      * @param dataType_
      *          a string representing the attribute type
@@ -121,7 +95,7 @@ public final class Attribute implements Cloneable {
     }
 
     /**
-     * Retrieves attibute values of a certain type
+     * Retrieves attribute values of a certain type
      *
      * @param dataType_
      *          a string representing the attribute type
@@ -149,7 +123,7 @@ public final class Attribute implements Cloneable {
      * @param value
      *          value to set
      */
-    public void createAttributeValues( String type, String value ) {
+    public void setAttributeValues( String type, String value ) {
         ifNotValidDataType( type );
         Reject.ifBlank( value );
         List<String> valueList = attributeValueMap.get( type );
@@ -180,7 +154,7 @@ public final class Attribute implements Cloneable {
      *          a DataType object representig the attribute type
      * @param value
      */
-    public void createAttributeValues( DataType dataType, String value ) {
+    public void setAttributeValues( DataType dataType, String value ) {
         List<String> valueList = attributeValueMap.get( dataType.toString() );
         if( valueList == null ) {
             valueList = new LinkedList<>();
@@ -201,17 +175,13 @@ public final class Attribute implements Cloneable {
      *
      * @return
      */
-    public DataType getAttributeDataType() {
+    public DataType getDataType() {
         return dataType;
     }
 
-    public boolean setAttributeDataType( DataType dataType ) {
-        if( dataType == null ) {
-            return false;
-        } else {
-            this.dataType = dataType;
-            return true;
-        }
+    public void setDataType( DataType dataType ) {
+        Reject.ifNull( dataType );
+        this.dataType = dataType;
     }
 
     /**
@@ -297,24 +267,19 @@ public final class Attribute implements Cloneable {
     public Attribute clone() throws CloneNotSupportedException { // NOSONAR
         super.clone();
         Attribute clone = new Attribute();
-        clone.createAttributeId( attributeId );
+        clone.setAttributeId( attributeId );
         for( Map.Entry<String, List<String>> entry : attributeValueMap.entrySet() ) {
             for( String s : entry.getValue() ) {
-                clone.createAttributeValues( entry.getKey(), s );
+                clone.setAttributeValues( entry.getKey(), s );
             }
         }
 
         return clone;
     }
 
-    public boolean setCategory( Category category ) {
-        // BEGIN parameter checking
-        if( category == null ) {
-            return false;
-        }
-        // END parameter checking
+    public void setCategory( Category category ) {
+        Reject.ifNull( category );
         this.category = category;
-        return true;
     }
 
     public Category getCategory() {
@@ -330,11 +295,8 @@ public final class Attribute implements Cloneable {
     }
 
     public void setValue( DataType dataType, String... values ) {
-        // BEGIN parameter checking
-        if( dataType == null || values == null ) {
-            return;
-        }
-        // END parameter checking
+        Reject.ifNull( dataType );
+        Reject.ifNull( values );
 
         ArrayList<String> list = new ArrayList<>( Arrays.asList( values ) );
         attributeValueMap.put( dataType.toString(), list );

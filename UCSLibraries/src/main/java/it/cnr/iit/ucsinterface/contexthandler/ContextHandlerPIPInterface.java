@@ -15,24 +15,24 @@
  ******************************************************************************/
 package it.cnr.iit.ucsinterface.contexthandler;
 
-import it.cnr.iit.ucsinterface.message.Message;
+import it.cnr.iit.ucsinterface.message.pipch.PipChMessage;
 
 /**
  * This is the interface provided by the ContextHandler to the PIP.
  *
- * @author antonio
+ * @author Antonio La Marra
  *
  */
 public interface ContextHandlerPIPInterface {
     /**
      * This is the attributeChanged function. In this case the CH is notified by
      * the PIPBarrierMonitor that the attribute monitored by a PIP has changed its
-     * value, hence it is necessary to reevaluate all the sessions realted to that
+     * value, hence it is necessary to reevaluate all the sessions related to that
      * attribute.
      *
      * @param message
-     *          the message sent by the PIPBarrierMonitor
+     *          the message sent by the CH
      */
-    public void attributeChanged( Message message );
+    public void attributeChanged( PipChMessage message );
 
 }

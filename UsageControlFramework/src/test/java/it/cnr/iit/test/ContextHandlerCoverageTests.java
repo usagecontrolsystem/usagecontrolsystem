@@ -1,8 +1,5 @@
 package it.cnr.iit.test;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-
 import java.io.IOException;
 import java.net.URISyntaxException;
 
@@ -59,21 +56,21 @@ public class ContextHandlerCoverageTests extends UCFBaseTests {
     }
 
     @Test
-    public void contextHandlerConfigurationShouldFail() throws JAXBException, URISyntaxException, IOException {
+    public void contextHandlerConfigurationShouldFail() throws Exception {
         ContextHandlerLC contextHandler = getContextHandler( properties );
         contextHandler.verify();
-        assertFalse( contextHandler.startMonitoringThread() );
+        contextHandler.startMonitoringThread();
         contextHandler.stopMonitoringThread();
     }
 
     @Test( expected = IllegalStateException.class )
-    public void contextHandlerTryAccessShouldFail() throws JAXBException, URISyntaxException, IOException {
+    public void contextHandlerTryAccessShouldFail() throws Exception {
         ContextHandlerLC contextHandler = getContextHandler( properties );
         initContextHandler( contextHandler );
         // set the pdp response to return deny
-        contextHandler.setPdpInterface( getMockedPDP( getMockedPDPEvaluation( DecisionType.DENY ) ) );
+        contextHandler.setPdp( getMockedPDP( getMockedPDPEvaluation( DecisionType.DENY ) ) );
         contextHandler.verify();
-        assertTrue( contextHandler.startMonitoringThread() );
+        contextHandler.startMonitoringThread();
 
         /* tryAccess */
         contextHandler.tryAccess( null );
@@ -91,10 +88,10 @@ public class ContextHandlerCoverageTests extends UCFBaseTests {
         contextHandler.tryAccess( tryAccessMessage );
 
         /* startAccess */
-        contextHandler.setSessionManagerInterface(
+        contextHandler.setSessionManager(
             getSessionManagerForStatus( testProperties.getSessionId(), policy, request, ContextHandlerConstants.TRY_STATUS ) );
         // this line makes the start access to take the deny path
-        contextHandler.setPdpInterface( getMockedPDP( getMockedPDPEvaluation( DecisionType.DENY ) ) );
+        contextHandler.setPdp( getMockedPDP( getMockedPDPEvaluation( DecisionType.DENY ) ) );
         StartAccessMessage startAccessMessage = buildStartAccessMessage( testProperties.getSessionId(), "a", "a" );
         contextHandler.startAccess( startAccessMessage );
 
@@ -111,15 +108,15 @@ public class ContextHandlerCoverageTests extends UCFBaseTests {
         contextHandler.tryAccess( tryAccessMessage );
 
         /* startAccess */
-        contextHandler.setSessionManagerInterface(
+        contextHandler.setSessionManager(
             getSessionManagerForStatus( testProperties.getSessionId(), policy, request, ContextHandlerConstants.TRY_STATUS ) );
         StartAccessMessage startAccessMessage = buildStartAccessMessage( testProperties.getSessionId(), "a", "a" );
         contextHandler.startAccess( startAccessMessage );
 
         /* endAccess */
-        contextHandler.setSessionManagerInterface(
+        contextHandler.setSessionManager(
             getSessionManagerForStatus( testProperties.getSessionId(), policy, request, ContextHandlerConstants.START_STATUS ) );
-        contextHandler.setPdpInterface( getMockedPDP( getMockedPDPEvaluation( DecisionType.DENY ) ) );
+        contextHandler.setPdp( getMockedPDP( getMockedPDPEvaluation( DecisionType.DENY ) ) );
         EndAccessMessage endAccessMessage = buildEndAccessMessage( testProperties.getSessionId(), "a", "a" );
         contextHandler.endAccess( endAccessMessage );
 
@@ -136,7 +133,7 @@ public class ContextHandlerCoverageTests extends UCFBaseTests {
         contextHandler.tryAccess( tryAccessMessage );
 
         /* startAccess */
-        contextHandler.setSessionManagerInterface(
+        contextHandler.setSessionManager(
             getSessionManagerForStatus( testProperties.getSessionId(), policy, request, ContextHandlerConstants.TRY_STATUS ) );
         StartAccessMessage startAccessMessage = buildStartAccessMessage( testProperties.getSessionId(), "a", "a" );
         contextHandler.startAccess( startAccessMessage );
@@ -151,7 +148,7 @@ public class ContextHandlerCoverageTests extends UCFBaseTests {
         contextHandler.attributeChanged( messagePipCh );
 
         /* endAccess */
-        contextHandler.setSessionManagerInterface(
+        contextHandler.setSessionManager(
             getSessionManagerForStatus( testProperties.getSessionId(), policy, request, ContextHandlerConstants.START_STATUS ) );
         EndAccessMessage endAccessMessage = buildEndAccessMessage( testProperties.getSessionId(), "a", "a" );
         contextHandler.endAccess( endAccessMessage );

@@ -40,7 +40,7 @@ public enum Category {
     ENVIRONMENT( "urn:oasis:names:tc:xacml:3.0:attribute-category:environment" );
 
     // the string representing the category in xacmlformat
-    private final String xacmlString;
+    private final String data;
 
     /**
      * constructor for the categoy enumerate
@@ -49,12 +49,12 @@ public enum Category {
      *          the string that identifies the category
      */
     Category( String string ) {
-        this.xacmlString = string;
+        this.data = string;
     }
 
     @Override
     public String toString() {
-        return xacmlString;
+        return data;
     }
 
     /**
@@ -82,7 +82,7 @@ public enum Category {
     }
 
     public boolean contains( String string ) {
-        return this.xacmlString.contains( string );
+        return this.data.contains( string );
     }
 
 }

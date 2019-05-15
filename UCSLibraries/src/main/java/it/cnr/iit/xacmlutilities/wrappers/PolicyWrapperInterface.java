@@ -13,7 +13,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  ******************************************************************************/
-package it.cnr.iit.xacmlutilities.policy;
+package it.cnr.iit.xacmlutilities.wrappers;
 
 import java.util.List;
 
@@ -38,10 +38,10 @@ import it.cnr.iit.xacmlutilities.Attribute;
  *
  * </p>
  *
- * @author antonio
+ * @author Antonio La Marra, Alessandro Rosetti
  *
  */
-public interface PolicyHelperInterface {
+public interface PolicyWrapperInterface {
     /**
      * Retrieves the list of attributes to be used to evaluate a certain
      * condition.

@@ -55,20 +55,17 @@ public abstract class AbstractContextHandler implements ContextHandlerInterface 
 
     private static final Logger log = Logger.getLogger( AbstractContextHandler.class.getName() );
 
-    protected PIPRegistry pipRegistry;
-
-    private SessionManagerInterface sessionManagerInterface;
-    private RequestManagerToCHInterface requestManagerToChInterface;
+    private SessionManagerInterface sessionManager;
+    private RequestManagerToCHInterface requestManager;
     private ObligationManagerInterface obligationManager;
-    private PDPInterface pdpInterface;
-    private PAPInterface papInterface;
+    private PDPInterface pdp;
+    private PAPInterface pap;
+
     private ForwardingQueueToCHInterface forwardingQueue;
+    private PIPRegistry pipRegistry;
 
     protected ContextHandlerProperties properties;
     protected URI uri;
-
-    @Deprecated
-    private volatile boolean initialized = false;
 
     /**
      * The constructor requires the various interfaces the
@@ -88,70 +85,42 @@ public abstract class AbstractContextHandler implements ContextHandlerInterface 
         pipRegistry = new PIPRegistry();
     }
 
-    /**
-     * Verifies that the status of the context handler is consistent.
-     */
-    @Deprecated
-    public void verify() {
-        final String[] checkObjectsNames = {
-            "sessionManager", "pipRegistry", "pap", "pdp",
-            "requestManagerToCh", "forwardingQueue", "obligationManager" };
-        final boolean[] checkObjects = {
-            sessionManagerInterface == null, pipRegistry == null,
-            papInterface == null, pdpInterface == null, requestManagerToChInterface == null,
-            forwardingQueue == null, obligationManager == null };
+    public abstract void startMonitoringThread();
 
-        StringBuilder sb = new StringBuilder();
-        for( int i = 0; i < checkObjects.length; i++ ) {
-            if( checkObjects[i] ) {
-                sb.append( checkObjectsNames[i] ).append( " " );
-            }
-        }
+    public abstract void stopMonitoringThread();
 
-        initialized = sb.length() == 0;
-
-        if( initialized ) {
-            log.info( "ContextHandler correctly initialized" );
-        } else {
-            log.severe( "ContextHandler incorrectly initialized" );
-            log.log( Level.SEVERE, "The offending components are : {0}", sb );
-        }
+    protected final SessionManagerInterface getSessionManager() {
+        return sessionManager;
     }
 
-    public abstract boolean startMonitoringThread() throws Exception;
-
-    protected final SessionManagerInterface getSessionManagerInterface() {
-        return sessionManagerInterface;
+    public void setSessionManager(
+            SessionManagerInterface sessionManager ) {
+        this.sessionManager = sessionManager;
     }
 
-    public void setSessionManagerInterface(
-            SessionManagerInterface sessionManagerInterface ) {
-        this.sessionManagerInterface = sessionManagerInterface;
+    protected final PDPInterface getPdp() {
+        return pdp;
     }
 
-    protected final PDPInterface getPdpInterface() {
-        return pdpInterface;
+    public void setPdp( PDPInterface pdpInterface ) {
+        this.pdp = pdpInterface;
     }
 
-    public void setPdpInterface( PDPInterface pdpInterface ) {
-        this.pdpInterface = pdpInterface;
+    protected final PAPInterface getPap() {
+        return pap;
     }
 
-    protected final PAPInterface getPapInterface() {
-        return papInterface;
+    public void setPap( PAPInterface papInterface ) {
+        this.pap = papInterface;
     }
 
-    public void setPapInterface( PAPInterface papInterface ) {
-        this.papInterface = papInterface;
+    protected final RequestManagerToCHInterface getRequestManager() {
+        return requestManager;
     }
 
-    protected final RequestManagerToCHInterface getRequestManagerToChInterface() {
-        return requestManagerToChInterface;
-    }
-
-    public void setRequestManagerToChInterface(
+    public void setRequestManager(
             RequestManagerToCHInterface requestManagerToChInterface ) {
-        this.requestManagerToChInterface = requestManagerToChInterface;
+        this.requestManager = requestManagerToChInterface;
     }
 
     public void setPIPs( List<PIPCHInterface> pipList ) {
@@ -189,41 +158,32 @@ public abstract class AbstractContextHandler implements ContextHandlerInterface 
     }
 
     /**
-     * Sets the various interfaces with which the ContextHandler has to
-     * communicate.
-     *
-     * @param proxySessionManager
-     *          the proxy to deal with the session manager
-     * @param proxyRequestManager
-     *          the proxy to deal with the request manager
-     * @param proxyPDP
-     *          the proxy to deal with the pdp
-     * @param proxyPAP
-     *          the proxy to deal with the pap
-     * @param pipList
-     *          the list of PIPs available to the context handler
-     * @param pipRetrieval
-     *          the pip-retrieval to be used by the context handler
-     * @param obligationManager
-     *          the interface to the obligation manager
+     * Verifies that the status of the context handler is consistent.
+     * @throws Exception
      */
     @Deprecated
-    public final void setInterfaces( SessionManagerInterface proxySessionManager,
-            RequestManagerToCHInterface proxyRequestManager, PDPInterface proxyPDP,
-            PAPInterface proxyPAP, List<PIPCHInterface> pipList,
-            ObligationManagerInterface obligationManager,
-            ForwardingQueueToCHInterface forwardingQueue ) {
-        setSessionManagerInterface( proxySessionManager );
-        setPapInterface( proxyPAP );
-        setPdpInterface( proxyPDP );
-        setRequestManagerToChInterface( proxyRequestManager );
-        setObligationManager( obligationManager );
-        setForwardingQueue( forwardingQueue );
-        setPIPs( pipList );
-        verify();
+    public void verify() throws Exception {
+        final String[] checkObjectsNames = {
+            "sessionManager", "pipRegistry", "pap", "pdp",
+            "requestManagerToCh", "forwardingQueue", "obligationManager" };
+        final boolean[] checkObjects = {
+            sessionManager == null, pipRegistry == null,
+            pap == null, pdp == null, requestManager == null,
+            forwardingQueue == null, obligationManager == null };
+
+        StringBuilder sb = new StringBuilder();
+        for( int i = 0; i < checkObjects.length; i++ ) {
+            if( checkObjects[i] ) {
+                sb.append( checkObjectsNames[i] ).append( " " );
+            }
+        }
+
+        if( sb.length() == 0 ) {
+            log.info( "ContextHandler correctly initialized" );
+        } else {
+            log.log( Level.SEVERE, "Context handler initialization error : {0}", sb );
+            throw new Exception( "Context handler initialization error : {0}" + sb.toString() );
+        }
     }
 
-    protected final boolean isInitialized() {
-        return initialized;
-    }
 }

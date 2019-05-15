@@ -100,9 +100,9 @@ public final class ObligationManager implements ObligationManagerInterface {
     @Override
     public PDPEvaluation translateObligations( PDPEvaluation pdpEvaluation,
             String sessionId, String status ) {
-        Reject.ifTrue( pdpEvaluation == null );
-        Reject.ifTrue( sessionId == null );
-        Reject.ifTrue( status == null );
+        Reject.ifNull( pdpEvaluation );
+        Reject.ifNull( sessionId );
+        Reject.ifNull( status );
         Reject.ifTrue( pipList == null || pipList.isEmpty() );
 
         List<String> obligationsString = pdpEvaluation.getObligations();

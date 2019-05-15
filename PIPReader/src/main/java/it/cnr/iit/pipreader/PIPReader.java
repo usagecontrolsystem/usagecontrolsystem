@@ -90,27 +90,32 @@ public final class PIPReader extends PIPBase {
         log.info( "PIPReader " + properties.getId() + " initialised" );
     }
 
+    // TODO use reject here
     private boolean init( PipProperties properties ) {
         try {
             Map<String, String> attributeMap = properties.getAttributes().get( 0 );
             Attribute attribute = new Attribute();
 
-            if( !attribute.createAttributeId( attributeMap.get( ATTRIBUTE_ID ) ) ) {
+            String attributeId = attributeMap.get( ATTRIBUTE_ID );
+            if( attributeId == null || attributeId.isEmpty() ) {
                 log.severe( "Wrong attributeId : " + attributeMap.get( ATTRIBUTE_ID ) );
                 return false;
             }
+            attribute.setAttributeId( attributeId );
 
-            if( !attribute
-                .setCategory( Category.toCATEGORY( attributeMap.get( CATEGORY ) ) ) ) {
+            Category category = Category.toCATEGORY( attributeMap.get( CATEGORY ) );
+            if( category == null ) {
                 log.severe( "Wrong category : " + attributeMap.get( CATEGORY ) );
                 return false;
             }
+            attribute.setCategory( category );
 
-            if( !attribute.setAttributeDataType(
-                DataType.toDATATYPE( attributeMap.get( DATA_TYPE ) ) ) ) {
+            DataType dataType = DataType.toDATATYPE( attributeMap.get( DATA_TYPE ) );
+            if( dataType == null ) {
                 log.severe( "Wrong datatype : " + attributeMap.get( DATA_TYPE ) );
                 return false;
             }
+            attribute.setDataType( dataType );
 
             if( attribute.getCategory() != Category.ENVIRONMENT ) {
                 expectedCategory = Category.toCATEGORY( attributeMap.get( EXPECTED_CATEGORY ) );
@@ -202,7 +207,7 @@ public final class PIPReader extends PIPBase {
         Reject.ifNull( contextHandler );
 
         String value = retrieve( attribute );
-        DataType dataType = attribute.getAttributeDataType();
+        DataType dataType = attribute.getDataType();
         attribute.setValue( dataType, value );
         addSubscription( attribute );
 
@@ -347,14 +352,14 @@ public final class PIPReader extends PIPBase {
                 return;
             }
 
-            String oldValue = attribute.getAttributeValues( attribute.getAttributeDataType() ).get( 0 );
+            String oldValue = attribute.getAttributeValues( attribute.getDataType() ).get( 0 );
             if( !oldValue.equals( value ) ) { // if the attribute has changed
                 log.log( Level.INFO,
                     "Attribute {0}={1}:{2} changed at {1}",
                     new Object[] { attribute.getAttributeId(), value,
                         attribute.getAdditionalInformations(),
                         System.currentTimeMillis() } );
-                attribute.setValue( attribute.getAttributeDataType(), value );
+                attribute.setValue( attribute.getDataType(), value );
                 notifyContextHandler( attribute );
             }
         }

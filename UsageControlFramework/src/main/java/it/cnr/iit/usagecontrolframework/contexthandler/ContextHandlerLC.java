@@ -34,7 +34,6 @@ import it.cnr.iit.ucs.exceptions.WrongOrderException;
 import it.cnr.iit.ucs.properties.components.ContextHandlerProperties;
 import it.cnr.iit.ucsinterface.contexthandler.AbstractContextHandler;
 import it.cnr.iit.ucsinterface.contexthandler.ContextHandlerConstants;
-import it.cnr.iit.ucsinterface.message.Message;
 import it.cnr.iit.ucsinterface.message.endaccess.EndAccessMessage;
 import it.cnr.iit.ucsinterface.message.endaccess.EndAccessResponse;
 import it.cnr.iit.ucsinterface.message.pipch.PipChMessage;
@@ -49,9 +48,10 @@ import it.cnr.iit.ucsinterface.sessionmanager.CreateEntryParameterBuilder;
 import it.cnr.iit.ucsinterface.sessionmanager.OnGoingAttributesInterface;
 import it.cnr.iit.ucsinterface.sessionmanager.SessionInterface;
 import it.cnr.iit.utility.JAXBUtility;
+import it.cnr.iit.utility.errorhandling.Reject;
 import it.cnr.iit.xacmlutilities.Attribute;
 import it.cnr.iit.xacmlutilities.Category;
-import it.cnr.iit.xacmlutilities.policy.PolicyHelper;
+import it.cnr.iit.xacmlutilities.wrappers.PolicyWrapper;
 
 import oasis.names.tc.xacml.core.schema.wd_17.AttributeType;
 import oasis.names.tc.xacml.core.schema.wd_17.AttributesType;
@@ -62,19 +62,14 @@ import oasis.names.tc.xacml.core.schema.wd_17.RequestType;
  * This is the class implementing a context-handler with low concurrency.
  * <p>
  * We will provide some different implementations of the context handler, so
- * that the user can pick up the most suitable to its case. This implementation
- * of the context handler works exactly in the same way of the first release.
- * The only difference here is how the changing of the value of an attribute is
- * managed: basically the context handler spawns a thread in charge of
- * monitoring eventual changes in the value of the attributes. This thread stays
- * in a sleeping state unless it is waken up by the calling of a proper function
- * performed by the PIP.
+ * that the user can pick up the most suitable to its case.
+ * The context handler spawns a thread in charge of  monitoring eventual changes
+ * in the value of the attributes. This thread stays  in a sleeping state unless
+ * it is waken up by the calling of a proper function performed by the PIP.
  * </p>
  * <p>
  * This implementation of the context handler can handle a single request per
- * time (as it was for the previous implementation). Hence here we do not have
- * to parse the configuration, because this implementation can handle only a
- * single thread. This single thread is represented by the AttributeMonitor
+ * time. This single thread is represented by the AttributeMonitor
  * actor which implements the Callable<String> interface. We have chosen this
  * approach because we might be interested in having something to signal us the
  * result of reevaluation. This context handler has as additional parameter a
@@ -89,7 +84,6 @@ import oasis.names.tc.xacml.core.schema.wd_17.RequestType;
  * <br>
  * </p>
  *
- *
  * @author Antonio La Marra, Alessandro Rosetti
  *
  */
@@ -97,46 +91,43 @@ public final class ContextHandlerLC extends AbstractContextHandler {
 
     private static final Logger log = Logger.getLogger( ContextHandlerLC.class.getName() );
 
-    private static final String TRYACCESS_POLICY = "pre";
-    private static final String STARTACCESS_POLICY = "ongoing";
-    private static final String ENDACCESS_POLICY = "post";
-    // this is the string that, in an URI separates the PEP from the node address
+    @Deprecated
     public static final String PEP_ID_SEPARATOR = "#";
 
     // monitors if the value of an attribute changes
-    private AttributeMonitor attributeMonitor = new AttributeMonitor();
+    private AttributeMonitor attributeMonitor;
     // queue in charge of storing the changing in the attributes
-    private LinkedTransferQueue<PipChMessage> attributesChanged = new LinkedTransferQueue<>();
-    // the thread object in charge of performing reevaluation
-    private Thread thread = new Thread( attributeMonitor );
-    // boolean variable that states if the thread has to run again or not
-    private volatile boolean continueMonitoring = true;
+    private LinkedTransferQueue<PipChMessage> attributesChanged;
+
+    private Thread monitoringThread;
+    private boolean monitoringRunning = true;
 
     public ContextHandlerLC( ContextHandlerProperties chProperties ) {
         super( chProperties );
+
+        attributesChanged = new LinkedTransferQueue<>();
+        attributeMonitor = new AttributeMonitor();
+        monitoringThread = new Thread( attributeMonitor );
     }
 
     /**
      * starts the thread in charge of monitoring the changes notified by PIPs
      */
     @Override
-    public boolean startMonitoringThread() {
-        if( isInitialized() ) {
-            thread.start();
-            return true;
-        }
-        return false;
+    public void startMonitoringThread() {
+        monitoringThread.start();
     }
 
     /**
      * stop the thread in charge of monitoring the changes notified by PIPs
      */
+    @Override
     public void stopMonitoringThread() {
-        continueMonitoring = false;
+        monitoringRunning = false;
     }
 
     /**
-     * tryaccess method invoked by PEP<br>
+     * TryAccess method invoked by PEP<br>
      * The following actions are performed:
      * <ol>
      * <li>policy set is extracted from the received one</li>
@@ -149,70 +140,45 @@ public final class ContextHandlerLC extends AbstractContextHandler {
      * </ol>
      *
      * @param message
-     *            the message received by the PEP
-     *
+     *            the TryAccessMessage received
      */
     @Override
-    // TODO use TryAccessMessage(review message classes family) directly as a parameter
-    public void tryAccess( Message message ) {
-        if( !isInitialized() || message == null ) {
-            log.log( Level.SEVERE, "{0} {1} \t {2}",
-                new Object[] { "INVALID tryAccess ", isInitialized(), ( message == null ) } );
-            throw new IllegalStateException( "Error in tryAccess: " + isInitialized() + "\t" + ( message == null ) );
+    public void tryAccess( TryAccessMessage message ) {
+        Reject.ifNull( message, "TryAccessMessage is null" );
+
+        log.log( Level.INFO, "TryAccess received at {0}", new Object[] { System.currentTimeMillis() } );
+
+        String sessionId = generateNewSessionId();
+        PolicyWrapper policyHelper = retrievePolicyHelper( message );
+        // TODO handle null policy helper
+        List<Attribute> attributes = policyHelper.getAttributesForCondition( POLICY_CONDITION.TRYACCESS );
+        // TODO handle null request
+        String fatRequest = fattenRequest( message.getRequest(), attributes, STATUS.TRYACCESS, true );
+        log.info( "TryAccess fattened request : \n" + fatRequest );
+
+        // perform the PDP evaluation TODO change evaluate to handle String instead of StringBuilder
+        PDPEvaluation evaluation = getPdp().evaluate( fatRequest, policyHelper, STATUS.TRYACCESS );
+        log.log( Level.INFO, "TryAccess evaluated at {0} response: {1}",
+            new Object[] { System.currentTimeMillis(), evaluation.getResult() } );
+
+        // if access decision is PERMIT update SM database entry
+        if( evaluation.getResult().equalsIgnoreCase( DecisionType.PERMIT.value() ) ) {
+            insertInSessionManager( message, fatRequest, policyHelper, sessionId );
         }
+        getObligationManager().translateObligations( evaluation, sessionId, ContextHandlerConstants.TRY_STATUS );
 
-        log.log( Level.INFO, "[TIME] tryaccess received at {0}", new Object[] { System.currentTimeMillis() } );
+        TryAccessResponse tryAccessResponse = buildTryAccessResponse( message, evaluation, sessionId );
+        getRequestManager().sendMessageToOutside( tryAccessResponse );
+    }
 
-        TryAccessMessage tryAccess = (TryAccessMessage) message;
-
-        PolicyHelper policyHelper = PolicyHelper.buildPolicyHelper( tryAccess.getPolicy() );
-
-        // eventual scheduling
-        List<Attribute> attributes = policyHelper.getAttributesForCondition( TRYACCESS_POLICY );
-        log.log( Level.INFO, "[TIME] tryaccess begin scheduling at {0}", new Object[] { System.currentTimeMillis() } );
-
-        String sessionId = createSessionId();
-        String policy = retrievePolicy( tryAccess );
-        String request = tryAccess.getRequest();
-        // make the request complete before reevaluation
-        String requestFull = makeRequestFull( request, attributes, STATUS.TRYACCESS, true );
-
-        log.info( requestFull );
-        log.info( "-------------" );
-        log.info( policy );
-
-        // perform the evaluation
-        StringBuilder policyBuilder = new StringBuilder();
-        PDPEvaluation pdpEvaluation = getPdpInterface().evaluate( requestFull, policyBuilder.append( policy ),
-            STATUS.TRYACCESS );
-
-        String pdpResponse = pdpEvaluation.getResult();
-        log.log( Level.INFO, "[TIME] tryaccess evaluated at {0} response: {1}", new Object[] { System.currentTimeMillis(), pdpResponse } );
-
-        // if access decision is PERMIT - update SM DB entry
-        if( pdpResponse.equalsIgnoreCase( DecisionType.PERMIT.value() ) ) {
-            /**
-             * If tryAccess was scheduled, then the ip to be stored is the one
-             * of the node that has the PEP attached, otherwise it is the URL of
-             * this node
-             */
-            insertInSessionManager( sessionId, policy, request, ContextHandlerConstants.TRY_STATUS,
-                tryAccess.isScheduled() ? tryAccess.getPepUri()
-                        : uri.getHost() + PEP_ID_SEPARATOR + tryAccess.getSource(),
-                policyHelper, tryAccess.isScheduled() ? tryAccess.getSource() : uri.getHost() );
-
-            log.log( Level.INFO, "[TIME] permit tryAccess ends at {0}", new Object[] { System.currentTimeMillis() } );
-
+    private TryAccessResponse buildTryAccessResponse( TryAccessMessage message, PDPEvaluation evaluation, String sessionId ) {
+        TryAccessResponse response = new TryAccessResponse( uri.getHost(), message.getSource(), message.getMessageId() );
+        response.setSessionId( sessionId );
+        response.setPDPEvaluation( evaluation );
+        if( message.isScheduled() ) {
+            response.setUCSDestination();
         }
-        getObligationManager().translateObligations( pdpEvaluation, sessionId, ContextHandlerConstants.TRY_STATUS );
-
-        TryAccessResponse tryAccessResponse = new TryAccessResponse( uri.getHost(), tryAccess.getSource(), message.getMessageId() );
-        tryAccessResponse.setSessionId( sessionId );
-        tryAccessResponse.setPDPEvaluation( pdpEvaluation );
-        if( tryAccess.isScheduled() ) {
-            tryAccessResponse.setUCSDestination();
-        }
-        getRequestManagerToChInterface().sendMessageToOutside( tryAccessResponse );
+        return response;
     }
 
     /**
@@ -228,40 +194,38 @@ public final class ContextHandlerLC extends AbstractContextHandler {
      *            the local ones, if false
      * @return a String that represents the request itself
      */
-    private synchronized String makeRequestFull( String request, List<Attribute> attributes, STATUS status,
+    // TODO use Optional
+    private synchronized String fattenRequest( String request, List<Attribute> attributes, STATUS status,
             boolean complete ) {
         try {
             RequestType requestType = JAXBUtility.unmarshalToObject( RequestType.class, request );
-            // handles all the cases except startaccess
-            if( status == STATUS.TRYACCESS || status == STATUS.ENDACCESS || status == STATUS.REVOKE ) {
-                requestType = makeRequestFull( requestType, attributes, complete, false );
-            }
-
-            if( status == STATUS.STARTACCESS ) {
-                requestType = makeRequestFull( requestType, attributes, complete, true );
-            }
-            return JAXBUtility.marshalToString( RequestType.class, requestType, "Request",
+            boolean isSubscription = status == STATUS.STARTACCESS;
+            requestType = handleRequestType( requestType, attributes, complete, isSubscription );
+            String str = JAXBUtility.marshalToString( RequestType.class, requestType, "Request",
                 JAXBUtility.SCHEMA );
-        } catch( JAXBException exception ) {
-            log.severe( exception.getMessage() );
-            return "";
+            return str;
+        } catch( JAXBException e ) {
+            log.severe( "Error fattening the request : " + e.getMessage() );
+            return null;
         }
     }
 
-    private RequestType makeRequestFull( RequestType requestType, List<Attribute> attributes,
+    // TODO use Optional
+    private RequestType handleRequestType( RequestType requestType, List<Attribute> attributes,
             boolean complete, boolean isSubscription ) {
-        List<Attribute> external = extractExternal( attributes, requestType );
 
         if( !isSubscription ) {
-            pipRegistry.retrieveAll( requestType );
+            getPipRegistry().retrieveAll( requestType );
         } else {
-            pipRegistry.subscribeAll( requestType );
+            getPipRegistry().subscribeAll( requestType );
         }
 
+        List<Attribute> external = externalAttributesExtract( attributes, requestType );
         if( !complete || !external.isEmpty() ) {
             log.warning( "Policy requires attributes that are not accessible!!" );
             return null;
         }
+
         return requestType;
     }
 
@@ -278,20 +242,19 @@ public final class ContextHandlerLC extends AbstractContextHandler {
      * @return the list of attributes without those attributes that can be
      *         retrieved by internal PIPs
      */
-    private List<Attribute> extractExternal( List<Attribute> attributes, RequestType request ) {
+    private List<Attribute> externalAttributesExtract( List<Attribute> attributes, RequestType request ) {
         List<Attribute> externalAttributes = new ArrayList<>();
-        boolean found = false;
         for( Attribute attribute : attributes ) {
             attribute.getAttributeValueMap().clear();
-            found = pipRegistry.hasAttribute( attribute ) || findInRequest( attribute, request );
-            if( !found ) {
+            if( !( getPipRegistry().hasAttribute( attribute ) ||
+                    requestHasAttribute( request, attribute ) ) ) {
                 externalAttributes.add( attribute );
             }
         }
         return externalAttributes;
     }
 
-    private boolean findInRequest( Attribute attribute, RequestType request ) {
+    private boolean requestHasAttribute( RequestType request, Attribute attribute ) {
         for( AttributesType attributeType : request.getAttributes() ) {
             for( AttributeType att : attributeType.getAttribute() ) {
                 if( attribute.getAttributeId().equals( att.getAttributeId() ) ) {
@@ -303,31 +266,31 @@ public final class ContextHandlerLC extends AbstractContextHandler {
     }
 
     /**
-     * It creates a new simple session id
+     * It creates a new session id
      *
-     * @return session id to associate to the incoming session during the tryaccess
+     * @return session id to associate to the incoming session during the tryAccess
      */
-    private synchronized String createSessionId() {
+    private synchronized String generateNewSessionId() {
         return UUID.randomUUID().toString();
     }
 
     /**
      * Retrieves the policy to be used to evaluate the request in string format
      *
-     * @param tryAccess
+     * @param message
      *            the message received by the context handler
      * @return the string representing the policy
      */
-    private String retrievePolicy( TryAccessMessage tryAccess ) {
-        String policy = tryAccess.getPolicy();
-        if( policy == null ) {
-            policy = getPapInterface().retrievePolicy( tryAccess.getPolicyId() );
-            if( policy == null ) {
-                log.warning( "UNABLE to RETRIEVE the POLICY" );
-                throw new IllegalArgumentException( "No policy found with Id: " + tryAccess.getPolicyId() );
-            }
+    private PolicyWrapper retrievePolicyHelper( TryAccessMessage message ) {
+        String policy = message.getPolicy();
+
+        if( policy == null && message.getPolicyId() != null ) {
+            policy = getPap().retrievePolicy( message.getPolicyId() );
         }
-        return policy;
+
+        Reject.ifNull( policy, "Unable to retrieve the policy" );
+
+        return PolicyWrapper.buildPolicyWrapper( policy );
     }
 
     /**
@@ -336,8 +299,8 @@ public final class ContextHandlerLC extends AbstractContextHandler {
      *
      * @param sessionId
      *            the session id
-     * @param uxacmlPol
-     *            the uxacml policy
+     * @param policy
+     *            the policy
      * @param originalRequest
      *            the original request, not the fat one because, whenever we
      *            need to re-evaluate the request we will retrieval from the
@@ -351,15 +314,18 @@ public final class ContextHandlerLC extends AbstractContextHandler {
      *            object representing the policy to be used in the various
      *            evaluations the subject id
      */
-    private void insertInSessionManager( String sessionId, String uxacmlPol, String request, final String status,
-            String pepUri, PolicyHelper policyHelper, String ip ) {
+    private void insertInSessionManager( TryAccessMessage message, String request, PolicyWrapper policyHelper, String sessionId ) {
+        String pepUri = message.isScheduled() ? message.getPepUri()
+                : uri.getHost() + PEP_ID_SEPARATOR + message.getSource();
+        String ip = message.isScheduled() ? message.getSource() : uri.getHost();
+
         try {
             RequestType requestType = JAXBUtility.unmarshalToObject( RequestType.class, request );
 
             // retrieve the id of ongoing attributes
             CreateEntryParameterBuilder createEntryParameterBuilder = new CreateEntryParameterBuilder();
 
-            List<Attribute> onGoingAttributes = policyHelper.getAttributesForCondition( STARTACCESS_POLICY );
+            List<Attribute> onGoingAttributes = policyHelper.getAttributesForCondition( POLICY_CONDITION.STARTACCESS );
             createEntryParameterBuilder.setOnGoingAttributesForSubject( getAttributesForCategory( onGoingAttributes, Category.SUBJECT ) )
                 .setOnGoingAttributesForAction( getAttributesForCategory( onGoingAttributes, Category.ACTION ) )
                 .setOnGoingAttributesForResource( getAttributesForCategory( onGoingAttributes, Category.RESOURCE ) )
@@ -369,18 +335,16 @@ public final class ContextHandlerLC extends AbstractContextHandler {
                 .setResourceName( requestType.extractValue( Category.RESOURCE ) )
                 .setActionName( requestType.extractValue( Category.ACTION ) );
 
-            createEntryParameterBuilder.setSessionId( sessionId ).setPolicySet( uxacmlPol ).setOriginalRequest( request )
-                .setStatus( status ).setPepURI( pepUri ).setMyIP( ip );
-
-            // retrieve the values of attributes in the request
+            createEntryParameterBuilder.setSessionId( sessionId ).setPolicySet( policyHelper.getPolicy() ).setOriginalRequest( request )
+                .setStatus( ContextHandlerConstants.TRY_STATUS ).setPepURI( pepUri ).setMyIP( ip );
 
             // insert all the values inside the session manager
-            if( !getSessionManagerInterface().createEntry( createEntryParameterBuilder.build() ) ) {
+            if( !getSessionManager().createEntry( createEntryParameterBuilder.build() ) ) {
                 log.log( Level.SEVERE, "[Context Handler] TryAccess: some error occurred, session {0} has not been stored correctly",
                     sessionId );
             }
         } catch( Exception e ) {
-            log.severe( e.getMessage() );
+            log.severe( "Insert in SM error : " + e.getMessage() );
         }
 
     }
@@ -430,55 +394,38 @@ public final class ContextHandlerLC extends AbstractContextHandler {
      *
      */
     @Override
-    public void startAccess( Message message ) throws Exception {
-        // BEGIN parameter checking
-        if( !isInitialized() || message == null || !( message instanceof StartAccessMessage ) ) {
-            log.log( Level.SEVERE, "Invalid startaccess {0} \t {1}",
-                new Object[] { isInitialized(), ( message instanceof StartAccessMessage ) } );
-            throw new IllegalStateException( "Invalid startaccess" );
+    public void startAccess( StartAccessMessage message ) throws Exception {
+        Optional<SessionInterface> optSession = getSessionManager().getSessionForId( message.getSessionId() );
+
+        if( !optSession.isPresent() ) {
+            throw new SessionManagerException(
+                "[Context Handler] Startaccess: no session for id " + message.getSessionId() );
         }
-        // END parameter checking
-        log.log( Level.INFO, "[TIME] startaccess begins at {0}", new Object[] { System.currentTimeMillis() } );
+        SessionInterface session = optSession.get();
+        PolicyWrapper policyHelper = PolicyWrapper.buildPolicyWrapper( session.getPolicySet() );
 
-        StartAccessMessage startAccessMessage = (StartAccessMessage) message;
-        String sessionId = startAccessMessage.getSessionId();
-
-        Optional<SessionInterface> optional = getSessionManagerInterface().getSessionForId( sessionId );
-
-        if( !optional.isPresent() ) {
-            // throw exception here
-            return;
-        }
-        SessionInterface sessionToReevaluate = optional.get();
-
-        PolicyHelper policyHelper = PolicyHelper.buildPolicyHelper( sessionToReevaluate.getPolicySet() );
-
-        List<Attribute> attributes = policyHelper.getAttributesForCondition( STARTACCESS_POLICY );
+        List<Attribute> attributes = policyHelper.getAttributesForCondition( POLICY_CONDITION.STARTACCESS );
         log.log( Level.INFO, "[TIME] startaccess begin scheduling at {0}", new Object[] { System.currentTimeMillis() } );
 
-        StartAccessResponse response = new StartAccessResponse( startAccessMessage.getDestination(),
-            startAccessMessage.getSource(), message.getMessageId() );
+        StartAccessResponse response = new StartAccessResponse( message.getDestination(),
+            message.getSource(), message.getMessageId() );
 
-        // check if there actually is a request to reevaluate for the received
-        // session id
-        if( !sessionToReevaluate.getStatus().equals( ContextHandlerConstants.TRY_STATUS ) ) {
-            // no request to reevaluate(some problem occurred during request and
-            // policy retrieving)
-            log.log( Level.SEVERE, "startaccess: tryaccess must be performed for session {0}", sessionId );
-
+        // check if there actually is a request to reevaluate for the received ession id
+        if( !session.getStatus().equals( ContextHandlerConstants.TRY_STATUS ) ) {
+            // no request to reevaluate(some problem occurred during request and policy retrieving)
+            log.log( Level.SEVERE, "startaccess: tryaccess must be performed for session {0}", message.getSessionId() );
             throw new WrongOrderException(
-                "[Context Handler] Startaccess: tryaccess must be performed yet for session " + sessionId );
+                "[Context Handler] Startaccess: tryaccess must be performed yet for session " + message.getSessionId() );
         }
 
-        String request = sessionToReevaluate.getOriginalRequest();
-
         // make the request complete before reevaluation
-        String requestFull = makeRequestFull( request, policyHelper.getAttributesForCondition( STARTACCESS_POLICY ),
+        String requestFull = fattenRequest( session.getOriginalRequest(),
+            policyHelper.getAttributesForCondition( POLICY_CONDITION.STARTACCESS ),
             STATUS.STARTACCESS, true );
 
         // perform the evaluation
-        PDPEvaluation pdpEvaluation = getPdpInterface().evaluate( requestFull,
-            policyHelper.getConditionForEvaluation( STARTACCESS_POLICY ) );
+        PDPEvaluation pdpEvaluation = getPdp().evaluate( requestFull,
+            policyHelper.getConditionForEvaluation( POLICY_CONDITION.STARTACCESS ) );
 
         log.log( Level.INFO, "[TIME] startaccess ends at {0}", new Object[] { System.currentTimeMillis() } );
 
@@ -486,40 +433,40 @@ public final class ContextHandlerLC extends AbstractContextHandler {
 
         // PDP returns PERMIT
         if( pdpEvaluation.getResult().equalsIgnoreCase( DecisionType.PERMIT.value() ) ) {
-
-            // obligation
-            getObligationManager().translateObligations( pdpEvaluation, sessionId, ContextHandlerConstants.START_STATUS );
+            getObligationManager().translateObligations( pdpEvaluation, message.getSessionId(), ContextHandlerConstants.START_STATUS );
 
             // update session status
-            if( !getSessionManagerInterface().updateEntry( sessionId, ContextHandlerConstants.START_STATUS ) ) {
-                log.log( Level.WARNING, "[TIME] startaccess session {0} status not updated", sessionId );
+            if( !getSessionManager().updateEntry( message.getSessionId(), ContextHandlerConstants.START_STATUS ) ) {
+                log.log( Level.WARNING, "[TIME] startaccess session {0} status not updated", message.getSessionId() );
             }
             log.log( Level.INFO, "[TIME] PERMIT startaccess ends at {0}", new Object[] { System.currentTimeMillis() } );
         } else {
-            getObligationManager().translateObligations( pdpEvaluation, sessionId, ContextHandlerConstants.START_STATUS );
+            getObligationManager().translateObligations( pdpEvaluation, message.getSessionId(), ContextHandlerConstants.START_STATUS );
 
-            if( revoke( sessionToReevaluate, attributes ) ) {
-                log.log( Level.INFO, "[TIME] access revocation for session {0}", sessionId );
+            if( revoke( session, attributes ) ) {
+                log.log( Level.INFO, "[TIME] access revocation for session {0}", message.getSessionId() );
 
                 // delete db entry for session sId
-                if( !getSessionManagerInterface().deleteEntry( sessionId ) ) {
-                    log.log( Level.SEVERE, "Startaccess: some problem occurred during entry deletion for session {0}", sessionId );
+                if( !getSessionManager().deleteEntry( message.getSessionId() ) ) {
+                    log.log( Level.SEVERE, "Startaccess: some problem occurred during entry deletion for session {0}",
+                        message.getSessionId() );
                     throw new SessionManagerException(
                         "[Context Handler] Startaccess: Some problem occurred during entry deletion for session "
-                                + sessionId );
+                                + message.getSessionId() );
                 }
             }
 
             log.log( Level.SEVERE,
-                "[Context Handler] Startaccess: Some problem occurred during execution of revokaccess for session {0}", sessionId );
+                "[Context Handler] Startaccess: Some problem occurred during execution of revokaccess for session {0}",
+                message.getSessionId() );
             throw new RevokeException(
                 "[Context Handler] Startaccess: Some problem occurred during execution of revokaccess for session "
-                        + sessionId );
+                        + message.getSessionId() );
         }
-        if( startAccessMessage.isScheduled() ) {
+        if( message.isScheduled() ) {
             response.setUCSDestination();
         }
-        getRequestManagerToChInterface().sendMessageToOutside( response );
+        getRequestManager().sendMessageToOutside( response );
     }
 
     /**
@@ -539,21 +486,13 @@ public final class ContextHandlerLC extends AbstractContextHandler {
         otherSessions = attributesToUnsubscribe( session.getId(), (ArrayList<Attribute>) attributes );
 
         if( !otherSessions ) {
-            pipRegistry.unsubscribeAll( attributes );
+            getPipRegistry().unsubscribeAll( attributes );
         }
 
         // database entry for the current must be deleted
-        try {
-            if( !getSessionManagerInterface().deleteEntry( session.getId() ) ) {
-                log.log( Level.SEVERE,
-                    "[Context Handler] Endaccess: Some problem occurred during entry deletion for session {0}",
-                    session.getId() );
-                throw new SessionManagerException(
-                    "[Context Handler] Endaccess: Some problem occurred during entry deletion for session "
-                            + session.getId() );
-            }
-        } catch( SessionManagerException sme ) {
-            log.severe( sme.getMessage() );
+        if( !getSessionManager().deleteEntry( session.getId() ) ) {
+            log.severe( "[Context Handler] Endaccess: Some problem occurred during entry deletion for session "
+                    + session.getId() );
             return false;
         }
 
@@ -583,7 +522,7 @@ public final class ContextHandlerLC extends AbstractContextHandler {
         String actionName = "";
         boolean otherSessions = true;
         // retrieve on going attributes for both subject and object
-        Collection<OnGoingAttributesInterface> onGoingAttributes = getSessionManagerInterface().getOnGoingAttributes( sessionId );
+        Collection<OnGoingAttributesInterface> onGoingAttributes = getSessionManager().getOnGoingAttributes( sessionId );
         List<OnGoingAttributesInterface> onGoingAttributesForSubject = new LinkedList<>();
         List<OnGoingAttributesInterface> onGoingAttributesForResource = new LinkedList<>();
         List<OnGoingAttributesInterface> onGoingAttributesForAction = new LinkedList<>();
@@ -610,16 +549,9 @@ public final class ContextHandlerLC extends AbstractContextHandler {
 
         // builds up the JSON object that is needed to perform unsubscribe
         if( onGoingAttributes != null && !onGoingAttributes.isEmpty() ) {
-            // ongoingattributes for object
             otherSessions = buildOnGoingAttributes( attributes, resourceName, otherSessions, onGoingAttributesForResource );
-
-            // verify what subject attributes must be unsubscribed
             otherSessions = verifyAttributesToUnsubscribe( attributes, subjectName, otherSessions, onGoingAttributesForSubject );
-
-            // on going attributes for action
             otherSessions = buildOnGoingAttributesForAction( attributes, actionName, otherSessions, onGoingAttributesForAction );
-
-            // on going attributes for environment
             otherSessions = buildOmGoingAttributesForEnvironment( attributes, otherSessions, onGoingAttributesForEnvironment );
         }
         return otherSessions;
@@ -628,12 +560,12 @@ public final class ContextHandlerLC extends AbstractContextHandler {
     private boolean buildOmGoingAttributesForEnvironment( ArrayList<Attribute> attributes, boolean otherSessions,
             List<OnGoingAttributesInterface> onGoingAttributesForEnvironment ) {
         for( OnGoingAttributesInterface attribute : onGoingAttributesForEnvironment ) {
-            List<SessionInterface> tempList = getSessionManagerInterface()
+            List<SessionInterface> tempList = getSessionManager()
                 .getSessionsForEnvironmentAttributes( attribute.getAttributeId() );
             if( tempList == null || tempList.isEmpty() || tempList.size() == 1 ) {
                 otherSessions = false;
                 Attribute tmpAttribute = new Attribute();
-                tmpAttribute.createAttributeId( attribute.getAttributeId() );
+                tmpAttribute.setAttributeId( attribute.getAttributeId() );
                 attributes.add( tmpAttribute );
             }
         }
@@ -643,12 +575,12 @@ public final class ContextHandlerLC extends AbstractContextHandler {
     private boolean buildOnGoingAttributesForAction( ArrayList<Attribute> attributes, String actionName, boolean otherSessions,
             List<OnGoingAttributesInterface> onGoingAttributesForAction ) {
         for( OnGoingAttributesInterface attribute : onGoingAttributesForAction ) {
-            List<SessionInterface> tempList = getSessionManagerInterface()
+            List<SessionInterface> tempList = getSessionManager()
                 .getSessionsForActionAttributes( actionName, attribute.getAttributeId() );
             if( tempList == null || tempList.isEmpty() || tempList.size() == 1 ) {
                 otherSessions = false;
                 Attribute tmpAttribute = new Attribute();
-                tmpAttribute.createAttributeId( attribute.getAttributeId() );
+                tmpAttribute.setAttributeId( attribute.getAttributeId() );
                 tmpAttribute.setAdditionalInformations( actionName );
                 attributes.add( tmpAttribute );
             }
@@ -659,19 +591,12 @@ public final class ContextHandlerLC extends AbstractContextHandler {
     private boolean verifyAttributesToUnsubscribe( ArrayList<Attribute> attributes, String subjectName, boolean otherSessions,
             List<OnGoingAttributesInterface> onGoingAttributesForSubject ) {
         for( OnGoingAttributesInterface attribute : onGoingAttributesForSubject ) {
-
-            // retrieve all the active sessions which deal with the
-            // considered on
-            // going attribute
-            List<SessionInterface> tempList = getSessionManagerInterface()
+            List<SessionInterface> tempList = getSessionManager()
                 .getSessionsForSubjectAttributes( subjectName, attribute.getAttributeId() );
-            // check if there are not any active sessions which deal with
-            // the
-            // attribute
             if( tempList == null || tempList.isEmpty() || tempList.size() == 1 ) {
                 otherSessions = false;
                 Attribute tmpAttribute = new Attribute();
-                tmpAttribute.createAttributeId( attribute.getAttributeId() );
+                tmpAttribute.setAttributeId( attribute.getAttributeId() );
                 tmpAttribute.setAdditionalInformations( subjectName );
                 attributes.add( tmpAttribute );
             }
@@ -682,19 +607,12 @@ public final class ContextHandlerLC extends AbstractContextHandler {
     private boolean buildOnGoingAttributes( ArrayList<Attribute> attributes, String resourceName, boolean otherSessions,
             List<OnGoingAttributesInterface> onGoingAttributesForResource ) {
         for( OnGoingAttributesInterface attribute : onGoingAttributesForResource ) {
-
-            // retrieve all the active sessions which deal with the
-            // considered on
-            // going attribute
-            List<SessionInterface> tempList = getSessionManagerInterface()
+            List<SessionInterface> tempList = getSessionManager()
                 .getSessionsForResourceAttributes( resourceName, attribute.getAttributeId() );
-            // check if there are not any active sessions which deal with
-            // the
-            // attribute
             if( tempList == null || tempList.isEmpty() || tempList.size() == 1 ) {
                 otherSessions = false;
                 Attribute tmpAttribute = new Attribute();
-                tmpAttribute.createAttributeId( attribute.getAttributeId() );
+                tmpAttribute.setAttributeId( attribute.getAttributeId() );
                 tmpAttribute.setAdditionalInformations( resourceName );
                 attributes.add( tmpAttribute );
             }
@@ -703,25 +621,17 @@ public final class ContextHandlerLC extends AbstractContextHandler {
     }
 
     @Override
-    public void endAccess( Message message ) {
-        // BEGIN parameter checking
-        if( !isInitialized() ) {
+    public void endAccess( EndAccessMessage message ) {
+        /*if( !isInitialized() ) {
             log.severe( "CH not initialized correctly" );
             return;
-        }
-        if( !( message instanceof EndAccessMessage ) ) {
-            log.severe( "Invalid message in endaccess" );
-            return;
-        }
-        // END parameter checking
-        try {
-            EndAccessMessage endAccessMessage = (EndAccessMessage) message;
-            String sessionId = endAccessMessage.getSessionId();
+        }*/
 
+        try {
             log.log( Level.INFO, "[TIME] endaccess begins at {0}", new Object[] { System.currentTimeMillis() } );
 
             // check if an entry actually exists in db
-            Optional<SessionInterface> optional = getSessionManagerInterface().getSessionForId( endAccessMessage.getSessionId() );
+            Optional<SessionInterface> optional = getSessionManager().getSessionForId( message.getSessionId() );
 
             if( !optional.isPresent() ) {
                 // throw exception here
@@ -735,35 +645,35 @@ public final class ContextHandlerLC extends AbstractContextHandler {
                 log.log( Level.INFO,
                     "[Context Handler] Endaccess: a tryaccess or startaccess must be performed yet for session {0}"
                             + ", or the related endaccess has already been executed",
-                    sessionId );
+                    message.getSessionId() );
                 throw new WrongOrderException(
-                    "[Context Handler] Endaccess: a tryaccess must be performed yet for session " + sessionId
+                    "[Context Handler] Endaccess: a tryaccess must be performed yet for session " + message.getSessionId()
                             + ", or the related endaccess has already been executed" );
             }
 
-            PolicyHelper policyHelper = PolicyHelper.buildPolicyHelper( sessionToReevaluate.getPolicySet() );
+            PolicyWrapper policyHelper = PolicyWrapper.buildPolicyWrapper( sessionToReevaluate.getPolicySet() );
 
             log.log( Level.INFO, "[TIME] endaccess scheduler starts at {0}", new Object[] { System.currentTimeMillis() } );
-            List<Attribute> attributes = policyHelper.getAttributesForCondition( ENDACCESS_POLICY );
+            List<Attribute> attributes = policyHelper.getAttributesForCondition( POLICY_CONDITION.ENDACCESS );
 
             String request = sessionToReevaluate.getOriginalRequest();
 
             // make the request complete before reevaluation
-            String requestFull = makeRequestFull( request, policyHelper.getAttributesForCondition( ENDACCESS_POLICY ),
+            String requestFull = fattenRequest( request, policyHelper.getAttributesForCondition( POLICY_CONDITION.ENDACCESS ),
                 STATUS.ENDACCESS, true );
 
-            PDPEvaluation pdpEvaluation = getPdpInterface().evaluate( requestFull,
-                policyHelper.getConditionForEvaluation( ENDACCESS_POLICY ) );
+            PDPEvaluation pdpEvaluation = getPdp().evaluate( requestFull,
+                policyHelper.getConditionForEvaluation( POLICY_CONDITION.ENDACCESS ) );
 
             log.log( Level.INFO, "[TIME] EndAccess evaluation ends at {0}", System.currentTimeMillis() );
 
-            getObligationManager().translateObligations( pdpEvaluation, sessionId, ContextHandlerConstants.END_STATUS );
+            getObligationManager().translateObligations( pdpEvaluation, message.getSessionId(), ContextHandlerConstants.END_STATUS );
 
-            EndAccessResponse response = new EndAccessResponse( endAccessMessage.getDestination(),
-                endAccessMessage.getSource(), message.getMessageId() );
+            EndAccessResponse response = new EndAccessResponse( message.getDestination(),
+                message.getSource(), message.getMessageId() );
             response.setPDPEvaluation( pdpEvaluation );
 
-            if( endAccessMessage.isScheduled() ) {
+            if( message.isScheduled() ) {
                 response.setUCSDestination();
             }
 
@@ -772,7 +682,7 @@ public final class ContextHandlerLC extends AbstractContextHandler {
                 log.log( Level.INFO, "[TIME] endaccess evaluation with revoke ends at {0}", System.currentTimeMillis() );
             }
 
-            getRequestManagerToChInterface().sendMessageToOutside( response );
+            getRequestManager().sendMessageToOutside( response );
         } catch( Exception e ) {
             log.severe( e.getMessage() );
         }
@@ -785,13 +695,10 @@ public final class ContextHandlerLC extends AbstractContextHandler {
      * @param message
      */
     @Override
-    public void attributeChanged( Message message ) {
+    public void attributeChanged( PipChMessage message ) {
         log.log( Level.INFO, "Attribute changed received {0}", System.currentTimeMillis() );
-        if( !( message instanceof PipChMessage ) ) {
-            log.warning( "Invalid message provided" );
-        }
         // non blocking insertion in the queue of attributes changed
-        attributesChanged.put( (PipChMessage) message );
+        attributesChanged.put( message );
     }
 
     /**
@@ -830,7 +737,7 @@ public final class ContextHandlerLC extends AbstractContextHandler {
         @Override
         public void run() {
             log.info( "Attribute monitor started" );
-            while( continueMonitoring ) {
+            while( monitoringRunning ) {
                 try {
                     PipChMessage message = attributesChanged.take();
                     List<Attribute> attributes = message.getAttributes();
@@ -925,16 +832,16 @@ public final class ContextHandlerLC extends AbstractContextHandler {
 
             switch( attr.getCategory() ) {
                 case RESOURCE:
-                    return getSessionManagerInterface()
+                    return getSessionManager()
                         .getSessionsForResourceAttributes( attrAddInfo, attrId );
                 case SUBJECT:
-                    return getSessionManagerInterface()
+                    return getSessionManager()
                         .getSessionsForSubjectAttributes( attrAddInfo, attrId );
                 case ACTION:
-                    return getSessionManagerInterface()
+                    return getSessionManager()
                         .getSessionsForActionAttributes( attrAddInfo, attrId );
                 case ENVIRONMENT:
-                    return getSessionManagerInterface()
+                    return getSessionManager()
                         .getSessionsForEnvironmentAttributes( attrId );
                 default:
                     log.severe( "Invalid attribute passed" );
@@ -964,16 +871,16 @@ public final class ContextHandlerLC extends AbstractContextHandler {
             try {
                 log.log( Level.INFO, "[TIME] reevaluation begins at {0}", System.currentTimeMillis() );
 
-                PolicyHelper policyHelper = PolicyHelper.buildPolicyHelper( session.getPolicySet() );
-                if( getSessionManagerInterface().checkSession( session.getId(),
+                PolicyWrapper policyHelper = PolicyWrapper.buildPolicyWrapper( session.getPolicySet() );
+                if( getSessionManager().checkSession( session.getId(),
                     null ) != it.cnr.iit.ucsinterface.sessionmanager.ReevaluationTableInterface.STATUS.IN_REEVALUATION ) {
-                    getSessionManagerInterface().insertSession( session, attribute );
+                    getSessionManager().insertSession( session, attribute );
                 } else {
                     log.info( "Session is already under evaluation" );
                     return null;
                 }
 
-                policyHelper.getAttributesForCondition( STARTACCESS_POLICY );
+                policyHelper.getAttributesForCondition( POLICY_CONDITION.STARTACCESS );
                 log.log( Level.INFO, "[TIME] reevaluation scheduler starts at {0}", System.currentTimeMillis() );
                 ReevaluationMessage reevaluationMessage = new ReevaluationMessage(
                     uri.getHost(),
@@ -982,7 +889,7 @@ public final class ContextHandlerLC extends AbstractContextHandler {
                 log.log( Level.INFO, "[TIME] reevaluation starts at {0}", System.currentTimeMillis() );
                 reevaluate( reevaluationMessage );
                 log.log( Level.INFO, "[TIME] reevaluation ends at {0}", System.currentTimeMillis() );
-                getSessionManagerInterface().stopSession( session );
+                getSessionManager().stopSession( session );
 
             } catch( Exception e ) {
                 log.severe( "Error in PIP retrieve " + e.getMessage() );
@@ -992,30 +899,20 @@ public final class ContextHandlerLC extends AbstractContextHandler {
     }
 
     @Override
-    public synchronized void reevaluate( Message message ) {
-        // BEGIN parameter checking
-        if( !( message instanceof ReevaluationMessage ) ) {
-            log.severe( "Invalid message received for reevaluation" );
-            return;
-        }
-        // END parameter checking
-
-        ReevaluationMessage reevaluationMessage = (ReevaluationMessage) message;
-
-        SessionInterface session = reevaluationMessage.getSession();
-
-        String request = reevaluationMessage.getSession().getOriginalRequest();
-        PolicyHelper policyHelper = PolicyHelper.buildPolicyHelper( reevaluationMessage.getSession().getPolicySet() );
+    public synchronized void reevaluate( ReevaluationMessage message ) {
+        SessionInterface session = message.getSession();
+        PolicyWrapper policyHelper = PolicyWrapper.buildPolicyWrapper( session.getPolicySet() );
         // make the request complete before reevaluation
-        String requestFull = makeRequestFull( request, policyHelper.getAttributesForCondition( STARTACCESS_POLICY ),
+        String requestFull = fattenRequest( session.getOriginalRequest(),
+            policyHelper.getAttributesForCondition( POLICY_CONDITION.STARTACCESS ),
             STATUS.STARTACCESS, true );
 
         // perform the evaluation
-        PDPEvaluation pdpEvaluation = getPdpInterface().evaluate( requestFull,
-            policyHelper.getConditionForEvaluation( STARTACCESS_POLICY ) );
+        PDPEvaluation pdpEvaluation = getPdp().evaluate( requestFull,
+            policyHelper.getConditionForEvaluation( POLICY_CONDITION.STARTACCESS ) );
 
         // obligation
-        getObligationManager().translateObligations( pdpEvaluation, reevaluationMessage.getSession().getId(),
+        getObligationManager().translateObligations( pdpEvaluation, message.getSession().getId(),
             ContextHandlerConstants.START_STATUS );
 
         log.log( Level.INFO, "[TIME] decision {0} taken at {1}", new Object[] { pdpEvaluation.getResult(), System.currentTimeMillis() } );
@@ -1027,20 +924,20 @@ public final class ContextHandlerLC extends AbstractContextHandler {
         pdpEvaluation.setSessionId( session.getId() );
         chPepMessage.setPDPEvaluation( pdpEvaluation );
         chPepMessage.setPepId( uriSplitted[uriSplitted.length - 1] );
-        getSessionManagerInterface().stopSession( session );
+        getSessionManager().stopSession( session );
         if( ( session.getStatus().equals( ContextHandlerConstants.START_STATUS )
                 || session.getStatus().equals( ContextHandlerConstants.TRY_STATUS ) )
                 && pdpEvaluation.getResult().contains( DecisionType.DENY.value() ) ) {
             log.log( Level.INFO, "[TIME] Sending revoke {0}", System.currentTimeMillis() );
-            getSessionManagerInterface().updateEntry( session.getId(), ContextHandlerConstants.REVOKE_STATUS );
-            getRequestManagerToChInterface().sendMessageToOutside( chPepMessage );
+            getSessionManager().updateEntry( session.getId(), ContextHandlerConstants.REVOKE_STATUS );
+            getRequestManager().sendMessageToOutside( chPepMessage );
         }
 
         if( session.getStatus().equals( ContextHandlerConstants.REVOKE_STATUS )
                 && pdpEvaluation.getResult().contains( DecisionType.PERMIT.value() ) ) {
             log.log( Level.INFO, "[TIME] Sending resume {0}", System.currentTimeMillis() );
-            getSessionManagerInterface().updateEntry( session.getId(), ContextHandlerConstants.START_STATUS );
-            getRequestManagerToChInterface().sendMessageToOutside( chPepMessage );
+            getSessionManager().updateEntry( session.getId(), ContextHandlerConstants.START_STATUS );
+            getRequestManager().sendMessageToOutside( chPepMessage );
         }
     }
 }
