@@ -22,7 +22,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URI;
-import java.net.URL;
+import java.nio.file.Paths;
 import java.util.Optional;
 import java.util.PropertyResourceBundle;
 import java.util.Scanner;
@@ -97,13 +97,12 @@ public final class Utility {
             return null;
         }
         File file = new File( relPath );
-        if( file != null && file.exists() ) {
+        if( file.exists() ) {
             return relPath;
         }
         try {
             ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-            URL input = classLoader.getResource( relPath );
-            return input.getPath();
+            return Paths.get( classLoader.getResource( relPath ).toURI() ).toString();
         } catch( NullPointerException e ) {
             return null;
         } catch( Exception e ) {
