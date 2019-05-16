@@ -45,7 +45,7 @@ import it.cnr.iit.ucsinterface.message.startaccess.StartAccessResponse;
 import it.cnr.iit.ucsinterface.message.tryaccess.TryAccessMessage;
 import it.cnr.iit.ucsinterface.message.tryaccess.TryAccessResponse;
 import it.cnr.iit.ucsinterface.pdp.PDPEvaluation;
-import it.cnr.iit.ucsinterface.sessionmanager.CreateEntryParameterBuilder;
+import it.cnr.iit.ucsinterface.sessionmanager.SessionAttributesBuilder;
 import it.cnr.iit.ucsinterface.sessionmanager.OnGoingAttributesInterface;
 import it.cnr.iit.ucsinterface.sessionmanager.SessionInterface;
 import it.cnr.iit.utility.JAXBUtility;
@@ -357,7 +357,7 @@ public final class ContextHandlerLC extends AbstractContextHandler {
             RequestType requestType = JAXBUtility.unmarshalToObject( RequestType.class, request );
 
             // retrieve the id of ongoing attributes
-            CreateEntryParameterBuilder createEntryParameterBuilder = new CreateEntryParameterBuilder();
+            SessionAttributesBuilder createEntryParameterBuilder = new SessionAttributesBuilder();
 
             List<Attribute> onGoingAttributes = policyHelper.getAttributesForCondition( STARTACCESS_POLICY );
             createEntryParameterBuilder.setOnGoingAttributesForSubject( getAttributesForCategory( onGoingAttributes, Category.SUBJECT ) )

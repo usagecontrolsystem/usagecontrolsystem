@@ -385,7 +385,7 @@ public class UCFBaseTests {
     protected String readResourceFileAsString( String resource ) throws URISyntaxException, IOException {
         log.info( "Loading resource file : " + resource );
         ClassLoader classLoader = this.getClass().getClassLoader();
-        Path path = Paths.get( classLoader.getResource( resource ).getFile() );
+        Path path = Paths.get( classLoader.getResource( resource ).toURI() );
         byte[] data = Files.readAllBytes( path );
         return new String( data );
     }

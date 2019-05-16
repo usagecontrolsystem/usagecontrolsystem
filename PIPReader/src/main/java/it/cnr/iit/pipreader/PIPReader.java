@@ -350,7 +350,7 @@ public final class PIPReader extends PIPBase {
             String oldValue = attribute.getAttributeValues( attribute.getAttributeDataType() ).get( 0 );
             if( !oldValue.equals( value ) ) { // if the attribute has changed
                 log.log( Level.INFO,
-                    "Attribute {0}={1}:{2} changed at {1}",
+                    "Attribute {0}={1}:{2} changed at {3}",
                     new Object[] { attribute.getAttributeId(), value,
                         attribute.getAdditionalInformations(),
                         System.currentTimeMillis() } );
