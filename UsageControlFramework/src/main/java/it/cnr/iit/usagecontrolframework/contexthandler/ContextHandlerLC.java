@@ -45,8 +45,8 @@ import it.cnr.iit.ucsinterface.message.startaccess.StartAccessResponse;
 import it.cnr.iit.ucsinterface.message.tryaccess.TryAccessMessage;
 import it.cnr.iit.ucsinterface.message.tryaccess.TryAccessResponse;
 import it.cnr.iit.ucsinterface.pdp.PDPEvaluation;
-import it.cnr.iit.ucsinterface.sessionmanager.SessionAttributesBuilder;
 import it.cnr.iit.ucsinterface.sessionmanager.OnGoingAttributesInterface;
+import it.cnr.iit.ucsinterface.sessionmanager.SessionAttributesBuilder;
 import it.cnr.iit.ucsinterface.sessionmanager.SessionInterface;
 import it.cnr.iit.utility.JAXBUtility;
 import it.cnr.iit.xacmlutilities.Attribute;
@@ -611,21 +611,21 @@ public final class ContextHandlerLC extends AbstractContextHandler {
         // builds up the JSON object that is needed to perform unsubscribe
         if( onGoingAttributes != null && !onGoingAttributes.isEmpty() ) {
             // ongoingattributes for object
-            otherSessions = buildOnGoingAttributes( attributes, resourceName, otherSessions, onGoingAttributesForResource );
+            otherSessions = buildOnGoingAttributesForResource( attributes, resourceName, otherSessions, onGoingAttributesForResource );
 
             // verify what subject attributes must be unsubscribed
-            otherSessions = verifyAttributesToUnsubscribe( attributes, subjectName, otherSessions, onGoingAttributesForSubject );
+            otherSessions = buildOnGoingAttributesForSubject( attributes, subjectName, otherSessions, onGoingAttributesForSubject );
 
             // on going attributes for action
             otherSessions = buildOnGoingAttributesForAction( attributes, actionName, otherSessions, onGoingAttributesForAction );
 
             // on going attributes for environment
-            otherSessions = buildOmGoingAttributesForEnvironment( attributes, otherSessions, onGoingAttributesForEnvironment );
+            otherSessions = buildOnGoingAttributesForEnvironment( attributes, otherSessions, onGoingAttributesForEnvironment );
         }
         return otherSessions;
     }
 
-    private boolean buildOmGoingAttributesForEnvironment( ArrayList<Attribute> attributes, boolean otherSessions,
+    private boolean buildOnGoingAttributesForEnvironment( ArrayList<Attribute> attributes, boolean otherSessions,
             List<OnGoingAttributesInterface> onGoingAttributesForEnvironment ) {
         for( OnGoingAttributesInterface attribute : onGoingAttributesForEnvironment ) {
             List<SessionInterface> tempList = getSessionManagerInterface()
@@ -656,7 +656,7 @@ public final class ContextHandlerLC extends AbstractContextHandler {
         return otherSessions;
     }
 
-    private boolean verifyAttributesToUnsubscribe( ArrayList<Attribute> attributes, String subjectName, boolean otherSessions,
+    private boolean buildOnGoingAttributesForSubject( ArrayList<Attribute> attributes, String subjectName, boolean otherSessions,
             List<OnGoingAttributesInterface> onGoingAttributesForSubject ) {
         for( OnGoingAttributesInterface attribute : onGoingAttributesForSubject ) {
 
@@ -679,7 +679,7 @@ public final class ContextHandlerLC extends AbstractContextHandler {
         return otherSessions;
     }
 
-    private boolean buildOnGoingAttributes( ArrayList<Attribute> attributes, String resourceName, boolean otherSessions,
+    private boolean buildOnGoingAttributesForResource( ArrayList<Attribute> attributes, String resourceName, boolean otherSessions,
             List<OnGoingAttributesInterface> onGoingAttributesForResource ) {
         for( OnGoingAttributesInterface attribute : onGoingAttributesForResource ) {
 
@@ -898,7 +898,7 @@ public final class ContextHandlerLC extends AbstractContextHandler {
                 }
                 return true;
             } catch( Exception e ) {
-                log.severe( "Error in Reevaluate sessions : " + e.getMessage() );
+                log.severe( "Error in Reevaluate sessions : " + e.getMessage() + "\t" + e.getLocalizedMessage() );
             }
             return false;
         }
@@ -965,13 +965,6 @@ public final class ContextHandlerLC extends AbstractContextHandler {
                 log.log( Level.INFO, "[TIME] reevaluation begins at {0}", System.currentTimeMillis() );
 
                 PolicyHelper policyHelper = PolicyHelper.buildPolicyHelper( session.getPolicySet() );
-                if( getSessionManagerInterface().checkSession( session.getId(),
-                    null ) != it.cnr.iit.ucsinterface.sessionmanager.ReevaluationTableInterface.STATUS.IN_REEVALUATION ) {
-                    getSessionManagerInterface().insertSession( session, attribute );
-                } else {
-                    log.info( "Session is already under evaluation" );
-                    return null;
-                }
 
                 policyHelper.getAttributesForCondition( STARTACCESS_POLICY );
                 log.log( Level.INFO, "[TIME] reevaluation scheduler starts at {0}", System.currentTimeMillis() );

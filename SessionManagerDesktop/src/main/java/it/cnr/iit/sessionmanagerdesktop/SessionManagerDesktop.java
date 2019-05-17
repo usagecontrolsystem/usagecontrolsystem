@@ -156,6 +156,9 @@ public final class SessionManagerDesktop implements SessionManagerInterface {
         try {
             ForeignCollection<OnGoingAttribute> a = sessionDao.queryForId( sessionId )
                 .getOnGoingAttributesAsForeign();
+            for( OnGoingAttribute attribute : a ) {
+                attributesDao.deleteById( attribute.getId() );
+            }
             a.clear();
             sessionDao.deleteById( sessionId );
         } catch( SQLException ex ) {
