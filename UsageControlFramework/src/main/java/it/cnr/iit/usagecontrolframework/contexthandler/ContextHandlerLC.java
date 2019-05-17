@@ -768,7 +768,6 @@ public final class ContextHandlerLC extends AbstractContextHandler {
             }
 
             // access must be revoked
-            System.out.println( "HELLO" );
             if( revoke( sessionToReevaluate, attributes ) ) {
                 log.log( Level.INFO, "[TIME] endaccess evaluation with revoke ends at {0}", System.currentTimeMillis() );
             }
