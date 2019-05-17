@@ -224,8 +224,8 @@ public class PolicyWrapper implements PolicyWrapperInterface {
      *         we're interested into in the String format
      */
     @Override
-    public String getConditionForEvaluation( String conditionName ) {
-        PolicyType tmp = copyPolicy();
+    public String getPolicy( String conditionName ) {
+        PolicyType clonedPolicy = clonePolicy();
 
         /**
          * This is the most delicate part of this function.
@@ -251,33 +251,33 @@ public class PolicyWrapper implements PolicyWrapperInterface {
                         if( conditionType.getDecisionTime() == null ) {
                             if( conditionName.equals( "pre" ) ) {
                                 RuleType tmpRuleType = copyRuleType( ruleType, conditionType );
-                                tmp.getCombinerParametersOrRuleCombinerParametersOrVariableDefinition()
+                                clonedPolicy.getCombinerParametersOrRuleCombinerParametersOrVariableDefinition()
                                     .add( tmpRuleType );
                             } else {
                                 RuleType tmpRuleType = getDefaultRuleType( "def-permit", EffectType.PERMIT );
                                 tmpRuleType.setObligationExpressions(
                                     ruleType.getObligationExpressions() );
-                                tmp.getCombinerParametersOrRuleCombinerParametersOrVariableDefinition()
+                                clonedPolicy.getCombinerParametersOrRuleCombinerParametersOrVariableDefinition()
                                     .add( tmpRuleType );
                             }
                         } else if( conditionType.getDecisionTime().equals( conditionName ) ) {
                             RuleType tmpRuleType = copyRuleType( ruleType, conditionType );
-                            tmp.getCombinerParametersOrRuleCombinerParametersOrVariableDefinition()
+                            clonedPolicy.getCombinerParametersOrRuleCombinerParametersOrVariableDefinition()
                                 .add( tmpRuleType );
                             break;
                         }
                     }
                 } else {
-                    tmp.getCombinerParametersOrRuleCombinerParametersOrVariableDefinition()
+                    clonedPolicy.getCombinerParametersOrRuleCombinerParametersOrVariableDefinition()
                         .add( ruleType );
                 }
             } else {
-                tmp.getCombinerParametersOrRuleCombinerParametersOrVariableDefinition()
+                clonedPolicy.getCombinerParametersOrRuleCombinerParametersOrVariableDefinition()
                     .add( obj );
             }
         }
 
-        return marshalPolicyType( tmp );
+        return marshalPolicyType( clonedPolicy );
     }
 
     public static PolicyType unmarshalPolicyType( String policy ) {
@@ -356,7 +356,7 @@ public class PolicyWrapper implements PolicyWrapperInterface {
      * @return the PolicyType object that is the copy of the one stored in this
      *         object
      */
-    private PolicyType copyPolicy() {
+    private PolicyType clonePolicy() {
         PolicyType tmpPolicyType = new PolicyType();
         tmpPolicyType.setDescription( policyType.getDescription() );
         tmpPolicyType.setPolicyId( policyType.getPolicyId() );

@@ -128,7 +128,7 @@ public final class PolicyDecisionPoint extends AbstractPDP {
             STATUS status ) {
         try {
             String conditionName = extractFromStatus( status );
-            String policyToEvaluate = policyHelper.getConditionForEvaluation( conditionName );
+            String policyToEvaluate = policyHelper.getPolicy( conditionName );
 
             ArrayList<ResponseCtx> responses = new ArrayList<>();
 

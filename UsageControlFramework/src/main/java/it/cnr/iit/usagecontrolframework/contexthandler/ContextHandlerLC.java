@@ -86,14 +86,14 @@ public final class ContextHandlerLC extends AbstractContextHandler {
     // monitors if the value of an attribute changes
     private AttributeMonitor attributeMonitor;
     // queue in charge of storing the changing in the attributes
-    private LinkedTransferQueue<PipChMessage> attributesChanged;
+    private LinkedTransferQueue<PipChMessage> changedAttributesQueue;
 
     private Thread monitoringThread;
     private boolean monitoringRunning = true;
 
     public ContextHandlerLC( ContextHandlerProperties chProperties ) {
         super( chProperties );
-        attributesChanged = new LinkedTransferQueue<>();
+        changedAttributesQueue = new LinkedTransferQueue<>();
         attributeMonitor = new AttributeMonitor();
         monitoringThread = new Thread( attributeMonitor );
     }
@@ -299,39 +299,34 @@ public final class ContextHandlerLC extends AbstractContextHandler {
         Reject.ifAbsent( optSession, "StartAccess: no session for id " + message.getSessionId() ); // TODO default deny
         SessionInterface session = optSession.get();
 
-        log.log( Level.INFO, "startAccess begin scheduling at {0}", new Object[] { System.currentTimeMillis() } );
+        log.log( Level.INFO, "StartAccess begin scheduling at {0}", new Object[] { System.currentTimeMillis() } );
 
         // Check if the session has the correct status
         // TODO update sessionInterface to handle sesion.isStatus(STATUS)
         if( !session.getStatus().equals( ContextHandlerConstants.TRY_STATUS ) ) {
-            log.log( Level.SEVERE, "startAccess: tryaccess must be performed for session {0}", message.getSessionId() );
-            // TODO avoid throw, default deny
-            // throw new WrongOrderException(
-            // "StartAccess: tryaccess must be performed yet for session " + message.getSessionId() );
+            log.log( Level.SEVERE, "StartAccess: wrong status for session {0}", message.getSessionId() );
+            throw new WrongOrderException( "StartAccess: tryaccess must be performed yet for session " + message.getSessionId() );
         }
 
         PolicyWrapper policy = PolicyWrapper.build( session.getPolicySet() );
         RequestWrapper request = RequestWrapper.build( session.getOriginalRequest() );
         RequestWrapper fatRequest = fattenRequest( request, policy, STATUS.STARTACCESS );
 
-        PDPEvaluation evaluation = getPdp().evaluate( fatRequest.getRequest(),
-            policy.getConditionForEvaluation( POLICY_CONDITION.STARTACCESS ) );
-
-        log.log( Level.INFO, "startAccess evaluation : {0}", evaluation.getResponse() );
+        PDPEvaluation evaluation = getPdp().evaluate( fatRequest.getRequest(), policy.getPolicy( POLICY_CONDITION.STARTACCESS ) );
+        log.log( Level.INFO, "StartAccess evaluated at {0} pdp response : {1}",
+            new Object[] { System.currentTimeMillis(), evaluation.getResult() } );
 
         getObligationManager().translateObligations( evaluation, message.getSessionId(), ContextHandlerConstants.START_STATUS );
 
         if( evaluation.isPermit() ) {
             if( !getSessionManager().updateEntry( message.getSessionId(), ContextHandlerConstants.START_STATUS ) ) {
-                log.log( Level.SEVERE, "startAccess error, sessionId {0} status update failed", message.getSessionId() );
+                log.log( Level.SEVERE, "StartAccess error, sessionId {0} status update failed", message.getSessionId() );
             }
         } else {
             List<Attribute> attributes = policy.getAttributesForCondition( POLICY_CONDITION.STARTACCESS );
-            if( revoke( session, attributes ) ) {
-                if( !getSessionManager().deleteEntry( message.getSessionId() ) ) {
-                    log.log( Level.SEVERE, "StartAccess error, sessionId {0} deletion failed",
-                        message.getSessionId() );
-                }
+            if( revoke( session, attributes ) && !getSessionManager().deleteEntry( message.getSessionId() ) ) {
+                log.log( Level.SEVERE, "StartAccess error, sessionId {0} deletion failed",
+                    message.getSessionId() );
             }
         }
 
@@ -364,7 +359,6 @@ public final class ContextHandlerLC extends AbstractContextHandler {
             getPipRegistry().unsubscribeAll( attributes );
         }
 
-        // database entry for the current must be deleted
         if( !getSessionManager().deleteEntry( session.getId() ) ) {
             log.log( Level.SEVERE, "EndAccess: errors during entry deletion for sessionId {0}", session.getId() );
             return false;
@@ -460,6 +454,7 @@ public final class ContextHandlerLC extends AbstractContextHandler {
                 return getSessionManager()
                     .getSessionsForResourceAttributes( name, id );
             default:
+                log.severe( "Invalid attribute passed" );
                 return new ArrayList<>();
         }
     }
@@ -474,62 +469,54 @@ public final class ContextHandlerLC extends AbstractContextHandler {
     }
 
     @Override
-    public void endAccess( EndAccessMessage message ) {
-        log.log( Level.INFO, "endAccess begins at {0}", System.currentTimeMillis() );
-        try {
-            // check if an entry actually exists in db
-            Optional<SessionInterface> optSession = getSessionManager().getSessionForId( message.getSessionId() );
-            if( !optSession.isPresent() ) {
-                // throw exception here
-                return;
-            }
-            SessionInterface session = optSession.get();
+    public void endAccess( EndAccessMessage message ) throws WrongOrderException {
+        log.log( Level.INFO, "EndAccess begins at {0}", System.currentTimeMillis() );
+        Optional<SessionInterface> optSession = getSessionManager().getSessionForId( message.getSessionId() );
+        Reject.ifAbsent( optSession, "EndAccess: no session for id " + message.getSessionId() ); // TODO default deny
+        SessionInterface session = optSession.get();
 
-            if( ( !session.getStatus().equals( ContextHandlerConstants.START_STATUS )
-                    && !session.getStatus().equals( ContextHandlerConstants.REVOKE_STATUS ) ) ) {
-                // no entry exists for the actual session
-                log.log( Level.INFO,
-                    "[Context Handler] Endaccess: a tryaccess or startaccess must be performed yet for session {0}"
-                            + ", or the related endaccess has already been executed",
-                    message.getSessionId() );
-                throw new WrongOrderException(
-                    "[Context Handler] Endaccess: a tryaccess must be performed yet for session " + message.getSessionId()
-                            + ", or the related endaccess has already been executed" );
-            }
-
-            PolicyWrapper policyHelper = PolicyWrapper.build( session.getPolicySet() );
-
-            log.log( Level.INFO, "endaccess scheduler starts at {0}", new Object[] { System.currentTimeMillis() } );
-            List<Attribute> attributes = policyHelper.getAttributesForCondition( POLICY_CONDITION.ENDACCESS );
-
-            // make the request complete before reevaluation
-            RequestWrapper request = RequestWrapper.build( session.getOriginalRequest() );
-            RequestWrapper fatRequest = fattenRequest( request, policyHelper, STATUS.ENDACCESS );
-
-            PDPEvaluation pdpEvaluation = getPdp().evaluate( fatRequest.getRequest(),
-                policyHelper.getConditionForEvaluation( POLICY_CONDITION.ENDACCESS ) );
-
-            log.log( Level.INFO, "EndAccess evaluation ends at {0}", System.currentTimeMillis() );
-
-            getObligationManager().translateObligations( pdpEvaluation, message.getSessionId(), ContextHandlerConstants.END_STATUS );
-
-            EndAccessResponse response = new EndAccessResponse( message.getDestination(),
-                message.getSource(), message.getMessageId() );
-            response.setPDPEvaluation( pdpEvaluation );
-
-            if( message.isScheduled() ) {
-                response.setUCSDestination();
-            }
-
-            // access must be revoked
-            if( revoke( session, attributes ) ) {
-                log.log( Level.INFO, "endaccess evaluation with revoke ends at {0}", System.currentTimeMillis() );
-            }
-
-            getRequestManager().sendMessageToOutside( response );
-        } catch( Exception e ) {
-            log.severe( e.getMessage() );
+        // try {
+        // Check if the session has the correct status
+        if( ( !session.getStatus().equals( ContextHandlerConstants.START_STATUS )
+                && !session.getStatus().equals( ContextHandlerConstants.REVOKE_STATUS ) ) ) {
+            log.log( Level.INFO, "EndAccess: wrong status for session {0}", message.getSessionId() );
+            throw new WrongOrderException( "EndAccess: wrong status for session " + message.getSessionId() );
         }
+
+        log.log( Level.INFO, "EndAccess evaluation starts at {0}", System.currentTimeMillis() );
+
+        PolicyWrapper policy = PolicyWrapper.build( session.getPolicySet() );
+        RequestWrapper request = RequestWrapper.build( session.getOriginalRequest() );
+        RequestWrapper fatRequest = fattenRequest( request, policy, STATUS.ENDACCESS );
+
+        PDPEvaluation evaluation = getPdp().evaluate( fatRequest.getRequest(),
+            policy.getPolicy( POLICY_CONDITION.ENDACCESS ) );
+
+        log.log( Level.INFO, "EndAccess evaluated at {0} pdp response : {1}",
+            new Object[] { System.currentTimeMillis(), evaluation.getResult() } );
+
+        getObligationManager().translateObligations( evaluation, message.getSessionId(), ContextHandlerConstants.END_STATUS );
+
+        // access must be revoked
+        List<Attribute> attributes = policy.getAttributesForCondition( POLICY_CONDITION.ENDACCESS );
+        if( revoke( session, attributes ) ) {
+            log.log( Level.INFO, "EndAccess evaluation with revoke ends at {0}", System.currentTimeMillis() );
+        }
+
+        EndAccessResponse response = buildEndAccessResponse( message, evaluation );
+        getRequestManager().sendMessageToOutside( response );
+        // } catch( Exception e ) {
+        // log.severe( e.getMessage() );
+        // }
+    }
+
+    private EndAccessResponse buildEndAccessResponse( EndAccessMessage message, PDPEvaluation evaluation ) {
+        EndAccessResponse response = new EndAccessResponse( message.getDestination(), message.getSource(), message.getMessageId() );
+        response.setPDPEvaluation( evaluation );
+        if( message.isScheduled() ) {
+            response.setUCSDestination();
+        }
+        return response;
     }
 
     /**
@@ -542,38 +529,24 @@ public final class ContextHandlerLC extends AbstractContextHandler {
     public void attributeChanged( PipChMessage message ) {
         log.log( Level.INFO, "Attribute changed received {0}", System.currentTimeMillis() );
         // non blocking insertion in the queue of attributes changed
-        attributesChanged.put( message );
+        changedAttributesQueue.put( message );
     }
 
     /**
      * This class represents the object in charge of performing reevaluation.
      * <p>
-     * Basically this thread waits for notifications coming from PIPs, when it
+     * The thread waits for notifications coming from PIPs, when it
      * receives a notification, it starts reevaluating all the sessions that are
-     * interested in that attribute. For this reason this thread will have to
-     * accomplish the following tasks:
+     * interested in that attribute.
+     * For this reason this thread will have to:
      * <ol type="i">
      * <li>Retrieve all the sessions that are interested into that attribute. If
      * the attribute contains any additional information (e.g. the name of the
      * subject) obviously check if the additional information stored in the
      * policy is the same.</li>
-     * <li>For each session: ask the scheduler if it has to be evaluated locally
-     * or by a remote site, in the latter send the request with the values of
-     * the local attributes to the remote site.</li>
-     * </ol>
-     * <br>
+     * </ol><br>
      * </p>
-     * <p>
-     * <b>Implemented behaviour: </b> <br>
-     * This thread waits on the list named attributesChanged for a message
-     * coming from a PIP. When this happens the reevaluation process described
-     * above can start. Obviously it has to check if the considered session is
-     * already being evaluated, for example the PEP may ask to terminate a
-     * session and in the meanwhile an attribute has changed, but the session
-     * has to be evaluated only once.
-     * </p>
-     *
-     * @author antonio
+     * @author Antonio La Marra, Alessandro Rosetti
      *
      */
     private final class AttributeMonitor implements Runnable {
@@ -583,7 +556,7 @@ public final class ContextHandlerLC extends AbstractContextHandler {
             log.info( "Attribute monitor started" );
             while( monitoringRunning ) {
                 try {
-                    PipChMessage message = attributesChanged.take();
+                    PipChMessage message = changedAttributesQueue.take();
                     List<Attribute> attributes = message.getAttributes();
 
                     if( attributes == null ) {
@@ -638,59 +611,19 @@ public final class ContextHandlerLC extends AbstractContextHandler {
          */
         private boolean reevaluateSessions( Attribute attribute ) {
             try {
-                log.info( "reevaluateSessions attrId : " + attribute.getAttributeId() );
-                List<SessionInterface> interestedSessions = retrieveSessions( attribute );
-                if( interestedSessions == null || interestedSessions.isEmpty() ) {
-                    log.info( "There are no sessions to be reevaluated" );
-                    return true;
-                }
-                for( SessionInterface session : interestedSessions ) {
-                    reevaluateSession( session, attribute );
+                log.info( "reevaluateSessions for  attributeId : " + attribute.getAttributeId() );
+                List<SessionInterface> sessionList = getSessionListForCategory( attribute.getCategory(), attribute.getAttributeId(),
+                    attribute.getAdditionalInformations() );
+                if( sessionList != null ) {
+                    for( SessionInterface session : sessionList ) {
+                        reevaluateSession( session );
+                    }
                 }
                 return true;
             } catch( Exception e ) {
                 log.severe( "Error in Reevaluate sessions : " + e.getMessage() );
             }
             return false;
-        }
-
-        /**
-         * Given a certain attribute retrieval, extract from it two basics
-         * informations: the attributeId and the eventual additional
-         * informations in order to retrieve all the sessions related to that
-         * particular attribute Id with that particular additionalInformations.
-         * We need also the additional informations in order to perform a
-         * pre-filtering, in fact it may happen, for example, that during time
-         * the role of a person changes, but we don't want to reevaluate all the
-         * sessions that use the attribute role, but only those sessions that
-         * are interested in that particular person.
-         *
-         * @param attr
-         *            the attribute retrieval object that represents the
-         *            attribute that has changed
-         * @return the list of sessions interested
-         */
-        private List<SessionInterface> retrieveSessions( Attribute attr ) {
-            String attrId = attr.getAttributeId();
-            String attrAddInfo = attr.getAdditionalInformations();
-
-            switch( attr.getCategory() ) {
-                case RESOURCE:
-                    return getSessionManager()
-                        .getSessionsForResourceAttributes( attrAddInfo, attrId );
-                case SUBJECT:
-                    return getSessionManager()
-                        .getSessionsForSubjectAttributes( attrAddInfo, attrId );
-                case ACTION:
-                    return getSessionManager()
-                        .getSessionsForActionAttributes( attrAddInfo, attrId );
-                case ENVIRONMENT:
-                    return getSessionManager()
-                        .getSessionsForEnvironmentAttributes( attrId );
-                default:
-                    log.severe( "Invalid attribute passed" );
-                    return new ArrayList<>();
-            }
         }
 
         /**
@@ -708,70 +641,60 @@ public final class ContextHandlerLC extends AbstractContextHandler {
          *
          * @param session
          *            the session to be reevaluated
-         * @return a String representing the answer of the PDP.
-         *
          */
-        private String reevaluateSession( SessionInterface session, Attribute attribute ) {
+        private void reevaluateSession( SessionInterface session ) {
             try {
-                log.log( Level.INFO, "reevaluation begins at {0}", System.currentTimeMillis() );
-
-                PolicyWrapper policy = PolicyWrapper.build( session.getPolicySet() );
-                policy.getAttributesForCondition( POLICY_CONDITION.STARTACCESS );
-                log.log( Level.INFO, "reevaluation scheduler starts at {0}", System.currentTimeMillis() );
-                ReevaluationMessage reevaluationMessage = new ReevaluationMessage(
-                    uri.getHost(),
-                    uri.getHost() );
+                log.log( Level.INFO, "Reevaluation begins at {0}", System.currentTimeMillis() );
+                ReevaluationMessage reevaluationMessage = new ReevaluationMessage( uri.getHost(), uri.getHost() );
                 reevaluationMessage.setSession( session );
-                log.log( Level.INFO, "reevaluation starts at {0}", System.currentTimeMillis() );
                 reevaluate( reevaluationMessage );
-                log.log( Level.INFO, "reevaluation ends at {0}", System.currentTimeMillis() );
-                getSessionManager().stopSession( session );
-
+                log.log( Level.INFO, "Reevaluation ends at {0}", System.currentTimeMillis() );
             } catch( Exception e ) {
-                log.severe( "Error in PIP retrieve " + e.getMessage() );
+                log.severe( "Error in PIP retrieval : " + e.getMessage() );
             }
-            return null;
         }
     }
 
     @Override
     public synchronized void reevaluate( ReevaluationMessage message ) {
         SessionInterface session = message.getSession(); // TODO check
-        PolicyWrapper policyHelper = PolicyWrapper.build( session.getPolicySet() );
+        PolicyWrapper policy = PolicyWrapper.build( session.getPolicySet() );
         RequestWrapper request = RequestWrapper.build( session.getOriginalRequest() );
-        RequestWrapper fatRequest = fattenRequest( request, policyHelper, STATUS.STARTACCESS );
+        RequestWrapper fatRequest = fattenRequest( request, policy, STATUS.STARTACCESS );
 
-        // perform the evaluation
-        PDPEvaluation pdpEvaluation = getPdp().evaluate( fatRequest.getRequest(),
-            policyHelper.getConditionForEvaluation( POLICY_CONDITION.STARTACCESS ) );
+        PDPEvaluation evaluation = getPdp().evaluate( fatRequest.getRequest(), policy.getPolicy( POLICY_CONDITION.STARTACCESS ) );
 
-        // obligation
-        getObligationManager().translateObligations( pdpEvaluation, message.getSession().getId(),
+        getObligationManager().translateObligations( evaluation, message.getSession().getId(),
             ContextHandlerConstants.START_STATUS );
 
-        log.log( Level.INFO, "decision {0} taken at {1}", new Object[] { pdpEvaluation.getResult(), System.currentTimeMillis() } );
-        String destination;
-        String[] uriSplitted = session.getPEPUri().split( PEP_ID_SEPARATOR );
-        destination = session.getPEPUri().split( PEP_ID_SEPARATOR )[0];
-        log.log( Level.INFO, "DESTINATION: {0}\t{1}", new Object[] { destination, session.getStatus() } );
-        ReevaluationResponse chPepMessage = new ReevaluationResponse( uri.getHost(), destination );
-        pdpEvaluation.setSessionId( session.getId() );
-        chPepMessage.setPDPEvaluation( pdpEvaluation );
-        chPepMessage.setPepId( uriSplitted[uriSplitted.length - 1] );
-        getSessionManager().stopSession( session );
-        if( ( session.getStatus().equals( ContextHandlerConstants.START_STATUS )
-                || session.getStatus().equals( ContextHandlerConstants.TRY_STATUS ) )
-                && pdpEvaluation.getResult().contains( DecisionType.DENY.value() ) ) {
+        log.log( Level.INFO, "Reevaluate evaluated at {0} pdp response : {1}",
+            new Object[] { System.currentTimeMillis(), evaluation.getResult() } );
+
+        evaluation.setSessionId( session.getId() );
+        ReevaluationResponse response = buildReevaluationResponse( evaluation, session.getPEPUri() );
+
+        if( session.getStatus().equals( ContextHandlerConstants.START_STATUS )
+                && evaluation.getResult().contains( DecisionType.DENY.value() ) ) {
             log.log( Level.INFO, "Sending revoke {0}", System.currentTimeMillis() );
             getSessionManager().updateEntry( session.getId(), ContextHandlerConstants.REVOKE_STATUS );
-            getRequestManager().sendMessageToOutside( chPepMessage );
+            getRequestManager().sendMessageToOutside( response );
         }
 
         if( session.getStatus().equals( ContextHandlerConstants.REVOKE_STATUS )
-                && pdpEvaluation.getResult().contains( DecisionType.PERMIT.value() ) ) {
+                && evaluation.getResult().contains( DecisionType.PERMIT.value() ) ) {
             log.log( Level.INFO, "Sending resume {0}", System.currentTimeMillis() );
             getSessionManager().updateEntry( session.getId(), ContextHandlerConstants.START_STATUS );
-            getRequestManager().sendMessageToOutside( chPepMessage );
+            getRequestManager().sendMessageToOutside( response );
         }
+    }
+
+    private ReevaluationResponse buildReevaluationResponse( PDPEvaluation evaluation, String pepUri ) {
+        String destination;
+        destination = pepUri.split( PEP_ID_SEPARATOR )[0];
+        ReevaluationResponse response = new ReevaluationResponse( uri.getHost(), destination );
+        String[] uriSplitted = pepUri.split( PEP_ID_SEPARATOR );
+        response.setPepId( uriSplitted[uriSplitted.length - 1] );
+        response.setPDPEvaluation( evaluation );
+        return response;
     }
 }

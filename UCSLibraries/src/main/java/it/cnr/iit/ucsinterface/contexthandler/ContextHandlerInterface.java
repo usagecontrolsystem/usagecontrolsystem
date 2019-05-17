@@ -15,6 +15,7 @@
  ******************************************************************************/
 package it.cnr.iit.ucsinterface.contexthandler;
 
+import it.cnr.iit.ucs.exceptions.WrongOrderException;
 import it.cnr.iit.ucsinterface.message.endaccess.EndAccessMessage;
 import it.cnr.iit.ucsinterface.message.reevaluation.ReevaluationMessage;
 import it.cnr.iit.ucsinterface.message.startaccess.StartAccessMessage;
@@ -91,8 +92,9 @@ public interface ContextHandlerInterface extends ContextHandlerPIPInterface {
      * @param message
      *          the message received by the RequestManager
      * @return a message stating the response of the PDP to the request
+     * @throws WrongOrderException
      */
-    public void endAccess( EndAccessMessage message );
+    public void endAccess( EndAccessMessage message ) throws WrongOrderException;
 
     /**
      * This is the reevaluation function. This function is triggered by a remote
