@@ -223,8 +223,9 @@ public final class PIPReader extends PIPBase {
         for( Attribute attribute : attributes ) {
             if( attribute.getAttributeId().equals( getAttributeIds().get( 0 ) ) ) {
                 for( Attribute subscribedAttribute : subscriptions ) {
-                    if( subscribedAttribute.getAdditionalInformations()
-                        .equals( attribute.getAdditionalInformations() ) ) {
+                    if( subscribedAttribute.getCategory() != Category.ENVIRONMENT &&
+                            subscribedAttribute.getAdditionalInformations()
+                                .equals( attribute.getAdditionalInformations() ) ) {
                         if( !subscriptions.remove( subscribedAttribute ) ) {
                             throw new IllegalStateException( "Unable to remove attribute from list" );
                         }
