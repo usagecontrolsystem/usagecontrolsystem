@@ -129,7 +129,7 @@ public class ProxyPEP implements PEPInterface {
                 return examplePEP.onGoingEvaluation( message );
             case REST_API:
                 RESTUtils.asyncPost(
-                    properties.getBaseUri(),
+                    uri.toString(),
                     OperationNames.ONGOINGRESPONSE_REST,
                     message );
                 break;
