@@ -7,9 +7,6 @@ import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URISyntaxException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -58,6 +55,7 @@ import it.cnr.iit.usagecontrolframework.proxies.ProxySessionManager;
 import it.cnr.iit.usagecontrolframework.requestmanager.RequestManagerLC;
 import it.cnr.iit.usagecontrolframework.rest.UsageControlFramework;
 import it.cnr.iit.utility.JAXBUtility;
+import it.cnr.iit.utility.Utility;
 import it.cnr.iit.xacmlutilities.Attribute;
 import it.cnr.iit.xacmlutilities.Category;
 import it.cnr.iit.xacmlutilities.DataType;
@@ -102,7 +100,7 @@ public class UCFBaseTests {
         ContextHandlerLC contextHandler = getContextHandler( prop );
         initContextHandler( contextHandler );
         contextHandler.setSessionManager(
-            getSessionManagerForStatus( "", policy, request, ContextHandlerConstants.TRY_STATUS ) );
+            getSessionManagerForStatus( "a", policy, request, ContextHandlerConstants.TRY_STATUS ) );
 
         contextHandler.verify();
         /* must be called after initialisation */
@@ -322,6 +320,7 @@ public class UCFBaseTests {
 
     protected StartAccessMessage buildStartAccessMessage( String sessionId, String src, String dest ) {
         StartAccessMessage message = new StartAccessMessage( src, dest );
+        message.setSessionId( sessionId );
         return message;
     }
 
@@ -379,15 +378,7 @@ public class UCFBaseTests {
 
     private Object loadXMLFromFile( String fileName, Class<?> className )
             throws JAXBException, URISyntaxException, IOException {
-        String data = readResourceFileAsString( fileName );
+        String data = Utility.readFileAsString( fileName );
         return JAXBUtility.unmarshalToObject( className, data );
-    }
-
-    protected String readResourceFileAsString( String resource ) throws URISyntaxException, IOException {
-        log.info( "Loading resource file : " + resource );
-        ClassLoader classLoader = this.getClass().getClassLoader();
-        Path path = Paths.get( classLoader.getResource( resource ).toURI() );
-        byte[] data = Files.readAllBytes( path );
-        return new String( data );
     }
 }

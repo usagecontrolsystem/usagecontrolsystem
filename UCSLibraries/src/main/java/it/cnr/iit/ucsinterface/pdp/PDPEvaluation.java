@@ -83,4 +83,6 @@ public interface PDPEvaluation {
     public String getSessionId();
 
     public List<Integer> getFiringRules();
+
+    public boolean isPermit();
 }

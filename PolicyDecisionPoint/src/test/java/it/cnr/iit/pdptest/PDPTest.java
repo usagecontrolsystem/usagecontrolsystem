@@ -95,7 +95,7 @@ public class PDPTest {
     @Test
     public void testPDP() {
         log.info( "HELLO\n" + requestDeny + "\n" + policy );
-        PolicyWrapper policyHelper = PolicyWrapper.buildPolicyWrapper( policy );
+        PolicyWrapper policyHelper = PolicyWrapper.build( policy );
         assertThat( testEvaluation( requestDeny, policy ) ).contains( "deny" );
         assertThat( testEvaluation( requestIndeterminate, policy ) ).contains( "indeterminate" );
         assertThat( testEvaluation( requestPermit, policy ) ).contains( "permit" );
@@ -112,7 +112,7 @@ public class PDPTest {
         assertThat( testEvaluation( requestIndeterminate, policyHelper, STATUS.ENDACCESS ) ).contains( "indeterminate" );
         assertTrue( testEvaluation( requestIndeterminate, null, STATUS.ENDACCESS ) == null );
         assertTrue( testEvaluation( null, policyHelper, STATUS.ENDACCESS ) == null );
-        PolicyWrapper policyHelperDup = PolicyWrapper.buildPolicyWrapper( policyDup );
+        PolicyWrapper policyHelperDup = PolicyWrapper.build( policyDup );
         assertThat( testEvaluation( requestPermit, policyHelperDup, STATUS.TRYACCESS ) ).contains( "permit" );
     }
 

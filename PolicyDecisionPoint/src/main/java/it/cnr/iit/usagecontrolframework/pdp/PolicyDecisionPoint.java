@@ -87,10 +87,9 @@ public final class PolicyDecisionPoint extends AbstractPDP {
     private PDPConfig pdpConfig;
     private Journal journal = null;
 
-    public PolicyDecisionPoint( PdpProperties configuration ) {
-        super( configuration );
-        configure( configuration.getJournalDir() );
-
+    public PolicyDecisionPoint( PdpProperties properties ) {
+        super( properties );
+        configure( properties.getJournalDir() );
     }
 
     private void configure( String journalFolder ) {

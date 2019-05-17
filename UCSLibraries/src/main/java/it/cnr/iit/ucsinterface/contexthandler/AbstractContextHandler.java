@@ -16,9 +16,10 @@
 package it.cnr.iit.ucsinterface.contexthandler;
 
 import java.net.URI;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import it.cnr.iit.ucs.properties.components.ContextHandlerProperties;
@@ -32,6 +33,7 @@ import it.cnr.iit.ucsinterface.requestmanager.RequestManagerToCHInterface;
 import it.cnr.iit.ucsinterface.sessionmanager.SessionManagerInterface;
 import it.cnr.iit.utility.Utility;
 import it.cnr.iit.utility.errorhandling.Reject;
+import it.cnr.iit.utility.errorhandling.exception.PreconditionException;
 
 /**
  * This is the abstract representation of the context handler object.
@@ -162,28 +164,27 @@ public abstract class AbstractContextHandler implements ContextHandlerInterface 
      * @throws Exception
      */
     @Deprecated
-    public void verify() throws Exception {
-        final String[] checkObjectsNames = {
-            "sessionManager", "pipRegistry", "pap", "pdp",
-            "requestManagerToCh", "forwardingQueue", "obligationManager" };
-        final boolean[] checkObjects = {
-            sessionManager == null, pipRegistry == null,
-            pap == null, pdp == null, requestManager == null,
-            forwardingQueue == null, obligationManager == null };
+    public void verify() throws PreconditionException {
+        final Map<String, Boolean> checkMap = new HashMap<String, Boolean>() {
+            private static final long serialVersionUID = 1L;
+            {
+                put( "sessionManager", sessionManager == null );
+                put( "requestManager", requestManager == null );
+                put( "obligationManager", obligationManager == null );
+                put( "pap", pap == null );
+                put( "pdp", pdp == null );
+            }
+        };
 
         StringBuilder sb = new StringBuilder();
-        for( int i = 0; i < checkObjects.length; i++ ) {
-            if( checkObjects[i] ) {
-                sb.append( checkObjectsNames[i] ).append( " " );
+        for( Map.Entry<String, Boolean> entry : checkMap.entrySet() ) {
+            if( entry.getValue() ) {
+                sb.append( entry.getKey() ).append( " " );
             }
         }
 
-        if( sb.length() == 0 ) {
-            log.info( "ContextHandler correctly initialized" );
-        } else {
-            log.log( Level.SEVERE, "Context handler initialization error : {0}", sb );
-            throw new Exception( "Context handler initialization error : {0}" + sb.toString() );
-        }
+        Reject.ifFalse( sb.length() == 0, "Context handler initialization error : " + sb );
+        log.info( "ContextHandler correctly initialized" );
     }
 
 }

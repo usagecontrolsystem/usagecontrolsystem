@@ -14,7 +14,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.DirtiesContext.ClassMode;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 
@@ -24,7 +23,6 @@ import it.cnr.iit.ucsinterface.message.Message;
 import it.cnr.iit.usagecontrolframework.properties.UCFProperties;
 import it.cnr.iit.usagecontrolframework.requestmanager.RequestManagerLC;
 
-@ActiveProfiles( "test" )
 @SpringBootTest
 @DirtiesContext( classMode = ClassMode.BEFORE_EACH_TEST_METHOD )
 @EnableAutoConfiguration

@@ -25,8 +25,6 @@ import java.util.concurrent.LinkedTransferQueue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.xml.bind.JAXBException;
-
 import it.cnr.iit.ucs.constants.STATUS;
 import it.cnr.iit.ucs.exceptions.RevokeException;
 import it.cnr.iit.ucs.exceptions.SessionManagerException;
@@ -44,19 +42,16 @@ import it.cnr.iit.ucsinterface.message.startaccess.StartAccessResponse;
 import it.cnr.iit.ucsinterface.message.tryaccess.TryAccessMessage;
 import it.cnr.iit.ucsinterface.message.tryaccess.TryAccessResponse;
 import it.cnr.iit.ucsinterface.pdp.PDPEvaluation;
-import it.cnr.iit.ucsinterface.sessionmanager.SessionAttributesBuilder;
 import it.cnr.iit.ucsinterface.sessionmanager.OnGoingAttributesInterface;
+import it.cnr.iit.ucsinterface.sessionmanager.SessionAttributesBuilder;
 import it.cnr.iit.ucsinterface.sessionmanager.SessionInterface;
-import it.cnr.iit.utility.JAXBUtility;
 import it.cnr.iit.utility.errorhandling.Reject;
 import it.cnr.iit.xacmlutilities.Attribute;
 import it.cnr.iit.xacmlutilities.Category;
 import it.cnr.iit.xacmlutilities.wrappers.PolicyWrapper;
+import it.cnr.iit.xacmlutilities.wrappers.RequestWrapper;
 
-import oasis.names.tc.xacml.core.schema.wd_17.AttributeType;
-import oasis.names.tc.xacml.core.schema.wd_17.AttributesType;
 import oasis.names.tc.xacml.core.schema.wd_17.DecisionType;
-import oasis.names.tc.xacml.core.schema.wd_17.RequestType;
 
 /**
  * This is the class implementing a context-handler with low concurrency.
@@ -70,17 +65,11 @@ import oasis.names.tc.xacml.core.schema.wd_17.RequestType;
  * <p>
  * This implementation of the context handler can handle a single request per
  * time. This single thread is represented by the AttributeMonitor
- * actor which implements the Callable<String> interface. We have chosen this
- * approach because we might be interested in having something to signal us the
- * result of reevaluation. This context handler has as additional parameter a
- * blocking queue that will be used to put the notification received by the
+ * actor which implements the Callable<String> interface.
+ * This context handler has a blocking queue that will be used for notifications by the
  * various PIPs, since once a notification has been received, all the PIPs will
  * be queried, then this queue MUST contain, unless something changes in the
- * architecture a single element only. Since we may have also remote attributes,
- * that queue may become very big because we don't know how many remote
- * attributes we may need to monitor, in that case the queue will be managed
- * like an hash function where the key will be the session id, so that, for each
- * session, it is possible to have a single attribute that notifies the changes.
+ * architecture a single element only.
  * <br>
  * </p>
  *
@@ -104,7 +93,6 @@ public final class ContextHandlerLC extends AbstractContextHandler {
 
     public ContextHandlerLC( ContextHandlerProperties chProperties ) {
         super( chProperties );
-
         attributesChanged = new LinkedTransferQueue<>();
         attributeMonitor = new AttributeMonitor();
         monitoringThread = new Thread( attributeMonitor );
@@ -127,45 +115,37 @@ public final class ContextHandlerLC extends AbstractContextHandler {
     }
 
     /**
-     * TryAccess method invoked by PEP<br>
-     * The following actions are performed:
-     * <ol>
-     * <li>policy set is extracted from the received one</li>
-     * <li>ongoing attributes are retrieved from the policy ongoing</li>
-     * <li>subject id and object id, for the received request, are retrieved
-     * from the request itself</li>
-     * <li>retrieve method of each PIP is invoked</li>
-     * <li>request evaluation</li>
-     * <li>PDP response is checked</li>
-     * </ol>
-     *
+     * TryAccess method invoked by the PEP<br>
      * @param message
      *            the TryAccessMessage received
      */
     @Override
     public void tryAccess( TryAccessMessage message ) {
         Reject.ifNull( message, "TryAccessMessage is null" );
+        Reject.ifNull( message.getPolicy(), "TryAccessMessage is policy null" );
+        Reject.ifNull( message.getRequest(), "TryAccessMessage is request null" );
 
         log.log( Level.INFO, "TryAccess received at {0}", new Object[] { System.currentTimeMillis() } );
 
-        String sessionId = generateNewSessionId();
-        PolicyWrapper policyHelper = retrievePolicyHelper( message );
-        // TODO handle null policy helper
-        List<Attribute> attributes = policyHelper.getAttributesForCondition( POLICY_CONDITION.TRYACCESS );
-        // TODO handle null request
-        String fatRequest = fattenRequest( message.getRequest(), attributes, STATUS.TRYACCESS, true );
-        log.info( "TryAccess fattened request : \n" + fatRequest );
+        Optional<PolicyWrapper> optPolicy = retrievePolicyWrapper( message );
+        Reject.ifAbsent( optPolicy ); // NOSONAR TODO send default deny
+        PolicyWrapper policy = optPolicy.get();
+        RequestWrapper request = RequestWrapper.build( message.getRequest() );
+        RequestWrapper fatRequest = fattenRequest( request, policy, STATUS.TRYACCESS );
+        log.info( "TryAccess fattened request contents : \n" + fatRequest.getRequest() );
 
-        // perform the PDP evaluation TODO change evaluate to handle String instead of StringBuilder
-        PDPEvaluation evaluation = getPdp().evaluate( fatRequest, policyHelper, STATUS.TRYACCESS );
-        log.log( Level.INFO, "TryAccess evaluated at {0} response: {1}",
+        // Perform the PDP evaluation
+        PDPEvaluation evaluation = getPdp().evaluate( fatRequest.getRequest(), policy, STATUS.TRYACCESS );
+        log.log( Level.INFO, "TryAccess evaluated at {0} pdp response : {1}",
             new Object[] { System.currentTimeMillis(), evaluation.getResult() } );
 
-        // if access decision is PERMIT update SM database entry
-        if( evaluation.getResult().equalsIgnoreCase( DecisionType.PERMIT.value() ) ) {
-            insertInSessionManager( message, fatRequest, policyHelper, sessionId );
-        }
+        String sessionId = generateNewSessionId();
         getObligationManager().translateObligations( evaluation, sessionId, ContextHandlerConstants.TRY_STATUS );
+
+        if( evaluation.isPermit() ) {
+            // If access decision is PERMIT create entry in SessionManager
+            createNewSession( message, request, policy, sessionId );
+        }
 
         TryAccessResponse tryAccessResponse = buildTryAccessResponse( message, evaluation, sessionId );
         getRequestManager().sendMessageToOutside( tryAccessResponse );
@@ -182,92 +162,36 @@ public final class ContextHandlerLC extends AbstractContextHandler {
     }
 
     /**
-     * Attempt to make the request full in order to let the PDP evaluate
-     * correctly the request.
-     *
+     * Attempt to fill the request in order to let the PDP evaluate it.
      * @param request
-     *            the request in string format
-     * @param attributes
-     *            the list of attributes required to evaluate the request
-     * @param complete
-     *            states if we need to add all the attributes (if true) or only
-     *            the local ones, if false
-     * @return a String that represents the request itself
+     *            the request
+     * @param policy
+     *            the policy
+     * @param status
+     *            the status
      */
-    // TODO use Optional
-    private synchronized String fattenRequest( String request, List<Attribute> attributes, STATUS status,
-            boolean complete ) {
-        try {
-            RequestType requestType = JAXBUtility.unmarshalToObject( RequestType.class, request );
-            boolean isSubscription = status == STATUS.STARTACCESS;
-            requestType = handleRequestType( requestType, attributes, complete, isSubscription );
-            String str = JAXBUtility.marshalToString( RequestType.class, requestType, "Request",
-                JAXBUtility.SCHEMA );
-            return str;
-        } catch( JAXBException e ) {
-            log.severe( "Error fattening the request : " + e.getMessage() );
-            return null;
-        }
+    // TODO move to RequestWrapper
+    private synchronized RequestWrapper fattenRequest( RequestWrapper request, PolicyWrapper policy, STATUS status ) {
+        boolean isSubscription = status == STATUS.STARTACCESS;
+        List<Attribute> attributes = policy.getAttributesForCondition( POLICY_CONDITION.fromStatus( status ) );
+        RequestWrapper fatRequest = RequestWrapper.build( request.getRequest() ); // TODO clone
+        fattenRequest( fatRequest, attributes, isSubscription );
+        return fatRequest;
     }
 
-    // TODO use Optional
-    private RequestType handleRequestType( RequestType requestType, List<Attribute> attributes,
-            boolean complete, boolean isSubscription ) {
-
+    // TODO move to RequestWrapper
+    private void fattenRequest( RequestWrapper request, List<Attribute> attributes, boolean isSubscription ) {
         if( !isSubscription ) {
-            getPipRegistry().retrieveAll( requestType );
+            getPipRegistry().retrieveAll( request.getRequestType() );
         } else {
-            getPipRegistry().subscribeAll( requestType );
+            getPipRegistry().subscribeAll( request.getRequestType() );
         }
 
-        List<Attribute> external = externalAttributesExtract( attributes, requestType );
-        if( !complete || !external.isEmpty() ) {
-            log.warning( "Policy requires attributes that are not accessible!!" );
-            return null;
-        }
-
-        return requestType;
-    }
-
-    /**
-     * From the list of attributes required by the actual policy, extract the
-     * ones related to external UCS. At first we try to see if the attribute is
-     * managed by one of the PIPs local to the ContextHandler, then,
-     * if we cannot find the PIP among the local ones, we check to see if the
-     * attribute is already in the request, otherwise the attribute has to be
-     * retrieved from a remote PIP.
-     *
-     * @param attributes
-     *            the list of attributes
-     * @return the list of attributes without those attributes that can be
-     *         retrieved by internal PIPs
-     */
-    private List<Attribute> externalAttributesExtract( List<Attribute> attributes, RequestType request ) {
-        List<Attribute> externalAttributes = new ArrayList<>();
-        for( Attribute attribute : attributes ) {
-            attribute.getAttributeValueMap().clear();
-            if( !( getPipRegistry().hasAttribute( attribute ) ||
-                    requestHasAttribute( request, attribute ) ) ) {
-                externalAttributes.add( attribute );
-            }
-        }
-        return externalAttributes;
-    }
-
-    private boolean requestHasAttribute( RequestType request, Attribute attribute ) {
-        for( AttributesType attributeType : request.getAttributes() ) {
-            for( AttributeType att : attributeType.getAttribute() ) {
-                if( attribute.getAttributeId().equals( att.getAttributeId() ) ) {
-                    return true;
-                }
-            }
-        }
-        return false;
+        request.update();
     }
 
     /**
      * It creates a new session id
-     *
      * @return session id to associate to the incoming session during the tryAccess
      */
     private synchronized String generateNewSessionId() {
@@ -275,77 +199,68 @@ public final class ContextHandlerLC extends AbstractContextHandler {
     }
 
     /**
-     * Retrieves the policy to be used to evaluate the request in string format
+     * Retrieves the policy to be used to evaluate the request
      *
      * @param message
      *            the message received by the context handler
-     * @return the string representing the policy
+     * @return an optional hopefully containing the policy
      */
-    private PolicyWrapper retrievePolicyHelper( TryAccessMessage message ) {
+    private Optional<PolicyWrapper> retrievePolicyWrapper( TryAccessMessage message ) {
         String policy = message.getPolicy();
 
         if( policy == null && message.getPolicyId() != null ) {
             policy = getPap().retrievePolicy( message.getPolicyId() );
         }
 
-        Reject.ifNull( policy, "Unable to retrieve the policy" );
-
-        return PolicyWrapper.buildPolicyWrapper( policy );
+        return policy != null ? Optional.of( PolicyWrapper.build( policy ) ) : Optional.empty();
     }
 
     /**
-     * this function inserts inside the session manager a new session with its
-     * relative on_going_attributes.
+     * This function creates a new session in the session manager.
      *
-     * @param sessionId
-     *            the session id
-     * @param policy
-     *            the policy
-     * @param originalRequest
+     * @param message
+     *            the message
+     * @param request
      *            the original request, not the fat one because, whenever we
      *            need to re-evaluate the request we will retrieval from the
      *            various PIPs a fresh value
-     * @param status
-     *            status of the request
-     * @param pepUri
-     *            the URI of the PEP in order to allow communication between the
-     *            PEP and the context handler
-     * @param policyHelper
-     *            object representing the policy to be used in the various
-     *            evaluations the subject id
+     * @param policy
+     *            the policy
+     * @param sessionId
+     *            the sessionId
      */
-    private void insertInSessionManager( TryAccessMessage message, String request, PolicyWrapper policyHelper, String sessionId ) {
+    private void createNewSession( TryAccessMessage message, RequestWrapper request, PolicyWrapper policy, String sessionId ) {
+        log.log( Level.INFO, "TryAccess creating new session : {0} ", sessionId );
+
         String pepUri = message.isScheduled() ? message.getPepUri()
                 : uri.getHost() + PEP_ID_SEPARATOR + message.getSource();
         String ip = message.isScheduled() ? message.getSource() : uri.getHost();
 
-        try {
-            RequestType requestType = JAXBUtility.unmarshalToObject( RequestType.class, request );
+        // try {
+        // retrieve the id of ongoing attributes
+        SessionAttributesBuilder sessionAttributeBuilder = new SessionAttributesBuilder();
 
-            // retrieve the id of ongoing attributes
-            SessionAttributesBuilder createEntryParameterBuilder = new SessionAttributesBuilder();
+        List<Attribute> onGoingAttributes = policy.getAttributesForCondition( POLICY_CONDITION.STARTACCESS );
+        sessionAttributeBuilder.setOnGoingAttributesForSubject( getAttributesForCategory( onGoingAttributes, Category.SUBJECT ) )
+            .setOnGoingAttributesForAction( getAttributesForCategory( onGoingAttributes, Category.ACTION ) )
+            .setOnGoingAttributesForResource( getAttributesForCategory( onGoingAttributes, Category.RESOURCE ) )
+            .setOnGoingAttributesForEnvironment( getAttributesForCategory( onGoingAttributes, Category.ENVIRONMENT ) );
 
-            List<Attribute> onGoingAttributes = policyHelper.getAttributesForCondition( POLICY_CONDITION.STARTACCESS );
-            createEntryParameterBuilder.setOnGoingAttributesForSubject( getAttributesForCategory( onGoingAttributes, Category.SUBJECT ) )
-                .setOnGoingAttributesForAction( getAttributesForCategory( onGoingAttributes, Category.ACTION ) )
-                .setOnGoingAttributesForResource( getAttributesForCategory( onGoingAttributes, Category.RESOURCE ) )
-                .setOnGoingAttributesForEnvironment( getAttributesForCategory( onGoingAttributes, Category.ENVIRONMENT ) );
+        sessionAttributeBuilder.setSubjectName( request.getRequestType().extractValue( Category.SUBJECT ) )
+            .setResourceName( request.getRequestType().extractValue( Category.RESOURCE ) )
+            .setActionName( request.getRequestType().extractValue( Category.ACTION ) );
 
-            createEntryParameterBuilder.setSubjectName( requestType.extractValue( Category.SUBJECT ) )
-                .setResourceName( requestType.extractValue( Category.RESOURCE ) )
-                .setActionName( requestType.extractValue( Category.ACTION ) );
+        sessionAttributeBuilder.setSessionId( sessionId ).setPolicySet( policy.getPolicy() ).setOriginalRequest( request.getRequest() )
+            .setStatus( ContextHandlerConstants.TRY_STATUS ).setPepURI( pepUri ).setMyIP( ip );
 
-            createEntryParameterBuilder.setSessionId( sessionId ).setPolicySet( policyHelper.getPolicy() ).setOriginalRequest( request )
-                .setStatus( ContextHandlerConstants.TRY_STATUS ).setPepURI( pepUri ).setMyIP( ip );
-
-            // insert all the values inside the session manager
-            if( !getSessionManager().createEntry( createEntryParameterBuilder.build() ) ) {
-                log.log( Level.SEVERE, "[Context Handler] TryAccess: some error occurred, session {0} has not been stored correctly",
-                    sessionId );
-            }
-        } catch( Exception e ) {
-            log.severe( "Insert in SM error : " + e.getMessage() );
+        // insert all the values inside the session manager
+        if( !getSessionManager().createEntry( sessionAttributeBuilder.build() ) ) {
+            log.log( Level.SEVERE, "TryAccess: session \"{0}\" has not been stored correctly",
+                sessionId );
         }
+        // } catch( Exception e ) {
+        // log.severe( "TryAccess error creating new session : " + e.getMessage() );
+        // }
 
     }
 
@@ -359,6 +274,7 @@ public final class ContextHandlerLC extends AbstractContextHandler {
      *            the category of the attributes
      * @return the list of the string representing the IDs of the attributes
      */
+    // TODO move to PolicyWrapper ?
     private List<String> getAttributesForCategory( List<Attribute> onGoingAttributes, Category category ) {
         ArrayList<String> attributeIds = new ArrayList<>();
         for( Attribute attribute : onGoingAttributes ) {
@@ -373,100 +289,63 @@ public final class ContextHandlerLC extends AbstractContextHandler {
     }
 
     /**
-     * startaccess method invoked by PEP<br>
-     * The following actions are performed:
-     * <ol>
-     * <li>the session that should be reevaluated is retrieved through the
-     * session manager</li>
-     * <li>subscribe method of each PIP is invoked</li>
-     * <li>request evaluation</li>
-     * <li>PDP response is checked</li>
-     * <li>in case of "deny" response, the considered session is revoked and the
-     * revoke method is invoked</li>
-     * </ol>
-     *
-     * @param sId
-     *            : session id of the involved session
-     * @return generic string which represents PDP response
-     * @throws WrongOrderException
-     * @throws SessionManagerException
-     * @throws RevokeException
-     *
+     * startAccess method invoked by PEP
+     * @param message
+     *            the StartAccessMessage
      */
     @Override
-    public void startAccess( StartAccessMessage message ) throws Exception {
+    public void startAccess( StartAccessMessage message ) throws WrongOrderException, SessionManagerException, RevokeException {
         Optional<SessionInterface> optSession = getSessionManager().getSessionForId( message.getSessionId() );
-
-        if( !optSession.isPresent() ) {
-            throw new SessionManagerException(
-                "[Context Handler] Startaccess: no session for id " + message.getSessionId() );
-        }
+        Reject.ifAbsent( optSession, "StartAccess: no session for id " + message.getSessionId() ); // TODO default deny
         SessionInterface session = optSession.get();
-        PolicyWrapper policyHelper = PolicyWrapper.buildPolicyWrapper( session.getPolicySet() );
 
-        List<Attribute> attributes = policyHelper.getAttributesForCondition( POLICY_CONDITION.STARTACCESS );
-        log.log( Level.INFO, "[TIME] startaccess begin scheduling at {0}", new Object[] { System.currentTimeMillis() } );
+        log.log( Level.INFO, "startAccess begin scheduling at {0}", new Object[] { System.currentTimeMillis() } );
 
-        StartAccessResponse response = new StartAccessResponse( message.getDestination(),
-            message.getSource(), message.getMessageId() );
-
-        // check if there actually is a request to reevaluate for the received ession id
+        // Check if the session has the correct status
+        // TODO update sessionInterface to handle sesion.isStatus(STATUS)
         if( !session.getStatus().equals( ContextHandlerConstants.TRY_STATUS ) ) {
-            // no request to reevaluate(some problem occurred during request and policy retrieving)
-            log.log( Level.SEVERE, "startaccess: tryaccess must be performed for session {0}", message.getSessionId() );
-            throw new WrongOrderException(
-                "[Context Handler] Startaccess: tryaccess must be performed yet for session " + message.getSessionId() );
+            log.log( Level.SEVERE, "startAccess: tryaccess must be performed for session {0}", message.getSessionId() );
+            // TODO avoid throw, default deny
+            // throw new WrongOrderException(
+            // "StartAccess: tryaccess must be performed yet for session " + message.getSessionId() );
         }
 
-        // make the request complete before reevaluation
-        String requestFull = fattenRequest( session.getOriginalRequest(),
-            policyHelper.getAttributesForCondition( POLICY_CONDITION.STARTACCESS ),
-            STATUS.STARTACCESS, true );
+        PolicyWrapper policy = PolicyWrapper.build( session.getPolicySet() );
+        RequestWrapper request = RequestWrapper.build( session.getOriginalRequest() );
+        RequestWrapper fatRequest = fattenRequest( request, policy, STATUS.STARTACCESS );
 
-        // perform the evaluation
-        PDPEvaluation pdpEvaluation = getPdp().evaluate( requestFull,
-            policyHelper.getConditionForEvaluation( POLICY_CONDITION.STARTACCESS ) );
+        PDPEvaluation evaluation = getPdp().evaluate( fatRequest.getRequest(),
+            policy.getConditionForEvaluation( POLICY_CONDITION.STARTACCESS ) );
 
-        log.log( Level.INFO, "[TIME] startaccess ends at {0}", new Object[] { System.currentTimeMillis() } );
+        log.log( Level.INFO, "startAccess evaluation : {0}", evaluation.getResponse() );
 
-        response.setPDPEvaluation( pdpEvaluation );
+        getObligationManager().translateObligations( evaluation, message.getSessionId(), ContextHandlerConstants.START_STATUS );
 
-        // PDP returns PERMIT
-        if( pdpEvaluation.getResult().equalsIgnoreCase( DecisionType.PERMIT.value() ) ) {
-            getObligationManager().translateObligations( pdpEvaluation, message.getSessionId(), ContextHandlerConstants.START_STATUS );
-
-            // update session status
+        if( evaluation.isPermit() ) {
             if( !getSessionManager().updateEntry( message.getSessionId(), ContextHandlerConstants.START_STATUS ) ) {
-                log.log( Level.WARNING, "[TIME] startaccess session {0} status not updated", message.getSessionId() );
+                log.log( Level.SEVERE, "startAccess error, sessionId {0} status update failed", message.getSessionId() );
             }
-            log.log( Level.INFO, "[TIME] PERMIT startaccess ends at {0}", new Object[] { System.currentTimeMillis() } );
         } else {
-            getObligationManager().translateObligations( pdpEvaluation, message.getSessionId(), ContextHandlerConstants.START_STATUS );
-
+            List<Attribute> attributes = policy.getAttributesForCondition( POLICY_CONDITION.STARTACCESS );
             if( revoke( session, attributes ) ) {
-                log.log( Level.INFO, "[TIME] access revocation for session {0}", message.getSessionId() );
-
-                // delete db entry for session sId
                 if( !getSessionManager().deleteEntry( message.getSessionId() ) ) {
-                    log.log( Level.SEVERE, "Startaccess: some problem occurred during entry deletion for session {0}",
+                    log.log( Level.SEVERE, "StartAccess error, sessionId {0} deletion failed",
                         message.getSessionId() );
-                    throw new SessionManagerException(
-                        "[Context Handler] Startaccess: Some problem occurred during entry deletion for session "
-                                + message.getSessionId() );
                 }
             }
-
-            log.log( Level.SEVERE,
-                "[Context Handler] Startaccess: Some problem occurred during execution of revokaccess for session {0}",
-                message.getSessionId() );
-            throw new RevokeException(
-                "[Context Handler] Startaccess: Some problem occurred during execution of revokaccess for session "
-                        + message.getSessionId() );
         }
+
+        StartAccessResponse response = buildStartAccessResponse( message, evaluation );
+        getRequestManager().sendMessageToOutside( response );
+    }
+
+    private StartAccessResponse buildStartAccessResponse( StartAccessMessage message, PDPEvaluation evaluation ) {
+        StartAccessResponse response = new StartAccessResponse( message.getDestination(), message.getSource(), message.getMessageId() );
+        response.setPDPEvaluation( evaluation );
         if( message.isScheduled() ) {
             response.setUCSDestination();
         }
-        getRequestManager().sendMessageToOutside( response );
+        return response;
     }
 
     /**
@@ -478,26 +357,20 @@ public final class ContextHandlerLC extends AbstractContextHandler {
      * @return true if everything goes ok, false otherwise
      */
     private synchronized boolean revoke( SessionInterface session, List<Attribute> attributes ) {
+        log.log( Level.INFO, "Revoke begins at {0}", System.currentTimeMillis() );
 
-        log.log( Level.INFO, "[TIME] revoke begins at {0}", System.currentTimeMillis() );
-
-        boolean otherSessions = true;
-
-        otherSessions = attributesToUnsubscribe( session.getId(), (ArrayList<Attribute>) attributes );
-
+        boolean otherSessions = attributesToUnsubscribe( session.getId(), (ArrayList<Attribute>) attributes );
         if( !otherSessions ) {
             getPipRegistry().unsubscribeAll( attributes );
         }
 
         // database entry for the current must be deleted
         if( !getSessionManager().deleteEntry( session.getId() ) ) {
-            log.severe( "[Context Handler] Endaccess: Some problem occurred during entry deletion for session "
-                    + session.getId() );
+            log.log( Level.SEVERE, "EndAccess: errors during entry deletion for sessionId {0}", session.getId() );
             return false;
         }
 
-        log.log( Level.INFO, "[TIME] revoke ends at {0}", new Object[] { System.currentTimeMillis() } );
-
+        log.log( Level.INFO, "Revoke ends at {0}", System.currentTimeMillis() );
         return true;
     }
 
@@ -511,8 +384,8 @@ public final class ContextHandlerLC extends AbstractContextHandler {
      * @param sessionId
      *            the id of the session we're revoking
      * @param attributes
-     *            the json object to be filled by this function
-     * @return true if threre are attributes to unsubscribe, false otherwise
+     *            the JSON object to be filled by this function
+     * @return true if there are attributes to unsubscribe, false otherwise
      *         <br>
      *
      */
@@ -520,127 +393,100 @@ public final class ContextHandlerLC extends AbstractContextHandler {
         String subjectName = "";
         String resourceName = "";
         String actionName = "";
-        boolean otherSessions = true;
         // retrieve on going attributes for both subject and object
         Collection<OnGoingAttributesInterface> onGoingAttributes = getSessionManager().getOnGoingAttributes( sessionId );
-        List<OnGoingAttributesInterface> onGoingAttributesForSubject = new LinkedList<>();
-        List<OnGoingAttributesInterface> onGoingAttributesForResource = new LinkedList<>();
-        List<OnGoingAttributesInterface> onGoingAttributesForAction = new LinkedList<>();
-        List<OnGoingAttributesInterface> onGoingAttributesForEnvironment = new LinkedList<>();
+        List<OnGoingAttributesInterface> subjectOnGoingAttributesList = new LinkedList<>();
+        List<OnGoingAttributesInterface> resourceOnGoingAttributesList = new LinkedList<>();
+        List<OnGoingAttributesInterface> actionOnGoingAttributesList = new LinkedList<>();
+        List<OnGoingAttributesInterface> environmentOnGoingAttributesList = new LinkedList<>();
 
         // build attribute lists for subject, resource, action and environment
         if( onGoingAttributes != null && !onGoingAttributes.isEmpty() ) {
-            // fill the correspondent list of ongoingattributes
+            // fill the correspondent list of ongoingAttributes
             for( OnGoingAttributesInterface attribute : onGoingAttributes ) {
                 if( attribute.getSubjectName() != null && !attribute.getSubjectName().equals( "null" ) ) {
-                    onGoingAttributesForSubject.add( attribute );
+                    subjectOnGoingAttributesList.add( attribute );
                     subjectName = attribute.getSubjectName();
                 } else if( attribute.getResourceName() != null && !attribute.getResourceName().equals( "null" ) ) {
-                    onGoingAttributesForResource.add( attribute );
+                    resourceOnGoingAttributesList.add( attribute );
                     resourceName = attribute.getResourceName();
                 } else if( attribute.getActionName() != null && !attribute.getActionName().equals( "null" ) ) {
-                    onGoingAttributesForAction.add( attribute );
+                    actionOnGoingAttributesList.add( attribute );
                     actionName = attribute.getActionName();
                 } else {
-                    onGoingAttributesForEnvironment.add( attribute );
+                    environmentOnGoingAttributesList.add( attribute );
                 }
             }
         }
 
         // builds up the JSON object that is needed to perform unsubscribe
+        boolean otherSessions = true;
         if( onGoingAttributes != null && !onGoingAttributes.isEmpty() ) {
-            otherSessions = buildOnGoingAttributes( attributes, resourceName, otherSessions, onGoingAttributesForResource );
-            otherSessions = verifyAttributesToUnsubscribe( attributes, subjectName, otherSessions, onGoingAttributesForSubject );
-            otherSessions = buildOnGoingAttributesForAction( attributes, actionName, otherSessions, onGoingAttributesForAction );
-            otherSessions = buildOmGoingAttributesForEnvironment( attributes, otherSessions, onGoingAttributesForEnvironment );
+            otherSessions = buildOnGoingAttributes( Category.RESOURCE, attributes, resourceName, otherSessions,
+                resourceOnGoingAttributesList );
+            otherSessions = buildOnGoingAttributes( Category.SUBJECT, attributes, subjectName, otherSessions,
+                subjectOnGoingAttributesList );
+            otherSessions = buildOnGoingAttributes( Category.ACTION, attributes, actionName, otherSessions, actionOnGoingAttributesList );
+            otherSessions = buildOnGoingAttributes( Category.ENVIRONMENT, attributes, "", otherSessions,
+                environmentOnGoingAttributesList );
         }
         return otherSessions;
     }
 
-    private boolean buildOmGoingAttributesForEnvironment( ArrayList<Attribute> attributes, boolean otherSessions,
-            List<OnGoingAttributesInterface> onGoingAttributesForEnvironment ) {
-        for( OnGoingAttributesInterface attribute : onGoingAttributesForEnvironment ) {
-            List<SessionInterface> tempList = getSessionManager()
-                .getSessionsForEnvironmentAttributes( attribute.getAttributeId() );
-            if( tempList == null || tempList.isEmpty() || tempList.size() == 1 ) {
+    private boolean buildOnGoingAttributes( Category category, ArrayList<Attribute> attributes, String name, boolean otherSessions,
+            List<OnGoingAttributesInterface> listOngoingAttributes ) {
+        for( OnGoingAttributesInterface attribute : listOngoingAttributes ) {
+            List<SessionInterface> sessionList = getSessionListForCategory( category, attribute.getAttributeId(), name );
+            if( sessionList == null || sessionList.isEmpty() || sessionList.size() == 1 ) {
                 otherSessions = false;
-                Attribute tmpAttribute = new Attribute();
-                tmpAttribute.setAttributeId( attribute.getAttributeId() );
-                attributes.add( tmpAttribute );
+                attributes.add( buildAttribute( attribute, name ) );
             }
         }
         return otherSessions;
     }
 
-    private boolean buildOnGoingAttributesForAction( ArrayList<Attribute> attributes, String actionName, boolean otherSessions,
-            List<OnGoingAttributesInterface> onGoingAttributesForAction ) {
-        for( OnGoingAttributesInterface attribute : onGoingAttributesForAction ) {
-            List<SessionInterface> tempList = getSessionManager()
-                .getSessionsForActionAttributes( actionName, attribute.getAttributeId() );
-            if( tempList == null || tempList.isEmpty() || tempList.size() == 1 ) {
-                otherSessions = false;
-                Attribute tmpAttribute = new Attribute();
-                tmpAttribute.setAttributeId( attribute.getAttributeId() );
-                tmpAttribute.setAdditionalInformations( actionName );
-                attributes.add( tmpAttribute );
-            }
+    private List<SessionInterface> getSessionListForCategory( Category category, String id, String name ) {
+        switch( category ) {
+            case ENVIRONMENT:
+                return getSessionManager()
+                    .getSessionsForEnvironmentAttributes( id );
+            case ACTION:
+                return getSessionManager()
+                    .getSessionsForActionAttributes( name, id );
+            case SUBJECT:
+                return getSessionManager()
+                    .getSessionsForSubjectAttributes( name, id );
+            case RESOURCE:
+                return getSessionManager()
+                    .getSessionsForResourceAttributes( name, id );
+            default:
+                return new ArrayList<>();
         }
-        return otherSessions;
     }
 
-    private boolean verifyAttributesToUnsubscribe( ArrayList<Attribute> attributes, String subjectName, boolean otherSessions,
-            List<OnGoingAttributesInterface> onGoingAttributesForSubject ) {
-        for( OnGoingAttributesInterface attribute : onGoingAttributesForSubject ) {
-            List<SessionInterface> tempList = getSessionManager()
-                .getSessionsForSubjectAttributes( subjectName, attribute.getAttributeId() );
-            if( tempList == null || tempList.isEmpty() || tempList.size() == 1 ) {
-                otherSessions = false;
-                Attribute tmpAttribute = new Attribute();
-                tmpAttribute.setAttributeId( attribute.getAttributeId() );
-                tmpAttribute.setAdditionalInformations( subjectName );
-                attributes.add( tmpAttribute );
-            }
+    private Attribute buildAttribute( OnGoingAttributesInterface ongoingAttribute, String name ) {
+        Attribute attribute = new Attribute();
+        attribute.setAttributeId( ongoingAttribute.getAttributeId() );
+        if( !name.isEmpty() ) {
+            attribute.setAdditionalInformations( name );
         }
-        return otherSessions;
-    }
-
-    private boolean buildOnGoingAttributes( ArrayList<Attribute> attributes, String resourceName, boolean otherSessions,
-            List<OnGoingAttributesInterface> onGoingAttributesForResource ) {
-        for( OnGoingAttributesInterface attribute : onGoingAttributesForResource ) {
-            List<SessionInterface> tempList = getSessionManager()
-                .getSessionsForResourceAttributes( resourceName, attribute.getAttributeId() );
-            if( tempList == null || tempList.isEmpty() || tempList.size() == 1 ) {
-                otherSessions = false;
-                Attribute tmpAttribute = new Attribute();
-                tmpAttribute.setAttributeId( attribute.getAttributeId() );
-                tmpAttribute.setAdditionalInformations( resourceName );
-                attributes.add( tmpAttribute );
-            }
-        }
-        return otherSessions;
+        return attribute;
     }
 
     @Override
     public void endAccess( EndAccessMessage message ) {
-        /*if( !isInitialized() ) {
-            log.severe( "CH not initialized correctly" );
-            return;
-        }*/
-
+        log.log( Level.INFO, "endAccess begins at {0}", System.currentTimeMillis() );
         try {
-            log.log( Level.INFO, "[TIME] endaccess begins at {0}", new Object[] { System.currentTimeMillis() } );
-
             // check if an entry actually exists in db
-            Optional<SessionInterface> optional = getSessionManager().getSessionForId( message.getSessionId() );
-
-            if( !optional.isPresent() ) {
+            Optional<SessionInterface> optSession = getSessionManager().getSessionForId( message.getSessionId() );
+            if( !optSession.isPresent() ) {
                 // throw exception here
                 return;
             }
-            SessionInterface sessionToReevaluate = optional.get();
+            SessionInterface session = optSession.get();
 
-            if( ( !sessionToReevaluate.getStatus().equals( ContextHandlerConstants.START_STATUS )
-                    && !sessionToReevaluate.getStatus().equals( ContextHandlerConstants.REVOKE_STATUS ) ) ) {
+            if( ( !session.getStatus().equals( ContextHandlerConstants.START_STATUS )
+                    && !session.getStatus().equals( ContextHandlerConstants.REVOKE_STATUS ) ) ) {
                 // no entry exists for the actual session
                 log.log( Level.INFO,
                     "[Context Handler] Endaccess: a tryaccess or startaccess must be performed yet for session {0}"
@@ -651,21 +497,19 @@ public final class ContextHandlerLC extends AbstractContextHandler {
                             + ", or the related endaccess has already been executed" );
             }
 
-            PolicyWrapper policyHelper = PolicyWrapper.buildPolicyWrapper( sessionToReevaluate.getPolicySet() );
+            PolicyWrapper policyHelper = PolicyWrapper.build( session.getPolicySet() );
 
-            log.log( Level.INFO, "[TIME] endaccess scheduler starts at {0}", new Object[] { System.currentTimeMillis() } );
+            log.log( Level.INFO, "endaccess scheduler starts at {0}", new Object[] { System.currentTimeMillis() } );
             List<Attribute> attributes = policyHelper.getAttributesForCondition( POLICY_CONDITION.ENDACCESS );
 
-            String request = sessionToReevaluate.getOriginalRequest();
-
             // make the request complete before reevaluation
-            String requestFull = fattenRequest( request, policyHelper.getAttributesForCondition( POLICY_CONDITION.ENDACCESS ),
-                STATUS.ENDACCESS, true );
+            RequestWrapper request = RequestWrapper.build( session.getOriginalRequest() );
+            RequestWrapper fatRequest = fattenRequest( request, policyHelper, STATUS.ENDACCESS );
 
-            PDPEvaluation pdpEvaluation = getPdp().evaluate( requestFull,
+            PDPEvaluation pdpEvaluation = getPdp().evaluate( fatRequest.getRequest(),
                 policyHelper.getConditionForEvaluation( POLICY_CONDITION.ENDACCESS ) );
 
-            log.log( Level.INFO, "[TIME] EndAccess evaluation ends at {0}", System.currentTimeMillis() );
+            log.log( Level.INFO, "EndAccess evaluation ends at {0}", System.currentTimeMillis() );
 
             getObligationManager().translateObligations( pdpEvaluation, message.getSessionId(), ContextHandlerConstants.END_STATUS );
 
@@ -678,8 +522,8 @@ public final class ContextHandlerLC extends AbstractContextHandler {
             }
 
             // access must be revoked
-            if( revoke( sessionToReevaluate, attributes ) ) {
-                log.log( Level.INFO, "[TIME] endaccess evaluation with revoke ends at {0}", System.currentTimeMillis() );
+            if( revoke( session, attributes ) ) {
+                log.log( Level.INFO, "endaccess evaluation with revoke ends at {0}", System.currentTimeMillis() );
             }
 
             getRequestManager().sendMessageToOutside( response );
@@ -720,11 +564,11 @@ public final class ContextHandlerLC extends AbstractContextHandler {
      * <br>
      * </p>
      * <p>
-     * <b>Implemented behavior: </b> <br>
+     * <b>Implemented behaviour: </b> <br>
      * This thread waits on the list named attributesChanged for a message
      * coming from a PIP. When this happens the reevaluation process described
      * above can start. Obviously it has to check if the considered session is
-     * already being evaluated, for eample the PEP may ask to terminate a
+     * already being evaluated, for example the PEP may ask to terminate a
      * session and in the meanwhile an attribute has changed, but the session
      * has to be evaluated only once.
      * </p>
@@ -869,26 +713,18 @@ public final class ContextHandlerLC extends AbstractContextHandler {
          */
         private String reevaluateSession( SessionInterface session, Attribute attribute ) {
             try {
-                log.log( Level.INFO, "[TIME] reevaluation begins at {0}", System.currentTimeMillis() );
+                log.log( Level.INFO, "reevaluation begins at {0}", System.currentTimeMillis() );
 
-                PolicyWrapper policyHelper = PolicyWrapper.buildPolicyWrapper( session.getPolicySet() );
-                if( getSessionManager().checkSession( session.getId(),
-                    null ) != it.cnr.iit.ucsinterface.sessionmanager.ReevaluationTableInterface.STATUS.IN_REEVALUATION ) {
-                    getSessionManager().insertSession( session, attribute );
-                } else {
-                    log.info( "Session is already under evaluation" );
-                    return null;
-                }
-
-                policyHelper.getAttributesForCondition( POLICY_CONDITION.STARTACCESS );
-                log.log( Level.INFO, "[TIME] reevaluation scheduler starts at {0}", System.currentTimeMillis() );
+                PolicyWrapper policy = PolicyWrapper.build( session.getPolicySet() );
+                policy.getAttributesForCondition( POLICY_CONDITION.STARTACCESS );
+                log.log( Level.INFO, "reevaluation scheduler starts at {0}", System.currentTimeMillis() );
                 ReevaluationMessage reevaluationMessage = new ReevaluationMessage(
                     uri.getHost(),
                     uri.getHost() );
                 reevaluationMessage.setSession( session );
-                log.log( Level.INFO, "[TIME] reevaluation starts at {0}", System.currentTimeMillis() );
+                log.log( Level.INFO, "reevaluation starts at {0}", System.currentTimeMillis() );
                 reevaluate( reevaluationMessage );
-                log.log( Level.INFO, "[TIME] reevaluation ends at {0}", System.currentTimeMillis() );
+                log.log( Level.INFO, "reevaluation ends at {0}", System.currentTimeMillis() );
                 getSessionManager().stopSession( session );
 
             } catch( Exception e ) {
@@ -900,22 +736,20 @@ public final class ContextHandlerLC extends AbstractContextHandler {
 
     @Override
     public synchronized void reevaluate( ReevaluationMessage message ) {
-        SessionInterface session = message.getSession();
-        PolicyWrapper policyHelper = PolicyWrapper.buildPolicyWrapper( session.getPolicySet() );
-        // make the request complete before reevaluation
-        String requestFull = fattenRequest( session.getOriginalRequest(),
-            policyHelper.getAttributesForCondition( POLICY_CONDITION.STARTACCESS ),
-            STATUS.STARTACCESS, true );
+        SessionInterface session = message.getSession(); // TODO check
+        PolicyWrapper policyHelper = PolicyWrapper.build( session.getPolicySet() );
+        RequestWrapper request = RequestWrapper.build( session.getOriginalRequest() );
+        RequestWrapper fatRequest = fattenRequest( request, policyHelper, STATUS.STARTACCESS );
 
         // perform the evaluation
-        PDPEvaluation pdpEvaluation = getPdp().evaluate( requestFull,
+        PDPEvaluation pdpEvaluation = getPdp().evaluate( fatRequest.getRequest(),
             policyHelper.getConditionForEvaluation( POLICY_CONDITION.STARTACCESS ) );
 
         // obligation
         getObligationManager().translateObligations( pdpEvaluation, message.getSession().getId(),
             ContextHandlerConstants.START_STATUS );
 
-        log.log( Level.INFO, "[TIME] decision {0} taken at {1}", new Object[] { pdpEvaluation.getResult(), System.currentTimeMillis() } );
+        log.log( Level.INFO, "decision {0} taken at {1}", new Object[] { pdpEvaluation.getResult(), System.currentTimeMillis() } );
         String destination;
         String[] uriSplitted = session.getPEPUri().split( PEP_ID_SEPARATOR );
         destination = session.getPEPUri().split( PEP_ID_SEPARATOR )[0];
@@ -928,14 +762,14 @@ public final class ContextHandlerLC extends AbstractContextHandler {
         if( ( session.getStatus().equals( ContextHandlerConstants.START_STATUS )
                 || session.getStatus().equals( ContextHandlerConstants.TRY_STATUS ) )
                 && pdpEvaluation.getResult().contains( DecisionType.DENY.value() ) ) {
-            log.log( Level.INFO, "[TIME] Sending revoke {0}", System.currentTimeMillis() );
+            log.log( Level.INFO, "Sending revoke {0}", System.currentTimeMillis() );
             getSessionManager().updateEntry( session.getId(), ContextHandlerConstants.REVOKE_STATUS );
             getRequestManager().sendMessageToOutside( chPepMessage );
         }
 
         if( session.getStatus().equals( ContextHandlerConstants.REVOKE_STATUS )
                 && pdpEvaluation.getResult().contains( DecisionType.PERMIT.value() ) ) {
-            log.log( Level.INFO, "[TIME] Sending resume {0}", System.currentTimeMillis() );
+            log.log( Level.INFO, "Sending resume {0}", System.currentTimeMillis() );
             getSessionManager().updateEntry( session.getId(), ContextHandlerConstants.START_STATUS );
             getRequestManager().sendMessageToOutside( chPepMessage );
         }

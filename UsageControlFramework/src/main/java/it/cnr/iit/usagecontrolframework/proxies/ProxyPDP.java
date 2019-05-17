@@ -100,7 +100,7 @@ public final class ProxyPDP implements PDPInterface {
 
     public void setInterfaces( PAPInterface pap ) {
         Reject.ifNull( pap );
-        pdp.setPAPInterface( pap );
+        pdp.setPAP( pap );
     }
 
     public boolean isInitialized() {

@@ -18,6 +18,7 @@ package it.cnr.iit.ucsinterface.pdp;
 import it.cnr.iit.ucs.properties.components.PdpProperties;
 import it.cnr.iit.ucsinterface.obligationmanager.ObligationManagerInterface;
 import it.cnr.iit.ucsinterface.pap.PAPInterface;
+import it.cnr.iit.utility.errorhandling.Reject;
 
 /**
  * This is the abstract class providing a schema for the PDP.
@@ -35,77 +36,42 @@ import it.cnr.iit.ucsinterface.pap.PAPInterface;
  */
 public abstract class AbstractPDP implements PDPInterface {
     // the interface to the obligation manager
-    private ObligationManagerInterface obligationManagerInterface;
+    private ObligationManagerInterface obligationManager;
     // the interface to the pap
-    private PAPInterface papInterface;
+    private PAPInterface pap;
     // variable in charge of storing the status of this class.
     private volatile boolean initialized = false;
     // configuration of the pdp
-    private PdpProperties configuration;
+    private PdpProperties properties;
 
     /**
      * The constructor for the abstract class is empty
      */
-    public AbstractPDP( PdpProperties configuration ) {
-        // BEGIN parameter checking
-        if( configuration == null ) {
-            return;
-        }
-        // END parameter checking
-        this.configuration = configuration;
+    public AbstractPDP( PdpProperties properties ) {
+        Reject.ifNull( properties );
+        this.properties = properties;
+        initialized = true;
     }
 
     protected final ObligationManagerInterface getObligationManager() {
-        if( initialized ) {
-            return obligationManagerInterface;
-        }
-        return null;
+        return obligationManager;
     }
 
-    public final void setObligationManagerInterface(
-            ObligationManagerInterface obligationManagerInterface ) {
-        // BEGIN parameter checking
-        if( obligationManagerInterface == null ) {
-            return;
-        }
-        // END parameter checking
-        this.obligationManagerInterface = obligationManagerInterface;
-        verify();
+    public final void setObligationManager( ObligationManagerInterface obligationManager ) {
+        Reject.ifNull( obligationManager );
+        this.obligationManager = obligationManager;
     }
 
-    protected final PAPInterface getPAPInterface() {
-        if( initialized ) {
-            return papInterface;
-        }
-        return null;
+    protected final PAPInterface getPAP() {
+        return pap;
     }
 
-    public final void setPAPInterface( PAPInterface papInterface ) {
-        // BEGIN parameter checking
-        if( papInterface == null ) {
-            return;
-        }
-        // END parameter checking
-        this.papInterface = papInterface;
-        verify();
+    public final void setPAP( PAPInterface pap ) {
+        Reject.ifNull( pap );
+
+        this.pap = pap;
     }
 
-    /**
-     * This function is in charge of verifying that the object is consistent. If
-     * the object is consistent the initialised flag will be updated
-     */
-    private void verify() {
-        if( obligationManagerInterface != null && papInterface != null
-                && configuration != null ) {
-            initialized = true;
-        }
-    }
-
-    /**
-     * Checks if the object has been correctly initialised
-     *
-     * @return true if the object has been correctly initialised, false otherwise
-     */
     public final boolean isInitialized() {
         return initialized;
     }

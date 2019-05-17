@@ -14,7 +14,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.DirtiesContext.ClassMode;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 
@@ -28,12 +27,13 @@ import it.cnr.iit.ucsinterface.message.startaccess.StartAccessMessage;
 import it.cnr.iit.ucsinterface.message.tryaccess.TryAccessMessage;
 import it.cnr.iit.usagecontrolframework.contexthandler.ContextHandlerLC;
 import it.cnr.iit.usagecontrolframework.properties.UCFProperties;
+import it.cnr.iit.utility.Utility;
+import it.cnr.iit.utility.errorhandling.exception.PreconditionException;
 import it.cnr.iit.xacmlutilities.Category;
 import it.cnr.iit.xacmlutilities.DataType;
 
 import oasis.names.tc.xacml.core.schema.wd_17.DecisionType;
 
-@ActiveProfiles( "test" )
 @SpringBootTest
 @DirtiesContext( classMode = ClassMode.BEFORE_EACH_TEST_METHOD )
 @EnableAutoConfiguration
@@ -51,20 +51,20 @@ public class ContextHandlerCoverageTests extends UCFBaseTests {
     @PostConstruct
     private void init() throws URISyntaxException, IOException, JAXBException {
         log.info( "Init tests " );
-        policy = readResourceFileAsString( testProperties.getPolicyFile() );
-        request = readResourceFileAsString( testProperties.getRequestFile() );
+        policy = Utility.readFileAsString( testProperties.getPolicyFile() );
+        request = Utility.readFileAsString( testProperties.getRequestFile() );
     }
 
-    @Test
-    public void contextHandlerConfigurationShouldFail() throws Exception {
+    @Test( expected = PreconditionException.class )
+    public void contextHandlerConfigurationShouldFail() throws PreconditionException {
         ContextHandlerLC contextHandler = getContextHandler( properties );
         contextHandler.verify();
         contextHandler.startMonitoringThread();
         contextHandler.stopMonitoringThread();
     }
 
-    @Test( expected = IllegalStateException.class )
-    public void contextHandlerTryAccessShouldFail() throws Exception {
+    @Test( expected = PreconditionException.class )
+    public void contextHandlerTryAccessShouldFail() throws PreconditionException {
         ContextHandlerLC contextHandler = getContextHandler( properties );
         initContextHandler( contextHandler );
         // set the pdp response to return deny
@@ -78,8 +78,8 @@ public class ContextHandlerCoverageTests extends UCFBaseTests {
         contextHandler.stopMonitoringThread();
     }
 
-    // @Test(expected = RevokeException.class)
-    public void contextHandlerStartAccessShouldFail() throws JAXBException, URISyntaxException, IOException, Exception {
+    @Test
+    public void contextHandlerStartAccess() throws JAXBException, URISyntaxException, IOException, Exception {
         ContextHandlerLC contextHandler = getContextHandlerCorrectlyInitialized( properties, policy, request );
 
         /* tryAccess */
@@ -101,17 +101,6 @@ public class ContextHandlerCoverageTests extends UCFBaseTests {
     @Test
     public void contextHandlerEndAccessShouldFail() throws JAXBException, URISyntaxException, IOException, Exception {
         ContextHandlerLC contextHandler = getContextHandlerCorrectlyInitialized( properties, policy, request );
-
-        /* tryAccess */
-        TryAccessMessage tryAccessMessage = buildTryAccessMessage( testProperties.getPepId(), properties.getGeneral().getBaseUri(), policy,
-            request );
-        contextHandler.tryAccess( tryAccessMessage );
-
-        /* startAccess */
-        contextHandler.setSessionManager(
-            getSessionManagerForStatus( testProperties.getSessionId(), policy, request, ContextHandlerConstants.TRY_STATUS ) );
-        StartAccessMessage startAccessMessage = buildStartAccessMessage( testProperties.getSessionId(), "a", "a" );
-        contextHandler.startAccess( startAccessMessage );
 
         /* endAccess */
         contextHandler.setSessionManager(

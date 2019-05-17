@@ -98,7 +98,7 @@ public class PolicyWrapper implements PolicyWrapperInterface {
      * @return a PolicyHelper object if everything goes fine, null otherwise
      */
     // TODO use optional
-    public static PolicyWrapper buildPolicyWrapper( String policy ) {
+    public static PolicyWrapper build( String policy ) {
         Reject.ifBlank( policy );
 
         PolicyWrapper policyHelper = new PolicyWrapper();

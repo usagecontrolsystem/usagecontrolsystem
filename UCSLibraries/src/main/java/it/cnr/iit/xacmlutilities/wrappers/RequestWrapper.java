@@ -6,7 +6,10 @@ import javax.xml.bind.JAXBException;
 
 import it.cnr.iit.utility.JAXBUtility;
 import it.cnr.iit.utility.errorhandling.Reject;
+import it.cnr.iit.xacmlutilities.Attribute;
 
+import oasis.names.tc.xacml.core.schema.wd_17.AttributeType;
+import oasis.names.tc.xacml.core.schema.wd_17.AttributesType;
 import oasis.names.tc.xacml.core.schema.wd_17.RequestType;
 
 public class RequestWrapper {
@@ -21,7 +24,8 @@ public class RequestWrapper {
     private RequestWrapper() {}
 
     // TODO use optional
-    public static RequestWrapper buildRequestWrapper( String request ) {
+    // TODO add pip registry
+    public static RequestWrapper build( String request ) {
         Reject.ifBlank( request );
 
         RequestWrapper requestHelper = new RequestWrapper();
@@ -60,6 +64,21 @@ public class RequestWrapper {
 
     public RequestType getRequestType() {
         return requestType;
+    }
+
+    public void update() {
+        request = marshalRequestType( requestType );
+    }
+
+    public boolean requestHasAttribute( Attribute attribute ) {
+        for( AttributesType attributeType : requestType.getAttributes() ) {
+            for( AttributeType att : attributeType.getAttribute() ) {
+                if( attribute.getAttributeId().equals( att.getAttributeId() ) ) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
 }

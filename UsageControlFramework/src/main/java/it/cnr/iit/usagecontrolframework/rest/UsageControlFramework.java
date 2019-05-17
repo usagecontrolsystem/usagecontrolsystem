@@ -127,6 +127,8 @@ public class UsageControlFramework implements UCSInterface {
     }
 
     private boolean buildComponents() {
+        log.info( "UsageControlFramework init" );
+
         Optional<AbstractContextHandler> optCH = buildComponent( properties.getContextHandler() );
         Reject.ifAbsent( optCH, "Error in building the context handler" );
         contextHandler = optCH.get(); // NOSONAR
@@ -146,9 +148,9 @@ public class UsageControlFramework implements UCSInterface {
         obligationManager = optOM.get(); // NOSONAR
         obligationManager.setPIPs( new ArrayList<PIPOMInterface>( pipList ) );
 
-        log.info( "UCF components building done." );
+        log.info( "UsageControlFramework building components completed." );
 
-        return setupInterfaces();
+        return setupComponentsConnections();
     }
 
     private boolean buildProxySM() {
@@ -198,7 +200,7 @@ public class UsageControlFramework implements UCSInterface {
         return failures == 0;
     }
 
-    private boolean setupInterfaces() {
+    private boolean setupComponentsConnections() {
         try {
             contextHandler.setSessionManager( proxySessionManager );
             contextHandler.setRequestManager( requestManager );
