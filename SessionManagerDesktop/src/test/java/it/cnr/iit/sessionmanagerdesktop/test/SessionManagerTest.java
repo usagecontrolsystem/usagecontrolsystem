@@ -21,8 +21,8 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import it.cnr.iit.sessionmanagerdesktop.SessionManagerDesktop;
 import it.cnr.iit.ucs.properties.components.SessionManagerProperties;
-import it.cnr.iit.ucsinterface.sessionmanager.SessionAttributesBuilder;
 import it.cnr.iit.ucsinterface.sessionmanager.OnGoingAttributesInterface;
+import it.cnr.iit.ucsinterface.sessionmanager.SessionAttributesBuilder;
 import it.cnr.iit.ucsinterface.sessionmanager.SessionInterface;
 
 @EnableConfigurationProperties
@@ -250,6 +250,10 @@ public class SessionManagerTest {
         Assert.assertEquals( true, status );
         List<OnGoingAttributesInterface> attributes = sessionManagerDesktop.getOnGoingAttributes( sessionId );
         Assert.assertTrue( attributes.size() > 0 );
+        for( OnGoingAttributesInterface attribute : attributes ) {
+            Assert.assertTrue( attribute.getId() != null );
+            Assert.assertTrue( attribute.getId().length() > 0 );
+        }
         attributes = sessionManagerDesktop.getOnGoingAttributes( startStatus );
         Assert.assertTrue( attributes == null || attributes.size() == 0 );
         log.info( "*******END TESTING GET On going Attributes****" );

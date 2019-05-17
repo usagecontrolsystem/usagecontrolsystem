@@ -96,6 +96,7 @@ public class OnGoingAttribute implements OnGoingAttributesInterface {
         }
         OnGoingAttribute onGoingAttribute = new OnGoingAttribute();
         onGoingAttribute.setAttributeId( attributeId );
+        onGoingAttribute.setId( UUID.randomUUID().toString() );
         switch( column ) {
             case SUBJECT:
                 onGoingAttribute.setSubjectName( name );
