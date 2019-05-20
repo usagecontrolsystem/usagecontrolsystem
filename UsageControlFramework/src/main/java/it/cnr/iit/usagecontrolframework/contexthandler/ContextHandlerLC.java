@@ -423,7 +423,7 @@ public final class ContextHandlerLC extends AbstractContextHandler {
         log.log( Level.INFO, "EndAccess begins at {0}", System.currentTimeMillis() );
         Optional<SessionInterface> optSession = getSessionManager().getSessionForId( message.getSessionId() );
         Reject.ifAbsent( optSession, "EndAccess: no session for id " + message.getSessionId() );
-        SessionInterface session = optSession.get();
+        SessionInterface session = optSession.get(); // NOSONAR
 
         // Check if the session has the correct status
         if( !( session.isStatus( ContextHandlerConstants.START_STATUS )
