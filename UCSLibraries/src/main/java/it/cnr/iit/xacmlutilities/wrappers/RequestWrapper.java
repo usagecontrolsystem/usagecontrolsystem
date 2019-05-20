@@ -81,4 +81,9 @@ public class RequestWrapper {
         return false;
     }
 
+    @Override
+    public RequestWrapper clone() {
+        return RequestWrapper.build( this.getRequest() );
+    }
+
 }

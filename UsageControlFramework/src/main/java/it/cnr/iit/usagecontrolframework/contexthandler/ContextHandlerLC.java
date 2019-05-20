@@ -140,26 +140,20 @@ public final class ContextHandlerLC extends AbstractContextHandler {
      *
      * @param request
      *            the request
-     * @param policy
-     *            the policy
      * @param status
      *            the status
      */
     private synchronized RequestWrapper fattenRequest( RequestWrapper request, STATUS status ) {
-        boolean isSubscription = status == STATUS.STARTACCESS;
-        RequestWrapper fatRequest = RequestWrapper.build( request.getRequest() );
-        fattenRequest( fatRequest, isSubscription );
-        return fatRequest;
-    }
+        RequestWrapper fatRequest = request.clone();
 
-    private void fattenRequest( RequestWrapper request, boolean isSubscription ) {
-        if( !isSubscription ) {
-            getPipRegistry().retrieveAll( request.getRequestType() );
+        if( status == STATUS.STARTACCESS ) {
+            getPipRegistry().subscribeAll( fatRequest.getRequestType() );
         } else {
-            getPipRegistry().subscribeAll( request.getRequestType() );
+            getPipRegistry().retrieveAll( fatRequest.getRequestType() );
         }
+        fatRequest.update();
 
-        request.update();
+        return fatRequest;
     }
 
     /**
