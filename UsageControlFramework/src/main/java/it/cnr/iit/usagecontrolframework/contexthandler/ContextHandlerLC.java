@@ -129,9 +129,6 @@ public final class ContextHandlerLC extends AbstractContextHandler {
         TryAccessResponse response = new TryAccessResponse( uri.getHost(), message.getSource(), message.getMessageId() );
         response.setSessionId( sessionId );
         response.setPDPEvaluation( evaluation );
-        if( message.isScheduled() ) {
-            response.setUCSDestination();
-        }
         return response;
     }
 
@@ -157,14 +154,6 @@ public final class ContextHandlerLC extends AbstractContextHandler {
     }
 
     /**
-     * It creates a new session id
-     * @return session id to associate to the incoming session during the tryAccess
-     */
-    private synchronized String generateNewSessionId() {
-        return UUID.randomUUID().toString();
-    }
-
-    /**
      * Retrieves the policy to be used to evaluate the request
      *
      * @param message
@@ -179,6 +168,14 @@ public final class ContextHandlerLC extends AbstractContextHandler {
         }
 
         return policy != null ? Optional.of( PolicyWrapper.build( policy ) ) : Optional.empty();
+    }
+
+    /**
+     * It creates a new session id
+     * @return session id to associate to the incoming session during the tryAccess
+     */
+    private synchronized String generateNewSessionId() {
+        return UUID.randomUUID().toString();
     }
 
     /**
@@ -296,9 +293,6 @@ public final class ContextHandlerLC extends AbstractContextHandler {
     private StartAccessResponse buildStartAccessResponse( StartAccessMessage message, PDPEvaluation evaluation ) {
         StartAccessResponse response = new StartAccessResponse( message.getDestination(), message.getSource(), message.getMessageId() );
         response.setPDPEvaluation( evaluation );
-        if( message.isScheduled() ) {
-            response.setUCSDestination();
-        }
         return response;
     }
 
@@ -465,9 +459,6 @@ public final class ContextHandlerLC extends AbstractContextHandler {
     private EndAccessResponse buildEndAccessResponse( EndAccessMessage message, PDPEvaluation evaluation ) {
         EndAccessResponse response = new EndAccessResponse( message.getDestination(), message.getSource(), message.getMessageId() );
         response.setPDPEvaluation( evaluation );
-        if( message.isScheduled() ) {
-            response.setUCSDestination();
-        }
         return response;
     }
 
