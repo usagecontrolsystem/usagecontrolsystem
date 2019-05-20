@@ -101,7 +101,7 @@ public class GivenMessage extends Stage<GivenMessage> {
         try {
             policy = Utility.readFileAsString( testContext.getPolicyFileDeny() );
         } catch( URISyntaxException | IOException e ) {
-            // NOSONAR
+            policy = null;
         }
         return self();
     }
