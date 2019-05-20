@@ -82,11 +82,6 @@ public class ContextHandlerCoverageTests extends UCFBaseTests {
     public void contextHandlerStartAccess() throws JAXBException, URISyntaxException, IOException, Exception {
         ContextHandlerLC contextHandler = getContextHandlerCorrectlyInitialized( properties, policy, request );
 
-        /* tryAccess */
-        TryAccessMessage tryAccessMessage = buildTryAccessMessage( testProperties.getPepId(), properties.getGeneral().getBaseUri(), policy,
-            request );
-        contextHandler.tryAccess( tryAccessMessage );
-
         /* startAccess */
         contextHandler.setSessionManager(
             getSessionManagerForStatus( testProperties.getSessionId(), policy, request, ContextHandlerConstants.TRY_STATUS ) );
@@ -99,7 +94,7 @@ public class ContextHandlerCoverageTests extends UCFBaseTests {
     }
 
     @Test
-    public void contextHandlerEndAccessShouldFail() throws JAXBException, URISyntaxException, IOException, Exception {
+    public void contextHandlerEndAccess() throws JAXBException, URISyntaxException, IOException, Exception {
         ContextHandlerLC contextHandler = getContextHandlerCorrectlyInitialized( properties, policy, request );
 
         /* endAccess */

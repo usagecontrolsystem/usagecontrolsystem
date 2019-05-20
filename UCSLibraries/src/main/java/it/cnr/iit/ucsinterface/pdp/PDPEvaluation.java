@@ -21,6 +21,8 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
+import oasis.names.tc.xacml.core.schema.wd_17.DecisionType;
+
 /**
  * This is the interface offered by the object returned by a PDP after
  * evaluation.
@@ -84,5 +86,5 @@ public interface PDPEvaluation {
 
     public List<Integer> getFiringRules();
 
-    public boolean isPermit();
+    public boolean isDecision( DecisionType decisionType );
 }

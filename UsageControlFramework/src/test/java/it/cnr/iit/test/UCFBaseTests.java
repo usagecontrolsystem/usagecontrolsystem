@@ -18,6 +18,8 @@ import javax.xml.bind.JAXBException;
 
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import it.cnr.iit.test.properties.TestProperties;
@@ -143,13 +145,22 @@ public class UCFBaseTests {
         Mockito.when( sessionInterface.getStatus() ).thenReturn( status );
         Mockito.when( sessionInterface.getPEPUri() ).thenReturn( "localhost" + ContextHandlerLC.PEP_ID_SEPARATOR + "1" );
 
+        Mockito.when( sessionInterface.isStatus( ArgumentMatchers.anyString() ) ).thenAnswer(
+            new Answer<Boolean>() {
+                @Override
+                public Boolean answer( final InvocationOnMock invocation ) throws Throwable {
+                    return invocation.getArguments()[0].equals( status );
+                }
+            } );
+
         return sessionInterface;
     }
 
     /* Mocked ContextHandlerInterface */
 
     protected ContextHandlerInterface getMockedContextHandlerInterface() {
-        ContextHandlerInterface contextHandler = Mockito.mock( ContextHandlerInterface.class );
+        ContextHandlerInterface contextHandler = Mockito
+            .mock( ContextHandlerInterface.class );
 
         return contextHandler;
     }

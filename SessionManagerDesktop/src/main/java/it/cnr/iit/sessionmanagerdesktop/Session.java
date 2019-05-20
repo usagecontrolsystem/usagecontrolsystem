@@ -157,6 +157,11 @@ public final class Session implements SessionInterface {
         this.status = status;
     }
 
+    @Override
+    public boolean isStatus( String status ) {
+        return this.status.equalsIgnoreCase( status );
+    }
+
     /**
      * Sets the URI of the PEP
      *
@@ -239,4 +244,5 @@ public final class Session implements SessionInterface {
     public void setRequest( String request ) {
         this.originalRequest = request;
     }
+
 }

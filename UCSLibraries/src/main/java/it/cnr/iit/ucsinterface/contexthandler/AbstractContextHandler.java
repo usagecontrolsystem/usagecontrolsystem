@@ -24,6 +24,7 @@ import java.util.logging.Logger;
 
 import it.cnr.iit.ucs.properties.components.ContextHandlerProperties;
 import it.cnr.iit.ucsinterface.contexthandler.pipregistry.PIPRegistry;
+import it.cnr.iit.ucsinterface.contexthandler.pipregistry.PIPRegistryInterface;
 import it.cnr.iit.ucsinterface.forwardingqueue.ForwardingQueueToCHInterface;
 import it.cnr.iit.ucsinterface.obligationmanager.ObligationManagerInterface;
 import it.cnr.iit.ucsinterface.pap.PAPInterface;
@@ -64,7 +65,7 @@ public abstract class AbstractContextHandler implements ContextHandlerInterface 
     private PAPInterface pap;
 
     private ForwardingQueueToCHInterface forwardingQueue;
-    private PIPRegistry pipRegistry;
+    private PIPRegistryInterface pipRegistry;
 
     protected ContextHandlerProperties properties;
     protected URI uri;
@@ -132,11 +133,11 @@ public abstract class AbstractContextHandler implements ContextHandlerInterface 
         }
     }
 
-    public PIPRegistry getPipRegistry() {
+    public PIPRegistryInterface getPipRegistry() {
         return pipRegistry;
     }
 
-    protected void setPipRegistry( PIPRegistry pipRegistry ) {
+    protected void setPipRegistry( PIPRegistryInterface pipRegistry ) {
         this.pipRegistry = pipRegistry;
     }
 

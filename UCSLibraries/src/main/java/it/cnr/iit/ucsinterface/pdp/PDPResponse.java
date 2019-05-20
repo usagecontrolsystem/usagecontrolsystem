@@ -123,8 +123,8 @@ public final class PDPResponse implements PDPEvaluation {
 
     @Override
     @JsonIgnore
-    public boolean isPermit() {
-        return getResult().equalsIgnoreCase( DecisionType.PERMIT.value() );
+    public boolean isDecision( DecisionType decisionType ) {
+        return getResult().equalsIgnoreCase( decisionType.value() );
     }
 
     @Override
