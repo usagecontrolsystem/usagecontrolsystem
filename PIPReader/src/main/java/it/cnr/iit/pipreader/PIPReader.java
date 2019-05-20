@@ -98,21 +98,23 @@ public final class PIPReader extends PIPBase {
 
             String attributeId = attributeMap.get( ATTRIBUTE_ID );
             if( attributeId == null || attributeId.isEmpty() ) {
-                log.severe( "Wrong attributeId : " + attributeMap.get( ATTRIBUTE_ID ) );
+                log.log( Level.SEVERE, "Wrong attributeId : {0}", attributeId );
                 return false;
             }
             attribute.setAttributeId( attributeId );
 
-            Category category = Category.toCATEGORY( attributeMap.get( CATEGORY ) );
+            String strCategory = attributeMap.get( CATEGORY );
+            Category category = Category.toCATEGORY( strCategory );
             if( category == null ) {
-                log.severe( "Wrong category : " + attributeMap.get( CATEGORY ) );
+                log.log( Level.SEVERE, "Wrong category : {0}", strCategory );
                 return false;
             }
             attribute.setCategory( category );
 
-            DataType dataType = DataType.toDATATYPE( attributeMap.get( DATA_TYPE ) );
+            String strDataType = attributeMap.get( DATA_TYPE );
+            DataType dataType = DataType.toDATATYPE( strDataType );
             if( dataType == null ) {
-                log.severe( "Wrong datatype : " + attributeMap.get( DATA_TYPE ) );
+                log.log( Level.SEVERE, "Wrong datatype : {0}", strDataType );
                 return false;
             }
             attribute.setDataType( dataType );
