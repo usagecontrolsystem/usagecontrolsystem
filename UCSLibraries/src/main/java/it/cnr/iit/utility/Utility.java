@@ -138,19 +138,6 @@ public final class Utility {
         return true;
     }
 
-    /*public static String readFileAsString( String resource ) throws URISyntaxException, IOException {
-        ClassLoader classLoader = Utility.class.getClassLoader();
-        Path path = Paths.get( classLoader.getResource( resource ).toURI() );
-
-        StringBuilder sb = new StringBuilder();
-        try (BufferedReader br = new BufferedReader( new FileReader( path.toString() ) )) {
-            for( String line; ( line = br.readLine() ) != null; ) {
-                sb.append( line );
-            }
-        }
-        return sb.toString();
-    }*/
-
     public static String readFileAsString( String resource ) throws URISyntaxException, IOException {
         ClassLoader classLoader = Utility.class.getClassLoader();
         Thread.interrupted(); // Avoid a nasty exception
