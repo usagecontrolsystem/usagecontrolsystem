@@ -16,13 +16,13 @@
 package it.cnr.iit.xacmlutilities;
 
 /**
- * This is emuerate represents the datatype enumerate
+ * This is enumerate represents the dataType enumerate
  * <p>
  * In UXACML syntax data-types can be many, we list here the ones that we will
  * use.
  * </p>
  *
- * @author Antonio La Marra
+ * @author Antonio La Marra, Alessandro Rosetti
  *
  */
 public enum DataType {
@@ -32,45 +32,45 @@ public enum DataType {
     ANYURI( "http://www.w3.org/2001/XMLSchema#anyURI" ),
     DATE( "http://www.w3.org/2001/XMLSchema#date" );
 
-    // the string that describes the datatype
-    private final String data;
+    // the string that describes the dataType
+    private final String dataType;
 
     /**
-     * Constructor for the datatype object
+     * Constructor for the dataType object
      *
-     * @param string
-     *          the string that describes the datatype
+     * @param dataType
+     *          the string that describes the dataType
      */
-    DataType( String string ) {
-        this.data = string;
+    DataType( String dataType ) {
+        this.dataType = dataType;
     }
 
     @Override
     public String toString() {
-        return data;
+        return dataType;
     }
 
     /**
-     * Convert a string to a datatype
+     * Convert a string to a dataType
      *
-     * @param string
+     * @param dataType
      *          the string to be converted
-     * @return the datatype object correspondent to the string, null otherwise
+     * @return the dataType object correspondent to the string, null otherwise
      */
-    public static DataType toDATATYPE( String string ) {
-        if( string.equalsIgnoreCase( INTEGER.toString() ) ) {
+    public static DataType toDATATYPE( String dataType ) {
+        if( dataType.equalsIgnoreCase( INTEGER.toString() ) ) {
             return INTEGER;
         }
-        if( string.equalsIgnoreCase( DOUBLE.toString() ) ) {
+        if( dataType.equalsIgnoreCase( DOUBLE.toString() ) ) {
             return DOUBLE;
         }
-        if( string.equalsIgnoreCase( STRING.toString() ) ) {
+        if( dataType.equalsIgnoreCase( STRING.toString() ) ) {
             return STRING;
         }
-        if( string.equalsIgnoreCase( ANYURI.toString() ) ) {
+        if( dataType.equalsIgnoreCase( ANYURI.toString() ) ) {
             return ANYURI;
         }
-        if( string.equalsIgnoreCase( DATE.toString() ) ) {
+        if( dataType.equalsIgnoreCase( DATE.toString() ) ) {
             return DATE;
         }
         return null;
