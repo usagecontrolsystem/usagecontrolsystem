@@ -9,9 +9,6 @@ import static it.cnr.iit.ucs.constants.RestOperation.TRY_ACCESS_RESPONSE;
 import static it.cnr.iit.ucsinterface.contexthandler.ContextHandlerConstants.START_STATUS;
 import static it.cnr.iit.ucsinterface.contexthandler.ContextHandlerConstants.TRY_STATUS;
 
-import java.io.IOException;
-import java.net.URISyntaxException;
-
 import org.apache.http.HttpStatus;
 import org.junit.Test;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -86,7 +83,7 @@ public class UsageControlFrameworkScenarioIntegrationTest
     }
 
     @Test
-    public void a_tryAccess_request_sends_PEP_tryAccessResponse_containg_Deny_decision() throws URISyntaxException, IOException {
+    public void a_tryAccess_request_sends_PEP_tryAccessResponse_containg_Deny_decision() {
         given().a_policy_that_will_trigger_a_Deny_response()
             .and().a_$_request( TRY_ACCESS );
         givenPEPRestSimulator

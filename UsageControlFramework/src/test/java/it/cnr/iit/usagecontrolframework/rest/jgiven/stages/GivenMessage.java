@@ -97,8 +97,12 @@ public class GivenMessage extends Stage<GivenMessage> {
         return self();
     }
 
-    public GivenMessage a_policy_that_will_trigger_a_Deny_response() throws URISyntaxException, IOException {
-        policy = Utility.readFileAsString( testContext.getPolicyFileDeny() );
+    public GivenMessage a_policy_that_will_trigger_a_Deny_response() {
+        try {
+            policy = Utility.readFileAsString( testContext.getPolicyFileDeny() );
+        } catch( URISyntaxException | IOException e ) {
+            // NOSONAR
+        }
         return self();
     }
 
