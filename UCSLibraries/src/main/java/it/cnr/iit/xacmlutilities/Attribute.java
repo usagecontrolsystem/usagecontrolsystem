@@ -51,8 +51,22 @@ public final class Attribute implements Cloneable {
     }
 
     public void setAttributeId( String attributeId ) {
-        Reject.ifBlank( attributeId );
+        Reject.ifBlank( attributeId, "Can't set a blank attributeId" );
         this.attributeId = attributeId;
+    }
+
+    /**
+     * Retrieves the attribute type (i.e String, Integer, AnyURI, Date)
+     *
+     * @return
+     */
+    public DataType getDataType() {
+        return dataType;
+    }
+
+    public void setDataType( DataType dataType ) {
+        Reject.ifNull( dataType, "Can't set a null dataType" );
+        this.dataType = dataType;
     }
 
     public String getIssuer() {
@@ -60,6 +74,7 @@ public final class Attribute implements Cloneable {
     }
 
     public void setIssuer( String issuer ) {
+        Reject.ifBlank( issuer, "Can't set a blank issuer" );
         this.issuer = issuer;
     }
 
@@ -171,20 +186,6 @@ public final class Attribute implements Cloneable {
     }
 
     /**
-     * Retrieves the attribute type (i.e String, Integer, AnyURI, Date)
-     *
-     * @return
-     */
-    public DataType getDataType() {
-        return dataType;
-    }
-
-    public void setDataType( DataType dataType ) {
-        Reject.ifNull( dataType );
-        this.dataType = dataType;
-    }
-
-    /**
      * Retrieves the attribute with its elements
      *
      * @return a string representing the attribute compliant with the XACML
@@ -243,10 +244,7 @@ public final class Attribute implements Cloneable {
         if( this == obj ) {
             return true;
         }
-        if( obj == null ) {
-            return false;
-        }
-        if( getClass() != obj.getClass() ) {
+        if( obj == null || getClass() != obj.getClass() ) {
             return false;
         }
         final Attribute other = (Attribute) obj;
@@ -278,7 +276,7 @@ public final class Attribute implements Cloneable {
     }
 
     public void setCategory( Category category ) {
-        Reject.ifNull( category );
+        Reject.ifNull( category, "Can't set a null category" );
         this.category = category;
     }
 
