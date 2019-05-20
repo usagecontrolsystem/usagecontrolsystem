@@ -82,8 +82,8 @@ public final class ContextHandlerLC extends AbstractContextHandler {
     // monitors if the value of an attribute changes
     private AttributeMonitor attributeMonitor;
 
-    public ContextHandlerLC( ContextHandlerProperties chProperties ) {
-        super( chProperties );
+    public ContextHandlerLC( ContextHandlerProperties properties ) {
+        super( properties );
         attributeMonitor = new AttributeMonitor( this );
     }
 
@@ -102,8 +102,8 @@ public final class ContextHandlerLC extends AbstractContextHandler {
         log.log( Level.INFO, "TryAccess received at {0}", new Object[] { System.currentTimeMillis() } );
 
         Optional<PolicyWrapper> optPolicy = retrievePolicyWrapper( message );
-        Reject.ifAbsent( optPolicy ); // NOSONAR TODO send default deny
-        PolicyWrapper policy = optPolicy.get();
+        Reject.ifAbsent( optPolicy );
+        PolicyWrapper policy = optPolicy.get(); // NOSONAR
         RequestWrapper request = RequestWrapper.build( message.getRequest() );
         RequestWrapper fatRequest = fattenRequest( request, STATUS.TRYACCESS );
         log.info( "TryAccess fattened request contents : \n" + fatRequest.getRequest() );
@@ -253,8 +253,8 @@ public final class ContextHandlerLC extends AbstractContextHandler {
     @Override
     public void startAccess( StartAccessMessage message ) throws WrongOrderException, SessionManagerException, RevokeException {
         Optional<SessionInterface> optSession = getSessionManager().getSessionForId( message.getSessionId() );
-        Reject.ifAbsent( optSession, "StartAccess: no session for id " + message.getSessionId() ); // TODO default deny
-        SessionInterface session = optSession.get();
+        Reject.ifAbsent( optSession, "StartAccess: no session for id " + message.getSessionId() );
+        SessionInterface session = optSession.get(); // NOSONAR
 
         log.log( Level.INFO, "StartAccess begin scheduling at {0}", new Object[] { System.currentTimeMillis() } );
 
