@@ -17,9 +17,9 @@ package it.cnr.iit.ucsinterface.contexthandler;
 
 import it.cnr.iit.ucs.exceptions.WrongOrderException;
 import it.cnr.iit.ucsinterface.message.endaccess.EndAccessMessage;
-import it.cnr.iit.ucsinterface.message.reevaluation.ReevaluationMessage;
 import it.cnr.iit.ucsinterface.message.startaccess.StartAccessMessage;
 import it.cnr.iit.ucsinterface.message.tryaccess.TryAccessMessage;
+import it.cnr.iit.ucsinterface.sessionmanager.SessionInterface;
 
 /**
  * This is the interface provided by the ContextHandler.
@@ -101,9 +101,9 @@ public interface ContextHandlerInterface extends ContextHandlerPIPInterface {
      * node querying the actual ContextHandler to perform the reevaluation of a
      * certain session. This is an API offered by a ContextHandler to another.
      *
-     * @param message
-     *          the reevaluation message
+     * @param session
+     *          the session to be reevaluated
      */
-    public void reevaluate( ReevaluationMessage message );
+    public void reevaluate( SessionInterface session );
 
 }

@@ -96,8 +96,7 @@ public abstract class AbstractContextHandler implements ContextHandlerInterface 
         return sessionManager;
     }
 
-    public void setSessionManager(
-            SessionManagerInterface sessionManager ) {
+    public void setSessionManager( SessionManagerInterface sessionManager ) {
         this.sessionManager = sessionManager;
     }
 

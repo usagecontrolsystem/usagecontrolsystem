@@ -34,7 +34,6 @@ import it.cnr.iit.ucsinterface.contexthandler.ContextHandlerConstants;
 import it.cnr.iit.ucsinterface.message.endaccess.EndAccessMessage;
 import it.cnr.iit.ucsinterface.message.endaccess.EndAccessResponse;
 import it.cnr.iit.ucsinterface.message.pipch.PipChMessage;
-import it.cnr.iit.ucsinterface.message.reevaluation.ReevaluationMessage;
 import it.cnr.iit.ucsinterface.message.reevaluation.ReevaluationResponse;
 import it.cnr.iit.ucsinterface.message.startaccess.StartAccessMessage;
 import it.cnr.iit.ucsinterface.message.startaccess.StartAccessResponse;
@@ -498,7 +497,7 @@ public final class ContextHandlerLC extends AbstractContextHandler {
                 attribute.getAdditionalInformations() );
             if( sessionList != null ) {
                 for( SessionInterface session : sessionList ) {
-                    reevaluateSession( session );
+                    reevaluate( session );
                 }
             }
             return true;
@@ -508,39 +507,16 @@ public final class ContextHandlerLC extends AbstractContextHandler {
         return false;
     }
 
-    /**
-     * Reevaluates the request related to the session which attribute has
-     * changed.
-     * For each session it retrieves the original request and once
-     * the request is fattened it evaluates the policy again.
-     * The PEP will be notified if the Request is not compliant with
-     * the policy anymore.
-     *
-     * @param session
-     *            the session to be reevaluated
-     */
-    private void reevaluateSession( SessionInterface session ) {
-        try {
-            log.log( Level.INFO, "Reevaluation begins at {0}", System.currentTimeMillis() );
-            ReevaluationMessage reevaluationMessage = new ReevaluationMessage( uri.getHost(), uri.getHost() );
-            reevaluationMessage.setSession( session );
-            reevaluate( reevaluationMessage );
-            log.log( Level.INFO, "Reevaluation ends at {0}", System.currentTimeMillis() );
-        } catch( Exception e ) {
-            log.severe( "Error in PIP retrieval : " + e.getMessage() );
-        }
-    }
-
     @Override
-    public synchronized void reevaluate( ReevaluationMessage message ) {
-        SessionInterface session = message.getSession();
+    public synchronized void reevaluate( SessionInterface session ) {
+        log.log( Level.INFO, "Reevaluation begins at {0}", System.currentTimeMillis() );
         PolicyWrapper policy = PolicyWrapper.build( session.getPolicySet() );
         RequestWrapper request = RequestWrapper.build( session.getOriginalRequest() );
         RequestWrapper fatRequest = fattenRequest( request, STATUS.STARTACCESS );
 
         PDPEvaluation evaluation = getPdp().evaluate( fatRequest, policy.getPolicy( POLICY_CONDITION.STARTACCESS ) );
         Reject.ifNull( evaluation );
-        evaluation.setSessionId( message.getSession().getId() );
+        evaluation.setSessionId( session.getId() );
         getObligationManager().translateObligations( evaluation, ContextHandlerConstants.START_STATUS );
 
         log.log( Level.INFO, "Reevaluate evaluated at {0} pdp response : {1}",
@@ -556,12 +532,14 @@ public final class ContextHandlerLC extends AbstractContextHandler {
             log.log( Level.INFO, "Resume at {0}", System.currentTimeMillis() );
             getSessionManager().updateEntry( session.getId(), ContextHandlerConstants.START_STATUS );
         } else {
+            log.log( Level.INFO, "Reevaluation ends without change at {0}", System.currentTimeMillis() );
             return;
         }
 
         evaluation.setSessionId( session.getId() );
         ReevaluationResponse response = buildReevaluationResponse( evaluation, session.getPEPUri() );
         getRequestManager().sendMessageToOutside( response );
+        log.log( Level.INFO, "Reevaluation ends changing status at {0}", System.currentTimeMillis() );
     }
 
     private ReevaluationResponse buildReevaluationResponse( PDPEvaluation evaluation, String dest ) {
