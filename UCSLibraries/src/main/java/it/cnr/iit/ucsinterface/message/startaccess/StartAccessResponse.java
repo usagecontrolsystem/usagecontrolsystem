@@ -18,7 +18,7 @@ package it.cnr.iit.ucsinterface.message.startaccess;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import it.cnr.iit.ucsinterface.message.EvaluatedMessage;
+import it.cnr.iit.ucsinterface.message.EvaluatedResponse;
 import it.cnr.iit.ucsinterface.message.Message;
 import it.cnr.iit.ucsinterface.message.PART;
 import it.cnr.iit.ucsinterface.message.PURPOSE;
@@ -31,7 +31,7 @@ import it.cnr.iit.ucsinterface.pdp.PDPEvaluation;
  *
  */
 @JsonIgnoreProperties( ignoreUnknown = true )
-public final class StartAccessResponse extends Message implements EvaluatedMessage {
+public final class StartAccessResponse extends Message implements EvaluatedResponse {
 
     private static final long serialVersionUID = 1L;
 

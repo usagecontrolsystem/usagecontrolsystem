@@ -17,7 +17,7 @@ package it.cnr.iit.ucsinterface.message.reevaluation;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import it.cnr.iit.ucsinterface.message.EvaluatedMessage;
+import it.cnr.iit.ucsinterface.message.EvaluatedResponse;
 import it.cnr.iit.ucsinterface.message.Message;
 import it.cnr.iit.ucsinterface.message.PART;
 import it.cnr.iit.ucsinterface.message.PURPOSE;
@@ -30,7 +30,7 @@ import it.cnr.iit.utility.errorhandling.Reject;
  * @author Antonio La Marra, Alessandro Rosetti
  *
  */
-public class ReevaluationResponse extends Message implements EvaluatedMessage {
+public class ReevaluationResponse extends Message implements EvaluatedResponse {
 
     private static final long serialVersionUID = 1L;
 

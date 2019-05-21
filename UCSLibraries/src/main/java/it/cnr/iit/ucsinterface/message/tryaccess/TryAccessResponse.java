@@ -15,7 +15,7 @@
  ******************************************************************************/
 package it.cnr.iit.ucsinterface.message.tryaccess;
 
-import it.cnr.iit.ucsinterface.message.EvaluatedMessage;
+import it.cnr.iit.ucsinterface.message.EvaluatedResponse;
 import it.cnr.iit.ucsinterface.message.Message;
 import it.cnr.iit.ucsinterface.message.PART;
 import it.cnr.iit.ucsinterface.message.PURPOSE;
@@ -31,7 +31,7 @@ import it.cnr.iit.ucsinterface.pdp.PDPEvaluation;
  * @author Antonio La Marra, Alessandro Rosetti
  *
  */
-public final class TryAccessResponse extends Message implements EvaluatedMessage {
+public final class TryAccessResponse extends Message implements EvaluatedResponse {
 
     private static final long serialVersionUID = 1L;
 

@@ -36,7 +36,7 @@ import it.cnr.iit.peprest.messagetrack.MessageStorage;
 import it.cnr.iit.peprest.messagetrack.MessageStorageInterface;
 import it.cnr.iit.peprest.messagetrack.MessagesPerSession;
 import it.cnr.iit.peprest.proxy.UCSProxy;
-import it.cnr.iit.ucsinterface.message.EvaluatedMessage;
+import it.cnr.iit.ucsinterface.message.EvaluatedResponse;
 import it.cnr.iit.ucsinterface.message.MEAN;
 import it.cnr.iit.ucsinterface.message.Message;
 import it.cnr.iit.ucsinterface.message.endaccess.EndAccessMessage;
@@ -294,8 +294,8 @@ public class PEPRest implements PEPInterface {
         Optional<Message> optional = getMessageFromId( messageId );
         if( optional.isPresent() ) {
             Message message = optional.get();
-            if( message instanceof EvaluatedMessage ) {
-                String result = ( (EvaluatedMessage) message ).getPDPEvaluation().getResult();
+            if( message instanceof EvaluatedResponse ) {
+                String result = ( (EvaluatedResponse) message ).getPDPEvaluation().getResult();
                 return Optional.of( result );
             }
         }
