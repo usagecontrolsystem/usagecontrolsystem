@@ -15,6 +15,8 @@
  ******************************************************************************/
 package it.cnr.iit.peprest;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -117,7 +119,7 @@ public class PEPRest implements PEPInterface {
         message.setPepUri( buildOnGoingEvaluationInterface() );
         message.setPolicy( policy.getPolicy() );
         message.setRequest( request.getRequest() );
-        message.setCallback( buildResponseInterface( "tryAccessResponse" ), MEAN.REST );
+        message.setCallback( buildResponseApi( "tryAccessResponse" ), MEAN.REST );
         return message;
     }
 
@@ -137,12 +139,12 @@ public class PEPRest implements PEPInterface {
     public StartAccessMessage buildStartAccessMessage( String sessionId ) {
         StartAccessMessage message = new StartAccessMessage( pep.getId(), pep.getBaseUri() );
         message.setSessionId( sessionId );
-        message.setCallback( buildResponseInterface( "startAccessResponse" ), MEAN.REST );
+        message.setCallback( buildResponseApi( "startAccessResponse" ), MEAN.REST );
         return message;
     }
 
     public String endAccess( String sessionId ) {
-        EndAccessMessage message = buildEndAccessMessage( sessionId, buildResponseInterface( "endAccessResponse" ) );
+        EndAccessMessage message = buildEndAccessMessage( sessionId, buildResponseApi( "endAccessResponse" ) );
         log.log( Level.INFO, "endAccess at {0} ", System.currentTimeMillis() );
         if( ucs.sendMessageToCH( message ).isDelivered() ) {
             unanswered.put( message.getMessageId(), message );
@@ -242,20 +244,16 @@ public class PEPRest implements PEPInterface {
         return response.getPDPEvaluation().getResult();
     }
 
-    private final String buildResponseInterface( String name ) {
-        StringBuilder sb = new StringBuilder();
-        sb.append( pep.getBaseUri() );
-
-        if( sb.charAt( sb.length() - 1 ) != '/' &&
-                name.charAt( name.length() - 1 ) != '/' ) {
-            sb.append( "/" );
+    private final String buildResponseApi( String name ) {
+        try {
+            return new URL( new URL( pep.getBaseUri() ), name ).toString();
+        } catch( MalformedURLException e ) {
+            return null;
         }
-        sb.append( name );
-        return sb.toString();
     }
 
     private String buildOnGoingEvaluationInterface() {
-        return buildResponseInterface( pep.getApiStatusChanged() );
+        return buildResponseApi( pep.getApiStatusChanged() );
     }
 
     public void end( String sessionId ) {
