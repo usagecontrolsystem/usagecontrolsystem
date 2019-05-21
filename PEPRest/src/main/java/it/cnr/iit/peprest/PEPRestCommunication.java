@@ -81,7 +81,7 @@ public class PEPRestCommunication {
         if( messageId == null || messageId.isEmpty() ) {
             throw new HttpMessageNotReadableException( HttpStatus.NO_CONTENT + " : No message id" );
         }
-        Optional<CallerResponse> callerResponse = pepRest.getMessageHistory().getMessageStatus( messageId );
+        Optional<CallerResponse> callerResponse = pepRest.getMessageStorage().getMessageStatus( messageId );
         if( callerResponse.isPresent() ) {
             return callerResponse.get();
         } else {

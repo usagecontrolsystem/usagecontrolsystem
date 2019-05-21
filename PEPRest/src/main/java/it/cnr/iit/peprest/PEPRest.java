@@ -34,6 +34,7 @@ import it.cnr.iit.peprest.messagetrack.MessageStorage;
 import it.cnr.iit.peprest.messagetrack.MessageStorageInterface;
 import it.cnr.iit.peprest.messagetrack.MessagesPerSession;
 import it.cnr.iit.peprest.proxy.UCSProxy;
+import it.cnr.iit.ucsinterface.message.EvaluatedMessage;
 import it.cnr.iit.ucsinterface.message.MEAN;
 import it.cnr.iit.ucsinterface.message.Message;
 import it.cnr.iit.ucsinterface.message.endaccess.EndAccessMessage;
@@ -47,6 +48,8 @@ import it.cnr.iit.ucsinterface.pep.PEPInterface;
 import it.cnr.iit.ucsinterface.requestmanager.UCSCHInterface;
 import it.cnr.iit.utility.Utility;
 import it.cnr.iit.utility.errorhandling.Reject;
+import it.cnr.iit.xacmlutilities.wrappers.PolicyWrapper;
+import it.cnr.iit.xacmlutilities.wrappers.RequestWrapper;
 
 import oasis.names.tc.xacml.core.schema.wd_17.DecisionType;
 
@@ -70,7 +73,7 @@ public class PEPRest implements PEPInterface {
     // map of unanswered messages, the key is the id of the message
     private ConcurrentMap<String, Message> unanswered = new ConcurrentHashMap<>();
     private ConcurrentMap<String, Message> responses = new ConcurrentHashMap<>();
-    private MessageStorage messageHistory = new MessageStorage();
+    private MessageStorage messageStorage = new MessageStorage();
 
     @Autowired
     private PEPProperties pep;
@@ -94,108 +97,96 @@ public class PEPRest implements PEPInterface {
     }
 
     public String tryAccess() {
-        String request = Utility.readFileAbsPath( pep.getRequestPath() );
-        String policy = Utility.readFileAbsPath( pep.getPolicyPath() );
+        RequestWrapper request = RequestWrapper.build( Utility.readFileAbsPath( pep.getRequestPath() ) );
+        PolicyWrapper policy = PolicyWrapper.build( Utility.readFileAbsPath( pep.getPolicyPath() ) );
+        TryAccessMessage message = buildTryAccessMessage( request, policy );
 
-        TryAccessMessage tryAccessMessage = new TryAccessMessage( pep.getId(),
-            pep.getBaseUri() );
-        tryAccessMessage.setPepUri( buildOnGoingEvaluationInterface() );
-        tryAccessMessage.setPolicy( policy );
-        tryAccessMessage.setRequest( request );
-        tryAccessMessage.setCallback( buildResponseInterface( "tryAccessResponse" ), MEAN.REST );
-        log.log( Level.INFO, "[TIME] TRYACCESS {0} ", System.currentTimeMillis() );
-        Message message = ucs.sendMessageToCH( tryAccessMessage );
-        if( message.isDelivered() ) {
-            unanswered.put( tryAccessMessage.getMessageId(), tryAccessMessage );
-            messageHistory.addMessage( tryAccessMessage );
-            return tryAccessMessage.getMessageId();
+        log.log( Level.INFO, "tryAccess at {0} ", System.currentTimeMillis() );
+        if( ucs.sendMessageToCH( message ).isDelivered() ) {
+            unanswered.put( message.getMessageId(), message );
+            messageStorage.addMessage( message );
+            return message.getMessageId();
         } else {
             log.log( Level.WARNING, IS_MSG_DELIVERED_TO_DESTINATION, message.isDelivered() );
             throw Throwables.propagate( new IllegalAccessException( UNABLE_TO_DELIVER_MESSSAGE_TO_UCS ) );
         }
     }
 
+    public TryAccessMessage buildTryAccessMessage( RequestWrapper request, PolicyWrapper policy ) {
+        TryAccessMessage message = new TryAccessMessage( pep.getId(), pep.getBaseUri() );
+        message.setPepUri( buildOnGoingEvaluationInterface() );
+        message.setPolicy( policy.getPolicy() );
+        message.setRequest( request.getRequest() );
+        message.setCallback( buildResponseInterface( "tryAccessResponse" ), MEAN.REST );
+        return message;
+    }
+
     public String startAccess( String sessionId ) {
-        StartAccessMessage startAccessMessage = new StartAccessMessage( pep.getId(), pep.getBaseUri() );
-        startAccessMessage.setSessionId( sessionId );
-        startAccessMessage.setCallback( buildResponseInterface( "startAccessResponse" ), MEAN.REST );
-        try {
-            log.log( Level.INFO, "[TIME] STARTACCESS {0} ", System.currentTimeMillis() );
-            Message message = ucs.sendMessageToCH( startAccessMessage );
-            if( message.isDelivered() ) {
-                unanswered.put( startAccessMessage.getMessageId(), startAccessMessage );
-                messageHistory.addMessage( startAccessMessage );
-                return startAccessMessage.getMessageId();
-            } else {
-                log.log( Level.WARNING, IS_MSG_DELIVERED_TO_DESTINATION, message.isDelivered() );
-                throw Throwables.propagate( new IllegalAccessException( UNABLE_TO_DELIVER_MESSSAGE_TO_UCS ) );
-            }
-        } catch( Exception e ) { // NOSONAR
-            log.severe( e.getLocalizedMessage() );
-            throw Throwables.propagate( e );
+        log.log( Level.INFO, "startAccess at {0} ", System.currentTimeMillis() );
+        StartAccessMessage message = buildStartAccessMessage( sessionId );
+        if( ucs.sendMessageToCH( message ).isDelivered() ) {
+            unanswered.put( message.getMessageId(), message );
+            messageStorage.addMessage( message );
+            return message.getMessageId();
+        } else {
+            log.log( Level.WARNING, IS_MSG_DELIVERED_TO_DESTINATION, message.isDelivered() );
+            throw Throwables.propagate( new IllegalAccessException( UNABLE_TO_DELIVER_MESSSAGE_TO_UCS ) );
         }
     }
 
+    public StartAccessMessage buildStartAccessMessage( String sessionId ) {
+        StartAccessMessage message = new StartAccessMessage( pep.getId(), pep.getBaseUri() );
+        message.setSessionId( sessionId );
+        message.setCallback( buildResponseInterface( "startAccessResponse" ), MEAN.REST );
+        return message;
+    }
+
     public String endAccess( String sessionId ) {
-        EndAccessMessage endAccessMessage = new EndAccessMessage( pep.getId(),
-            pep.getBaseUri() );
-        endAccessMessage.setSessionId( sessionId );
-        endAccessMessage.setCallback( buildResponseInterface( "endAccessResponse" ), MEAN.REST );
-        try {
-            log.log( Level.INFO, "[TIME] ENDACCESS {0} ", System.currentTimeMillis() );
-            Message message = ucs.sendMessageToCH( endAccessMessage );
-            if( message.isDelivered() ) {
-                unanswered.put( endAccessMessage.getMessageId(), endAccessMessage );
-                messageHistory.addMessage( endAccessMessage );
-                return endAccessMessage.getMessageId();
-            } else {
-                log.log( Level.INFO, IS_MSG_DELIVERED_TO_DESTINATION, message.isDelivered() );
-                throw Throwables.propagate( new IllegalAccessException( UNABLE_TO_DELIVER_MESSSAGE_TO_UCS ) );
-            }
-        } catch( Exception e ) { // NOSONAR
-            log.severe( e.getLocalizedMessage() );
-            throw Throwables.propagate( e );
+        EndAccessMessage message = buildEndAccessMessage( sessionId, buildResponseInterface( "endAccessResponse" ) );
+        log.log( Level.INFO, "endAccess at {0} ", System.currentTimeMillis() );
+        if( ucs.sendMessageToCH( message ).isDelivered() ) {
+            unanswered.put( message.getMessageId(), message );
+            messageStorage.addMessage( message );
+            return message.getMessageId();
+        } else {
+            log.log( Level.INFO, IS_MSG_DELIVERED_TO_DESTINATION, message.isDelivered() );
+            throw Throwables.propagate( new IllegalAccessException( UNABLE_TO_DELIVER_MESSSAGE_TO_UCS ) );
         }
+    }
+
+    public EndAccessMessage buildEndAccessMessage( String sessionId, String responseInterface ) {
+        EndAccessMessage message = new EndAccessMessage( pep.getId(), pep.getBaseUri() );
+        message.setSessionId( sessionId );
+        message.setCallback( responseInterface, MEAN.REST );
+        return message;
     }
 
     @Override
     @Async
-    public Message onGoingEvaluation( Message message ) {
-        // BEGIN parameter checking
-        if( !( message instanceof ReevaluationResponse ) ) {
-            log.severe( "Message not valid" );
-            throw Throwables.propagate( new IllegalArgumentException( "Invalid message type'" ) );
-        }
-        // END parameter checking
+    public Message onGoingEvaluation( ReevaluationResponse message ) {
         responses.put( message.getMessageId(), message );
-        messageHistory.addMessage( message );
-        log.log( Level.INFO, "[TIME] ON_GOING_EVAL {0} ", System.currentTimeMillis() );
+        messageStorage.addMessage( message );
+        log.log( Level.INFO, "onGoingEvaluation at {0} ", System.currentTimeMillis() );
 
-        ReevaluationResponse chPepMessage = (ReevaluationResponse) message;
         if( pep.getRevokeType().equals( "HARD" ) ) {
-            log.log( Level.INFO, "[TIME] sending endacces {0} ", System.currentTimeMillis() );
-            EndAccessMessage endAccess = new EndAccessMessage( pep.getId(),
-                pep.getBaseUri() );
-            endAccess.setCallback( null, MEAN.REST );
-            endAccess.setSessionId( chPepMessage.getPDPEvaluation().getSessionId() );
+            log.log( Level.INFO, "endAcces sent at {0} ", System.currentTimeMillis() );
 
-            message = ucs.sendMessageToCH( endAccess );
-            if( message.isDelivered() ) {
+            EndAccessMessage endAccess = buildEndAccessMessage( message.getPDPEvaluation().getSessionId(), null );
+            if( ucs.sendMessageToCH( endAccess ).isDelivered() ) {
                 unanswered.put( endAccess.getMessageId(), endAccess );
-                messageHistory.addMessage( endAccess );
+                messageStorage.addMessage( endAccess );
             } else {
                 log.log( Level.INFO, IS_MSG_DELIVERED_TO_DESTINATION, message.isDelivered() );
                 throw Throwables.propagate( new IllegalAccessException( UNABLE_TO_DELIVER_MESSSAGE_TO_UCS ) );
             }
         } else {
             // generic case to cater for multiple scenarios, e.g. pause/resume/pause/end etc...
-            if( chPepMessage.getPDPEvaluation().getResult().contains( PERMIT ) ) {
+            if( message.getPDPEvaluation().isDecision( DecisionType.PERMIT ) ) {
                 log.info( "RESUME EXECUTION" );
-            } else if( chPepMessage.getPDPEvaluation().getResult().contains( DENY ) ) {
+            } else if( message.getPDPEvaluation().isDecision( DecisionType.DENY ) ) {
                 log.info( "STOP EXECUTION" );
             }
         }
-
         message.setMotivation( "OK" );
         return message;
     }
@@ -206,7 +197,7 @@ public class PEPRest implements PEPInterface {
         try {
             responses.put( message.getMessageId(), message );
             unanswered.remove( message.getMessageId() );
-            messageHistory.addMessage( message );
+            messageStorage.addMessage( message );
             return handleResponse( message );
         } catch( Exception e ) { // NOSONAR
             log.severe( "Error occured while evaluating the response: " + e.getLocalizedMessage() ); // NOSONAR
@@ -233,7 +224,7 @@ public class PEPRest implements PEPInterface {
      * @return a String stating the result of the evaluation or the ID of the startaccess message
      */
     private String handleTryAccessResponse( TryAccessResponse response ) {
-        log.log( Level.INFO, " Evaluation {0} ", response.getPDPEvaluation().getResult() );
+        log.log( Level.INFO, "Evaluation {0} ", response.getPDPEvaluation().getResult() );
         if( response.getPDPEvaluation().getResult().contains( PERMIT ) ) {
             return startAccess( response.getSessionId() );
         }
@@ -268,7 +259,7 @@ public class PEPRest implements PEPInterface {
     }
 
     public void end( String sessionId ) {
-        log.log( Level.INFO, "[TIME] Sending endAccess {0} ", System.currentTimeMillis() );
+        log.log( Level.INFO, "endAccess sent at {0} ", System.currentTimeMillis() );
         endAccess( sessionId );
     }
 
@@ -305,27 +296,10 @@ public class PEPRest implements PEPInterface {
         Optional<Message> optional = getMessageFromId( messageId );
         if( optional.isPresent() ) {
             Message message = optional.get();
-            return extractEvaluationFromMessage( message );
-        } else {
-            return Optional.empty();
-        }
-    }
-
-    /**
-     * Given the message extracts the result of the evaluation
-     * @param message the message from which the evaluation has to be extraced
-     * @return an optional containing either the result as a string or nothing
-     */
-    // TODO define an EvaluatedMessage interface for a Message that has a pdpEvaluation.
-    private Optional<String> extractEvaluationFromMessage( Message message ) {
-        if( message instanceof TryAccessResponse ) {
-            return Optional.ofNullable( ( (TryAccessResponse) message ).getPDPEvaluation().getResult() );
-        }
-        if( message instanceof StartAccessResponse ) {
-            return Optional.ofNullable( ( (StartAccessResponse) message ).getPDPEvaluation().getResult() );
-        }
-        if( message instanceof EndAccessResponse ) {
-            return Optional.ofNullable( ( (EndAccessResponse) message ).getPDPEvaluation().getResult() );
+            if( message instanceof EvaluatedMessage ) {
+                String result = ( (EvaluatedMessage) message ).getPDPEvaluation().getResult();
+                return Optional.of( result );
+            }
         }
         return Optional.empty();
     }
@@ -342,16 +316,16 @@ public class PEPRest implements PEPInterface {
         return Optional.of( responses.get( messageId ) );
     }
 
-    public MessageStorageInterface getMessageHistory() {
-        return messageHistory;
+    public MessageStorageInterface getMessageStorage() {
+        return messageStorage;
     }
 
-    public MessagesPerSession getMessagesPerSession() { // NOSONAR
-        return messageHistory;
+    public MessagesPerSession getMessagesPerSession() {
+        return messageStorage;
     }
 
     public void setMessageStorage( MessageStorage messageStorage ) {
-        messageHistory = messageStorage;
+        this.messageStorage = messageStorage;
     }
 
 }

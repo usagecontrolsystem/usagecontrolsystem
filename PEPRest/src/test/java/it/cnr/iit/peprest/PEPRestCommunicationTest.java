@@ -54,7 +54,7 @@ public class PEPRestCommunicationTest extends PEPRestAbstractTest {
 
     @Test( expected = IllegalArgumentException.class )
     public void flowStatusRequestWithWrongMessageIdResultsInBadRequestResponse() throws Throwable {
-        when( pepRest.getMessageHistory() ).thenReturn( new MessageStorage() );
+        when( pepRest.getMessageStorage() ).thenReturn( new MessageStorage() );
         try {
             postGetRequestToPEPRest( " ", FLOW_STATUS.getOperationUri() ).getStatus();
             fail( "Should have thrown IllegalArgumentException" );

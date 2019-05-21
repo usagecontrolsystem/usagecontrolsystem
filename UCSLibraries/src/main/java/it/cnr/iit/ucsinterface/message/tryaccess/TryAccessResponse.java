@@ -15,6 +15,7 @@
  ******************************************************************************/
 package it.cnr.iit.ucsinterface.message.tryaccess;
 
+import it.cnr.iit.ucsinterface.message.EvaluatedMessage;
 import it.cnr.iit.ucsinterface.message.Message;
 import it.cnr.iit.ucsinterface.message.PART;
 import it.cnr.iit.ucsinterface.message.PURPOSE;
@@ -30,7 +31,7 @@ import it.cnr.iit.ucsinterface.pdp.PDPEvaluation;
  * @author Antonio La Marra, Alessandro Rosetti
  *
  */
-public final class TryAccessResponse extends Message {
+public final class TryAccessResponse extends Message implements EvaluatedMessage {
 
     private static final long serialVersionUID = 1L;
 
@@ -52,10 +53,12 @@ public final class TryAccessResponse extends Message {
         super( source, dest, messageId );
     }
 
+    @Override
     public void setPDPEvaluation( PDPEvaluation pdpEvaluation ) {
         this.pdpEvaluation = pdpEvaluation;
     }
 
+    @Override
     public PDPEvaluation getPDPEvaluation() {
         return pdpEvaluation;
     }

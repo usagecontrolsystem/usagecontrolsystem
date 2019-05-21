@@ -17,6 +17,7 @@ package it.cnr.iit.ucsinterface.message.endaccess;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import it.cnr.iit.ucsinterface.message.EvaluatedMessage;
 import it.cnr.iit.ucsinterface.message.Message;
 import it.cnr.iit.ucsinterface.message.PART;
 import it.cnr.iit.ucsinterface.message.PURPOSE;
@@ -28,7 +29,7 @@ import it.cnr.iit.ucsinterface.pdp.PDPEvaluation;
  * @author Antonio La Marra, Alessandro Rosetti
  *
  */
-public class EndAccessResponse extends Message {
+public class EndAccessResponse extends Message implements EvaluatedMessage {
 
     private static final long serialVersionUID = 1L;
 
@@ -62,10 +63,12 @@ public class EndAccessResponse extends Message {
         purpose = PURPOSE.ENDACCESS_RESPONSE;
     }
 
+    @Override
     public PDPEvaluation getPDPEvaluation() {
         return pdpEvaluation;
     }
 
+    @Override
     public void setPDPEvaluation( PDPEvaluation pdpEvaluation ) {
         this.pdpEvaluation = pdpEvaluation;
     }

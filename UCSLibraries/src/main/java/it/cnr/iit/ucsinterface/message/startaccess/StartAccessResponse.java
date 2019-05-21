@@ -18,6 +18,7 @@ package it.cnr.iit.ucsinterface.message.startaccess;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import it.cnr.iit.ucsinterface.message.EvaluatedMessage;
 import it.cnr.iit.ucsinterface.message.Message;
 import it.cnr.iit.ucsinterface.message.PART;
 import it.cnr.iit.ucsinterface.message.PURPOSE;
@@ -30,7 +31,7 @@ import it.cnr.iit.ucsinterface.pdp.PDPEvaluation;
  *
  */
 @JsonIgnoreProperties( ignoreUnknown = true )
-public final class StartAccessResponse extends Message {
+public final class StartAccessResponse extends Message implements EvaluatedMessage {
 
     private static final long serialVersionUID = 1L;
 
@@ -64,10 +65,12 @@ public final class StartAccessResponse extends Message {
         purpose = PURPOSE.STARTACCESS_RESPONSE;
     }
 
+    @Override
     public PDPEvaluation getPDPEvaluation() {
         return pdpEvaluation;
     }
 
+    @Override
     public void setPDPEvaluation( PDPEvaluation pdpEvaluation ) {
         this.pdpEvaluation = pdpEvaluation;
     }
