@@ -33,44 +33,44 @@ public enum DataType {
     DATE( "http://www.w3.org/2001/XMLSchema#date" );
 
     // the string that describes the dataType
-    private final String dataType;
+    private final String payload;
 
     /**
      * Constructor for the dataType object
      *
-     * @param dataType
+     * @param payload
      *          the string that describes the dataType
      */
-    DataType( String dataType ) {
-        this.dataType = dataType;
+    DataType( String payload ) {
+        this.payload = payload;
     }
 
     @Override
     public String toString() {
-        return dataType;
+        return payload;
     }
 
     /**
      * Convert a string to a dataType
      *
-     * @param dataType
+     * @param payload
      *          the string to be converted
      * @return the dataType object correspondent to the string, null otherwise
      */
-    public static DataType toDATATYPE( String dataType ) {
-        if( dataType.equalsIgnoreCase( INTEGER.toString() ) ) {
+    public static DataType toDATATYPE( String payload ) {
+        if( payload.equalsIgnoreCase( INTEGER.toString() ) ) {
             return INTEGER;
         }
-        if( dataType.equalsIgnoreCase( DOUBLE.toString() ) ) {
+        if( payload.equalsIgnoreCase( DOUBLE.toString() ) ) {
             return DOUBLE;
         }
-        if( dataType.equalsIgnoreCase( STRING.toString() ) ) {
+        if( payload.equalsIgnoreCase( STRING.toString() ) ) {
             return STRING;
         }
-        if( dataType.equalsIgnoreCase( ANYURI.toString() ) ) {
+        if( payload.equalsIgnoreCase( ANYURI.toString() ) ) {
             return ANYURI;
         }
-        if( dataType.equalsIgnoreCase( DATE.toString() ) ) {
+        if( payload.equalsIgnoreCase( DATE.toString() ) ) {
             return DATE;
         }
         return null;

@@ -140,7 +140,6 @@ public final class Utility {
 
     public static String readFileAsString( String resource ) throws URISyntaxException, IOException {
         ClassLoader classLoader = Utility.class.getClassLoader();
-        Thread.interrupted(); // Avoid a nasty exception
         Path path = Paths.get( classLoader.getResource( resource ).toURI() );
         byte[] data = Files.readAllBytes( path );
         return new String( data );

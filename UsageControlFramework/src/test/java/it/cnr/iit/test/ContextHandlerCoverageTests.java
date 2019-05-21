@@ -50,6 +50,7 @@ public class ContextHandlerCoverageTests extends UCFBaseTests {
     @PostConstruct
     private void init() throws URISyntaxException, IOException, JAXBException {
         log.info( "Init tests " );
+        Thread.interrupted(); // Avoid a nasty exception
         policy = Utility.readFileAsString( testProperties.getPolicyFile() );
         request = Utility.readFileAsString( testProperties.getRequestFile() );
     }
