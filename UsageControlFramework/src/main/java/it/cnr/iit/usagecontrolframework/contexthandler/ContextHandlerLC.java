@@ -109,7 +109,8 @@ public final class ContextHandlerLC extends AbstractContextHandler {
         log.info( "TryAccess fattened request contents : \n" + fatRequest.getRequest() );
 
         // Perform the PDP evaluation
-        PDPEvaluation evaluation = getPdp().evaluate( fatRequest.getRequest(), policy, STATUS.TRYACCESS );
+        PDPEvaluation evaluation = getPdp().evaluate( fatRequest, policy, STATUS.TRYACCESS );
+        Reject.ifNull( evaluation );
         log.log( Level.INFO, "TryAccess evaluated at {0} pdp response : {1}",
             new Object[] { System.currentTimeMillis(), evaluation.getResult() } );
 
@@ -195,8 +196,7 @@ public final class ContextHandlerLC extends AbstractContextHandler {
     private void createNewSession( TryAccessMessage message, RequestWrapper request, PolicyWrapper policy, String sessionId ) {
         log.log( Level.INFO, "TryAccess creating new session : {0} ", sessionId );
 
-        String pepUri = message.isScheduled() ? message.getPepUri() : uri.getHost() + PEP_ID_SEPARATOR + message.getSource();
-        String ip = message.isScheduled() ? message.getSource() : uri.getHost();
+        String pepUri = uri.getHost() + PEP_ID_SEPARATOR + message.getSource();
 
         // retrieve the id of ongoing attributes
         SessionAttributesBuilder sessionAttributeBuilder = new SessionAttributesBuilder();
@@ -212,7 +212,7 @@ public final class ContextHandlerLC extends AbstractContextHandler {
             .setActionName( request.getRequestType().extractValue( Category.ACTION ) );
 
         sessionAttributeBuilder.setSessionId( sessionId ).setPolicySet( policy.getPolicy() ).setOriginalRequest( request.getRequest() )
-            .setStatus( ContextHandlerConstants.TRY_STATUS ).setPepURI( pepUri ).setMyIP( ip );
+            .setStatus( ContextHandlerConstants.TRY_STATUS ).setPepURI( pepUri ).setMyIP( uri.getHost() );
 
         // insert all the values inside the session manager
         if( !getSessionManager().createEntry( sessionAttributeBuilder.build() ) ) {
@@ -268,7 +268,8 @@ public final class ContextHandlerLC extends AbstractContextHandler {
         RequestWrapper request = RequestWrapper.build( session.getOriginalRequest() );
         RequestWrapper fatRequest = fattenRequest( request, STATUS.STARTACCESS );
 
-        PDPEvaluation evaluation = getPdp().evaluate( fatRequest.getRequest(), policy.getPolicy( POLICY_CONDITION.STARTACCESS ) );
+        PDPEvaluation evaluation = getPdp().evaluate( fatRequest, policy.getPolicy( POLICY_CONDITION.STARTACCESS ) );
+        Reject.ifNull( evaluation );
         log.log( Level.INFO, "StartAccess evaluated at {0} pdp response : {1}",
             new Object[] { System.currentTimeMillis(), evaluation.getResult() } );
 
@@ -438,9 +439,8 @@ public final class ContextHandlerLC extends AbstractContextHandler {
         RequestWrapper request = RequestWrapper.build( session.getOriginalRequest() );
         RequestWrapper fatRequest = fattenRequest( request, STATUS.ENDACCESS );
 
-        PDPEvaluation evaluation = getPdp().evaluate( fatRequest.getRequest(),
-            policy.getPolicy( POLICY_CONDITION.ENDACCESS ) );
-
+        PDPEvaluation evaluation = getPdp().evaluate( fatRequest, policy.getPolicy( POLICY_CONDITION.ENDACCESS ) );
+        Reject.ifNull( evaluation );
         log.log( Level.INFO, "EndAccess evaluated at {0} pdp response : {1}",
             new Object[] { System.currentTimeMillis(), evaluation.getResult() } );
 
@@ -535,8 +535,8 @@ public final class ContextHandlerLC extends AbstractContextHandler {
         RequestWrapper request = RequestWrapper.build( session.getOriginalRequest() );
         RequestWrapper fatRequest = fattenRequest( request, STATUS.STARTACCESS );
 
-        PDPEvaluation evaluation = getPdp().evaluate( fatRequest.getRequest(), policy.getPolicy( POLICY_CONDITION.STARTACCESS ) );
-
+        PDPEvaluation evaluation = getPdp().evaluate( fatRequest, policy.getPolicy( POLICY_CONDITION.STARTACCESS ) );
+        Reject.ifNull( evaluation );
         getObligationManager().translateObligations( evaluation, message.getSession().getId(),
             ContextHandlerConstants.START_STATUS );
 

@@ -97,7 +97,6 @@ public class PolicyWrapper implements PolicyWrapperInterface {
      *          the xml that describes the policy
      * @return a PolicyHelper object if everything goes fine, null otherwise
      */
-    // TODO use optional
     public static PolicyWrapper build( String policy ) {
         Reject.ifBlank( policy );
 
@@ -224,9 +223,8 @@ public class PolicyWrapper implements PolicyWrapperInterface {
      *         we're interested into in the String format
      */
     @Override
-    public String getPolicy( String conditionName ) {
+    public PolicyWrapper getPolicy( String conditionName ) {
         PolicyType clonedPolicy = clonePolicy();
-
         /**
          * This is the most delicate part of this function.
          * <p>
@@ -277,7 +275,7 @@ public class PolicyWrapper implements PolicyWrapperInterface {
             }
         }
 
-        return marshalPolicyType( clonedPolicy );
+        return PolicyWrapper.build( marshalPolicyType( clonedPolicy ) );
     }
 
     public static PolicyType unmarshalPolicyType( String policy ) {

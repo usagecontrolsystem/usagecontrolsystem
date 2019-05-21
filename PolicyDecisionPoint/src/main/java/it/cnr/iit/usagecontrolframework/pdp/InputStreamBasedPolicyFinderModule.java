@@ -165,18 +165,12 @@ class InputStreamBasedPolicyFinderModule extends PolicyFinderModule {
      * Private helper that tries to load the given file-based policy, and returns
      * null if any error occurs.
      */
-
     private AbstractPolicy loadPolicy( PolicyFinder finder ) {
         AbstractPolicy policy = null;
 
         try (InputStream stream = new ByteArrayInputStream( dataUsagePolicy.getBytes() )) {
             DocumentBuilder db = documentBuilderFactory.newDocumentBuilder();
-            // create a builder based on the factory & try to load the policy
-            // convert UXACML policy to input stream
-
             Document doc = db.parse( stream );
-
-            // handle the policy, if it's a known type
             Element root = doc.getDocumentElement();
             String name = root.getLocalName();
 

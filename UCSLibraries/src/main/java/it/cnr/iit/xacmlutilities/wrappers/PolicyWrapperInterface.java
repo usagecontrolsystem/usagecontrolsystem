@@ -77,6 +77,6 @@ public interface PolicyWrapperInterface {
      *          states which is the condition we will use for the evaluation
      * @return a String representing the policy to be used for the evaluation
      */
-    public String getPolicy( String condition ) throws Exception;
+    public PolicyWrapper getPolicy( String condition );
 
 }

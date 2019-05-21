@@ -62,6 +62,7 @@ import it.cnr.iit.xacmlutilities.Attribute;
 import it.cnr.iit.xacmlutilities.Category;
 import it.cnr.iit.xacmlutilities.DataType;
 import it.cnr.iit.xacmlutilities.wrappers.PolicyWrapper;
+import it.cnr.iit.xacmlutilities.wrappers.RequestWrapper;
 
 import oasis.names.tc.xacml.core.schema.wd_17.DecisionType;
 import oasis.names.tc.xacml.core.schema.wd_17.PolicyType;
@@ -220,9 +221,11 @@ public class UCFBaseTests {
 
     protected PDPInterface getMockedPDP( PDPEvaluation pdpEval ) {
         PDPInterface pdp = Mockito.mock( PDPInterface.class );
-        Mockito.when( pdp.evaluate( ArgumentMatchers.anyString(), ArgumentMatchers.<PolicyWrapper>any(), ArgumentMatchers.<STATUS>any() ) )
+        Mockito
+            .when( pdp.evaluate( ArgumentMatchers.<RequestWrapper>any(), ArgumentMatchers.<PolicyWrapper>any(),
+                ArgumentMatchers.<STATUS>any() ) )
             .thenReturn( pdpEval );
-        Mockito.when( pdp.evaluate( ArgumentMatchers.anyString(), ArgumentMatchers.anyString() ) ).thenReturn( pdpEval );
+        Mockito.when( pdp.evaluate( ArgumentMatchers.<RequestWrapper>any(), ArgumentMatchers.<PolicyWrapper>any() ) ).thenReturn( pdpEval );
         assertNotNull( pdp );
         return pdp;
     }

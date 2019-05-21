@@ -17,6 +17,7 @@ package it.cnr.iit.ucsinterface.pdp;
 
 import it.cnr.iit.ucs.constants.STATUS;
 import it.cnr.iit.xacmlutilities.wrappers.PolicyWrapper;
+import it.cnr.iit.xacmlutilities.wrappers.RequestWrapper;
 
 /**
  * This is the interface to the PDP.
@@ -50,7 +51,7 @@ public interface PDPInterface {
      * @param status
      * @return the PDPEvaluation provided as response
      */
-    public PDPEvaluation evaluate( String request, PolicyWrapper policy, STATUS status );
+    public PDPEvaluation evaluate( RequestWrapper request, PolicyWrapper policy, STATUS status );
 
     /**
      * Ask the evaluation to the PDP providing to it the request in string format
@@ -64,7 +65,7 @@ public interface PDPInterface {
      *          the policy in string format
      * @return the PDPEvaluation provided as response
      */
-    public PDPEvaluation evaluate( String request, String policy );
+    public PDPEvaluation evaluate( RequestWrapper request, PolicyWrapper policy );
 
     /**
      * Evaluate the request
@@ -72,6 +73,6 @@ public interface PDPInterface {
      * @param request
      * @return
      */
-    public PDPEvaluation evaluate( String request );
+    public PDPEvaluation evaluate( RequestWrapper request );
 
 }

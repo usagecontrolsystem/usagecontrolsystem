@@ -29,6 +29,7 @@ import it.cnr.iit.ucsinterface.pdp.PDPInterface;
 import it.cnr.iit.usagecontrolframework.rest.UsageControlFramework;
 import it.cnr.iit.utility.errorhandling.Reject;
 import it.cnr.iit.xacmlutilities.wrappers.PolicyWrapper;
+import it.cnr.iit.xacmlutilities.wrappers.RequestWrapper;
 
 /**
  * This is the class implementing the proxy towards the PDP.
@@ -49,7 +50,7 @@ public final class ProxyPDP implements PDPInterface {
 
         switch( getConnection() ) {
             case API:
-                Reject.ifFalse( buildLocalPdp( properties ), "PDP is null" );
+                Reject.ifFalse( buildLocalPdp( properties ), "Error building PDP" );
                 break;
             case SOCKET:
             case REST_API:
@@ -61,17 +62,16 @@ public final class ProxyPDP implements PDPInterface {
     }
 
     private boolean buildLocalPdp( PdpProperties properties ) {
-        Optional<AbstractPDP> optPDP = UsageControlFramework.buildComponent( properties );
-        if( optPDP.isPresent() ) {
-            pdp = optPDP.get();
+        Optional<AbstractPDP> component = UsageControlFramework.buildComponent( properties );
+        if( component.isPresent() ) {
+            pdp = component.get();
             return true;
         }
-        log.severe( "Error building PDP" );
         return false;
     }
 
     @Override
-    public PDPEvaluation evaluate( String request, String policy ) {
+    public PDPEvaluation evaluate( RequestWrapper request, PolicyWrapper policy ) {
         switch( getConnection() ) {
             case API:
                 Reject.ifNull( pdp );
@@ -82,19 +82,18 @@ public final class ProxyPDP implements PDPInterface {
     }
 
     @Override
-    public PDPEvaluation evaluate( String request, PolicyWrapper policyHelper, STATUS status ) {
+    public PDPEvaluation evaluate( RequestWrapper request, PolicyWrapper policy, STATUS status ) {
         switch( getConnection() ) {
             case API:
                 Reject.ifNull( pdp );
-
-                return pdp.evaluate( request, policyHelper, status );
+                return pdp.evaluate( request, policy, status );
             default:
                 return null;
         }
     }
 
     @Override
-    public PDPEvaluation evaluate( String request ) {
+    public PDPEvaluation evaluate( RequestWrapper request ) {
         return null;
     }
 
