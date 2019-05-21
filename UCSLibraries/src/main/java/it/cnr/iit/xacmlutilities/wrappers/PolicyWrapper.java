@@ -100,10 +100,10 @@ public class PolicyWrapper implements PolicyWrapperInterface {
     public static PolicyWrapper build( String policy ) {
         Reject.ifBlank( policy );
 
-        PolicyWrapper policyHelper = new PolicyWrapper();
-        policyHelper.setPolicy( policy );
+        PolicyWrapper policyWrapper = new PolicyWrapper();
+        policyWrapper.setPolicy( policy );
 
-        return policyHelper.policyType != null ? policyHelper : null;
+        return policyWrapper.policyType != null ? policyWrapper : null;
     }
 
     @Override
