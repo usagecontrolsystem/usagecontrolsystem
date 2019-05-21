@@ -23,7 +23,7 @@ import it.cnr.iit.utility.errorhandling.Reject;
  * Creates an Attribute object compliant with the XACML standard Embeds
  * AttributeDesignator and AttributeValue.
  *
- * @author Fabio Bindi and Filippo Lauria and Antonio La Marra and Alesasndro Rosetti
+ * @author Fabio Bindi and Filippo Lauria and Antonio La Marra and Alessandro Rosetti
  */
 public final class Attribute implements Cloneable {
     private final Logger log = Logger.getLogger( Attribute.class.getName() );
