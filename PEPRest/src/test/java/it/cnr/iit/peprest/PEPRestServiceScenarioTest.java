@@ -99,7 +99,6 @@ public class PEPRestServiceScenarioTest
 
         then().the_$_message_is_put_in_the_unanswered_queue( END_ACCESS )
             .and().the_Message_motivation_is_OK()
-            .and().the_message_id_in_the_unanswered_queue_matches_the_one_sent()
             .and().the_asynch_post_request_for_$_was_received_by_context_handler( END_ACCESS.getOperationUri() );
     }
 
