@@ -15,7 +15,7 @@
  ******************************************************************************/
 package it.cnr.iit.ucsinterface.contexthandler;
 
-import it.cnr.iit.ucsinterface.message.pipch.PipChMessage;
+import it.cnr.iit.ucsinterface.message.attributechange.AttributeChangeMessage;
 
 /**
  * This is the interface provided by the ContextHandler to the PIP.
@@ -33,6 +33,6 @@ public interface ContextHandlerPIPInterface {
      * @param message
      *          the message sent by the CH
      */
-    public void attributeChanged( PipChMessage message );
+    public void attributeChanged( AttributeChangeMessage message );
 
 }

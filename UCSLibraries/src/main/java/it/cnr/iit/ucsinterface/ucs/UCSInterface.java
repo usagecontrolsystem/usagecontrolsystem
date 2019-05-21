@@ -15,9 +15,9 @@
  ******************************************************************************/
 package it.cnr.iit.ucsinterface.ucs;
 
+import it.cnr.iit.ucsinterface.message.attributechange.AttributeChangeMessage;
 import it.cnr.iit.ucsinterface.message.endaccess.EndAccessMessage;
 import it.cnr.iit.ucsinterface.message.endaccess.EndAccessResponse;
-import it.cnr.iit.ucsinterface.message.pipch.PipChMessage;
 import it.cnr.iit.ucsinterface.message.reevaluation.ReevaluationMessage;
 import it.cnr.iit.ucsinterface.message.reevaluation.ReevaluationResponse;
 import it.cnr.iit.ucsinterface.message.startaccess.StartAccessMessage;
@@ -205,7 +205,7 @@ public interface UCSInterface {
      * @param messagePipCh
      *          the message to be exchanged between PIP and CH
      */
-    public void retrieveRemote( PipChMessage messagePipCh );
+    public void retrieveRemote( AttributeChangeMessage messagePipCh );
 
     /**
      * Allows a PEP to register to this UCS.

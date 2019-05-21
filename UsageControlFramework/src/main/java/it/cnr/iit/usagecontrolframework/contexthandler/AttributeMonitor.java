@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.concurrent.LinkedTransferQueue;
 import java.util.logging.Logger;
 
-import it.cnr.iit.ucsinterface.message.pipch.PipChMessage;
+import it.cnr.iit.ucsinterface.message.attributechange.AttributeChangeMessage;
 import it.cnr.iit.utility.errorhandling.Reject;
 import it.cnr.iit.xacmlutilities.Attribute;
 
@@ -33,7 +33,7 @@ public class AttributeMonitor implements Runnable {
     private boolean running;
 
     // queue in charge of storing the changing in the attributes
-    private LinkedTransferQueue<PipChMessage> changedAttributesQueue;
+    private LinkedTransferQueue<AttributeChangeMessage> changedAttributesQueue;
     private ContextHandlerLC contextHandler;
 
     public AttributeMonitor( ContextHandlerLC contextHandler ) {
@@ -48,7 +48,7 @@ public class AttributeMonitor implements Runnable {
         log.info( "Attribute monitor started" );
         while( running ) {
             try {
-                PipChMessage message = changedAttributesQueue.take();
+                AttributeChangeMessage message = changedAttributesQueue.take();
                 List<Attribute> attributes = message.getAttributes();
 
                 if( attributes == null ) {
@@ -75,7 +75,7 @@ public class AttributeMonitor implements Runnable {
         return true;
     }
 
-    public void add( PipChMessage message ) {
+    public void add( AttributeChangeMessage message ) {
         changedAttributesQueue.put( message );
     }
 

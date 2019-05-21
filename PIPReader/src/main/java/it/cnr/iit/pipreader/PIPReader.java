@@ -32,7 +32,7 @@ import java.util.logging.Logger;
 
 import it.cnr.iit.ucs.properties.components.PipProperties;
 import it.cnr.iit.ucsinterface.message.PART;
-import it.cnr.iit.ucsinterface.message.pipch.PipChMessage;
+import it.cnr.iit.ucsinterface.message.attributechange.AttributeChangeMessage;
 import it.cnr.iit.ucsinterface.obligationmanager.ObligationInterface;
 import it.cnr.iit.ucsinterface.pip.PIPBase;
 import it.cnr.iit.ucsinterface.pip.exception.PIPException;
@@ -346,9 +346,9 @@ public final class PIPReader extends PIPBase {
     }
 
     public void notifyContextHandler( Attribute attribute ) {
-        PipChMessage pipchMessage = new PipChMessage( PART.PIP.toString(), PART.CH.toString() );
+        AttributeChangeMessage attrChangeMessage = new AttributeChangeMessage( PART.PIP.toString(), PART.CH.toString() );
         ArrayList<Attribute> attrList = new ArrayList<>( Arrays.asList( attribute ) );
-        pipchMessage.setAttributes( attrList );
-        contextHandler.attributeChanged( pipchMessage );
+        attrChangeMessage.setAttributes( attrList );
+        contextHandler.attributeChanged( attrChangeMessage );
     }
 }

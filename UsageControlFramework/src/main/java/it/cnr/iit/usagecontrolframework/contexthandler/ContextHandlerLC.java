@@ -31,9 +31,9 @@ import it.cnr.iit.ucs.exceptions.WrongOrderException;
 import it.cnr.iit.ucs.properties.components.ContextHandlerProperties;
 import it.cnr.iit.ucsinterface.contexthandler.AbstractContextHandler;
 import it.cnr.iit.ucsinterface.contexthandler.ContextHandlerConstants;
+import it.cnr.iit.ucsinterface.message.attributechange.AttributeChangeMessage;
 import it.cnr.iit.ucsinterface.message.endaccess.EndAccessMessage;
 import it.cnr.iit.ucsinterface.message.endaccess.EndAccessResponse;
-import it.cnr.iit.ucsinterface.message.pipch.PipChMessage;
 import it.cnr.iit.ucsinterface.message.reevaluation.ReevaluationResponse;
 import it.cnr.iit.ucsinterface.message.startaccess.StartAccessMessage;
 import it.cnr.iit.ucsinterface.message.startaccess.StartAccessResponse;
@@ -470,7 +470,7 @@ public final class ContextHandlerLC extends AbstractContextHandler {
      * @param message
      */
     @Override
-    public void attributeChanged( PipChMessage message ) {
+    public void attributeChanged( AttributeChangeMessage message ) {
         log.log( Level.INFO, "Attribute changed received {0}", System.currentTimeMillis() );
         // non blocking insertion in the queue of attributes changed
         attributeMonitor.add( message );

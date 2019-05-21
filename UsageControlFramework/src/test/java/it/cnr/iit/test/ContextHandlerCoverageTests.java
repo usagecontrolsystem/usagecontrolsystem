@@ -20,8 +20,8 @@ import org.springframework.test.context.junit4.SpringRunner;
 import it.cnr.iit.test.properties.TestProperties;
 import it.cnr.iit.ucs.properties.UCSProperties;
 import it.cnr.iit.ucsinterface.contexthandler.ContextHandlerConstants;
+import it.cnr.iit.ucsinterface.message.attributechange.AttributeChangeMessage;
 import it.cnr.iit.ucsinterface.message.endaccess.EndAccessMessage;
-import it.cnr.iit.ucsinterface.message.pipch.PipChMessage;
 import it.cnr.iit.ucsinterface.message.startaccess.StartAccessMessage;
 import it.cnr.iit.ucsinterface.message.tryaccess.TryAccessMessage;
 import it.cnr.iit.usagecontrolframework.contexthandler.ContextHandlerLC;
@@ -124,7 +124,7 @@ public class ContextHandlerCoverageTests extends UCFBaseTests {
         /* reevaluate */
         contextHandler.reevaluate( getMockedSessionInterface( policy, request, ContextHandlerConstants.START_STATUS ) );
 
-        PipChMessage PipChmessage = buildPipChMessage( testProperties.getSessionId(), "a", "a" );
+        AttributeChangeMessage PipChmessage = buildPipChMessage( testProperties.getSessionId(), "a", "a" );
         PipChmessage.addAttribute( getNewAttribute( "virus", Category.ENVIRONMENT, DataType.INTEGER, "1" ) );
         contextHandler.attributeChanged( PipChmessage );
 
