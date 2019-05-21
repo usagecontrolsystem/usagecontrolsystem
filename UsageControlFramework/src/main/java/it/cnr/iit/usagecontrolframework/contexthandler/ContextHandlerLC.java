@@ -115,7 +115,8 @@ public final class ContextHandlerLC extends AbstractContextHandler {
             new Object[] { System.currentTimeMillis(), evaluation.getResult() } );
 
         String sessionId = generateNewSessionId();
-        getObligationManager().translateObligations( evaluation, sessionId, ContextHandlerConstants.TRY_STATUS );
+        evaluation.setSessionId( sessionId );
+        getObligationManager().translateObligations( evaluation, ContextHandlerConstants.TRY_STATUS );
 
         if( evaluation.isDecision( DecisionType.PERMIT ) ) {
             // If access decision is PERMIT create entry in SessionManager
@@ -273,7 +274,8 @@ public final class ContextHandlerLC extends AbstractContextHandler {
         log.log( Level.INFO, "StartAccess evaluated at {0} pdp response : {1}",
             new Object[] { System.currentTimeMillis(), evaluation.getResult() } );
 
-        getObligationManager().translateObligations( evaluation, message.getSessionId(), ContextHandlerConstants.START_STATUS );
+        evaluation.setSessionId( message.getSessionId() );
+        getObligationManager().translateObligations( evaluation, ContextHandlerConstants.START_STATUS );
 
         if( evaluation.isDecision( DecisionType.PERMIT ) ) {
             if( !getSessionManager().updateEntry( message.getSessionId(), ContextHandlerConstants.START_STATUS ) ) {
@@ -445,7 +447,8 @@ public final class ContextHandlerLC extends AbstractContextHandler {
             new Object[] { System.currentTimeMillis(), evaluation.getResult() } );
 
         // TODO remove message.getSessionId() the eval has .getSessionId()
-        getObligationManager().translateObligations( evaluation, message.getSessionId(), ContextHandlerConstants.END_STATUS );
+        evaluation.setSessionId( message.getSessionId() );
+        getObligationManager().translateObligations( evaluation, ContextHandlerConstants.END_STATUS );
 
         // access must be revoked
         if( revoke( session, policy.getAttributesForCondition( POLICY_CONDITION.ENDACCESS ) ) ) {
@@ -537,8 +540,8 @@ public final class ContextHandlerLC extends AbstractContextHandler {
 
         PDPEvaluation evaluation = getPdp().evaluate( fatRequest, policy.getPolicy( POLICY_CONDITION.STARTACCESS ) );
         Reject.ifNull( evaluation );
-        getObligationManager().translateObligations( evaluation, message.getSession().getId(),
-            ContextHandlerConstants.START_STATUS );
+        evaluation.setSessionId( message.getSession().getId() );
+        getObligationManager().translateObligations( evaluation, ContextHandlerConstants.START_STATUS );
 
         log.log( Level.INFO, "Reevaluate evaluated at {0} pdp response : {1}",
             new Object[] { System.currentTimeMillis(), evaluation.getResult() } );

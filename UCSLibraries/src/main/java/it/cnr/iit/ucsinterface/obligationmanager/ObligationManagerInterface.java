@@ -29,7 +29,7 @@ import it.cnr.iit.ucsinterface.pip.PIPOMInterface;
  * obligations in the policy that have to be managed by the ObligationManager.
  * </p>
  *
- * @author antonio
+ * @author Antonio La Marra, Alessandro Rosetti
  *
  */
 public interface ObligationManagerInterface {
@@ -41,15 +41,12 @@ public interface ObligationManagerInterface {
      *
      * @param pdpEvaluation
      *          the evaluation provided by the PDP
-     * @param sessionId
-     *          the sessionId
      * @param status
      *          the status in which the obligation has to be performed
      *
      * @return a message that represents the
      */
-    public PDPEvaluation translateObligations( PDPEvaluation pdpEvaluation,
-            String sessionId, String status );
+    public PDPEvaluation translateObligations( PDPEvaluation pdpEvaluation, String status );
 
     /**
      * Set the pips to be used by this obligation manager, the obligation manager

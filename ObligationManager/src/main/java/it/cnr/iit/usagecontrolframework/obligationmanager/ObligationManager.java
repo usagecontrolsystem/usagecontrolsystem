@@ -89,39 +89,36 @@ public final class ObligationManager implements ObligationManagerInterface {
      * Translates the obligation from String to an Object that can be passed to a
      * PIP
      *
-     * @param pdpEvaluation
+     * @param evaluation
      *          the evaluation returned by the PDP
-     * @param sessionId
-     *          the id of the session
      * @param status
      *          the status of the given session
      *          obligation to the PIP
      */
     @Override
-    public PDPEvaluation translateObligations( PDPEvaluation pdpEvaluation,
-            String sessionId, String status ) {
-        Reject.ifNull( pdpEvaluation );
-        Reject.ifNull( sessionId );
+    public PDPEvaluation translateObligations( PDPEvaluation evaluation, String status ) {
+        Reject.ifNull( evaluation );
+        Reject.ifNull( evaluation.getSessionId() );
         Reject.ifNull( status );
         Reject.ifTrue( pipList == null || pipList.isEmpty() );
 
-        List<String> obligationsString = pdpEvaluation.getObligations();
-        if( obligationsString == null ) {
+        List<String> obligationsList = evaluation.getObligations();
+        if( obligationsList == null ) {
             return null;
         }
 
         StringBuilder pipName = new StringBuilder();
         HashMap<String, ObligationInterface> obligationMap = new HashMap<>();
-        for( String obligationString : obligationsString ) {
-            ObligationInterface obligationInterface = (ObligationInterface) createObjectFromString( obligationString, pipName );
-            if( obligationInterface != null ) {
-                obligationInterface.setSessionId( sessionId );
-                obligationInterface.setStep( status );
-                if( obligationInterface.getAttributeId() != null ) {
-                    obligationMap.put( obligationInterface.getAttributeId(),
-                        obligationInterface );
+        for( String obligationString : obligationsList ) {
+            ObligationInterface obligation = (ObligationInterface) createObjectFromString( obligationString, pipName );
+            if( obligation != null ) {
+                obligation.setSessionId( evaluation.getSessionId() );
+                obligation.setStep( status );
+                if( obligation.getAttributeId() != null ) {
+                    obligationMap.put( obligation.getAttributeId(),
+                        obligation );
                 } else {
-                    obligationMap.put( pipName.toString(), obligationInterface );
+                    obligationMap.put( pipName.toString(), obligation );
                 }
             }
         }

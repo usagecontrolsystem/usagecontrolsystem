@@ -212,8 +212,8 @@ public class UCFBaseTests {
     protected ObligationManagerInterface getMockedObligationManager() {
         ObligationManagerInterface obligationManager = Mockito
             .mock( ObligationManagerInterface.class );
-        Mockito.when( obligationManager.translateObligations( ArgumentMatchers.<PDPEvaluation>any(), ArgumentMatchers.anyString(),
-            ArgumentMatchers.anyString() ) ).thenReturn( null );
+        Mockito.when( obligationManager.translateObligations( ArgumentMatchers.<PDPEvaluation>any(), ArgumentMatchers.anyString() ) )
+            .thenReturn( null );
         return obligationManager;
     }
 
