@@ -445,7 +445,6 @@ public final class ContextHandlerLC extends AbstractContextHandler {
         log.log( Level.INFO, "EndAccess evaluated at {0} pdp response : {1}",
             new Object[] { System.currentTimeMillis(), evaluation.getResult() } );
 
-        // TODO remove message.getSessionId() the eval has .getSessionId()
         evaluation.setSessionId( message.getSessionId() );
         getObligationManager().translateObligations( evaluation, ContextHandlerConstants.END_STATUS );
 
