@@ -18,7 +18,7 @@ package it.cnr.iit.ucsinterface.pip;
 import java.util.List;
 import java.util.Map;
 
-import it.cnr.iit.ucsinterface.message.pipch.PipChMessage;
+import it.cnr.iit.ucsinterface.message.attributechange.AttributeChangeMessage;
 import it.cnr.iit.xacmlutilities.Attribute;
 
 /**
@@ -37,7 +37,7 @@ public interface PIPRMInterface extends PIPCHInterface {
      * @param message
      *          the message sent by the remote context handler to this
      */
-    public void messageArrived( PipChMessage message );
+    public void messageArrived( AttributeChangeMessage message );
 
     public void unsubscribe( List<Attribute> attributes,
             Map<String, Integer> attributesIP );

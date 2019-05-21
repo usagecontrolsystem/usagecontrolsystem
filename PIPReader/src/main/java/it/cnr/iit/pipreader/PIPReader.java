@@ -32,7 +32,7 @@ import java.util.logging.Logger;
 
 import it.cnr.iit.ucs.properties.components.PipProperties;
 import it.cnr.iit.ucsinterface.message.PART;
-import it.cnr.iit.ucsinterface.message.pipch.PipChMessage;
+import it.cnr.iit.ucsinterface.message.attributechange.AttributeChangeMessage;
 import it.cnr.iit.ucsinterface.obligationmanager.ObligationInterface;
 import it.cnr.iit.ucsinterface.pip.PIPBase;
 import it.cnr.iit.ucsinterface.pip.exception.PIPException;
@@ -83,54 +83,34 @@ public final class PIPReader extends PIPBase {
 
     public PIPReader( PipProperties properties ) {
         super( properties );
-        Reject.ifFalse( init( properties ),
-            "Error initialising pip : " + properties.getId() );
-        subscriberTimer = new PIPReaderSubscriberTimer( this );
-        subscriberTimer.start();
+        Reject.ifFalse( init( properties ), "Error initialising pip : " + properties.getId() );
         log.info( "PIPReader " + properties.getId() + " initialised" );
     }
 
+    // TODO use reject here
     private boolean init( PipProperties properties ) {
         try {
             Map<String, String> attributeMap = properties.getAttributes().get( 0 );
             Attribute attribute = new Attribute();
-
-            if( !attribute.createAttributeId( attributeMap.get( ATTRIBUTE_ID ) ) ) {
-                log.severe( "Wrong attributeId : " + attributeMap.get( ATTRIBUTE_ID ) );
-                return false;
-            }
-
-            if( !attribute
-                .setCategory( Category.toCATEGORY( attributeMap.get( CATEGORY ) ) ) ) {
-                log.severe( "Wrong category : " + attributeMap.get( CATEGORY ) );
-                return false;
-            }
-
-            if( !attribute.setAttributeDataType(
-                DataType.toDATATYPE( attributeMap.get( DATA_TYPE ) ) ) ) {
-                log.severe( "Wrong datatype : " + attributeMap.get( DATA_TYPE ) );
-                return false;
-            }
-
+            attribute.setAttributeId( attributeMap.get( ATTRIBUTE_ID ) );
+            Category category = Category.toCATEGORY( attributeMap.get( CATEGORY ) );
+            attribute.setCategory( category );
+            DataType dataType = DataType.toDATATYPE( attributeMap.get( DATA_TYPE ) );
+            attribute.setDataType( dataType );
             if( attribute.getCategory() != Category.ENVIRONMENT ) {
                 expectedCategory = Category.toCATEGORY( attributeMap.get( EXPECTED_CATEGORY ) );
-                if( expectedCategory == null ) {
-                    return false;
-                }
+                Reject.ifNull( expectedCategory, "missing expected category" );
             }
-
-            if( attributeMap.containsKey( FILE_PATH ) ) {
-                setFilePath( attributeMap.get( FILE_PATH ) );
-            } else {
-                log.severe( "Missing PIPReader file path" );
-                return false;
-            }
-
+            Reject.ifFalse( attributeMap.containsKey( FILE_PATH ), "missing file path" );
+            setFilePath( attributeMap.get( FILE_PATH ) );
             addAttribute( attribute );
+
             journal = new PIPJournalHelper( properties.getJournalDir() );
+
+            subscriberTimer = new PIPReaderSubscriberTimer( this );
+            subscriberTimer.start();
             return true;
         } catch( Exception e ) {
-            log.severe( "Error in PIP initialization : " + e.getMessage() );
             return false;
         }
     }
@@ -202,7 +182,7 @@ public final class PIPReader extends PIPBase {
         Reject.ifNull( contextHandler );
 
         String value = retrieve( attribute );
-        DataType dataType = attribute.getAttributeDataType();
+        DataType dataType = attribute.getDataType();
         attribute.setValue( dataType, value );
         addSubscription( attribute );
 
@@ -297,13 +277,13 @@ public final class PIPReader extends PIPBase {
     }
 
     private final void setFilePath( String filePath ) {
-        Reject.ifBlank( filePath );
         String absFilePath = Utility.findFileAbsPathUsingClassLoader( filePath );
         if( absFilePath != null ) {
             this.filePath = absFilePath;
         } else {
             this.filePath = filePath;
         }
+        Reject.ifBlank( this.filePath );
     }
 
     @Override
@@ -352,23 +332,23 @@ public final class PIPReader extends PIPBase {
                 return;
             }
 
-            String oldValue = attribute.getAttributeValues( attribute.getAttributeDataType() ).get( 0 );
+            String oldValue = attribute.getAttributeValues( attribute.getDataType() ).get( 0 );
             if( !oldValue.equals( value ) ) { // if the attribute has changed
                 log.log( Level.INFO,
                     "Attribute {0}={1}:{2} changed at {3}",
                     new Object[] { attribute.getAttributeId(), value,
                         attribute.getAdditionalInformations(),
                         System.currentTimeMillis() } );
-                attribute.setValue( attribute.getAttributeDataType(), value );
+                attribute.setValue( attribute.getDataType(), value );
                 notifyContextHandler( attribute );
             }
         }
     }
 
     public void notifyContextHandler( Attribute attribute ) {
-        PipChMessage pipchMessage = new PipChMessage( PART.PIP.toString(), PART.CH.toString() );
+        AttributeChangeMessage attrChangeMessage = new AttributeChangeMessage( PART.PIP.toString(), PART.CH.toString() );
         ArrayList<Attribute> attrList = new ArrayList<>( Arrays.asList( attribute ) );
-        pipchMessage.setAttributes( attrList );
-        contextHandler.attributeChanged( pipchMessage );
+        attrChangeMessage.setAttributes( attrList );
+        contextHandler.attributeChanged( attrChangeMessage );
     }
 }

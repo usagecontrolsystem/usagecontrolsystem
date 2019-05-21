@@ -126,20 +126,20 @@ public class CoverageTest {
     }
 
     private void initAttributes() {
-        subjectAttribute.createAttributeId( "urn:oasis:names:tc:xacml:1.0:subject:role" );
-        subjectAttribute.setAttributeDataType( DataType.STRING );
+        subjectAttribute.setAttributeId( "urn:oasis:names:tc:xacml:1.0:subject:role" );
+        subjectAttribute.setDataType( DataType.STRING );
         subjectAttribute.setCategory( Category.SUBJECT );
 
-        resourceAttribute.createAttributeId( "urn:oasis:names:tc:xacml:1.0:resource:class" );
-        resourceAttribute.setAttributeDataType( DataType.STRING );
+        resourceAttribute.setAttributeId( "urn:oasis:names:tc:xacml:1.0:resource:class" );
+        resourceAttribute.setDataType( DataType.STRING );
         resourceAttribute.setCategory( Category.RESOURCE );
 
-        actionAttribute.createAttributeId( "urn:oasis:names:tc:xacml:1.0:resource:type" );
-        actionAttribute.setAttributeDataType( DataType.STRING );
+        actionAttribute.setAttributeId( "urn:oasis:names:tc:xacml:1.0:resource:type" );
+        actionAttribute.setDataType( DataType.STRING );
         actionAttribute.setCategory( Category.ACTION );
 
-        environmentAttribute.createAttributeId( "urn:oasis:names:tc:xacml:3.0:environment:temperature" );
-        environmentAttribute.setAttributeDataType( DataType.STRING );
+        environmentAttribute.setAttributeId( "urn:oasis:names:tc:xacml:3.0:environment:temperature" );
+        environmentAttribute.setDataType( DataType.STRING );
         environmentAttribute.setCategory( Category.ENVIRONMENT );
     }
 
@@ -240,7 +240,7 @@ public class CoverageTest {
         resetRequest();
 
         Attribute dummySubjectAttribute = new Attribute();
-        dummySubjectAttribute.createAttributeId( "subjectId" );
+        dummySubjectAttribute.setAttributeId( "subjectId" );
         testRetrieveAndEnrichment( requestType, fault );
         testRetrieveAndEnrichment( null, fault );
         assertEquals( null, verifyRequest( requestType, dummySubjectAttribute ) );
@@ -278,7 +278,7 @@ public class CoverageTest {
         resetRequest();
 
         Attribute dummySubjectAttribute = new Attribute();
-        dummySubjectAttribute.createAttributeId( "subjectId" );
+        dummySubjectAttribute.setAttributeId( "subjectId" );
         testSubscribeAndEnrichment( requestType, fault );
         testSubscribeAndEnrichment( null, fault );
         assertEquals( null, verifyRequest( requestType, dummySubjectAttribute ) );

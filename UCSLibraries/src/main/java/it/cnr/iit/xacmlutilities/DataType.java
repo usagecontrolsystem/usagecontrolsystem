@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2018 IIT-CNR
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy
  * of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
@@ -16,13 +16,13 @@
 package it.cnr.iit.xacmlutilities;
 
 /**
- * This is emuerate represents the datatype enumerate
+ * This is enumerate represents the dataType enumerate
  * <p>
- * In UXACML synatx datatypes can be many, we list here the ones that we will
+ * In UXACML syntax data-types can be many, we list here the ones that we will
  * use.
  * </p>
- * 
- * @author antonio
+ *
+ * @author Antonio La Marra, Alessandro Rosetti
  *
  */
 public enum DataType {
@@ -32,45 +32,45 @@ public enum DataType {
     ANYURI( "http://www.w3.org/2001/XMLSchema#anyURI" ),
     DATE( "http://www.w3.org/2001/XMLSchema#date" );
 
-    // the string that describes the datatype
-    private final String xacmlString;
+    // the string that describes the dataType
+    private final String payload;
 
     /**
-     * Constructor for the datatype object
-     * 
-     * @param string
-     *          the string that describes the datatype
+     * Constructor for the dataType object
+     *
+     * @param payload
+     *          the string that describes the dataType
      */
-    DataType( String string ) {
-        this.xacmlString = string;
+    DataType( String payload ) {
+        this.payload = payload;
     }
 
     @Override
     public String toString() {
-        return xacmlString;
+        return payload;
     }
 
     /**
-     * Convert a string to a datatype
-     * 
-     * @param string
+     * Convert a string to a dataType
+     *
+     * @param payload
      *          the string to be converted
-     * @return the datatype object correspondent to the string, null otherwise
+     * @return the dataType object correspondent to the string, null otherwise
      */
-    public static DataType toDATATYPE( String string ) {
-        if( string.equalsIgnoreCase( INTEGER.toString() ) ) {
+    public static DataType toDATATYPE( String payload ) {
+        if( payload.equalsIgnoreCase( INTEGER.toString() ) ) {
             return INTEGER;
         }
-        if( string.equalsIgnoreCase( DOUBLE.toString() ) ) {
+        if( payload.equalsIgnoreCase( DOUBLE.toString() ) ) {
             return DOUBLE;
         }
-        if( string.equalsIgnoreCase( STRING.toString() ) ) {
+        if( payload.equalsIgnoreCase( STRING.toString() ) ) {
             return STRING;
         }
-        if( string.equalsIgnoreCase( ANYURI.toString() ) ) {
+        if( payload.equalsIgnoreCase( ANYURI.toString() ) ) {
             return ANYURI;
         }
-        if( string.equalsIgnoreCase( DATE.toString() ) ) {
+        if( payload.equalsIgnoreCase( DATE.toString() ) ) {
             return DATE;
         }
         return null;

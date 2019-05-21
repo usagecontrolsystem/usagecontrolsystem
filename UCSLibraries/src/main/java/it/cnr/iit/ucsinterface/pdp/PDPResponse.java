@@ -27,6 +27,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import it.cnr.iit.utility.JAXBUtility;
 import it.cnr.iit.utility.errorhandling.Reject;
 
+import oasis.names.tc.xacml.core.schema.wd_17.DecisionType;
 import oasis.names.tc.xacml.core.schema.wd_17.ObligationType;
 import oasis.names.tc.xacml.core.schema.wd_17.ResponseType;
 
@@ -118,6 +119,12 @@ public final class PDPResponse implements PDPEvaluation {
     public String getResult() {
         Reject.ifFalse( initialized );
         return responseType.getResult().get( 0 ).getDecision().value();
+    }
+
+    @Override
+    @JsonIgnore
+    public boolean isDecision( DecisionType decisionType ) {
+        return getResult().equalsIgnoreCase( decisionType.value() );
     }
 
     @Override

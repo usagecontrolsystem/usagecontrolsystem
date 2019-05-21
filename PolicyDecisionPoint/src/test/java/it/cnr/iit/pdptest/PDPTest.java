@@ -24,6 +24,8 @@ import it.cnr.iit.ucs.constants.STATUS;
 import it.cnr.iit.ucs.properties.components.PdpProperties;
 import it.cnr.iit.ucsinterface.pdp.PDPEvaluation;
 import it.cnr.iit.usagecontrolframework.pdp.PolicyDecisionPoint;
+import it.cnr.iit.xacmlutilities.wrappers.PolicyWrapper;
+import it.cnr.iit.xacmlutilities.wrappers.RequestWrapper;
 
 @EnableConfigurationProperties
 @TestPropertySource( properties = "application-test.properties" )
@@ -93,12 +95,11 @@ public class PDPTest {
 
     @Test
     public void testPDP() {
-        log.info( "HELLO\n" + requestDeny + "\n" + policy );
+        PolicyWrapper policy = PolicyWrapper.build( this.policy );
         assertThat( testEvaluation( requestDeny, policy ) ).contains( "deny" );
         assertThat( testEvaluation( requestIndeterminate, policy ) ).contains( "indeterminate" );
         assertThat( testEvaluation( requestPermit, policy ) ).contains( "permit" );
-        assertThat( testEvaluation( requestNotApplicable, policyNotApplicable ) ).contains( "notapplicable" );
-        assertThat( testEvaluation( requestNotApplicable, "" ) ).descriptionText().isEmpty();
+        assertThat( testEvaluation( requestNotApplicable, PolicyWrapper.build( policyNotApplicable ) ) ).contains( "notapplicable" );
         assertThat( testEvaluation( requestDeny, policy, STATUS.TRYACCESS ) ).contains( "deny" );
         assertThat( testEvaluation( requestPermit, policy, STATUS.TRYACCESS ) ).contains( "permit" );
         assertThat( testEvaluation( requestIndeterminate, policy, STATUS.TRYACCESS ) ).contains( "indeterminate" );
@@ -110,11 +111,13 @@ public class PDPTest {
         assertThat( testEvaluation( requestIndeterminate, policy, STATUS.ENDACCESS ) ).contains( "indeterminate" );
         assertTrue( testEvaluation( requestIndeterminate, null, STATUS.ENDACCESS ) == null );
         assertTrue( testEvaluation( null, policy, STATUS.ENDACCESS ) == null );
-        assertThat( testEvaluation( requestPermit, policyDup, STATUS.TRYACCESS ) ).contains( "permit" );
+        PolicyWrapper policyHelperDup = PolicyWrapper.build( policyDup );
+        assertThat( testEvaluation( requestPermit, policyHelperDup, STATUS.TRYACCESS ) ).contains( "permit" );
     }
 
-    private String testEvaluation( String request, String policy ) {
-        PDPEvaluation response = policyDecisionpoint.evaluate( request, policy );
+    private String testEvaluation( String request, PolicyWrapper policy ) {
+        RequestWrapper requestWrapper = RequestWrapper.build( request );
+        PDPEvaluation response = policyDecisionpoint.evaluate( requestWrapper, policy );
         if( response != null ) {
             String result = response.getResult().toLowerCase();
             log.info( result );
@@ -123,9 +126,10 @@ public class PDPTest {
         return null;
     }
 
-    private String testEvaluation( String request, String policy, STATUS status ) {
+    private String testEvaluation( String request, PolicyWrapper policy, STATUS status ) {
         try {
-            PDPEvaluation response = policyDecisionpoint.evaluate( request, new StringBuilder( policy ), status );
+            RequestWrapper requestWrapper = RequestWrapper.build( request );
+            PDPEvaluation response = policyDecisionpoint.evaluate( requestWrapper, policy, status );
             if( response != null ) {
                 String result = response.getResult().toLowerCase();
                 log.info( result );

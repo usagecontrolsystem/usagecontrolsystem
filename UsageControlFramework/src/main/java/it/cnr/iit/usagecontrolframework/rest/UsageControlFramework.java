@@ -34,9 +34,9 @@ import it.cnr.iit.ucs.properties.components.PepProperties;
 import it.cnr.iit.ucs.properties.components.PipProperties;
 import it.cnr.iit.ucsinterface.contexthandler.AbstractContextHandler;
 import it.cnr.iit.ucsinterface.forwardingqueue.ForwardingQueue;
+import it.cnr.iit.ucsinterface.message.attributechange.AttributeChangeMessage;
 import it.cnr.iit.ucsinterface.message.endaccess.EndAccessMessage;
 import it.cnr.iit.ucsinterface.message.endaccess.EndAccessResponse;
-import it.cnr.iit.ucsinterface.message.pipch.PipChMessage;
 import it.cnr.iit.ucsinterface.message.reevaluation.ReevaluationMessage;
 import it.cnr.iit.ucsinterface.message.reevaluation.ReevaluationResponse;
 import it.cnr.iit.ucsinterface.message.startaccess.StartAccessMessage;
@@ -46,6 +46,7 @@ import it.cnr.iit.ucsinterface.message.tryaccess.TryAccessResponse;
 import it.cnr.iit.ucsinterface.obligationmanager.ObligationManagerInterface;
 import it.cnr.iit.ucsinterface.pep.PEPInterface;
 import it.cnr.iit.ucsinterface.pip.PIPBase;
+import it.cnr.iit.ucsinterface.pip.PIPCHInterface;
 import it.cnr.iit.ucsinterface.pip.PIPOMInterface;
 import it.cnr.iit.ucsinterface.requestmanager.AbstractRequestManager;
 import it.cnr.iit.ucsinterface.ucs.UCSInterface;
@@ -109,7 +110,7 @@ public class UsageControlFramework implements UCSInterface {
 
     private ForwardingQueue forwardingQueue = new ForwardingQueue();
 
-    private volatile boolean initialised = false;
+    private boolean initialised = false;
 
     @Autowired
     private UCSProperties properties;
@@ -117,9 +118,8 @@ public class UsageControlFramework implements UCSInterface {
     @PostConstruct
     private void init() {
         try {
-            if( buildComponents() ) {
-                initialised = true;
-            }
+            buildComponents();
+            initialised = true;
         } catch( PreconditionException e ) {
             log.severe( e.getLocalizedMessage() );
             Thread.currentThread().interrupt();
@@ -127,6 +127,8 @@ public class UsageControlFramework implements UCSInterface {
     }
 
     private boolean buildComponents() {
+        log.info( "UsageControlFramework init" );
+
         Optional<AbstractContextHandler> optCH = buildComponent( properties.getContextHandler() );
         Reject.ifAbsent( optCH, "Error in building the context handler" );
         contextHandler = optCH.get(); // NOSONAR
@@ -146,9 +148,9 @@ public class UsageControlFramework implements UCSInterface {
         obligationManager = optOM.get(); // NOSONAR
         obligationManager.setPIPs( new ArrayList<PIPOMInterface>( pipList ) );
 
-        log.info( "UCF components building done." );
+        log.info( "UsageControlFramework building components completed." );
 
-        return checkConnection();
+        return setupComponentsConnections();
     }
 
     private boolean buildProxySM() {
@@ -198,20 +200,24 @@ public class UsageControlFramework implements UCSInterface {
         return failures == 0;
     }
 
-    private boolean checkConnection() {
-
-        contextHandler.setInterfaces( proxySessionManager, requestManager, proxyPDP,
-            proxyPAP, new ArrayList<>( pipList ), obligationManager, forwardingQueue );
-
+    private boolean setupComponentsConnections() {
         try {
+            contextHandler.setSessionManager( proxySessionManager );
+            contextHandler.setRequestManager( requestManager );
+            contextHandler.setPap( proxyPAP );
+            contextHandler.setPdp( proxyPDP );
+            contextHandler.setObligationManager( obligationManager );
+            contextHandler.setForwardingQueue( forwardingQueue );
+            contextHandler.setPIPs( new ArrayList<PIPCHInterface>( pipList ) );
+            contextHandler.verify();
+
             contextHandler.startMonitoringThread();
+            requestManager.setInterfaces( contextHandler, proxyPEPMap, forwardingQueue );
+            proxyPDP.setInterfaces( proxyPAP );
         } catch( Exception e ) {
             log.severe( "Error starting context handler : " + e.getMessage() );
             return false;
         }
-
-        requestManager.setInterfaces( contextHandler, proxyPEPMap, forwardingQueue );
-        proxyPDP.setInterfaces( proxyPAP );
 
         return true;
     }
@@ -288,7 +294,7 @@ public class UsageControlFramework implements UCSInterface {
 
     @Override
     @Async
-    public void retrieveRemote( PipChMessage messagePipCh ) {
+    public void retrieveRemote( AttributeChangeMessage messagePipCh ) {
         // TODO check if sent
         requestManager.sendMessageToCH( messagePipCh );
     }

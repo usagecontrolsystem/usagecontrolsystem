@@ -236,7 +236,7 @@ public final class RequestType {
 
     public boolean addAttribute( Attribute attribute, String value ) {
         return addAttribute( attribute.getCategory().toString(),
-            attribute.getAttributeDataType().toString(),
+            attribute.getDataType().toString(),
             attribute.getAttributeId(), value );
     }
 

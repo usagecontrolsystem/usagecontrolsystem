@@ -5,8 +5,6 @@ import static org.junit.Assert.fail;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -28,6 +26,7 @@ import it.cnr.iit.ucsinterface.message.endaccess.EndAccessMessage;
 import it.cnr.iit.ucsinterface.message.startaccess.StartAccessMessage;
 import it.cnr.iit.ucsinterface.message.tryaccess.TryAccessMessage;
 import it.cnr.iit.usagecontrolframework.rest.UCFTestContext;
+import it.cnr.iit.utility.Utility;
 
 @JGivenStage
 public class GivenMessage extends Stage<GivenMessage> {
@@ -55,10 +54,10 @@ public class GivenMessage extends Stage<GivenMessage> {
     String monitoredResource;
 
     @BeforeScenario
-    public void init() {
-
-        policy = readResourceFileAsString( testContext.getPolicyFile() );
-        request = readResourceFileAsString( testContext.getRequestFile() );
+    public void init() throws URISyntaxException, IOException {
+        Thread.interrupted(); // Avoid a nasty exception
+        policy = Utility.readFileAsString( testContext.getPolicyFile() );
+        request = Utility.readFileAsString( testContext.getRequestFile() );
 
         pepProps = properties.getPepList().get( Integer.parseInt( testContext.getPepId() ) );
 
@@ -99,7 +98,12 @@ public class GivenMessage extends Stage<GivenMessage> {
     }
 
     public GivenMessage a_policy_that_will_trigger_a_Deny_response() {
-        policy = readResourceFileAsString( testContext.getPolicyFileDeny() );
+        try {
+            Thread.interrupted(); // Avoid a nasty exception
+            policy = Utility.readFileAsString( testContext.getPolicyFileDeny() );
+        } catch( URISyntaxException | IOException e ) {
+            policy = null;
+        }
         return self();
     }
 
@@ -142,13 +146,4 @@ public class GivenMessage extends Stage<GivenMessage> {
         return buildResponseInterface( pepProps, "onGoingEvaluation" );
     }
 
-    private String readResourceFileAsString( String resource ) {
-        try {
-            byte[] data = Files.readAllBytes( Paths.get( this.getClass().getClassLoader().getResource( resource ).toURI() ) );
-            return new String( data );
-        } catch( URISyntaxException | IOException e ) {
-            fail( "Unable to read resource due to " + e.getLocalizedMessage() );
-            return null;
-        }
-    }
 }

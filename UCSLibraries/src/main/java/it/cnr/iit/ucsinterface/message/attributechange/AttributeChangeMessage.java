@@ -13,7 +13,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  ******************************************************************************/
-package it.cnr.iit.ucsinterface.message.pipch;
+package it.cnr.iit.ucsinterface.message.attributechange;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,8 +36,9 @@ import it.cnr.iit.xacmlutilities.Attribute;
  * @author Antonio La Marra, Alessandro Rosetti
  *
  */
-public final class PipChMessage extends Message {
-    private static final Logger log = Logger.getLogger( PipChMessage.class.getName() );
+public final class AttributeChangeMessage extends Message {
+
+    private static final Logger log = Logger.getLogger( AttributeChangeMessage.class.getName() );
 
     private static final long serialVersionUID = 1L;
 
@@ -56,7 +57,7 @@ public final class PipChMessage extends Message {
      *          motivation of the message (most likely it is a json describing the
      *          motivation)
      */
-    public PipChMessage( String source, String destination ) {
+    public AttributeChangeMessage( String source, String destination ) {
         super( source, destination );
     }
 
@@ -71,7 +72,7 @@ public final class PipChMessage extends Message {
      *          content of the message (most likely it is a json describing the
      *          motivation)
      */
-    public PipChMessage( PART source, PART destination, List<Attribute> attributes ) {
+    public AttributeChangeMessage( PART source, PART destination, List<Attribute> attributes ) {
         super( source.toString(), destination.toString() );
         if( super.isInitialized() ) {
             setAttributes( attributes );

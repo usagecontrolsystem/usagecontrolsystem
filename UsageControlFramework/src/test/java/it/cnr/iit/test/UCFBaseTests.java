@@ -7,9 +7,6 @@ import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URISyntaxException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -21,6 +18,8 @@ import javax.xml.bind.JAXBException;
 
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import it.cnr.iit.test.properties.TestProperties;
@@ -33,9 +32,9 @@ import it.cnr.iit.ucsinterface.contexthandler.ContextHandlerInterface;
 import it.cnr.iit.ucsinterface.forwardingqueue.ForwardingQueueToCHInterface;
 import it.cnr.iit.ucsinterface.forwardingqueue.ForwardingQueueToRMInterface;
 import it.cnr.iit.ucsinterface.message.Message;
+import it.cnr.iit.ucsinterface.message.attributechange.AttributeChangeMessage;
 import it.cnr.iit.ucsinterface.message.endaccess.EndAccessMessage;
 import it.cnr.iit.ucsinterface.message.endaccess.EndAccessResponse;
-import it.cnr.iit.ucsinterface.message.pipch.PipChMessage;
 import it.cnr.iit.ucsinterface.message.reevaluation.ReevaluationMessage;
 import it.cnr.iit.ucsinterface.message.reevaluation.ReevaluationResponse;
 import it.cnr.iit.ucsinterface.message.startaccess.StartAccessMessage;
@@ -58,9 +57,12 @@ import it.cnr.iit.usagecontrolframework.proxies.ProxySessionManager;
 import it.cnr.iit.usagecontrolframework.requestmanager.RequestManagerLC;
 import it.cnr.iit.usagecontrolframework.rest.UsageControlFramework;
 import it.cnr.iit.utility.JAXBUtility;
+import it.cnr.iit.utility.Utility;
 import it.cnr.iit.xacmlutilities.Attribute;
 import it.cnr.iit.xacmlutilities.Category;
 import it.cnr.iit.xacmlutilities.DataType;
+import it.cnr.iit.xacmlutilities.wrappers.PolicyWrapper;
+import it.cnr.iit.xacmlutilities.wrappers.RequestWrapper;
 
 import oasis.names.tc.xacml.core.schema.wd_17.DecisionType;
 import oasis.names.tc.xacml.core.schema.wd_17.PolicyType;
@@ -87,26 +89,26 @@ public class UCFBaseTests {
     }
 
     protected void initContextHandler( ContextHandlerLC contextHandler ) {
-        contextHandler.setPdpInterface( getMockedPDP( getMockedPDPEvaluation( DecisionType.PERMIT ) ) );
-        contextHandler.setPapInterface( getMockedPAP( null ) );
-        contextHandler.setRequestManagerToChInterface( getMockedRequestManagerToChInterface() );
-        contextHandler.setSessionManagerInterface( getSessionManagerForStatus( "", "", "", ContextHandlerConstants.TRY_STATUS ) );
+        contextHandler.setPdp( getMockedPDP( getMockedPDPEvaluation( DecisionType.PERMIT ) ) );
+        contextHandler.setPap( getMockedPAP( null ) );
+        contextHandler.setRequestManager( getMockedRequestManagerToChInterface() );
+        contextHandler.setSessionManager( getSessionManagerForStatus( "", "", "", ContextHandlerConstants.TRY_STATUS ) );
         contextHandler.setForwardingQueue( getMockedForwardingQueueToCHInterface() );
         contextHandler.setObligationManager( getMockedObligationManager() );
     }
 
     protected ContextHandlerLC getContextHandlerCorrectlyInitialized( UCSProperties prop,
             String policy,
-            String request ) {
+            String request ) throws Exception {
         ContextHandlerLC contextHandler = getContextHandler( prop );
         initContextHandler( contextHandler );
-        contextHandler.setSessionManagerInterface(
-            getSessionManagerForStatus( "", policy, request, ContextHandlerConstants.TRY_STATUS ) );
+        contextHandler.setSessionManager(
+            getSessionManagerForStatus( "a", policy, request, ContextHandlerConstants.TRY_STATUS ) );
 
         contextHandler.verify();
         /* must be called after initialisation */
         addMockedPips( prop, contextHandler );
-        assertTrue( contextHandler.startMonitoringThread() );
+        contextHandler.startMonitoringThread();
 
         return contextHandler;
     }
@@ -144,13 +146,22 @@ public class UCFBaseTests {
         Mockito.when( sessionInterface.getStatus() ).thenReturn( status );
         Mockito.when( sessionInterface.getPEPUri() ).thenReturn( "localhost" + ContextHandlerLC.PEP_ID_SEPARATOR + "1" );
 
+        Mockito.when( sessionInterface.isStatus( ArgumentMatchers.anyString() ) ).thenAnswer(
+            new Answer<Boolean>() {
+                @Override
+                public Boolean answer( final InvocationOnMock invocation ) throws Throwable {
+                    return invocation.getArguments()[0].equals( status );
+                }
+            } );
+
         return sessionInterface;
     }
 
     /* Mocked ContextHandlerInterface */
 
     protected ContextHandlerInterface getMockedContextHandlerInterface() {
-        ContextHandlerInterface contextHandler = Mockito.mock( ContextHandlerInterface.class );
+        ContextHandlerInterface contextHandler = Mockito
+            .mock( ContextHandlerInterface.class );
 
         return contextHandler;
     }
@@ -201,8 +212,8 @@ public class UCFBaseTests {
     protected ObligationManagerInterface getMockedObligationManager() {
         ObligationManagerInterface obligationManager = Mockito
             .mock( ObligationManagerInterface.class );
-        Mockito.when( obligationManager.translateObligations( ArgumentMatchers.<PDPEvaluation>any(), ArgumentMatchers.anyString(),
-            ArgumentMatchers.anyString() ) ).thenReturn( null );
+        Mockito.when( obligationManager.translateObligations( ArgumentMatchers.<PDPEvaluation>any(), ArgumentMatchers.anyString() ) )
+            .thenReturn( null );
         return obligationManager;
     }
 
@@ -210,9 +221,11 @@ public class UCFBaseTests {
 
     protected PDPInterface getMockedPDP( PDPEvaluation pdpEval ) {
         PDPInterface pdp = Mockito.mock( PDPInterface.class );
-        Mockito.when( pdp.evaluate( ArgumentMatchers.anyString(), ArgumentMatchers.<StringBuilder>any(), ArgumentMatchers.<STATUS>any() ) )
+        Mockito
+            .when( pdp.evaluate( ArgumentMatchers.<RequestWrapper>any(), ArgumentMatchers.<PolicyWrapper>any(),
+                ArgumentMatchers.<STATUS>any() ) )
             .thenReturn( pdpEval );
-        Mockito.when( pdp.evaluate( ArgumentMatchers.anyString(), ArgumentMatchers.anyString() ) ).thenReturn( pdpEval );
+        Mockito.when( pdp.evaluate( ArgumentMatchers.<RequestWrapper>any(), ArgumentMatchers.<PolicyWrapper>any() ) ).thenReturn( pdpEval );
         assertNotNull( pdp );
         return pdp;
     }
@@ -263,9 +276,9 @@ public class UCFBaseTests {
 
     protected Attribute getNewAttribute( String id, Category category, DataType type, String val ) {
         Attribute attr = new Attribute();
-        attr.createAttributeId( id );
-        attr.createAttributeValues( type, val );
-        attr.setAttributeDataType( type );
+        attr.setAttributeId( id );
+        attr.setAttributeValues( type, val );
+        attr.setDataType( type );
         attr.setCategory( category );
         return attr;
     }
@@ -321,6 +334,7 @@ public class UCFBaseTests {
 
     protected StartAccessMessage buildStartAccessMessage( String sessionId, String src, String dest ) {
         StartAccessMessage message = new StartAccessMessage( src, dest );
+        message.setSessionId( sessionId );
         return message;
     }
 
@@ -335,8 +349,8 @@ public class UCFBaseTests {
         return message;
     }
 
-    protected PipChMessage buildPipChMessage( String sessionId, String src, String dest ) {
-        PipChMessage message = new PipChMessage( src, dest );
+    protected AttributeChangeMessage buildPipChMessage( String sessionId, String src, String dest ) {
+        AttributeChangeMessage message = new AttributeChangeMessage( src, dest );
         return message;
     }
 
@@ -378,15 +392,7 @@ public class UCFBaseTests {
 
     private Object loadXMLFromFile( String fileName, Class<?> className )
             throws JAXBException, URISyntaxException, IOException {
-        String data = readResourceFileAsString( fileName );
+        String data = Utility.readFileAsString( fileName );
         return JAXBUtility.unmarshalToObject( className, data );
-    }
-
-    protected String readResourceFileAsString( String resource ) throws URISyntaxException, IOException {
-        log.info( "Loading resource file : " + resource );
-        ClassLoader classLoader = this.getClass().getClassLoader();
-        Path path = Paths.get( classLoader.getResource( resource ).toURI() );
-        byte[] data = Files.readAllBytes( path );
-        return new String( data );
     }
 }

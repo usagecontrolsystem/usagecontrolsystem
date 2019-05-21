@@ -54,6 +54,8 @@ public interface SessionInterface {
      */
     public String getStatus();
 
+    public boolean isStatus( String status );
+
     /**
      * Retrieves the OriginalRequest
      *

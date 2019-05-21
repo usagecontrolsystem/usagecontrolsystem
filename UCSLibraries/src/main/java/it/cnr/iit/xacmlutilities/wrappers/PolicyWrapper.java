@@ -13,7 +13,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  ******************************************************************************/
-package it.cnr.iit.xacmlutilities.policy;
+package it.cnr.iit.xacmlutilities.wrappers;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,6 +32,7 @@ import oasis.names.tc.xacml.core.schema.wd_17.ApplyType;
 import oasis.names.tc.xacml.core.schema.wd_17.AttributeDesignatorType;
 import oasis.names.tc.xacml.core.schema.wd_17.AttributeValueType;
 import oasis.names.tc.xacml.core.schema.wd_17.ConditionType;
+import oasis.names.tc.xacml.core.schema.wd_17.EffectType;
 import oasis.names.tc.xacml.core.schema.wd_17.PolicyType;
 import oasis.names.tc.xacml.core.schema.wd_17.RuleType;
 
@@ -72,45 +73,36 @@ import oasis.names.tc.xacml.core.schema.wd_17.RuleType;
  * not want to allow the UCS to deal with damaged files.
  * </p>
  *
- * @author antonio
+ * @author Antonio La Marra, Alessandro Rosetti
  *
  */
-public class PolicyHelper implements PolicyHelperInterface {
+public class PolicyWrapper implements PolicyWrapperInterface {
 
-    private static final Logger log = Logger.getLogger( PolicyHelper.class.getName() );
+    private static final Logger log = Logger.getLogger( PolicyWrapper.class.getName() );
 
-    private static final String MSG_ERR_UNMASHAL_POLICY = "Error unmarshalling policy : {0}";
-    private static final String MSG_ERR_MARSHAL_POLICY = "Error marshalling policy : {0}";
+    private static final String MSG_ERR_UNMASHAL = "Error unmarshalling policy : {0}";
+    private static final String MSG_ERR_MARSHAL = "Error marshalling policy : {0}";
     private static final String MSG_WARN_COND_NOT_FOUND = "Condition not found : {0}";
 
-    // the policy type object
     private PolicyType policyType;
+    private String policy;
 
-    /**
-     * private constructor to avoid possible instantiation of this class
-     */
-    private PolicyHelper() {
-
-    }
+    private PolicyWrapper() {}
 
     /**
      * Builds a PolicyHelper object starting from the xml description provided in
      * the string
      *
-     * @param string
+     * @param policy
      *          the xml that describes the policy
-     * @return a PolicyHelper object if everything goes ok, null otherwise
+     * @return a PolicyHelper object if everything goes fine, null otherwise
      */
-    public static PolicyHelper buildPolicyHelper( String string ) {
-        // BEGIN PARAMETER CHECKING
-        if( string == null || string.isEmpty() ) {
-            throw new NullPointerException(
-                "PolicyHelper.buildPolicyHelper string parameter is null or empty" );
-        }
-        // END PARAMETER CHECKING
+    public static PolicyWrapper build( String policy ) {
+        Reject.ifBlank( policy );
 
-        PolicyHelper policyHelper = new PolicyHelper();
-        policyHelper.policyType = unmarshalPolicyType( string );
+        PolicyWrapper policyHelper = new PolicyWrapper();
+        policyHelper.setPolicy( policy );
+
         return policyHelper.policyType != null ? policyHelper : null;
     }
 
@@ -155,7 +147,7 @@ public class PolicyHelper implements PolicyHelperInterface {
      * </p>
      *
      * @param conditionType
-     *          the condition we are analyzing
+     *          the condition we are analysing
      * @return the list of attributes types interested by this condition.
      */
     private List<Attribute> extractAttributes( ConditionType conditionType ) {
@@ -177,15 +169,15 @@ public class PolicyHelper implements PolicyHelperInterface {
                 attributes.get( j ).setCategory(
                     Category.toCATEGORY( attributeDesignatorType.getCategory() ) );
                 attributes.get( j )
-                    .createAttributeId( attributeDesignatorType.getAttributeId() );
-                attributes.get( j ).setAttributeDataType(
+                    .setAttributeId( attributeDesignatorType.getAttributeId() );
+                attributes.get( j ).setDataType(
                     DataType.toDATATYPE( attributeDesignatorType.getDataType() ) );
                 j += 1;
             } else if( element.getValue().getClass().toString()
                 .contains( "AttributeValue" ) ) {
                 AttributeValueType ad = (AttributeValueType) element.getValue();
                 for( Object obj : ad.getContent() ) {
-                    attribute.createAttributeValues( ad.getDataType(), obj.toString() );
+                    attribute.setAttributeValues( ad.getDataType(), obj.toString() );
                 }
                 attributes.add( attribute );
                 attribute = new Attribute();
@@ -220,7 +212,7 @@ public class PolicyHelper implements PolicyHelperInterface {
      * PolicyType.
      *
      * Once a RuleType object inside that list has been identified, we look for
-     * the condition in which we are interested in if the ruletype contiains
+     * the condition in which we are interested in if the ruletype contains
      * conditions, otherwise we simply put the rule inside the new policy. In
      * general ruletypes that do not contain any Condition are the default ones.
      * </p>
@@ -231,9 +223,8 @@ public class PolicyHelper implements PolicyHelperInterface {
      *         we're interested into in the String format
      */
     @Override
-    public String getConditionForEvaluation( String conditionName ) {
-        PolicyType tmp = copyPolicy();
-
+    public PolicyWrapper getPolicy( String conditionName ) {
+        PolicyType clonedPolicy = clonePolicy();
         /**
          * This is the most delicate part of this function.
          * <p>
@@ -258,40 +249,40 @@ public class PolicyHelper implements PolicyHelperInterface {
                         if( conditionType.getDecisionTime() == null ) {
                             if( conditionName.equals( "pre" ) ) {
                                 RuleType tmpRuleType = copyRuleType( ruleType, conditionType );
-                                tmp.getCombinerParametersOrRuleCombinerParametersOrVariableDefinition()
+                                clonedPolicy.getCombinerParametersOrRuleCombinerParametersOrVariableDefinition()
                                     .add( tmpRuleType );
                             } else {
-                                RuleType tmpRuleType = DefaultPermitRule.getInstance();
+                                RuleType tmpRuleType = getDefaultRuleType( "def-permit", EffectType.PERMIT );
                                 tmpRuleType.setObligationExpressions(
                                     ruleType.getObligationExpressions() );
-                                tmp.getCombinerParametersOrRuleCombinerParametersOrVariableDefinition()
+                                clonedPolicy.getCombinerParametersOrRuleCombinerParametersOrVariableDefinition()
                                     .add( tmpRuleType );
                             }
                         } else if( conditionType.getDecisionTime().equals( conditionName ) ) {
                             RuleType tmpRuleType = copyRuleType( ruleType, conditionType );
-                            tmp.getCombinerParametersOrRuleCombinerParametersOrVariableDefinition()
+                            clonedPolicy.getCombinerParametersOrRuleCombinerParametersOrVariableDefinition()
                                 .add( tmpRuleType );
                             break;
                         }
                     }
                 } else {
-                    tmp.getCombinerParametersOrRuleCombinerParametersOrVariableDefinition()
+                    clonedPolicy.getCombinerParametersOrRuleCombinerParametersOrVariableDefinition()
                         .add( ruleType );
                 }
             } else {
-                tmp.getCombinerParametersOrRuleCombinerParametersOrVariableDefinition()
+                clonedPolicy.getCombinerParametersOrRuleCombinerParametersOrVariableDefinition()
                     .add( obj );
             }
         }
 
-        return marshalPolicyType( tmp );
+        return PolicyWrapper.build( marshalPolicyType( clonedPolicy ) );
     }
 
     public static PolicyType unmarshalPolicyType( String policy ) {
         try {
             return JAXBUtility.unmarshalToObject( PolicyType.class, policy );
         } catch( Exception e ) {
-            log.severe( String.format( MSG_ERR_UNMASHAL_POLICY, e.getMessage() ) );
+            log.severe( String.format( MSG_ERR_UNMASHAL, e.getMessage() ) );
         }
         return null;
     }
@@ -301,9 +292,29 @@ public class PolicyHelper implements PolicyHelperInterface {
             return JAXBUtility.marshalToString( PolicyType.class, policy, "Policy",
                 JAXBUtility.SCHEMA );
         } catch( JAXBException e ) {
-            log.severe( String.format( MSG_ERR_MARSHAL_POLICY, e.getMessage() ) );
+            log.severe( String.format( MSG_ERR_MARSHAL, e.getMessage() ) );
         }
         return null;
+    }
+
+    public String getPolicy() {
+        return policy;
+    }
+
+    public void setPolicy( String policy ) {
+        this.policy = policy;
+        this.policyType = unmarshalPolicyType( policy );
+    }
+
+    public PolicyType getPolicyType() {
+        return policyType;
+    }
+
+    private RuleType getDefaultRuleType( String id, EffectType effectType ) {
+        RuleType ruleType = new RuleType();
+        ruleType.setEffect( effectType );
+        ruleType.setRuleId( id );
+        return ruleType;
     }
 
     /**
@@ -336,14 +347,14 @@ public class PolicyHelper implements PolicyHelperInterface {
      * <p>
      * The only part that will be left outside is the part is the list
      * combinerParametersOrRuleCombinerParametersOrVariableDefinition which will
-     * be analyzed later. This because we may require in the new policy to have
+     * be analysed later. This because we may require in the new policy to have
      * only a part of that list
      * </p>
      *
      * @return the PolicyType object that is the copy of the one stored in this
      *         object
      */
-    private PolicyType copyPolicy() {
+    private PolicyType clonePolicy() {
         PolicyType tmpPolicyType = new PolicyType();
         tmpPolicyType.setDescription( policyType.getDescription() );
         tmpPolicyType.setPolicyId( policyType.getPolicyId() );

@@ -15,21 +15,19 @@
  ******************************************************************************/
 package it.cnr.iit.utility;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.net.URI;
+import java.net.URISyntaxException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Optional;
 import java.util.PropertyResourceBundle;
 import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import javax.xml.bind.JAXBException;
 
 import it.cnr.iit.utility.errorhandling.Reject;
 
@@ -78,13 +76,11 @@ public final class Utility {
     }
 
     private static boolean isValidPath( String filePath ) {
-        // BEGIN parameter checking
         if( filePath == null || filePath.isEmpty() ) {
             log.severe( "String for filePath can not be empty." );
             return false;
         }
         return true;
-        // END parameter checking
     }
 
     /**
@@ -129,22 +125,6 @@ public final class Utility {
         return null;
     }
 
-    public static <T> T retrieveConfiguration( String configFile, Class<T> configClass ) {
-        try (
-                InputStream stream = Thread.currentThread().getContextClassLoader().getResource( configFile ).openStream();
-                BufferedReader buffer = new BufferedReader( new InputStreamReader( stream ) );) {
-            StringBuilder xml = new StringBuilder();
-            String line = "";
-            while( ( line = buffer.readLine() ) != null ) {
-                xml.append( line );
-            }
-            return JAXBUtility.unmarshalToObject( configClass, xml.toString() );
-        } catch( IOException | JAXBException e ) { // NOSONAR
-            log.severe( "Unable to read config file due to error: " + e.getMessage() );
-            throw new IllegalStateException( "Unable to read config file due to error: " + e.getLocalizedMessage() );
-        }
-    }
-
     public static boolean createPathIfNotExists( String path ) {
         Reject.ifNull( path );
         return createPathIfNotExists( new File( path ) );
@@ -156,6 +136,13 @@ public final class Utility {
             return file.mkdir();
         }
         return true;
+    }
+
+    public static String readFileAsString( String resource ) throws URISyntaxException, IOException {
+        ClassLoader classLoader = Utility.class.getClassLoader();
+        Path path = Paths.get( classLoader.getResource( resource ).toURI() );
+        byte[] data = Files.readAllBytes( path );
+        return new String( data );
     }
 
     public static Optional<String> getPropertiesValue( String key ) {

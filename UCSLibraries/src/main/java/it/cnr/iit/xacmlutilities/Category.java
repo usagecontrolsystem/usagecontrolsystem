@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2018 IIT-CNR
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy
  * of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
@@ -17,7 +17,7 @@ package it.cnr.iit.xacmlutilities;
 
 /**
  * This is the category enumerate.
- * 
+ *
  * <p>
  * In XACML syntax Category can be one of these 4 possible values:
  * <ol>
@@ -29,7 +29,7 @@ package it.cnr.iit.xacmlutilities;
  * This enumerate is used to hold the String that represents the category in the
  * UXACML format
  * </p>
- * 
+ *
  * @author antonio
  *
  */
@@ -40,49 +40,49 @@ public enum Category {
     ENVIRONMENT( "urn:oasis:names:tc:xacml:3.0:attribute-category:environment" );
 
     // the string representing the category in xacmlformat
-    private final String xacmlString;
+    private final String payload;
 
     /**
-     * constructor for the categoy enumerate
-     * 
-     * @param string
+     * constructor for the category enumerate
+     *
+     * @param payload
      *          the string that identifies the category
      */
-    Category( String string ) {
-        this.xacmlString = string;
+    Category( String payload ) {
+        this.payload = payload;
     }
 
     @Override
     public String toString() {
-        return xacmlString;
+        return payload;
     }
 
     /**
      * Converts the string passed as parameter to a CATEGORY enumerate
-     * 
-     * @param string
+     *
+     * @param payload
      *          the string we want to convert
      * @return the CATEGORY object correspondent to that string if any, null
      *         otherwise
      */
-    public static Category toCATEGORY( String string ) {
-        if( string.equalsIgnoreCase( ACTION.toString() ) ) {
+    public static Category toCATEGORY( String payload ) {
+        if( payload.equalsIgnoreCase( ACTION.toString() ) ) {
             return ACTION;
         }
-        if( string.equalsIgnoreCase( RESOURCE.toString() ) ) {
+        if( payload.equalsIgnoreCase( RESOURCE.toString() ) ) {
             return RESOURCE;
         }
-        if( string.equalsIgnoreCase( SUBJECT.toString() ) ) {
+        if( payload.equalsIgnoreCase( SUBJECT.toString() ) ) {
             return SUBJECT;
         }
-        if( string.equalsIgnoreCase( ENVIRONMENT.toString() ) ) {
+        if( payload.equalsIgnoreCase( ENVIRONMENT.toString() ) ) {
             return ENVIRONMENT;
         }
         return null;
     }
 
-    public boolean contains( String string ) {
-        return this.xacmlString.contains( string );
+    public boolean contains( String payload ) {
+        return this.payload.contains( payload );
     }
 
 }

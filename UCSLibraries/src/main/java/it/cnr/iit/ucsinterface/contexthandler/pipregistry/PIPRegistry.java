@@ -76,7 +76,7 @@ public class PIPRegistry implements PIPRegistryInterface {
     @Override
     public Optional<PIPCHInterface> getByAttributeId( String attributeId ) {
         Attribute attribute = new Attribute();
-        attribute.createAttributeId( attributeId );
+        attribute.setAttributeId( attributeId );
         return getByAttribute( attribute );
     }
 

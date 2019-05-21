@@ -25,7 +25,7 @@ import it.cnr.iit.ucs.properties.components.RequestManagerProperties;
 import it.cnr.iit.ucsinterface.contexthandler.ContextHandlerInterface;
 import it.cnr.iit.ucsinterface.forwardingqueue.ForwardingQueueToRMInterface;
 import it.cnr.iit.ucsinterface.message.Message;
-import it.cnr.iit.ucsinterface.message.pipch.PipChMessage;
+import it.cnr.iit.ucsinterface.message.attributechange.AttributeChangeMessage;
 import it.cnr.iit.ucsinterface.pep.PEPInterface;
 import it.cnr.iit.utility.errorhandling.Reject;
 
@@ -51,7 +51,7 @@ public abstract class AbstractRequestManager
     // queue of messages to be passed to the context handler
     private final BlockingQueue<Message> queueToCH = new LinkedBlockingQueue<>();
     // interface provided by the context handler
-    private final BlockingQueue<PipChMessage> retrieveRequests = new LinkedBlockingQueue<>();
+    private final BlockingQueue<AttributeChangeMessage> retrieveRequests = new LinkedBlockingQueue<>();
 
     private ContextHandlerInterface contextHandler;
     // interface provided by the PEP
@@ -102,7 +102,7 @@ public abstract class AbstractRequestManager
         return queueToCH;
     }
 
-    protected final BlockingQueue<PipChMessage> getRetrieveRequestsQueue() {
+    protected final BlockingQueue<AttributeChangeMessage> getRetrieveRequestsQueue() {
         return retrieveRequests;
     }
 

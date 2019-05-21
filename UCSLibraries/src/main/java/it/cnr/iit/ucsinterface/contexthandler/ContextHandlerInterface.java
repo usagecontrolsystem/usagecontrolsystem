@@ -15,7 +15,11 @@
  ******************************************************************************/
 package it.cnr.iit.ucsinterface.contexthandler;
 
-import it.cnr.iit.ucsinterface.message.Message;
+import it.cnr.iit.ucs.exceptions.WrongOrderException;
+import it.cnr.iit.ucsinterface.message.endaccess.EndAccessMessage;
+import it.cnr.iit.ucsinterface.message.startaccess.StartAccessMessage;
+import it.cnr.iit.ucsinterface.message.tryaccess.TryAccessMessage;
+import it.cnr.iit.ucsinterface.sessionmanager.SessionInterface;
 
 /**
  * This is the interface provided by the ContextHandler.
@@ -47,7 +51,7 @@ import it.cnr.iit.ucsinterface.message.Message;
  * </ol>
  * </p>
  *
- * @author antonio
+ * @author Antonio La Marra
  *
  */
 public interface ContextHandlerInterface extends ContextHandlerPIPInterface {
@@ -62,7 +66,7 @@ public interface ContextHandlerInterface extends ContextHandlerPIPInterface {
      *          message received by the RequestManager
      * @return a message stating the response of the PDP to the request.
      */
-    public void tryAccess( Message message );
+    public void tryAccess( TryAccessMessage message );
 
     /**
      * This is the startAccess function. In this case a tryAccess has already been
@@ -76,7 +80,7 @@ public interface ContextHandlerInterface extends ContextHandlerPIPInterface {
      * @return a message stating the response of the PDP to the request
      * @throws Exception
      */
-    public void startAccess( Message message ) throws Exception;
+    public void startAccess( StartAccessMessage message ) throws Exception;
 
     /**
      * This is the endAcces function. In this case the PEP doesn't require the
@@ -88,17 +92,18 @@ public interface ContextHandlerInterface extends ContextHandlerPIPInterface {
      * @param message
      *          the message received by the RequestManager
      * @return a message stating the response of the PDP to the request
+     * @throws WrongOrderException
      */
-    public void endAccess( Message message );
+    public void endAccess( EndAccessMessage message ) throws WrongOrderException;
 
     /**
      * This is the reevaluation function. This function is triggered by a remote
      * node querying the actual ContextHandler to perform the reevaluation of a
      * certain session. This is an API offered by a ContextHandler to another.
      *
-     * @param message
-     *          the reevaluation message
+     * @param session
+     *          the session to be reevaluated
      */
-    public void reevaluate( Message message );
+    public void reevaluate( SessionInterface session );
 
 }

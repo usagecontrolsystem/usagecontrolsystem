@@ -22,11 +22,14 @@ import java.util.logging.Logger;
 import it.cnr.iit.ucs.constants.CONNECTION;
 import it.cnr.iit.ucs.constants.STATUS;
 import it.cnr.iit.ucs.properties.components.PdpProperties;
+import it.cnr.iit.ucsinterface.pap.PAPInterface;
 import it.cnr.iit.ucsinterface.pdp.AbstractPDP;
 import it.cnr.iit.ucsinterface.pdp.PDPEvaluation;
 import it.cnr.iit.ucsinterface.pdp.PDPInterface;
 import it.cnr.iit.usagecontrolframework.rest.UsageControlFramework;
 import it.cnr.iit.utility.errorhandling.Reject;
+import it.cnr.iit.xacmlutilities.wrappers.PolicyWrapper;
+import it.cnr.iit.xacmlutilities.wrappers.RequestWrapper;
 
 /**
  * This is the class implementing the proxy towards the PDP.
@@ -41,17 +44,13 @@ public final class ProxyPDP implements PDPInterface {
     private PdpProperties properties;
     private AbstractPDP pdp;
 
-    private volatile boolean initialized = false;
-
     public ProxyPDP( PdpProperties properties ) {
         Reject.ifNull( properties );
         this.properties = properties;
 
         switch( getConnection() ) {
             case API:
-                if( buildLocalPdp( properties ) ) {
-                    initialized = true;
-                }
+                Reject.ifFalse( buildLocalPdp( properties ), "Error building PDP" );
                 break;
             case SOCKET:
             case REST_API:
@@ -63,51 +62,51 @@ public final class ProxyPDP implements PDPInterface {
     }
 
     private boolean buildLocalPdp( PdpProperties properties ) {
-        Optional<AbstractPDP> optPDP = UsageControlFramework.buildComponent( properties );
-        if( optPDP.isPresent() ) {
-            pdp = optPDP.get();
+        Optional<AbstractPDP> component = UsageControlFramework.buildComponent( properties );
+        if( component.isPresent() ) {
+            pdp = component.get();
             return true;
         }
-        log.severe( "Error building PDP" );
         return false;
     }
 
     @Override
-    public PDPEvaluation evaluate( String request, String policy ) {
-        if( initialized ) {
-            return pdp.evaluate( request, policy );
-        }
-        return null;
-    }
-
-    @Override
-    public PDPEvaluation evaluate( String request ) {
-        return null;
-    }
-
-    public void setInterfaces( ProxyPAP proxyPAP ) {
-        Reject.ifNull( proxyPAP );
-
-        if( getConnection() == CONNECTION.API
-                && pdp.isInitialized() ) {
-            pdp.setPAPInterface( proxyPAP );
-            initialized = true;
+    public PDPEvaluation evaluate( RequestWrapper request, PolicyWrapper policy ) {
+        switch( getConnection() ) {
+            case API:
+                Reject.ifNull( pdp );
+                return pdp.evaluate( request, policy );
+            default:
+                return null;
         }
     }
 
     @Override
-    public PDPEvaluation evaluate( String request, StringBuilder policy, STATUS status ) {
-        if( pdp != null ) {
-            return pdp.evaluate( request, policy, status );
+    public PDPEvaluation evaluate( RequestWrapper request, PolicyWrapper policy, STATUS status ) {
+        switch( getConnection() ) {
+            case API:
+                Reject.ifNull( pdp );
+                return pdp.evaluate( request, policy, status );
+            default:
+                return null;
         }
+    }
+
+    @Override
+    public PDPEvaluation evaluate( RequestWrapper request ) {
         return null;
+    }
+
+    public void setInterfaces( PAPInterface pap ) {
+        Reject.ifNull( pap );
+        pdp.setPAP( pap );
+    }
+
+    public boolean isInitialized() {
+        return pdp != null ? pdp.isInitialized() : false;
     }
 
     protected CONNECTION getConnection() {
         return CONNECTION.valueOf( properties.getCommunicationType() );
-    }
-
-    public boolean isInitialized() {
-        return initialized;
     }
 }

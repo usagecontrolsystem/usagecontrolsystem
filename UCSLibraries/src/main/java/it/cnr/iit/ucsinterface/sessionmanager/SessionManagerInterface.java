@@ -244,6 +244,17 @@ public interface SessionManagerInterface extends ReevaluationTableInterface {
             String actionName, String attributeId );
 
     /**
+     * Retrieve the list of sessions related to that attributeName
+     *
+     * @param the
+     *          attribute name related to the environment in which we're
+     *          interested into
+     * @return the list of sessions
+     */
+    public List<SessionInterface> getSessionsForEnvironmentAttributes(
+            String attributeName );
+
+    /**
      * Retrieve the session that is identified by the specified session id
      *
      * @param sessionId
@@ -260,17 +271,6 @@ public interface SessionManagerInterface extends ReevaluationTableInterface {
      * @return the list of session interface that have that status
      */
     public List<SessionInterface> getSessionsForStatus( String status );
-
-    /**
-     * Retrieve the list of sessions related to that attributeName
-     *
-     * @param the
-     *          attribute name related to the environment in which we're
-     *          interested into
-     * @return the list of sessions
-     */
-    public List<SessionInterface> getSessionsForEnvironmentAttributes(
-            String attributeName );
 
     /**
      * Retrieves the list of ongoing attributes related to the session id passed

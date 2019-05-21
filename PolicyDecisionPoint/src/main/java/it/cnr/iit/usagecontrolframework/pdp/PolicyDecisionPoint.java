@@ -53,7 +53,8 @@ import it.cnr.iit.ucs.properties.components.PdpProperties;
 import it.cnr.iit.ucsinterface.pdp.AbstractPDP;
 import it.cnr.iit.ucsinterface.pdp.PDPEvaluation;
 import it.cnr.iit.ucsinterface.pdp.PDPResponse;
-import it.cnr.iit.xacmlutilities.policy.PolicyHelper;
+import it.cnr.iit.xacmlutilities.wrappers.PolicyWrapper;
+import it.cnr.iit.xacmlutilities.wrappers.RequestWrapper;
 
 import journal.io.api.Journal;
 import journal.io.api.Journal.WriteType;
@@ -87,10 +88,9 @@ public final class PolicyDecisionPoint extends AbstractPDP {
     private PDPConfig pdpConfig;
     private Journal journal = null;
 
-    public PolicyDecisionPoint( PdpProperties configuration ) {
-        super( configuration );
-        configure( configuration.getJournalDir() );
-
+    public PolicyDecisionPoint( PdpProperties properties ) {
+        super( properties );
+        configure( properties.getJournalDir() );
     }
 
     private void configure( String journalFolder ) {
@@ -125,14 +125,10 @@ public final class PolicyDecisionPoint extends AbstractPDP {
      * This is the effective evaluation function.
      */
     @Override
-    public PDPEvaluation evaluate( String request, StringBuilder stringPolicy,
-            STATUS status ) {
+    public PDPEvaluation evaluate( RequestWrapper request, PolicyWrapper policy, STATUS status ) {
         try {
             String conditionName = extractFromStatus( status );
-            PolicyHelper policyHelper = PolicyHelper
-                .buildPolicyHelper( stringPolicy.toString() );
-            String policyToEvaluate = policyHelper
-                .getConditionForEvaluation( conditionName );
+            String policyToEvaluate = policy.getPolicy( conditionName ).getPolicy();
 
             ArrayList<ResponseCtx> responses = new ArrayList<>();
 
@@ -143,10 +139,10 @@ public final class PolicyDecisionPoint extends AbstractPDP {
             policyFinderModules.add( dataUCONPolicyFinderModule );
             policyFinder.setModules( policyFinderModules );
             policyFinder.init();
-            ResponseCtx response = evaluate( request, policyFinder );
+            ResponseCtx response = evaluate( request.getRequest(), policyFinder );
             log.info( response.encode() );
             journal.write( policyToEvaluate.getBytes(), WriteType.ASYNC );
-            journal.write( request.getBytes(), WriteType.ASYNC );
+            journal.write( request.getRequest().getBytes(), WriteType.ASYNC );
             journal.write( response.encode().getBytes(), WriteType.ASYNC );
             journal.sync();
             responses.add( response );
@@ -368,24 +364,24 @@ public final class PolicyDecisionPoint extends AbstractPDP {
     }
 
     @Override
-    public PDPEvaluation evaluate( String request ) {
+    public PDPEvaluation evaluate( RequestWrapper request ) {
         log.info( "evaluate( String request ) not implemented" );
         return null;
     }
 
     @Override
-    public PDPEvaluation evaluate( String request, String policy ) {
+    public PDPEvaluation evaluate( RequestWrapper request, PolicyWrapper policy ) {
         try {
             PolicyFinder policyFinder = new PolicyFinder();
             Set<PolicyFinderModule> policyFinderModules = new HashSet<>();
             InputStreamBasedPolicyFinderModule dataUCONPolicyFinderModule = new InputStreamBasedPolicyFinderModule(
-                policy );
+                policy.getPolicy() );
             policyFinderModules.add( dataUCONPolicyFinderModule );
             policyFinder.setModules( policyFinderModules );
             policyFinder.init();
-            ResponseCtx responseCtx = evaluate( request, policyFinder );
-            journal.write( policy.getBytes(), WriteType.ASYNC );
-            journal.write( request.getBytes(), WriteType.ASYNC );
+            ResponseCtx responseCtx = evaluate( request.getRequest(), policyFinder );
+            journal.write( policy.getPolicy().getBytes(), WriteType.ASYNC );
+            journal.write( request.getRequest().getBytes(), WriteType.ASYNC );
             journal.write( responseCtx.encode().getBytes(), WriteType.ASYNC );
             journal.sync();
             return new PDPResponse( responseCtx.encode() );
