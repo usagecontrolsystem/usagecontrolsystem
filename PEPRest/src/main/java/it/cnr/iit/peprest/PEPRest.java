@@ -40,10 +40,8 @@ import it.cnr.iit.ucsinterface.message.EvaluatedResponse;
 import it.cnr.iit.ucsinterface.message.MEAN;
 import it.cnr.iit.ucsinterface.message.Message;
 import it.cnr.iit.ucsinterface.message.endaccess.EndAccessMessage;
-import it.cnr.iit.ucsinterface.message.endaccess.EndAccessResponse;
 import it.cnr.iit.ucsinterface.message.reevaluation.ReevaluationResponse;
 import it.cnr.iit.ucsinterface.message.startaccess.StartAccessMessage;
-import it.cnr.iit.ucsinterface.message.startaccess.StartAccessResponse;
 import it.cnr.iit.ucsinterface.message.tryaccess.TryAccessMessage;
 import it.cnr.iit.ucsinterface.message.tryaccess.TryAccessResponse;
 import it.cnr.iit.ucsinterface.pep.PEPInterface;
@@ -68,9 +66,6 @@ public class PEPRest implements PEPInterface {
 
     private static final String UNABLE_TO_DELIVER_MESSSAGE_TO_UCS = "Unable to deliver messsage to UCS";
     private static final String IS_MSG_DELIVERED_TO_DESTINATION = "isDeliveredToDestination: {0} ";
-
-    private static final String DENY = DecisionType.DENY.value();
-    private static final String PERMIT = DecisionType.PERMIT.value();
 
     // map of unanswered messages, the key is the id of the message
     private ConcurrentMap<String, Message> unanswered = new ConcurrentHashMap<>();
@@ -208,15 +203,16 @@ public class PEPRest implements PEPInterface {
     }
 
     private String handleResponse( Message message ) {
+        String response;
         if( message instanceof TryAccessResponse ) {
-            return handleTryAccessResponse( (TryAccessResponse) message );
-        } else if( message instanceof StartAccessResponse ) {
-            return handleStartAccessResponse( (StartAccessResponse) message );
-        } else if( message instanceof EndAccessResponse ) {
-            return handleEndAccessResponse( (EndAccessResponse) message );
+            response = handleTryAccessResponse( (TryAccessResponse) message );
+        } else if( message instanceof EvaluatedResponse ) {
+            response = ( (EvaluatedResponse) message ).getPDPEvaluation().getResult();
         } else {
             throw new IllegalArgumentException( "INVALID MESSAGE: " + message.toString() );
         }
+        log.log( Level.INFO, "Evaluation {0} ", response );
+        return response;
     }
 
     /**
@@ -226,21 +222,9 @@ public class PEPRest implements PEPInterface {
      * @return a String stating the result of the evaluation or the ID of the startaccess message
      */
     private String handleTryAccessResponse( TryAccessResponse response ) {
-        log.log( Level.INFO, "Evaluation {0} ", response.getPDPEvaluation().getResult() );
-        if( response.getPDPEvaluation().getResult().contains( PERMIT ) ) {
+        if( response.getPDPEvaluation().isDecision( DecisionType.PERMIT ) ) {
             return startAccess( response.getSessionId() );
         }
-        return response.getPDPEvaluation().getResult();
-    }
-
-    private String handleStartAccessResponse( StartAccessResponse response ) {
-        log.info( response.getMessageId() + " Evaluation " + response.getPDPEvaluation().getResult() );
-        // if the start access response is deny then notify device to stop
-        return response.getPDPEvaluation().getResult();
-    }
-
-    private String handleEndAccessResponse( EndAccessResponse response ) {
-        log.info( response.getMessageId() + " Evaluation " + response.getPDPEvaluation().getResult() );
         return response.getPDPEvaluation().getResult();
     }
 
