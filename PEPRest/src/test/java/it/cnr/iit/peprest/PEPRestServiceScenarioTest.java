@@ -125,11 +125,11 @@ public class PEPRestServiceScenarioTest
         given().and().a_mocked_context_handler_for_$( START_ACCESS.getOperationUri() )
             .with().a_success_response_status_code_of_$( HttpStatus.SC_OK );
 
-        when().PEPRest_service_receive_response_is_executed( restOperation );
+        when().PEPRest_service_receive_response_is_executed_for_$( restOperation );
 
         then().the_message_is_put_in_the_responses_queue()
-            .and().the_session_id_is_not_null( restOperation, givenMessage.getMessageId() )
-            .and().the_evaluation_result_is_permit( givenMessage.getMessageId() );
+            .and().the_session_id_for_$_is_not_null( restOperation )
+            .and().the_evaluation_result_decision_is_$( DecisionType.PERMIT );
     }
 
 }

@@ -136,7 +136,7 @@ public class ThenMessage extends Stage<ThenMessage> {
         return self();
     }
 
-    public ThenMessage the_session_id_is_not_null( RestOperation restOperation, String messageId ) {
+    public ThenMessage the_session_id_for_$_is_not_null( RestOperation restOperation ) {
         if( restOperation == TRY_ACCESS_RESPONSE ) {
             assertNotNull( pepRest.getSessionIdInTryAccess( message.getMessageId() ).get() );
             assertTrue( pepRest.getSessionIdInTryAccess( messageId ).get().length() > 0 );
@@ -144,10 +144,10 @@ public class ThenMessage extends Stage<ThenMessage> {
         return self();
     }
 
-    public void the_evaluation_result_is_permit( String messageId ) {
+    public void the_evaluation_result_decision_is_$( DecisionType decision ) {
         assertNotNull( pepRest.getEvaluationResult( messageId ).get() );
         assertTrue( pepRest.getEvaluationResult( messageId ).get().length() > 0 );
-        assertTrue( pepRest.getEvaluationResult( messageId ).get().equals( "Permit" ) );
+        assertTrue( pepRest.getEvaluationResult( messageId ).get().equals( decision.value() ) );
     }
 
     public ThenMessage a_message_id_is_returned() {
