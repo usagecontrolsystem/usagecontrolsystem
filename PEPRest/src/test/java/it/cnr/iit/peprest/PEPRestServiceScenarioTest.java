@@ -128,8 +128,8 @@ public class PEPRestServiceScenarioTest
         when().PEPRest_service_receive_response_is_executed( restOperation );
 
         then().the_message_is_put_in_the_responses_queue()
-            .and().the_session_id_is_not_null( restOperation, givenMessage.getMessageId() )
-            .and().the_evaluation_result_is_permit( givenMessage.getMessageId() );
+            .and().the_session_id_is_not_null( restOperation )
+            .and().the_evaluation_result_decision_is_$( DecisionType.PERMIT );
     }
 
 }
