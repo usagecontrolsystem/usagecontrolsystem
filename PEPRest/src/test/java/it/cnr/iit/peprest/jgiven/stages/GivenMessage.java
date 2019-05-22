@@ -138,8 +138,4 @@ public class GivenMessage extends Stage<GivenMessage> {
         endAccessResponse.setMessageId( messageId );
         return endAccessResponse;
     }
-
-    public String getMessageId() {
-        return message.getMessageId();
-    }
 }

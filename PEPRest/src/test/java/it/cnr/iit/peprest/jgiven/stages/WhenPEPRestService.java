@@ -87,7 +87,7 @@ public class WhenPEPRestService extends Stage<WhenPEPRestService> {
         }
     }
 
-    public WhenPEPRestService PEPRest_service_receive_response_is_executed( RestOperation operation ) {
+    public WhenPEPRestService PEPRest_service_receive_response_is_executed_for_$( RestOperation operation ) {
         assertNotNull( message );
         CallerResponse callerResponse = new CallerResponse();
         callerResponse.setSessionId( sessionId );

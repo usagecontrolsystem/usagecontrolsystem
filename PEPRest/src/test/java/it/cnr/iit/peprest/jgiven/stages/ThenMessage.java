@@ -136,7 +136,7 @@ public class ThenMessage extends Stage<ThenMessage> {
         return self();
     }
 
-    public ThenMessage the_session_id_is_not_null( RestOperation restOperation ) {
+    public ThenMessage the_session_id_for_$_is_not_null( RestOperation restOperation ) {
         if( restOperation == TRY_ACCESS_RESPONSE ) {
             assertNotNull( pepRest.getSessionIdInTryAccess( message.getMessageId() ).get() );
             assertTrue( pepRest.getSessionIdInTryAccess( messageId ).get().length() > 0 );
