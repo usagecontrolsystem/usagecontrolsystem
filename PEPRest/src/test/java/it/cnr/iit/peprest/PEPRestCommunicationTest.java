@@ -17,6 +17,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
+import org.springframework.web.client.HttpClientErrorException;
 
 import it.cnr.iit.peprest.messagetrack.MessageStorage;
 
@@ -47,9 +48,14 @@ public class PEPRestCommunicationTest extends PEPRestAbstractTest {
         assertEquals( SC_BAD_REQUEST, postStringResponseToPEPRest( "", FINISH.getOperationUri() ).getStatus() );
     }
 
-    @Test
-    public void flowStatusRequestWithoutMessageIdResultsInBadRequestResponse() throws Exception {
-        assertEquals( SC_BAD_REQUEST, postGetRequestToPEPRest( "", FLOW_STATUS.getOperationUri() ).getStatus() );
+    @Test( expected = HttpClientErrorException.class )
+    public void flowStatusRequestWithoutMessageIdResultsInBadRequestResponse() throws Throwable {
+        try {
+            postGetRequestToPEPRest( "", FLOW_STATUS.getOperationUri() );
+            fail( "Should have thrown HttpClientErrorException: 204 NO_CONTENT" );
+        } catch( Exception e ) {
+            throw e.getCause();
+        }
     }
 
     @Test( expected = IllegalArgumentException.class )

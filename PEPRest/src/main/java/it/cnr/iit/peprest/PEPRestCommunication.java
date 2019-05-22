@@ -23,13 +23,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.HttpClientErrorException;
 
 import it.cnr.iit.peprest.messagetrack.CallerResponse;
 
@@ -73,7 +73,7 @@ public class PEPRestCommunication {
     // TODO UCS-34 NOSONAR
     public CallerResponse getMessageStatus( @RequestParam( value = "messageId" ) String messageId ) {
         if( messageId == null || messageId.isEmpty() ) {
-            throw new HttpMessageNotReadableException( HttpStatus.NO_CONTENT + " : No message id" );
+            throw new HttpClientErrorException( HttpStatus.NO_CONTENT );
         }
         Optional<CallerResponse> callerResponse = pepRest.getMessageStorage().getMessageStatus( messageId );
         if( callerResponse.isPresent() ) {
@@ -91,7 +91,7 @@ public class PEPRestCommunication {
     // TODO UCS-34 NOSONAR
     public void finish( @RequestBody( ) String sessionId ) {
         if( sessionId == null || sessionId.isEmpty() ) {
-            throw new HttpMessageNotReadableException( HttpStatus.NO_CONTENT + " : No session id" );
+            throw new HttpClientErrorException( HttpStatus.NO_CONTENT );
         }
         pepRest.end( sessionId );
     }
