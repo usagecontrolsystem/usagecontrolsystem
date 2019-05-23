@@ -33,16 +33,9 @@ import it.cnr.iit.ucs.properties.base.PluginProperties;
 import it.cnr.iit.ucs.properties.components.PepProperties;
 import it.cnr.iit.ucs.properties.components.PipProperties;
 import it.cnr.iit.ucsinterface.contexthandler.AbstractContextHandler;
-import it.cnr.iit.ucsinterface.forwardingqueue.ForwardingQueue;
-import it.cnr.iit.ucsinterface.message.attributechange.AttributeChangeMessage;
 import it.cnr.iit.ucsinterface.message.endaccess.EndAccessMessage;
-import it.cnr.iit.ucsinterface.message.endaccess.EndAccessResponse;
-import it.cnr.iit.ucsinterface.message.reevaluation.ReevaluationMessage;
-import it.cnr.iit.ucsinterface.message.reevaluation.ReevaluationResponse;
 import it.cnr.iit.ucsinterface.message.startaccess.StartAccessMessage;
-import it.cnr.iit.ucsinterface.message.startaccess.StartAccessResponse;
 import it.cnr.iit.ucsinterface.message.tryaccess.TryAccessMessage;
-import it.cnr.iit.ucsinterface.message.tryaccess.TryAccessResponse;
 import it.cnr.iit.ucsinterface.obligationmanager.ObligationManagerInterface;
 import it.cnr.iit.ucsinterface.pep.PEPInterface;
 import it.cnr.iit.ucsinterface.pip.PIPBase;
@@ -107,8 +100,6 @@ public class UsageControlFramework implements UCSInterface {
     private ProxySessionManager proxySessionManager;
     private ProxyPDP proxyPDP;
     private ProxyPAP proxyPAP;
-
-    private ForwardingQueue forwardingQueue = new ForwardingQueue();
 
     private boolean initialised = false;
 
@@ -207,12 +198,11 @@ public class UsageControlFramework implements UCSInterface {
             contextHandler.setPap( proxyPAP );
             contextHandler.setPdp( proxyPDP );
             contextHandler.setObligationManager( obligationManager );
-            contextHandler.setForwardingQueue( forwardingQueue );
             contextHandler.setPIPs( new ArrayList<PIPCHInterface>( pipList ) );
             contextHandler.verify();
 
             contextHandler.startMonitoringThread();
-            requestManager.setInterfaces( contextHandler, proxyPEPMap, forwardingQueue );
+            requestManager.setInterfaces( contextHandler, proxyPEPMap );
             proxyPDP.setInterfaces( proxyPAP );
         } catch( Exception e ) {
             log.severe( "Error starting context handler : " + e.getMessage() );
@@ -240,63 +230,21 @@ public class UsageControlFramework implements UCSInterface {
     @Async
     public void tryAccess( TryAccessMessage tryAccessMessage ) {
         // TODO check if sent
-        requestManager.sendMessageToCH( tryAccessMessage );
-    }
-
-    @Override
-    @Async
-    public void tryAccessResponse( TryAccessResponse tryAccessResponse ) {
-        // TODO check if sent
-        requestManager.sendMessageToCH( tryAccessResponse );
+        requestManager.sendMessage( tryAccessMessage );
     }
 
     @Override
     @Async
     public void startAccess( StartAccessMessage startAccessMessage ) {
         // TODO check if sent
-        requestManager.sendMessageToCH( startAccessMessage );
-    }
-
-    @Override
-    @Async
-    public void startAccessResponse( StartAccessResponse startAccessResponse ) {
-        // TODO check if sent
-        requestManager.sendMessageToCH( startAccessResponse );
+        requestManager.sendMessage( startAccessMessage );
     }
 
     @Override
     @Async
     public void endAccess( EndAccessMessage endAccessMessage ) {
         // TODO check if sent
-        requestManager.sendMessageToCH( endAccessMessage );
-    }
-
-    @Override
-    @Async
-    public void endAccessResponse( EndAccessResponse endAccessResponse ) {
-        // TODO check if sent
-        requestManager.sendMessageToCH( endAccessResponse );
-    }
-
-    @Override
-    @Async
-    public void onGoingEvaluation( ReevaluationMessage onGoingEvaluation ) {
-        // TODO check if sent
-        requestManager.sendMessageToCH( onGoingEvaluation );
-    }
-
-    @Override
-    @Async
-    public void onGoingEvaluationResponse( ReevaluationResponse onGoingEvaluationResponse ) {
-        // TODO check if sent
-        requestManager.sendMessageToCH( onGoingEvaluationResponse );
-    }
-
-    @Override
-    @Async
-    public void retrieveRemote( AttributeChangeMessage messagePipCh ) {
-        // TODO check if sent
-        requestManager.sendMessageToCH( messagePipCh );
+        requestManager.sendMessage( endAccessMessage );
     }
 
     public boolean isInitialised() {

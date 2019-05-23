@@ -15,7 +15,6 @@
  ******************************************************************************/
 package it.cnr.iit.usagecontrolframework.requestmanager;
 
-import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.logging.Logger;
@@ -23,12 +22,9 @@ import java.util.logging.Logger;
 import it.cnr.iit.ucs.properties.components.RequestManagerProperties;
 import it.cnr.iit.ucsinterface.message.Message;
 import it.cnr.iit.ucsinterface.message.endaccess.EndAccessMessage;
-import it.cnr.iit.ucsinterface.message.endaccess.EndAccessResponse;
 import it.cnr.iit.ucsinterface.message.reevaluation.ReevaluationResponse;
 import it.cnr.iit.ucsinterface.message.startaccess.StartAccessMessage;
-import it.cnr.iit.ucsinterface.message.startaccess.StartAccessResponse;
 import it.cnr.iit.ucsinterface.message.tryaccess.TryAccessMessage;
-import it.cnr.iit.ucsinterface.message.tryaccess.TryAccessResponse;
 import it.cnr.iit.ucsinterface.requestmanager.AbstractRequestManager;
 import it.cnr.iit.utility.errorhandling.Reject;
 
@@ -51,8 +47,6 @@ public class RequestManagerLC extends AbstractRequestManager {
 
     private static final Logger log = Logger.getLogger( RequestManagerLC.class.getName() );
 
-    private ExecutorService inquirers;
-
     public RequestManagerLC( RequestManagerProperties properties ) {
         super( properties );
         initializeInquirers();
@@ -65,7 +59,7 @@ public class RequestManagerLC extends AbstractRequestManager {
     */
     private boolean initializeInquirers() {
         try {
-            inquirers = Executors.newFixedThreadPool( 2 );
+            ExecutorService inquirers = Executors.newFixedThreadPool( 1 );
             inquirers.submit( new ContextHandlerInquirer() );
         } catch( Exception e ) {
             log.severe( "Error initialising the RequestManager inquirers : " + e.getMessage() );
@@ -75,24 +69,8 @@ public class RequestManagerLC extends AbstractRequestManager {
     }
 
     @Override
-    public synchronized void sendMessageToOutside( Message message ) {
-        Reject.ifNull( message, "Invalid message" );
-
-        if( message instanceof TryAccessResponse
-                || message instanceof StartAccessResponse
-                || message instanceof EndAccessResponse ) {
-            sendResponse( message );
-        } else if( message instanceof ReevaluationResponse ) {
-            sendReevaluation( (ReevaluationResponse) message );
-        }
-    }
-
-    private void sendResponse( Message message ) {
-        getPEPInterface().get( message.getDestination() )
-            .receiveResponse( message );
-    }
-
-    private void sendReevaluation( ReevaluationResponse reevaluation ) {
+    public synchronized void sendReevaluation( ReevaluationResponse reevaluation ) {
+        Reject.ifNull( reevaluation, "Invalid message" );
         log.info( "Sending on going reevaluation." );
         getPEPInterface().get( ( reevaluation ).getPepId() )
             .onGoingEvaluation( reevaluation );
@@ -106,7 +84,8 @@ public class RequestManagerLC extends AbstractRequestManager {
      * </p>
      */
     @Override
-    public synchronized Message sendMessageToCH( Message message ) {
+    public void sendMessage( Message message ) {
+        Reject.ifNull( message );
         try {
             getQueueToCH().put( message );
         } catch( NullPointerException e ) {
@@ -115,7 +94,6 @@ public class RequestManagerLC extends AbstractRequestManager {
             log.severe( e.getMessage() );
             Thread.currentThread().interrupt();
         }
-        return null;
     }
 
     /**
@@ -127,29 +105,38 @@ public class RequestManagerLC extends AbstractRequestManager {
      * @author antonio
      *
     */
-    private class ContextHandlerInquirer implements Callable<Message> {
+    private class ContextHandlerInquirer implements Runnable {
 
         @Override
-        public Message call() {
-            Message message;
-            try {
-                while( ( message = getQueueToCH().take() ) != null ) {
+        public void run() {
 
-                    if( message instanceof TryAccessMessage ) {
-                        getContextHandler().tryAccess( (TryAccessMessage) message );
-                    }
-                    if( message instanceof StartAccessMessage ) {
-                        getContextHandler().startAccess( (StartAccessMessage) message );
-                    }
-                    if( message instanceof EndAccessMessage ) {
-                        getContextHandler().endAccess( (EndAccessMessage) message );
+            try {
+                Message message = null;
+                while( ( message = getQueueToCH().take() ) != null ) {
+                    switch( message.getPurpose() ) {
+                        case TRYACCESS:
+                            sendResponse( getContextHandler().tryAccess( (TryAccessMessage) message ) );
+                            break;
+                        case STARTACCESS:
+                            sendResponse( getContextHandler().startAccess( (StartAccessMessage) message ) );
+                            break;
+                        case ENDACCESS:
+                            sendResponse( getContextHandler().endAccess( (EndAccessMessage) message ) );
+                            break;
+                        default:
+                            log.severe( "Invalid message purpose" );
+                            break;
                     }
                 }
             } catch( Exception e ) {
                 log.severe( e.getMessage() );
                 Thread.currentThread().interrupt();
             }
-            return null;
+        }
+
+        private void sendResponse( Message message ) {
+            getPEPInterface().get( message.getDestination() )
+                .receiveResponse( message );
         }
     }
 

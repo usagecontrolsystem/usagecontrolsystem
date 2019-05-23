@@ -44,7 +44,6 @@ import it.cnr.iit.ucsinterface.message.startaccess.StartAccessResponse;
 import it.cnr.iit.ucsinterface.message.tryaccess.TryAccessMessage;
 import it.cnr.iit.ucsinterface.message.tryaccess.TryAccessResponse;
 import it.cnr.iit.ucsinterface.pep.PEPInterface;
-import it.cnr.iit.ucsinterface.requestmanager.UCSCHInterface;
 import it.cnr.iit.utility.Utility;
 import it.cnr.iit.utility.errorhandling.Reject;
 
@@ -76,7 +75,7 @@ public class PEPRest implements PEPInterface {
     private PEPProperties pep;
 
     @Autowired
-    private UCSCHInterface ucs;
+    private UCSProxy ucs;
 
     @Bean
     public PEPProperties getPEPProperties() {
@@ -89,7 +88,7 @@ public class PEPRest implements PEPInterface {
     }
 
     @Bean
-    public UCSCHInterface getUCSInterface() {
+    public UCSProxy getUCSInterface() {
         return new UCSProxy();
     }
 
@@ -104,13 +103,12 @@ public class PEPRest implements PEPInterface {
         tryAccessMessage.setRequest( request );
         tryAccessMessage.setCallback( buildResponseInterface( "tryAccessResponse" ), MEAN.REST );
         log.log( Level.INFO, "[TIME] TRYACCESS {0} ", System.currentTimeMillis() );
-        Message message = ucs.sendMessageToCH( tryAccessMessage );
-        if( message.isDelivered() ) {
+        if( ucs.sendMessage( tryAccessMessage ) ) {
             unanswered.put( tryAccessMessage.getMessageId(), tryAccessMessage );
             messageHistory.addMessage( tryAccessMessage );
             return tryAccessMessage.getMessageId();
         } else {
-            log.log( Level.WARNING, IS_MSG_DELIVERED_TO_DESTINATION, message.isDelivered() );
+            log.log( Level.WARNING, IS_MSG_DELIVERED_TO_DESTINATION );
             throw Throwables.propagate( new IllegalAccessException( UNABLE_TO_DELIVER_MESSSAGE_TO_UCS ) );
         }
     }
@@ -121,13 +119,12 @@ public class PEPRest implements PEPInterface {
         startAccessMessage.setCallback( buildResponseInterface( "startAccessResponse" ), MEAN.REST );
         try {
             log.log( Level.INFO, "[TIME] STARTACCESS {0} ", System.currentTimeMillis() );
-            Message message = ucs.sendMessageToCH( startAccessMessage );
-            if( message.isDelivered() ) {
+            if( ucs.sendMessage( startAccessMessage ) ) {
                 unanswered.put( startAccessMessage.getMessageId(), startAccessMessage );
                 messageHistory.addMessage( startAccessMessage );
                 return startAccessMessage.getMessageId();
             } else {
-                log.log( Level.WARNING, IS_MSG_DELIVERED_TO_DESTINATION, message.isDelivered() );
+                log.log( Level.WARNING, IS_MSG_DELIVERED_TO_DESTINATION );
                 throw Throwables.propagate( new IllegalAccessException( UNABLE_TO_DELIVER_MESSSAGE_TO_UCS ) );
             }
         } catch( Exception e ) { // NOSONAR
@@ -143,13 +140,12 @@ public class PEPRest implements PEPInterface {
         endAccessMessage.setCallback( buildResponseInterface( "endAccessResponse" ), MEAN.REST );
         try {
             log.log( Level.INFO, "[TIME] ENDACCESS {0} ", System.currentTimeMillis() );
-            Message message = ucs.sendMessageToCH( endAccessMessage );
-            if( message.isDelivered() ) {
+            if( ucs.sendMessage( endAccessMessage ) ) {
                 unanswered.put( endAccessMessage.getMessageId(), endAccessMessage );
                 messageHistory.addMessage( endAccessMessage );
                 return endAccessMessage.getMessageId();
             } else {
-                log.log( Level.INFO, IS_MSG_DELIVERED_TO_DESTINATION, message.isDelivered() );
+                log.log( Level.INFO, IS_MSG_DELIVERED_TO_DESTINATION );
                 throw Throwables.propagate( new IllegalAccessException( UNABLE_TO_DELIVER_MESSSAGE_TO_UCS ) );
             }
         } catch( Exception e ) { // NOSONAR
@@ -179,8 +175,7 @@ public class PEPRest implements PEPInterface {
             endAccess.setCallback( null, MEAN.REST );
             endAccess.setSessionId( chPepMessage.getPDPEvaluation().getSessionId() );
 
-            message = ucs.sendMessageToCH( endAccess );
-            if( message.isDelivered() ) {
+            if( ucs.sendMessage( endAccess ) ) {
                 unanswered.put( endAccess.getMessageId(), endAccess );
                 messageHistory.addMessage( endAccess );
             } else {

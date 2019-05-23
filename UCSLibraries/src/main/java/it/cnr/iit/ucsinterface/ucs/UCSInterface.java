@@ -15,15 +15,9 @@
  ******************************************************************************/
 package it.cnr.iit.ucsinterface.ucs;
 
-import it.cnr.iit.ucsinterface.message.attributechange.AttributeChangeMessage;
 import it.cnr.iit.ucsinterface.message.endaccess.EndAccessMessage;
-import it.cnr.iit.ucsinterface.message.endaccess.EndAccessResponse;
-import it.cnr.iit.ucsinterface.message.reevaluation.ReevaluationMessage;
-import it.cnr.iit.ucsinterface.message.reevaluation.ReevaluationResponse;
 import it.cnr.iit.ucsinterface.message.startaccess.StartAccessMessage;
-import it.cnr.iit.ucsinterface.message.startaccess.StartAccessResponse;
 import it.cnr.iit.ucsinterface.message.tryaccess.TryAccessMessage;
-import it.cnr.iit.ucsinterface.message.tryaccess.TryAccessResponse;
 
 /**
  * This is the UCSInterface.
@@ -88,20 +82,6 @@ public interface UCSInterface {
     public void tryAccess( TryAccessMessage tryAccessMessage );
 
     /**
-     * Response to a tryAccess evaluation.
-     * <p>
-     * This function can be called only in one case: the UCS to which this UCS has
-     * asked the evaluation has finished and has provided a result, hence the
-     * response has to be provided to the PEP
-     * </p>
-     *
-     * @param tryAccessResponse
-     *          the response provided by the UCS to which we have asked the
-     *          evaluation
-     */
-    public void tryAccessResponse( TryAccessResponse tryAccessResponse );
-
-    /**
      * Request of a startAccess evaluation.
      * <p>
      * The startAccess is the second operation the PEP performs. It does it before
@@ -120,20 +100,6 @@ public interface UCSInterface {
      *          evaluated
      */
     public void startAccess( StartAccessMessage startAccessMessage );
-
-    /**
-     * Response to a startAccess evaluation
-     * <p>
-     * This function can be called only in one case, the UCS to which this UCS has
-     * asked the evaluation has finished and has provided a result, hence the
-     * response has to be provided to the PEP.
-     * </p>
-     *
-     * @param startAccessResponse
-     *          the response provided by the UCS to which we have asked the
-     *          evaluation
-     */
-    public void startAccessResponse( StartAccessResponse startAccessResponse );
 
     /**
      * Request of an endAccess evaluation.
@@ -160,57 +126,4 @@ public interface UCSInterface {
      */
     public void endAccess( EndAccessMessage endAccessMessage );
 
-    /**
-     * Response to an endAccess evaluation.
-     * <p>
-     * This function can be called only in one case, the UCS to which this UCS has
-     * asked the evaluation has finished and has provided a result, hence the
-     * response must be provided to the PEP
-     * </p>
-     *
-     * @param endAccessResponse
-     *          the response provided by the UCS to which we have asked the
-     *          evaluation
-     */
-    public void endAccessResponse( EndAccessResponse endAccessResponse );
-
-    /**
-     * Request of a reevaluation.
-     * <p>
-     * Whenever one of the attributes used to evaluate a request changes its value,
-     * the UCS has to reevaluate the Policy against the request. Hence this function
-     * can only be called by another UCS asking for a reevaluation.
-     * </p>
-     * TODO update the structure of the message by considering also the attributes
-     * that have changed
-     *
-     * @param onGoingEvaluation
-     *          the message containing all the informations required for a
-     *          reevaluation.
-     */
-    public void onGoingEvaluation( ReevaluationMessage onGoingEvaluation );
-
-    /**
-     * Response to a reevaluation
-     *
-     * @param onGoingEvaluationResponse
-     */
-    public void onGoingEvaluationResponse( ReevaluationResponse onGoingEvaluationResponse );
-
-    /**
-     * Allows a ContextHandler to retrieve an Attribute from an AttributeManager
-     * that is not directly linked with its PIP but it's linked with one of the
-     * nodes inside its DHT
-     *
-     * @param messagePipCh
-     *          the message to be exchanged between PIP and CH
-     */
-    public void retrieveRemote( AttributeChangeMessage messagePipCh );
-
-    /**
-     * Allows a PEP to register to this UCS.
-     *
-     * @param message
-     */
-    // public void register( Message message );
 }
