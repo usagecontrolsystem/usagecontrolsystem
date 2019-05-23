@@ -1,6 +1,8 @@
 package it.cnr.iit.usagecontrolframework.contexthandler;
 
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedTransferQueue;
 import java.util.logging.Logger;
 
@@ -25,12 +27,13 @@ import it.cnr.iit.xacmlutilities.Attribute;
  * @author Antonio La Marra, Alessandro Rosetti
  *
  */
-class AttributeMonitor implements Runnable {
+class AttributeMonitor {
 
     private static final Logger log = Logger.getLogger( AttributeMonitor.class.getName() );
 
-    private Thread thread;
     private boolean running;
+
+    private ExecutorService executorService;
 
     // queue in charge of storing the changing in the attributes
     private LinkedTransferQueue<AttributeChangeMessage> changedAttributesQueue;
@@ -40,39 +43,44 @@ class AttributeMonitor implements Runnable {
         Reject.ifNull( contextHandler, "ContextHandler is null" );
         this.contextHandler = contextHandler;
         changedAttributesQueue = new LinkedTransferQueue<>();
-        thread = new Thread( this );
+
+        executorService = Executors.newSingleThreadExecutor();
+        executorService.submit( new Checker() );
     }
 
-    @Override
-    public void run() {
-        log.info( "Attribute monitor started" );
-        while( running ) {
-            try {
-                AttributeChangeMessage message = changedAttributesQueue.take();
-                List<Attribute> attributes = message.getAttributes();
+    private class Checker implements Runnable {
+        @Override
+        public void run() {
+            log.info( "Attribute monitor started" );
+            while( running ) {
+                try {
+                    AttributeChangeMessage message = changedAttributesQueue.take();
+                    List<Attribute> attributes = message.getAttributes();
 
-                if( attributes == null ) {
-                    log.warning( "Attributes list in the message is null" );
-                    continue;
-                }
+                    if( attributes == null ) {
+                        log.warning( "Attributes list in the message is null" );
+                        continue;
+                    }
 
-                if( !handleChanges( attributes ) ) {
-                    log.warning( "Unable to handle all the changed attributes" );
+                    if( !handleChanges( attributes ) ) {
+                        log.warning( "Unable to handle all the changed attributes" );
+                    }
+                } catch( InterruptedException e ) {
+                    log.severe( "Attribute Monitor interrupted : " + e.getMessage() );
+                    Thread.currentThread().interrupt();
                 }
-            } catch( InterruptedException e ) {
-                log.severe( "Attribute Monitor interrupted : " + e.getMessage() );
-                Thread.currentThread().interrupt();
             }
         }
-    }
 
-    private boolean handleChanges( List<Attribute> attributes ) {
-        for( Attribute attribute : attributes ) {
-            if( !contextHandler.reevaluateSessions( attribute ) ) {
-                return false;
+        private boolean handleChanges( List<Attribute> attributes ) {
+            for( Attribute attribute : attributes ) {
+                if( !contextHandler.reevaluateSessions( attribute ) ) {
+                    return false;
+                }
             }
+            return true;
         }
-        return true;
+
     }
 
     public void add( AttributeChangeMessage message ) {
@@ -82,7 +90,7 @@ class AttributeMonitor implements Runnable {
     public void setTheadStatus( boolean status ) {
         running = status;
         if( status ) {
-            thread.start();
+            executorService.submit( new Checker() );
         }
     }
 
