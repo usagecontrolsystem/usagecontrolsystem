@@ -47,7 +47,6 @@ import it.cnr.iit.ucsinterface.message.tryaccess.TryAccessMessage;
 import it.cnr.iit.ucsinterface.message.tryaccess.TryAccessResponse;
 import it.cnr.iit.ucsinterface.pdp.PDPEvaluation;
 import it.cnr.iit.ucsinterface.pep.PEPInterface;
-import it.cnr.iit.ucsinterface.requestmanager.UCSCHInterface;
 import it.cnr.iit.utility.Utility;
 import it.cnr.iit.utility.errorhandling.Reject;
 import it.cnr.iit.xacmlutilities.wrappers.PolicyWrapper;
@@ -77,7 +76,7 @@ public class PEPRest implements PEPInterface {
     private PEPProperties pep;
 
     @Autowired
-    private UCSCHInterface ucs;
+    private UCSProxy ucs;
 
     @Bean
     public PEPProperties getPEPProperties() {
@@ -90,7 +89,7 @@ public class PEPRest implements PEPInterface {
     }
 
     @Bean
-    public UCSCHInterface getUCSInterface() {
+    public UCSProxy getUCSInterface() {
         return new UCSProxy();
     }
 
@@ -168,7 +167,7 @@ public class PEPRest implements PEPInterface {
 
     private String handleRequest( Message message ) {
         Reject.ifNull( message );
-        if( ucs.sendMessageToCH( message ).isDelivered() ) {
+        if( ucs.sendMessage( message ) ) {
             unansweredMap.put( message.getMessageId(), message );
             messageStorage.addMessage( message );
             return message.getMessageId();
