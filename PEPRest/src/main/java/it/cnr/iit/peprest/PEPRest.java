@@ -36,6 +36,7 @@ import it.cnr.iit.peprest.messagetrack.MessageStorage;
 import it.cnr.iit.peprest.messagetrack.MessageStorageInterface;
 import it.cnr.iit.peprest.messagetrack.MessagesPerSession;
 import it.cnr.iit.peprest.proxy.UCSProxy;
+import it.cnr.iit.ucs.constants.OperationNames;
 import it.cnr.iit.ucsinterface.message.EvaluatedResponse;
 import it.cnr.iit.ucsinterface.message.MEAN;
 import it.cnr.iit.ucsinterface.message.Message;
@@ -44,6 +45,7 @@ import it.cnr.iit.ucsinterface.message.reevaluation.ReevaluationResponse;
 import it.cnr.iit.ucsinterface.message.startaccess.StartAccessMessage;
 import it.cnr.iit.ucsinterface.message.tryaccess.TryAccessMessage;
 import it.cnr.iit.ucsinterface.message.tryaccess.TryAccessResponse;
+import it.cnr.iit.ucsinterface.pdp.PDPEvaluation;
 import it.cnr.iit.ucsinterface.pep.PEPInterface;
 import it.cnr.iit.ucsinterface.requestmanager.UCSCHInterface;
 import it.cnr.iit.utility.Utility;
@@ -64,12 +66,11 @@ public class PEPRest implements PEPInterface {
 
     private static final Logger log = Logger.getLogger( PEPRest.class.getName() );
 
-    private static final String UNABLE_TO_DELIVER_MESSSAGE_TO_UCS = "Unable to deliver messsage to UCS";
-    private static final String IS_MSG_DELIVERED_TO_DESTINATION = "isDeliveredToDestination: {0} ";
+    private static final String ERR_SEND_UCS_FAILED = "Unable to deliver messsage to UCS";
 
     // map of unanswered messages, the key is the id of the message
-    private ConcurrentMap<String, Message> unanswered = new ConcurrentHashMap<>();
-    private ConcurrentMap<String, Message> responses = new ConcurrentHashMap<>();
+    private ConcurrentMap<String, Message> unansweredMap = new ConcurrentHashMap<>();
+    private ConcurrentMap<String, Message> responsesMap = new ConcurrentHashMap<>();
     private MessageStorage messageStorage = new MessageStorage();
 
     @Autowired
@@ -96,91 +97,41 @@ public class PEPRest implements PEPInterface {
     public String tryAccess() {
         RequestWrapper request = RequestWrapper.build( Utility.readFileAbsPath( pep.getRequestPath() ) );
         PolicyWrapper policy = PolicyWrapper.build( Utility.readFileAbsPath( pep.getPolicyPath() ) );
-        TryAccessMessage message = buildTryAccessMessage( request, policy );
-
         log.log( Level.INFO, "tryAccess at {0} ", System.currentTimeMillis() );
-        if( ucs.sendMessageToCH( message ).isDelivered() ) {
-            unanswered.put( message.getMessageId(), message );
-            messageStorage.addMessage( message );
-            return message.getMessageId();
-        } else {
-            log.log( Level.WARNING, IS_MSG_DELIVERED_TO_DESTINATION, message.isDelivered() );
-            throw Throwables.propagate( new IllegalAccessException( UNABLE_TO_DELIVER_MESSSAGE_TO_UCS ) );
-        }
-    }
-
-    public TryAccessMessage buildTryAccessMessage( RequestWrapper request, PolicyWrapper policy ) {
-        TryAccessMessage message = new TryAccessMessage( pep.getId(), pep.getBaseUri() );
-        message.setPepUri( buildOnGoingEvaluationInterface() );
-        message.setPolicy( policy.getPolicy() );
-        message.setRequest( request.getRequest() );
-        message.setCallback( buildResponseApi( "tryAccessResponse" ), MEAN.REST );
-        return message;
+        TryAccessMessage message = buildTryAccessMessage( request, policy );
+        return handleRequest( message );
     }
 
     public String startAccess( String sessionId ) {
         log.log( Level.INFO, "startAccess at {0} ", System.currentTimeMillis() );
         StartAccessMessage message = buildStartAccessMessage( sessionId );
-        if( ucs.sendMessageToCH( message ).isDelivered() ) {
-            unanswered.put( message.getMessageId(), message );
-            messageStorage.addMessage( message );
-            return message.getMessageId();
-        } else {
-            log.log( Level.WARNING, IS_MSG_DELIVERED_TO_DESTINATION, message.isDelivered() );
-            throw Throwables.propagate( new IllegalAccessException( UNABLE_TO_DELIVER_MESSSAGE_TO_UCS ) );
-        }
-    }
-
-    public StartAccessMessage buildStartAccessMessage( String sessionId ) {
-        StartAccessMessage message = new StartAccessMessage( pep.getId(), pep.getBaseUri() );
-        message.setSessionId( sessionId );
-        message.setCallback( buildResponseApi( "startAccessResponse" ), MEAN.REST );
-        return message;
+        return handleRequest( message );
     }
 
     public String endAccess( String sessionId ) {
-        EndAccessMessage message = buildEndAccessMessage( sessionId, buildResponseApi( "endAccessResponse" ) );
         log.log( Level.INFO, "endAccess at {0} ", System.currentTimeMillis() );
-        if( ucs.sendMessageToCH( message ).isDelivered() ) {
-            unanswered.put( message.getMessageId(), message );
-            messageStorage.addMessage( message );
-            return message.getMessageId();
-        } else {
-            log.log( Level.INFO, IS_MSG_DELIVERED_TO_DESTINATION, message.isDelivered() );
-            throw Throwables.propagate( new IllegalAccessException( UNABLE_TO_DELIVER_MESSSAGE_TO_UCS ) );
-        }
-    }
-
-    public EndAccessMessage buildEndAccessMessage( String sessionId, String responseInterface ) {
-        EndAccessMessage message = new EndAccessMessage( pep.getId(), pep.getBaseUri() );
-        message.setSessionId( sessionId );
-        message.setCallback( responseInterface, MEAN.REST );
-        return message;
+        EndAccessMessage message = buildEndAccessMessage( sessionId );
+        return handleRequest( message );
     }
 
     @Override
     @Async
     public Message onGoingEvaluation( ReevaluationResponse message ) {
-        responses.put( message.getMessageId(), message );
-        messageStorage.addMessage( message );
+        Reject.ifNull( message );
+        PDPEvaluation evaluation = message.getPDPEvaluation();
+        Reject.ifNull( evaluation );
         log.log( Level.INFO, "onGoingEvaluation at {0} ", System.currentTimeMillis() );
-
+        responsesMap.put( message.getMessageId(), message );
+        messageStorage.addMessage( message );
         if( pep.getRevokeType().equals( "HARD" ) ) {
             log.log( Level.INFO, "endAcces sent at {0} ", System.currentTimeMillis() );
-
-            EndAccessMessage endAccess = buildEndAccessMessage( message.getPDPEvaluation().getSessionId(), null );
-            if( ucs.sendMessageToCH( endAccess ).isDelivered() ) {
-                unanswered.put( endAccess.getMessageId(), endAccess );
-                messageStorage.addMessage( endAccess );
-            } else {
-                log.log( Level.INFO, IS_MSG_DELIVERED_TO_DESTINATION, message.isDelivered() );
-                throw Throwables.propagate( new IllegalAccessException( UNABLE_TO_DELIVER_MESSSAGE_TO_UCS ) );
-            }
+            EndAccessMessage endAccess = buildEndAccessMessage( evaluation.getSessionId(), null );
+            handleRequest( endAccess );
         } else {
             // generic case to cater for multiple scenarios, e.g. pause/resume/pause/end etc...
-            if( message.getPDPEvaluation().isDecision( DecisionType.PERMIT ) ) {
+            if( evaluation.isDecision( DecisionType.PERMIT ) ) {
                 log.info( "RESUME EXECUTION" );
-            } else if( message.getPDPEvaluation().isDecision( DecisionType.DENY ) ) {
+            } else if( evaluation.isDecision( DecisionType.DENY ) ) {
                 log.info( "STOP EXECUTION" );
             }
         }
@@ -188,16 +139,55 @@ public class PEPRest implements PEPInterface {
         return message;
     }
 
+    private TryAccessMessage buildTryAccessMessage( RequestWrapper request, PolicyWrapper policy ) {
+        TryAccessMessage message = new TryAccessMessage( pep.getId(), pep.getBaseUri() );
+        message.setPepUri( buildResponseApi( pep.getApiStatusChanged() ) );
+        message.setPolicy( policy.getPolicy() );
+        message.setRequest( request.getRequest() );
+        message.setCallback( buildResponseApi( OperationNames.TRYACCESSRESPONSE_REST ), MEAN.REST );
+        return message;
+    }
+
+    private StartAccessMessage buildStartAccessMessage( String sessionId ) {
+        StartAccessMessage message = new StartAccessMessage( pep.getId(), pep.getBaseUri() );
+        message.setSessionId( sessionId );
+        message.setCallback( buildResponseApi( OperationNames.STARTACCESSRESPONSE_REST ), MEAN.REST );
+        return message;
+    }
+
+    private EndAccessMessage buildEndAccessMessage( String sessionId ) {
+        return buildEndAccessMessage( sessionId, buildResponseApi( OperationNames.ENDACCESSRESPONSE_REST ) );
+    }
+
+    private EndAccessMessage buildEndAccessMessage( String sessionId, String responseInterface ) {
+        EndAccessMessage message = new EndAccessMessage( pep.getId(), pep.getBaseUri() );
+        message.setSessionId( sessionId );
+        message.setCallback( responseInterface, MEAN.REST );
+        return message;
+    }
+
+    private String handleRequest( Message message ) {
+        Reject.ifNull( message );
+        if( ucs.sendMessageToCH( message ).isDelivered() ) {
+            unansweredMap.put( message.getMessageId(), message );
+            messageStorage.addMessage( message );
+            return message.getMessageId();
+        } else {
+            throw Throwables.propagate( new IllegalAccessException( ERR_SEND_UCS_FAILED ) );
+        }
+    }
+
     @Override
     @Async
     public String receiveResponse( Message message ) {
+        Reject.ifNull( message );
         try {
-            responses.put( message.getMessageId(), message );
-            unanswered.remove( message.getMessageId() );
+            responsesMap.put( message.getMessageId(), message );
+            unansweredMap.remove( message.getMessageId() );
             messageStorage.addMessage( message );
             return handleResponse( message );
         } catch( Exception e ) { // NOSONAR
-            log.severe( "Error occured while evaluating the response: " + e.getLocalizedMessage() ); // NOSONAR
+            log.log( Level.SEVERE, "Error occured while evaluating the response: {0}", e.getMessage() );
             throw Throwables.propagate( e );
         }
     }
@@ -222,10 +212,11 @@ public class PEPRest implements PEPInterface {
      * @return a String stating the result of the evaluation or the ID of the startaccess message
      */
     private String handleTryAccessResponse( TryAccessResponse response ) {
-        if( response.getPDPEvaluation().isDecision( DecisionType.PERMIT ) ) {
+        PDPEvaluation evaluation = response.getPDPEvaluation();
+        if( evaluation.isDecision( DecisionType.PERMIT ) ) {
             return startAccess( response.getSessionId() );
         }
-        return response.getPDPEvaluation().getResult();
+        return evaluation.getResult();
     }
 
     private final String buildResponseApi( String name ) {
@@ -234,23 +225,6 @@ public class PEPRest implements PEPInterface {
         } catch( MalformedURLException e ) {
             return null;
         }
-    }
-
-    private String buildOnGoingEvaluationInterface() {
-        return buildResponseApi( pep.getApiStatusChanged() );
-    }
-
-    public void end( String sessionId ) {
-        log.log( Level.INFO, "endAccess sent at {0} ", System.currentTimeMillis() );
-        endAccess( sessionId );
-    }
-
-    public ConcurrentMap<String, Message> getResponses() {
-        return responses;
-    }
-
-    public ConcurrentMap<String, Message> getUnanswered() {
-        return unanswered;
     }
 
     /**
@@ -292,10 +266,10 @@ public class PEPRest implements PEPInterface {
      * @return an optional containing the message or nothing
      */
     private Optional<Message> getMessageFromId( String messageId ) {
-        if( !responses.containsKey( messageId ) ) {
+        if( !responsesMap.containsKey( messageId ) ) {
             return Optional.empty();
         }
-        return Optional.of( responses.get( messageId ) );
+        return Optional.of( responsesMap.get( messageId ) );
     }
 
     public MessageStorageInterface getMessageStorage() {
@@ -310,4 +284,11 @@ public class PEPRest implements PEPInterface {
         this.messageStorage = messageStorage;
     }
 
+    public ConcurrentMap<String, Message> getResponses() {
+        return responsesMap;
+    }
+
+    public ConcurrentMap<String, Message> getUnanswered() {
+        return unansweredMap;
+    }
 }

@@ -1,8 +1,9 @@
 package it.cnr.iit.peprest.messagetrack;
 
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import it.cnr.iit.ucsinterface.message.EvaluatedResponse;
+import it.cnr.iit.ucsinterface.message.Message;
 import it.cnr.iit.ucsinterface.message.endaccess.EndAccessMessage;
 import it.cnr.iit.ucsinterface.message.endaccess.EndAccessResponse;
 import it.cnr.iit.ucsinterface.message.reevaluation.ReevaluationResponse;
@@ -19,7 +20,7 @@ import oasis.names.tc.xacml.core.schema.wd_17.DecisionType;
  * The only information that can be seen by an external component, i.e. a component external to the PEP is the status of
  * the session.
  *
- * @author antonio
+ * @author Antonio La Marra, Alessandro Rosetti
  *
  */
 public class MessageInformations {
@@ -54,79 +55,59 @@ public class MessageInformations {
         this.callerResponse = callerResponse;
     }
 
-    public static MessageInformations fromTryAccessMessage( TryAccessMessage message ) {
+    private static MessageInformations build( Message message, STATUS status ) {
         MessageInformations messageInformations = new MessageInformations();
         messageInformations.messageId = message.getMessageId();
         messageInformations.callerResponse = new CallerResponse();
-        messageInformations.callerResponse.setStatus( STATUS.TRYACCESS_SENT );
+        messageInformations.callerResponse.setStatus( status );
         return messageInformations;
     }
 
-    public static MessageInformations fromStartAccessMessage( StartAccessMessage message ) {
-        MessageInformations messageInformations = new MessageInformations();
-        messageInformations.messageId = message.getMessageId();
-        messageInformations.callerResponse = new CallerResponse();
-        messageInformations.callerResponse.setStatus( STATUS.STARTACCESS_SENT );
+    public static MessageInformations build( TryAccessMessage message ) {
+        return build( message, STATUS.TRYACCESS_SENT );
+    }
+
+    public static MessageInformations build( StartAccessMessage message ) {
+        MessageInformations messageInformations = build( message, STATUS.STARTACCESS_SENT );
         messageInformations.callerResponse.setSessionId( message.getSessionId() );
         return messageInformations;
     }
 
-    public static MessageInformations fromEndAccessMessage( EndAccessMessage message ) {
-        MessageInformations messageInformations = new MessageInformations();
-        messageInformations.messageId = message.getMessageId();
-        messageInformations.callerResponse = new CallerResponse();
-        messageInformations.callerResponse.setStatus( STATUS.ENDACCESS_SENT );
-        return messageInformations;
+    public static MessageInformations build( EndAccessMessage message ) {
+        return build( message, STATUS.ENDACCESS_SENT );
     }
 
-    public void merge( TryAccessResponse message ) {
-        if( callerResponse.getStatus() != STATUS.TRYACCESS_SENT ) {
+    public static MessageInformations build( ReevaluationResponse message ) {
+        if( message.getPDPEvaluation().isDecision( DecisionType.PERMIT ) ) {
+            return build( message, STATUS.SESSION_RESUMED );
+        } else {
+            return build( message, STATUS.REVOKED );
+        }
+    }
+
+    public void merge( EvaluatedResponse message, STATUS status, STATUS positiveStatus, STATUS negativeStatus ) {
+        if( callerResponse.getStatus() != status ) {
             throw new IllegalArgumentException( "Wrong flow of messages!! \n status is: " + callerResponse.getStatus() );
         }
         evaluation = message.getPDPEvaluation();
-        log.log( Level.INFO, "{0}\t{1}", new Object[] { evaluation.getResult(), DecisionType.PERMIT.value() } );
-        if( evaluation.getResult().equals( DecisionType.PERMIT.value() ) ) {
-            callerResponse.setStatus( STATUS.TRYACCESS_PERMIT );
-            callerResponse.setSessionId( message.getSessionId() );
+        if( evaluation.isDecision( DecisionType.PERMIT ) ) {
+            callerResponse.setStatus( positiveStatus );
         } else {
-            callerResponse.setStatus( STATUS.TRYACCESS_DENY );
+            callerResponse.setStatus( negativeStatus );
         }
+    }
+
+    public void merge( TryAccessResponse message ) {
+        merge( message, STATUS.TRYACCESS_SENT, STATUS.TRYACCESS_PERMIT, STATUS.TRYACCESS_DENY );
+        callerResponse.setSessionId( message.getSessionId() );
     }
 
     public void merge( StartAccessResponse message ) {
-        if( callerResponse.getStatus() != STATUS.STARTACCESS_SENT ) {
-            throw new IllegalArgumentException( "Wrong flow of messages!!" );
-        }
-        evaluation = message.getPDPEvaluation();
-        if( evaluation.getResult().equals( DecisionType.PERMIT.value() ) ) {
-            callerResponse.setStatus( STATUS.STARTACCESS_PERMIT );
-        } else {
-            callerResponse.setStatus( STATUS.STARTACCESS_DENY );
-        }
+        merge( message, STATUS.STARTACCESS_SENT, STATUS.STARTACCESS_PERMIT, STATUS.STARTACCESS_DENY );
     }
 
     public void merge( EndAccessResponse message ) {
-        if( callerResponse.getStatus() != STATUS.ENDACCESS_SENT ) {
-            throw new IllegalArgumentException( "Wrong flow of messages!!" );
-        }
-        evaluation = message.getPDPEvaluation();
-        if( evaluation.getResult().equals( DecisionType.PERMIT.value() ) ) {
-            callerResponse.setStatus( STATUS.ENDACCESS_PERMIT );
-        } else {
-            callerResponse.setStatus( STATUS.ENDACCESS_DENY );
-        }
-    }
-
-    public static MessageInformations fromReevaluationResponse( ReevaluationResponse message ) {
-        MessageInformations messageInformations = new MessageInformations();
-        messageInformations.messageId = message.getMessageId();
-        messageInformations.callerResponse = new CallerResponse();
-        if( message.getPDPEvaluation().getResult().equals( DecisionType.PERMIT.value() ) ) {
-            messageInformations.callerResponse.setStatus( STATUS.SESSION_RESUMED );
-        } else {
-            messageInformations.callerResponse.setStatus( STATUS.REVOKED );
-        }
-        return messageInformations;
+        merge( message, STATUS.ENDACCESS_SENT, STATUS.ENDACCESS_PERMIT, STATUS.ENDACCESS_DENY );
     }
 
 }

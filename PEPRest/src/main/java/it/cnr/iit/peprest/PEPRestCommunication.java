@@ -93,7 +93,7 @@ public class PEPRestCommunication {
         if( sessionId == null || sessionId.isEmpty() ) {
             throw new HttpClientErrorException( HttpStatus.NO_CONTENT );
         }
-        pepRest.end( sessionId );
+        pepRest.endAccess( sessionId );
     }
 
     @Autowired

@@ -7,7 +7,6 @@ import static org.apache.http.HttpStatus.SC_OK;
 import static org.assertj.core.api.Assertions.fail;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.mockito.Mockito.doCallRealMethod;
 import static org.mockito.Mockito.when;
 
 import org.junit.Before;
@@ -34,7 +33,6 @@ public class PEPRestCommunicationTest extends PEPRestAbstractTest {
 
     @Test
     public void finishRequestPerformsEndAccessSuccessfully() throws Exception {
-        doCallRealMethod().when( pepRest ).end( SESSION_ID_01 );
         when( pepRest.endAccess( SESSION_ID_01 ) ).thenReturn( SESSION_ID_01 );
 
         MockHttpServletResponse mvcResponse = postStringResponseToPEPRest( SESSION_ID_01, FINISH.getOperationUri() );
