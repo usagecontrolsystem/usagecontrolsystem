@@ -169,7 +169,7 @@ public class ThenMessage extends Stage<ThenMessage> {
     public ThenMessage the_message_is_in_$_status( STATUS messageSendStatus ) {
         try {
             assertNotNull( messageId );
-            CallerResponse callerResponse = pepRest.getMessageHistory().getMessageStatus( messageId ).get();
+            CallerResponse callerResponse = pepRest.getMessageStorage().getMessageStatus( messageId ).get();
             assertNotNull( callerResponse.getStatus() );
             assertEquals( messageSendStatus, callerResponse.getStatus() );
         } catch( Exception e ) {

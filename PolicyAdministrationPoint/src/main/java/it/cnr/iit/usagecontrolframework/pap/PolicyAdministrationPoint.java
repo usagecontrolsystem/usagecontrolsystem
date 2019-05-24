@@ -87,7 +87,6 @@ public class PolicyAdministrationPoint implements PAPInterface {
         } catch( Exception e ) {
             log.severe( String.format( MSG_ERR_POLICY_READ, path, e.getMessage() ) );
         }
-
         return null;
     }
 
@@ -112,8 +111,6 @@ public class PolicyAdministrationPoint implements PAPInterface {
             log.warning( MSG_WARN_POLICY_EXISTS );
             return true;
         }
-        // END parameter checking
-
         return writePolicy( policyType.getPolicyId(), policy );
     }
 
