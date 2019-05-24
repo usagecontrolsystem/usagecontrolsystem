@@ -20,7 +20,7 @@ import oasis.names.tc.xacml.core.schema.wd_17.DecisionType;
 
 /**
  *
- * @author antonio
+ * @author Antonio La Marra
  *
  */
 public class MessageStorage implements MessageStorageInterface, MessagesPerSession {
@@ -97,13 +97,13 @@ public class MessageStorage implements MessageStorageInterface, MessagesPerSessi
     private boolean addNewMessage( Message message ) {
         MessageInformations messageInformations = null;
         if( message instanceof TryAccessMessage ) {
-            messageInformations = MessageInformations.fromTryAccessMessage( (TryAccessMessage) message );
+            messageInformations = MessageInformations.build( (TryAccessMessage) message );
         } else if( message instanceof StartAccessMessage ) {
-            messageInformations = MessageInformations.fromStartAccessMessage( (StartAccessMessage) message );
+            messageInformations = MessageInformations.build( (StartAccessMessage) message );
         } else if( message instanceof EndAccessMessage ) {
-            messageInformations = MessageInformations.fromEndAccessMessage( (EndAccessMessage) message );
+            messageInformations = MessageInformations.build( (EndAccessMessage) message );
         } else if( message instanceof ReevaluationResponse ) {
-            messageInformations = MessageInformations.fromReevaluationResponse( (ReevaluationResponse) message );
+            messageInformations = MessageInformations.build( (ReevaluationResponse) message );
         }
         return insert( messageInformations );
     }

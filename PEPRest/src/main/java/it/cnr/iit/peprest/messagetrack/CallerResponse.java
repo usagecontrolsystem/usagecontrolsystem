@@ -12,7 +12,7 @@ package it.cnr.iit.peprest.messagetrack;
  * </ol>
  * </p>
  *
- * @author anton
+ * @author Antonio La Marra
  *
  */
 public class CallerResponse {

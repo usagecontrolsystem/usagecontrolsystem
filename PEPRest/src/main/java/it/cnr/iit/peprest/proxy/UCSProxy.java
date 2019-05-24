@@ -25,32 +25,27 @@ import org.springframework.stereotype.Component;
 import it.cnr.iit.peprest.configuration.UCSProxyProperties;
 import it.cnr.iit.ucsinterface.message.Message;
 import it.cnr.iit.ucsinterface.message.PURPOSE;
-import it.cnr.iit.ucsinterface.requestmanager.UCSCHInterface;
 import it.cnr.iit.utility.RESTUtils;
 
 @Component
-public class UCSProxy implements UCSCHInterface {
+public class UCSProxy {
 
     private static final Logger log = Logger.getLogger( UCSProxy.class.getName() );
 
     @Autowired
     private UCSProxyProperties ucs;
 
-    @Override
-    public Message sendMessageToCH( Message message ) {
+    public boolean sendMessage( Message message ) {
         try {
             Optional<ResponseEntity<Void>> response = RESTUtils.post(
                 ucs.getBaseUri(),
                 getApiNameFromPurpose( message.getPurpose() ),
                 message );
-            if( response.isPresent() && response.get().getStatusCode().is2xxSuccessful() ) {
-                message.setDelivered( true );
-            }
+            return response.isPresent() && response.get().getStatusCode().is2xxSuccessful();
         } catch( Exception e ) {
             log.severe( "Error posting message : " + e.getMessage() );
         }
-
-        return message;
+        return false;
     }
 
     private String getApiNameFromPurpose( PURPOSE purpose ) {
