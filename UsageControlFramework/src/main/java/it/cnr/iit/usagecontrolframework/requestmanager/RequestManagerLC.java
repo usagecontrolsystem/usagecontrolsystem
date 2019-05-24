@@ -23,12 +23,9 @@ import java.util.logging.Logger;
 import it.cnr.iit.ucs.properties.components.RequestManagerProperties;
 import it.cnr.iit.ucsinterface.message.Message;
 import it.cnr.iit.ucsinterface.message.endaccess.EndAccessMessage;
-import it.cnr.iit.ucsinterface.message.endaccess.EndAccessResponse;
 import it.cnr.iit.ucsinterface.message.reevaluation.ReevaluationResponse;
 import it.cnr.iit.ucsinterface.message.startaccess.StartAccessMessage;
-import it.cnr.iit.ucsinterface.message.startaccess.StartAccessResponse;
 import it.cnr.iit.ucsinterface.message.tryaccess.TryAccessMessage;
-import it.cnr.iit.ucsinterface.message.tryaccess.TryAccessResponse;
 import it.cnr.iit.ucsinterface.requestmanager.AbstractRequestManager;
 import it.cnr.iit.utility.errorhandling.Reject;
 
@@ -65,7 +62,7 @@ public class RequestManagerLC extends AbstractRequestManager {
     */
     private boolean initializeInquirers() {
         try {
-            inquirers = Executors.newFixedThreadPool( 2 );
+            inquirers = Executors.newFixedThreadPool( 1 );
             inquirers.submit( new ContextHandlerInquirer() );
         } catch( Exception e ) {
             log.severe( "Error initialising the RequestManager inquirers : " + e.getMessage() );
@@ -75,24 +72,9 @@ public class RequestManagerLC extends AbstractRequestManager {
     }
 
     @Override
-    public synchronized void sendMessageToOutside( Message message ) {
-        Reject.ifNull( message, "Invalid message" );
+    public synchronized void sendReevaluation( ReevaluationResponse reevaluation ) {
+        Reject.ifNull( reevaluation, "Invalid message" );
 
-        if( message instanceof TryAccessResponse
-                || message instanceof StartAccessResponse
-                || message instanceof EndAccessResponse ) {
-            sendResponse( message );
-        } else if( message instanceof ReevaluationResponse ) {
-            sendReevaluation( (ReevaluationResponse) message );
-        }
-    }
-
-    private void sendResponse( Message message ) {
-        getPEPInterface().get( message.getDestination() )
-            .receiveResponse( message );
-    }
-
-    private void sendReevaluation( ReevaluationResponse reevaluation ) {
         log.info( "Sending on going reevaluation." );
         getPEPInterface().get( ( reevaluation ).getPepId() )
             .onGoingEvaluation( reevaluation );

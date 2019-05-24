@@ -17,11 +17,8 @@ package it.cnr.iit.usagecontrolframework.proxies;
 
 import java.net.URI;
 import java.util.Optional;
-import java.util.concurrent.ExecutionException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import com.google.common.base.Throwables;
 
 import it.cnr.iit.ucs.constants.CONNECTION;
 import it.cnr.iit.ucs.constants.OperationNames;
@@ -30,7 +27,6 @@ import it.cnr.iit.ucsinterface.message.Message;
 import it.cnr.iit.ucsinterface.message.endaccess.EndAccessResponse;
 import it.cnr.iit.ucsinterface.message.startaccess.StartAccessResponse;
 import it.cnr.iit.ucsinterface.message.tryaccess.TryAccessResponse;
-import it.cnr.iit.ucsinterface.pep.ExamplePEP;
 import it.cnr.iit.ucsinterface.pep.PEPInterface;
 import it.cnr.iit.ucsinterface.requestmanager.UCSCHInterface;
 import it.cnr.iit.usagecontrolframework.rest.UsageControlFramework;
@@ -56,7 +52,6 @@ public class ProxyPEP implements PEPInterface {
 
     private PepProperties properties;
     private URI uri;
-    private ExamplePEP examplePEP; // TODO use interface
 
     private boolean initialized = false;
 
@@ -91,7 +86,6 @@ public class ProxyPEP implements PEPInterface {
         Optional<PEPInterface> optPEP = UsageControlFramework.buildComponent( properties );
 
         if( optPEP.isPresent() ) {
-            examplePEP = (ExamplePEP) optPEP.get();
             return true;
         }
         log.severe( "Error building PEP" );
@@ -110,8 +104,6 @@ public class ProxyPEP implements PEPInterface {
             UCSCHInterface requestManager ) {
         switch( getConnection() ) {
             case API:
-                examplePEP.setRequestManagerInterface( requestManager );
-                break;
             case REST_API:
             case SOCKET:
                 break;
@@ -125,14 +117,14 @@ public class ProxyPEP implements PEPInterface {
     @Override
     public Message onGoingEvaluation( Message message ) {
         switch( getConnection() ) {
-            case API:
-                return examplePEP.onGoingEvaluation( message );
+
             case REST_API:
                 RESTUtils.asyncPost(
                     uri.toString(),
                     OperationNames.ONGOINGRESPONSE_REST,
                     message );
                 break;
+            case API:
             default:
                 break;
         }
@@ -142,9 +134,6 @@ public class ProxyPEP implements PEPInterface {
     @Override
     public String receiveResponse( Message message ) {
         switch( getConnection() ) {
-            case API:
-                examplePEP.receiveResponse( message );
-                break;
             case REST_API:
                 Optional<String> api = getApi( message );
                 try {
@@ -157,6 +146,7 @@ public class ProxyPEP implements PEPInterface {
                     return "KO";
                 }
                 break;
+            case API:
             default:
                 log.severe( "Error in the receive response" );
                 break;
@@ -178,15 +168,6 @@ public class ProxyPEP implements PEPInterface {
 
     public void start() {
         switch( getConnection() ) {
-            case API:
-                try {
-                    examplePEP.start();
-                } catch( InterruptedException | ExecutionException e ) {
-                    log.severe( e.getMessage() );
-                    Thread.currentThread().interrupt();
-                    Throwables.propagate( e );
-                }
-                break;
             case REST_API:
             case SOCKET:
             default:
