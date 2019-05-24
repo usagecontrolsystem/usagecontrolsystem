@@ -12,11 +12,7 @@
 		<maven.compiler.target>1.8</maven.compiler.target>
 		<spring.version>5.1.5.RELEASE</spring.version>
 		<jackson.version>2.9.8</jackson.version>
-		<sonar.exclusions>
-			**
-		</sonar.exclusions>
 	</properties>
-
 
 	<parent>
 		<groupId>org.springframework.boot</groupId>
@@ -68,21 +64,21 @@
 			<version>4.1.34.Final</version>
 		</dependency>
 
-		<dependency>
-			<groupId>com.tngtech.jgiven</groupId>
-			<artifactId>jgiven-junit</artifactId>
-			<version>0.17.0</version>
-		</dependency>
-		<dependency>
-			<groupId>com.tngtech.jgiven</groupId>
-			<artifactId>jgiven-spring</artifactId>
-			<version>0.17.0</version>
-		</dependency>
-		<dependency>
-			<groupId>com.github.tomakehurst</groupId>
-			<artifactId>wiremock</artifactId>
-			<version>2.18.0</version>
-		</dependency>
+        <dependency>
+            <groupId>com.tngtech.jgiven</groupId>
+            <artifactId>jgiven-junit</artifactId>
+            <version>0.17.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.tngtech.jgiven</groupId>
+            <artifactId>jgiven-spring</artifactId>
+            <version>0.17.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.github.tomakehurst</groupId>
+            <artifactId>wiremock</artifactId>
+            <version>2.18.0</version>
+        </dependency>
 	</dependencies>
 
 	<build>
@@ -139,16 +135,6 @@
 					<format>XML</format>
 				</configuration>
 			</plugin>
-
-			<!-- https://discuss.circleci.com/t/the-forked-vm-terminated-without-properly-saying-goodbye-while-running-tests/26246/9 -->
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-surefire-plugin</artifactId>
-				<configuration>
-					<useSystemClassLoader>false</useSystemClassLoader>
-				</configuration>
-			</plugin>
-
 		</plugins>
 	</build>
 
