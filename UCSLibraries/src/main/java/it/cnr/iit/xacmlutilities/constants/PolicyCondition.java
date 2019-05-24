@@ -1,22 +1,22 @@
-package it.cnr.iit.usagecontrolframework.contexthandler;
+package it.cnr.iit.xacmlutilities.constants;
 
 import it.cnr.iit.ucs.constants.STATUS;
 
-public class POLICY_CONDITION {
+public class PolicyCondition {
     public static final String TRYACCESS = "pre";
     public static final String STARTACCESS = "ongoing";
     public static final String ENDACCESS = "post";
 
-    private POLICY_CONDITION() {}
+    private PolicyCondition() {}
 
     public static String fromStatus( STATUS status ) {
         switch( status ) {
             case TRYACCESS:
-                return POLICY_CONDITION.TRYACCESS;
+                return PolicyCondition.TRYACCESS;
             case STARTACCESS:
-                return POLICY_CONDITION.STARTACCESS;
+                return PolicyCondition.STARTACCESS;
             case ENDACCESS:
-                return POLICY_CONDITION.ENDACCESS;
+                return PolicyCondition.ENDACCESS;
             default:
                 return "";
         }
