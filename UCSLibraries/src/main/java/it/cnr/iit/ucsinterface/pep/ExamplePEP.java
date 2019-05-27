@@ -130,12 +130,7 @@ public class ExamplePEP implements PEPInterface {
     }
 
     @Override
-    public Message onGoingEvaluation( Message message ) {
-        // BEGIN parameter checking
-        if( message == null || !( message instanceof ReevaluationResponse ) ) {
-            log.severe( "Message not valid" );
-            return null;
-        }
+    public Message onGoingEvaluation( ReevaluationResponse message ) {
         if( !initialized ) {
             log.severe( "Cannot answer the message" );
             return null;
@@ -145,28 +140,24 @@ public class ExamplePEP implements PEPInterface {
             log.severe( "Message in invalid format" );
             return null;
         }
-        // END parameter checking
 
-        ReevaluationResponse chPepMessage = (ReevaluationResponse) message;
         if( configuration.getRevokeType().equals( "HARD" ) ) {
             EndAccessMessage endAccess = new EndAccessMessage( PART.PEP.toString(),
                 PART.CH.toString() );
             endAccess.setCallback( null, MEAN.API );
-            endAccess.setSessionId( chPepMessage.getPDPEvaluation().getSessionId() );
+            endAccess.setSessionId( message.getPDPEvaluation().getSessionId() );
             requestManager.sendMessageToCH( endAccess );
         } else {
-            if( chPepMessage.getPDPEvaluation().getResult().contains( "Permit" ) ) {
+            if( message.getPDPEvaluation().getResult().contains( "Permit" ) ) {
                 log.info(
                     "[TIME] RESUME EXECUTION " + System.currentTimeMillis() );
             }
-            if( chPepMessage.getPDPEvaluation().getResult().contains( "Deny" ) ) {
+            if( message.getPDPEvaluation().getResult().contains( "Deny" ) ) {
                 log.info(
                     "[TIME] STOP EXECUTION " + System.currentTimeMillis() );
             }
         }
-        // contextHandler.endAccess(endAccess);
         message.setMotivation( "OK" );
-
         return message;
     }
 

@@ -13,6 +13,7 @@ import static org.junit.Assert.fail;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -29,10 +30,13 @@ import it.cnr.iit.peprest.PEPRest;
 import it.cnr.iit.peprest.messagetrack.CallerResponse;
 import it.cnr.iit.peprest.messagetrack.STATUS;
 import it.cnr.iit.ucs.constants.RestOperation;
+import it.cnr.iit.ucsinterface.message.EvaluatedResponse;
 import it.cnr.iit.ucsinterface.message.Message;
 import it.cnr.iit.ucsinterface.message.endaccess.EndAccessMessage;
 import it.cnr.iit.ucsinterface.message.startaccess.StartAccessMessage;
 import it.cnr.iit.ucsinterface.message.tryaccess.TryAccessMessage;
+import it.cnr.iit.ucsinterface.message.tryaccess.TryAccessResponse;
+import it.cnr.iit.utility.errorhandling.Reject;
 
 import oasis.names.tc.xacml.core.schema.wd_17.DecisionType;
 
@@ -138,16 +142,62 @@ public class ThenMessage extends Stage<ThenMessage> {
 
     public ThenMessage the_session_id_for_$_is_not_null( RestOperation restOperation ) {
         if( restOperation == TRY_ACCESS_RESPONSE ) {
-            assertNotNull( pepRest.getSessionIdInTryAccess( message.getMessageId() ).get() );
-            assertTrue( pepRest.getSessionIdInTryAccess( messageId ).get().length() > 0 );
+            assertNotNull( getSessionIdInTryAccess( message.getMessageId() ).get() );
+            assertTrue( getSessionIdInTryAccess( messageId ).get().length() > 0 );
         }
         return self();
     }
 
     public void the_evaluation_result_decision_is_$( DecisionType decision ) {
-        assertNotNull( pepRest.getEvaluationResult( messageId ).get() );
-        assertTrue( pepRest.getEvaluationResult( messageId ).get().length() > 0 );
-        assertTrue( pepRest.getEvaluationResult( messageId ).get().equals( decision.value() ) );
+        String msgEvalResult = getEvaluationResult( messageId ).get();
+        assertNotNull( msgEvalResult );
+        assertTrue( msgEvalResult.length() > 0 );
+        assertTrue( msgEvalResult.equals( decision.value() ) );
+    }
+
+    /**
+     * Retrieves the sessionId assigned in the tryAccessResponse
+     * @param messageId the messageId assigned in the tryAccess request
+     * @return an optional containing either the sessionId either nothing
+     */
+    public Optional<String> getSessionIdInTryAccess( String messageId ) {
+        Reject.ifBlank( messageId );
+        Optional<Message> message = getMessageFromId( messageId );
+        if( message.isPresent() ) {
+            TryAccessResponse response = (TryAccessResponse) message.get();
+            return Optional.ofNullable( response.getSessionId() );
+        }
+        return Optional.empty();
+    }
+
+    /**
+     * Retrieves the evaluation from the returned messageId
+     * @param messageId the messageId assigned to that evaluation
+     * @return an optional containing either the required evaluation or an empty one
+     */
+    public Optional<String> getEvaluationResult( String messageId ) {
+        Reject.ifBlank( messageId );
+        Optional<Message> optional = getMessageFromId( messageId );
+        if( optional.isPresent() ) {
+            Message message = optional.get();
+            if( message instanceof EvaluatedResponse ) {
+                String result = ( (EvaluatedResponse) message ).getPDPEvaluation().getResult();
+                return Optional.of( result );
+            }
+        }
+        return Optional.empty();
+    }
+
+    /**
+     * Retrieves a message in the responses map
+     * @param messageId the messageid assigned in the evaluation
+     * @return an optional containing the message or nothing
+     */
+    private Optional<Message> getMessageFromId( String messageId ) {
+        if( !pepRest.getResponses().containsKey( messageId ) ) {
+            return Optional.empty();
+        }
+        return Optional.of( pepRest.getResponses().get( messageId ) );
     }
 
     public ThenMessage a_message_id_is_returned() {
@@ -169,7 +219,7 @@ public class ThenMessage extends Stage<ThenMessage> {
     public ThenMessage the_message_is_in_$_status( STATUS messageSendStatus ) {
         try {
             assertNotNull( messageId );
-            CallerResponse callerResponse = pepRest.getMessageHistory().getMessageStatus( messageId ).get();
+            CallerResponse callerResponse = pepRest.getMessageStorage().getMessageStatus( messageId ).get();
             assertNotNull( callerResponse.getStatus() );
             assertEquals( messageSendStatus, callerResponse.getStatus() );
         } catch( Exception e ) {

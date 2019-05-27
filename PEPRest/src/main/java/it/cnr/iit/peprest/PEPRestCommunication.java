@@ -48,12 +48,6 @@ public class PEPRestCommunication {
 
     private PEPRest pepRest;
 
-    @GetMapping( value = "/isAlive", consumes = MediaType.ALL_VALUE )
-    // TODO UCS-34 NOSONAR
-    public void isAlive() {
-        log.info( "in isAlive():heath check OK" );
-    }
-
     @ApiOperation( httpMethod = "POST", value = "Starts the PEP" )
     @ApiResponses( value = {
         @ApiResponse( code = 500, message = "Invalid message received" ),
@@ -71,7 +65,7 @@ public class PEPRestCommunication {
      * @throws InterruptedException
      * @throws ExecutionException
      */
-    @ApiOperation( httpMethod = "GET", value = "Starts the PEP" )
+    @ApiOperation( httpMethod = "GET", value = "Retrieves the status of a message" )
     @ApiResponses( value = {
         @ApiResponse( code = 500, message = "Invalid message received" ),
         @ApiResponse( code = 200, message = "OK" ) } )
@@ -81,7 +75,7 @@ public class PEPRestCommunication {
         if( messageId == null || messageId.isEmpty() ) {
             throw new HttpClientErrorException( HttpStatus.NO_CONTENT );
         }
-        Optional<CallerResponse> callerResponse = pepRest.getMessageHistory().getMessageStatus( messageId );
+        Optional<CallerResponse> callerResponse = pepRest.getMessageStorage().getMessageStatus( messageId );
         if( callerResponse.isPresent() ) {
             return callerResponse.get();
         } else {
@@ -99,7 +93,7 @@ public class PEPRestCommunication {
         if( sessionId == null || sessionId.isEmpty() ) {
             throw new HttpClientErrorException( HttpStatus.NO_CONTENT );
         }
-        pepRest.end( sessionId );
+        pepRest.endAccess( sessionId );
     }
 
     @Autowired

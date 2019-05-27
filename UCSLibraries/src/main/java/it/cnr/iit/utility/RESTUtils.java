@@ -15,6 +15,8 @@
  ******************************************************************************/
 package it.cnr.iit.utility;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Supplier;
@@ -28,6 +30,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
+
+import it.cnr.iit.utility.errorhandling.Reject;
 
 import reactor.core.publisher.Mono;
 
@@ -52,9 +56,17 @@ public final class RESTUtils {
         return post( baseUri, api, obj, Void.class );
     }
 
+    public static Optional<String> joinUrl( String base, String api ) {
+        try {
+            return Optional.of( new URL( new URL( base ), api ).toString() );
+        } catch( MalformedURLException e ) {
+            return Optional.empty();
+        }
+    }
+
     public static <T, E> Optional<ResponseEntity<T>> post( String baseUri, String api, E obj, Class<T> responseClass ) {
-        // TODO fix this mess, use URI instead of string
-        String url = baseUri + ( ( !api.endsWith( "/" ) && !baseUri.endsWith( "/" ) ) ? "/" : "" ) + api;
+        Optional<String> url = joinUrl( baseUri, api );
+        Reject.ifAbsent( url );
 
         Optional<String> jsonString = JsonUtility.getJsonStringFromObject( obj, false );
         if( !jsonString.isPresent() ) {
@@ -65,7 +77,7 @@ public final class RESTUtils {
         headers.setContentType( MediaType.APPLICATION_JSON );
         HttpEntity<String> entity = new HttpEntity<>( jsonString.get(), headers );
         RestTemplate restTemplate = new RestTemplate();
-        ResponseEntity<T> responseEntity = restTemplate.postForEntity( url, entity, responseClass );
+        ResponseEntity<T> responseEntity = restTemplate.postForEntity( url.get(), entity, responseClass ); // NOSONAR
 
         checkResponesEntity( responseEntity );
 
