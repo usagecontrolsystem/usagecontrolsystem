@@ -64,7 +64,6 @@ public class RequestManagerLC extends AbstractRequestManager {
     private boolean initializeInquirers() {
         try {
             inquirers = Executors.newFixedThreadPool( 1 );
-            inquirers.submit( new ContextHandlerInquirer() );
         } catch( Exception e ) {
             log.severe( "Error initialising the RequestManager inquirers : " + e.getMessage() );
             return false;
@@ -135,6 +134,11 @@ public class RequestManagerLC extends AbstractRequestManager {
             }
             return null;
         }
+    }
+
+    @Override
+    public void startMonitoring() {
+        inquirers.submit( new ContextHandlerInquirer() );
     }
 
 }

@@ -130,6 +130,7 @@ public class UsageControlFramework implements UCSInterface {
         Optional<AbstractRequestManager> optRM = buildComponent( properties.getRequestManager() );
         Reject.ifAbsent( optRM, "Error in building the request manager" );
         requestManager = optRM.get(); // NOSONAR
+        requestManager.startMonitoring();
 
         Reject.ifFalse( buildProxySM(), "Error in building the session manager" );
         Reject.ifFalse( buildProxyPDP(), "Error in building the pdp" );
