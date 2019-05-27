@@ -26,7 +26,7 @@ import it.cnr.iit.xacmlutilities.Attribute;
  * @author Antonio La Marra, Alessandro Rosetti
  *
  */
-public class AttributeMonitor {
+class AttributeMonitor {
 
     private static final Logger log = Logger.getLogger( AttributeMonitor.class.getName() );
 
