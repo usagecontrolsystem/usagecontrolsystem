@@ -101,4 +101,6 @@ public abstract class AbstractRequestManager
         return retrieveRequests;
     }
 
+    public abstract void startMonitoring();
+
 }
