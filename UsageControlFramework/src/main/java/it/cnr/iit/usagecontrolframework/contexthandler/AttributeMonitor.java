@@ -2,6 +2,7 @@ package it.cnr.iit.usagecontrolframework.contexthandler;
 
 import java.util.List;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedTransferQueue;
 import java.util.logging.Logger;
 
@@ -41,6 +42,7 @@ class AttributeMonitor {
         Reject.ifNull( contextHandler, "ContextHandler is null" );
         this.contextHandler = contextHandler;
         changedAttributesQueue = new LinkedTransferQueue<>();
+        executorService = Executors.newSingleThreadExecutor();
     }
 
     private class ContinuousMonitor implements Runnable {

@@ -22,6 +22,7 @@ import java.util.logging.Logger;
 
 import it.cnr.iit.ucs.properties.components.RequestManagerProperties;
 import it.cnr.iit.ucsinterface.message.Message;
+import it.cnr.iit.ucsinterface.message.PURPOSE;
 import it.cnr.iit.ucsinterface.message.endaccess.EndAccessMessage;
 import it.cnr.iit.ucsinterface.message.reevaluation.ReevaluationResponse;
 import it.cnr.iit.ucsinterface.message.startaccess.StartAccessMessage;
@@ -116,16 +117,17 @@ public class RequestManagerLC extends AbstractRequestManager {
             Message message;
             try {
                 while( ( message = getQueueToCH().take() ) != null ) {
-
-                    if( message instanceof TryAccessMessage ) {
-                        getContextHandler().tryAccess( (TryAccessMessage) message );
+                    Message responseMessage = null;
+                    if( message.getPurpose() == PURPOSE.TRYACCESS ) {
+                        responseMessage = getContextHandler().tryAccess( (TryAccessMessage) message );
+                    } else if( message.getPurpose() == PURPOSE.STARTACCESS ) {
+                        responseMessage = getContextHandler().startAccess( (StartAccessMessage) message );
+                    } else if( message.getPurpose() == PURPOSE.ENDACCESS ) {
+                        responseMessage = getContextHandler().endAccess( (EndAccessMessage) message );
+                    } else {
+                        throw new IllegalArgumentException( "Invalid message arrived" );
                     }
-                    if( message instanceof StartAccessMessage ) {
-                        getContextHandler().startAccess( (StartAccessMessage) message );
-                    }
-                    if( message instanceof EndAccessMessage ) {
-                        getContextHandler().endAccess( (EndAccessMessage) message );
-                    }
+                    getPEPInterface().get( responseMessage.getDestination() ).receiveResponse( responseMessage );
                 }
             } catch( Exception e ) {
                 log.severe( e.getMessage() );

@@ -43,17 +43,6 @@ public class RequestManagerCoverageTests extends UCFBaseTests {
         requestManager.sendReevaluation( null );
     }
 
-    @Test( expected = NullPointerException.class )
-    public void requestManagerCoverageTestWithNullMessage()
-            throws JAXBException, URISyntaxException, IOException, NoSuchMethodException, SecurityException,
-            InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
-        RequestManagerLC requestManager = getRequestManager( properties );
-        requestManager.setInterfaces( getMockedContextHandlerInterface(),
-            getMockedPEPMap( "", "" ) );
-
-        testRequestManager( requestManager );
-    }
-
     @Test
     public void requestManagerCoverageTestFull()
             throws JAXBException, URISyntaxException, IOException, NoSuchMethodException, SecurityException,
