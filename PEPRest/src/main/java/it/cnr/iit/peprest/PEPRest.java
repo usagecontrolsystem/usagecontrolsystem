@@ -17,7 +17,6 @@ package it.cnr.iit.peprest;
 
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.logging.Level;
@@ -224,51 +223,6 @@ public class PEPRest implements PEPInterface {
         } catch( MalformedURLException e ) {
             return null;
         }
-    }
-
-    /**
-     * Retrieves the sessionId assigned in the tryAccessResponse
-     * @param messageId the messageId assigned in the tryAccess request
-     * @return an optional containing either the sessionId either nothing
-     */
-    public Optional<String> getSessionIdInTryAccess( String messageId ) {
-        Reject.ifBlank( messageId );
-        Optional<Message> message = getMessageFromId( messageId );
-        if( message.isPresent() ) {
-            TryAccessResponse response = (TryAccessResponse) message.get();
-            return Optional.ofNullable( response.getSessionId() );
-        }
-        return Optional.empty();
-    }
-
-    /**
-     * Retrieves the evaluation from the returned messageId
-     * @param messageId the messageId assigned to that evaluation
-     * @return an optional containing either the required evaluation or an empty one
-     */
-    public Optional<String> getEvaluationResult( String messageId ) {
-        Reject.ifBlank( messageId );
-        Optional<Message> optional = getMessageFromId( messageId );
-        if( optional.isPresent() ) {
-            Message message = optional.get();
-            if( message instanceof EvaluatedResponse ) {
-                String result = ( (EvaluatedResponse) message ).getPDPEvaluation().getResult();
-                return Optional.of( result );
-            }
-        }
-        return Optional.empty();
-    }
-
-    /**
-     * Retrieves a message in the responses map
-     * @param messageId the messageid assigned in the evaluation
-     * @return an optional containing the message or nothing
-     */
-    private Optional<Message> getMessageFromId( String messageId ) {
-        if( !responsesMap.containsKey( messageId ) ) {
-            return Optional.empty();
-        }
-        return Optional.of( responsesMap.get( messageId ) );
     }
 
     public MessageStorageInterface getMessageStorage() {
