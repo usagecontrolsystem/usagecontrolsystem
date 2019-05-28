@@ -14,12 +14,12 @@ import com.tngtech.jgiven.annotation.Hidden;
 import com.tngtech.jgiven.annotation.ProvidedScenarioState;
 
 import it.cnr.iit.ucs.constants.RestOperation;
-import it.cnr.iit.ucsinterface.message.Message;
-import it.cnr.iit.ucsinterface.message.endaccess.EndAccessResponse;
-import it.cnr.iit.ucsinterface.message.reevaluation.ReevaluationResponse;
-import it.cnr.iit.ucsinterface.message.startaccess.StartAccessResponse;
-import it.cnr.iit.ucsinterface.message.tryaccess.TryAccessResponse;
-import it.cnr.iit.ucsinterface.pdp.PDPResponse;
+import it.cnr.iit.ucs.message.Message;
+import it.cnr.iit.ucs.message.endaccess.EndAccessResponse;
+import it.cnr.iit.ucs.message.reevaluation.ReevaluationResponse;
+import it.cnr.iit.ucs.message.startaccess.StartAccessResponse;
+import it.cnr.iit.ucs.message.tryaccess.TryAccessResponse;
+import it.cnr.iit.ucs.pdp.PDPResponse;
 
 import oasis.names.tc.xacml.core.schema.wd_17.DecisionType;
 import oasis.names.tc.xacml.core.schema.wd_17.ResponseType;

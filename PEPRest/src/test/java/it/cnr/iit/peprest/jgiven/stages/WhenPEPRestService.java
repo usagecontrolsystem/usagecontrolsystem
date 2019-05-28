@@ -19,8 +19,8 @@ import it.cnr.iit.peprest.messagetrack.CallerResponse;
 import it.cnr.iit.peprest.messagetrack.MessageStorage;
 import it.cnr.iit.peprest.messagetrack.STATUS;
 import it.cnr.iit.ucs.constants.RestOperation;
-import it.cnr.iit.ucsinterface.message.Message;
-import it.cnr.iit.ucsinterface.message.reevaluation.ReevaluationResponse;
+import it.cnr.iit.ucs.message.Message;
+import it.cnr.iit.ucs.message.reevaluation.ReevaluationResponse;
 
 @JGivenStage
 public class WhenPEPRestService extends Stage<WhenPEPRestService> {

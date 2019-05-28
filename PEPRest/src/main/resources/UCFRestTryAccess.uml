@@ -6,7 +6,7 @@ participant ContextHandlerLC
 participant PIPReader
 participant PolicyAdministrationPoint
 participant PolicyDecisionPoint
-participant SessionManagerDesktop
+participant SessionManager
 participant ObligatonManager
 PEP->UCFRestController : tryAccessRequest
 UCFRestController->ContextHandlerLC : forward message
@@ -25,11 +25,11 @@ activate PolicyDecisionPoint
 PolicyDecisionPoint->PolicyDecisionPoint : evaluate policy
 alt PERMIT
 
-	ContextHandlerLC->SessionManagerDesktop : create session
-	activate SessionManagerDesktop
-	SessionManagerDesktop->SessionManagerDesktop : add sessionID into DB
+	ContextHandlerLC->SessionManager : create session
+	activate SessionManager
+	SessionManager->SessionManager : add sessionID into DB
 end
-deactivate SessionManagerDesktop
+deactivate SessionManager
 deactivate PolicyDecisionPoint
 ContextHandlerLC->ObligatonManager : notify
 activate ObligatonManager

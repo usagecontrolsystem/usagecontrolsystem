@@ -7,7 +7,7 @@ participant PIPReader
 participant RangerServiceFacade
 participant RangerPAPRestApi
 participant RangerPDPPlugin
-participant SessionManagerDesktop
+participant SessionManager
 participant ObligatonManager
 PEP->UCFRestController : tryAccessRequest
 UCFRestController->ContextHandlerLC : forward message
@@ -37,11 +37,11 @@ deactivate RangerPDPPlugin
 RangerServiceFacade --> ContextHandlerLC : access decision
 deactivate RangerServiceFacade
 alt PERMIT
-	ContextHandlerLC->SessionManagerDesktop : create session
-	activate SessionManagerDesktop
-	SessionManagerDesktop->SessionManagerDesktop : add sessionID into DB
+	ContextHandlerLC->SessionManager : create session
+	activate SessionManager
+	SessionManager->SessionManager : add sessionID into DB
 end
-deactivate SessionManagerDesktop
+deactivate SessionManager
 ContextHandlerLC->ObligatonManager : notify
 activate ObligatonManager
 ObligatonManager->ObligatonManager : perform rules
