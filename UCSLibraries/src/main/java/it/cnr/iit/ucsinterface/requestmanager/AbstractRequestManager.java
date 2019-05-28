@@ -23,7 +23,6 @@ import java.util.logging.Logger;
 
 import it.cnr.iit.ucs.properties.components.RequestManagerProperties;
 import it.cnr.iit.ucsinterface.contexthandler.ContextHandlerInterface;
-import it.cnr.iit.ucsinterface.forwardingqueue.ForwardingQueueToRMInterface;
 import it.cnr.iit.ucsinterface.message.Message;
 import it.cnr.iit.ucsinterface.message.attributechange.AttributeChangeMessage;
 import it.cnr.iit.ucsinterface.pep.PEPInterface;
@@ -57,8 +56,6 @@ public abstract class AbstractRequestManager
     // interface provided by the PEP
     private HashMap<String, PEPInterface> pep;
 
-    private ForwardingQueueToRMInterface forwardingQueue;
-
     protected RequestManagerProperties properties;
 
     protected AbstractRequestManager( RequestManagerProperties properties ) {
@@ -78,12 +75,10 @@ public abstract class AbstractRequestManager
      *          the interface provided by the nodes for a distributes system
      */
     public final void setInterfaces( ContextHandlerInterface contextHandler,
-            Map<String, PEPInterface> proxyPEPMap,
-            ForwardingQueueToRMInterface forwardingQueue ) {
-        Reject.ifNull( contextHandler, proxyPEPMap, forwardingQueue );
+            Map<String, PEPInterface> proxyPEPMap ) {
+        Reject.ifNull( contextHandler, proxyPEPMap );
         this.contextHandler = contextHandler;
         pep.putAll( proxyPEPMap );
-        this.forwardingQueue = forwardingQueue;
     }
 
     protected ContextHandlerInterface getContextHandler() {
@@ -106,8 +101,6 @@ public abstract class AbstractRequestManager
         return retrieveRequests;
     }
 
-    protected final ForwardingQueueToRMInterface getForwardingQueue() {
-        return forwardingQueue;
-    }
+    public abstract void startMonitoring();
 
 }

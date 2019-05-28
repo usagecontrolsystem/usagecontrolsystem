@@ -40,19 +40,7 @@ public class RequestManagerCoverageTests extends UCFBaseTests {
             InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
         RequestManagerLC requestManager = getRequestManager( null );
         requestManager.sendMessageToCH( null );
-        requestManager.sendMessageToOutside( null );
-    }
-
-    @Test( expected = NullPointerException.class )
-    public void requestManagerCoverageTestWithNullMessage()
-            throws JAXBException, URISyntaxException, IOException, NoSuchMethodException, SecurityException,
-            InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
-        RequestManagerLC requestManager = getRequestManager( properties );
-        requestManager.setInterfaces( getMockedContextHandlerInterface(),
-            getMockedPEPMap( "", "" ),
-            getMockedForwardingQueueToRMInterface( null ) );
-
-        testRequestManager( requestManager );
+        requestManager.sendReevaluation( null );
     }
 
     @Test
@@ -62,8 +50,7 @@ public class RequestManagerCoverageTests extends UCFBaseTests {
         RequestManagerLC requestManager = getRequestManager( properties );
         Message message = new Message( "a", "a", "a" );
         requestManager.setInterfaces( getMockedContextHandlerInterface(),
-            getMockedPEPMap( "a", "" ),
-            getMockedForwardingQueueToRMInterface( message ) );
+            getMockedPEPMap( "a", "" ) );
 
         testRequestManager( requestManager );
         message.setUCSDestination();
@@ -84,7 +71,6 @@ public class RequestManagerCoverageTests extends UCFBaseTests {
 
         for( Message message : messages ) {
             requestManager.sendMessageToCH( message );
-            requestManager.sendMessageToOutside( message );
         }
     }
 

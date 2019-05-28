@@ -22,13 +22,11 @@ import java.util.logging.Logger;
 
 import it.cnr.iit.ucs.properties.components.RequestManagerProperties;
 import it.cnr.iit.ucsinterface.message.Message;
+import it.cnr.iit.ucsinterface.message.PURPOSE;
 import it.cnr.iit.ucsinterface.message.endaccess.EndAccessMessage;
-import it.cnr.iit.ucsinterface.message.endaccess.EndAccessResponse;
 import it.cnr.iit.ucsinterface.message.reevaluation.ReevaluationResponse;
 import it.cnr.iit.ucsinterface.message.startaccess.StartAccessMessage;
-import it.cnr.iit.ucsinterface.message.startaccess.StartAccessResponse;
 import it.cnr.iit.ucsinterface.message.tryaccess.TryAccessMessage;
-import it.cnr.iit.ucsinterface.message.tryaccess.TryAccessResponse;
 import it.cnr.iit.ucsinterface.requestmanager.AbstractRequestManager;
 import it.cnr.iit.utility.errorhandling.Reject;
 
@@ -65,8 +63,7 @@ public class RequestManagerLC extends AbstractRequestManager {
     */
     private boolean initializeInquirers() {
         try {
-            inquirers = Executors.newFixedThreadPool( 2 );
-            inquirers.submit( new ContextHandlerInquirer() );
+            inquirers = Executors.newFixedThreadPool( 1 );
         } catch( Exception e ) {
             log.severe( "Error initialising the RequestManager inquirers : " + e.getMessage() );
             return false;
@@ -75,24 +72,9 @@ public class RequestManagerLC extends AbstractRequestManager {
     }
 
     @Override
-    public synchronized void sendMessageToOutside( Message message ) {
-        Reject.ifNull( message, "Invalid message" );
+    public synchronized void sendReevaluation( ReevaluationResponse reevaluation ) {
+        Reject.ifNull( reevaluation, "Invalid message" );
 
-        if( message instanceof TryAccessResponse
-                || message instanceof StartAccessResponse
-                || message instanceof EndAccessResponse ) {
-            sendResponse( message );
-        } else if( message instanceof ReevaluationResponse ) {
-            sendReevaluation( (ReevaluationResponse) message );
-        }
-    }
-
-    private void sendResponse( Message message ) {
-        getPEPInterface().get( message.getDestination() )
-            .receiveResponse( message );
-    }
-
-    private void sendReevaluation( ReevaluationResponse reevaluation ) {
         log.info( "Sending on going reevaluation." );
         getPEPInterface().get( ( reevaluation ).getPepId() )
             .onGoingEvaluation( reevaluation );
@@ -134,16 +116,17 @@ public class RequestManagerLC extends AbstractRequestManager {
             Message message;
             try {
                 while( ( message = getQueueToCH().take() ) != null ) {
-
-                    if( message instanceof TryAccessMessage ) {
-                        getContextHandler().tryAccess( (TryAccessMessage) message );
+                    Message responseMessage = null;
+                    if( message.getPurpose() == PURPOSE.TRYACCESS ) {
+                        responseMessage = getContextHandler().tryAccess( (TryAccessMessage) message );
+                    } else if( message.getPurpose() == PURPOSE.STARTACCESS ) {
+                        responseMessage = getContextHandler().startAccess( (StartAccessMessage) message );
+                    } else if( message.getPurpose() == PURPOSE.ENDACCESS ) {
+                        responseMessage = getContextHandler().endAccess( (EndAccessMessage) message );
+                    } else {
+                        throw new IllegalArgumentException( "Invalid message arrived" );
                     }
-                    if( message instanceof StartAccessMessage ) {
-                        getContextHandler().startAccess( (StartAccessMessage) message );
-                    }
-                    if( message instanceof EndAccessMessage ) {
-                        getContextHandler().endAccess( (EndAccessMessage) message );
-                    }
+                    getPEPInterface().get( responseMessage.getDestination() ).receiveResponse( responseMessage );
                 }
             } catch( Exception e ) {
                 log.severe( e.getMessage() );
@@ -151,6 +134,11 @@ public class RequestManagerLC extends AbstractRequestManager {
             }
             return null;
         }
+    }
+
+    @Override
+    public void startMonitoring() {
+        inquirers.submit( new ContextHandlerInquirer() );
     }
 
 }

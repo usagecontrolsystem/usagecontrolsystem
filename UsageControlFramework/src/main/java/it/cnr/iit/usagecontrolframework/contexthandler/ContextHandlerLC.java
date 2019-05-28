@@ -94,7 +94,7 @@ public final class ContextHandlerLC extends AbstractContextHandler {
      *            the TryAccessMessage received
      */
     @Override
-    public void tryAccess( TryAccessMessage message ) {
+    public TryAccessResponse tryAccess( TryAccessMessage message ) {
         Reject.ifNull( message, "TryAccessMessage is null" );
         Reject.ifNull( message.getPolicy(), "TryAccessMessage is policy null" );
         Reject.ifNull( message.getRequest(), "TryAccessMessage is request null" );
@@ -123,8 +123,7 @@ public final class ContextHandlerLC extends AbstractContextHandler {
             createNewSession( message, request, policy, sessionId );
         }
 
-        TryAccessResponse tryAccessResponse = buildTryAccessResponse( message, evaluation, sessionId );
-        getRequestManager().sendMessageToOutside( tryAccessResponse );
+        return buildTryAccessResponse( message, evaluation, sessionId );
     }
 
     private TryAccessResponse buildTryAccessResponse( TryAccessMessage message, PDPEvaluation evaluation, String sessionId ) {
@@ -252,7 +251,8 @@ public final class ContextHandlerLC extends AbstractContextHandler {
      *            the StartAccessMessage
      */
     @Override
-    public void startAccess( StartAccessMessage message ) throws WrongOrderException, SessionManagerException, RevokeException {
+    public StartAccessResponse startAccess( StartAccessMessage message )
+            throws WrongOrderException, SessionManagerException, RevokeException {
         Optional<SessionInterface> optSession = getSessionManager().getSessionForId( message.getSessionId() );
         Reject.ifAbsent( optSession, "StartAccess: no session for id " + message.getSessionId() );
         SessionInterface session = optSession.get(); // NOSONAR
@@ -289,8 +289,7 @@ public final class ContextHandlerLC extends AbstractContextHandler {
             }
         }
 
-        StartAccessResponse response = buildStartAccessResponse( message, evaluation );
-        getRequestManager().sendMessageToOutside( response );
+        return buildStartAccessResponse( message, evaluation );
     }
 
     private StartAccessResponse buildStartAccessResponse( StartAccessMessage message, PDPEvaluation evaluation ) {
@@ -422,7 +421,7 @@ public final class ContextHandlerLC extends AbstractContextHandler {
     }
 
     @Override
-    public void endAccess( EndAccessMessage message ) throws WrongOrderException {
+    public EndAccessResponse endAccess( EndAccessMessage message ) throws WrongOrderException {
         log.log( Level.INFO, "EndAccess begins at {0}", System.currentTimeMillis() );
         Optional<SessionInterface> optSession = getSessionManager().getSessionForId( message.getSessionId() );
         Reject.ifAbsent( optSession, "EndAccess: no session for id " + message.getSessionId() );
@@ -454,8 +453,7 @@ public final class ContextHandlerLC extends AbstractContextHandler {
             log.log( Level.INFO, "EndAccess evaluation with revoke ends at {0}", System.currentTimeMillis() );
         }
 
-        EndAccessResponse response = buildEndAccessResponse( message, evaluation );
-        getRequestManager().sendMessageToOutside( response );
+        return buildEndAccessResponse( message, evaluation );
     }
 
     private EndAccessResponse buildEndAccessResponse( EndAccessMessage message, PDPEvaluation evaluation ) {
@@ -507,7 +505,6 @@ public final class ContextHandlerLC extends AbstractContextHandler {
         return false;
     }
 
-    @Override
     public synchronized void reevaluate( SessionInterface session ) {
         log.log( Level.INFO, "Reevaluation begins at {0}", System.currentTimeMillis() );
         PolicyWrapper policy = PolicyWrapper.build( session.getPolicySet() );
@@ -538,7 +535,7 @@ public final class ContextHandlerLC extends AbstractContextHandler {
 
         evaluation.setSessionId( session.getId() );
         ReevaluationResponse response = buildReevaluationResponse( evaluation, session.getPEPUri() );
-        getRequestManager().sendMessageToOutside( response );
+        getRequestManager().sendReevaluation( response );
         log.log( Level.INFO, "Reevaluation ends changing status at {0}", System.currentTimeMillis() );
     }
 
