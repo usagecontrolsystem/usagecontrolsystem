@@ -30,11 +30,11 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import it.cnr.iit.ucs.exceptions.PIPException;
 import it.cnr.iit.ucs.message.PART;
 import it.cnr.iit.ucs.message.attributechange.AttributeChangeMessage;
 import it.cnr.iit.ucs.obligationmanager.ObligationInterface;
 import it.cnr.iit.ucs.pip.PIPBase;
-import it.cnr.iit.ucs.pip.exception.PIPException;
 import it.cnr.iit.ucs.properties.components.PipProperties;
 import it.cnr.iit.utility.Utility;
 import it.cnr.iit.utility.errorhandling.Reject;

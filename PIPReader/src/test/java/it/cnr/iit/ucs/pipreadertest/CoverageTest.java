@@ -25,7 +25,7 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import it.cnr.iit.ucs.contexthandler.ContextHandlerInterface;
-import it.cnr.iit.ucs.pip.exception.PIPException;
+import it.cnr.iit.ucs.exceptions.PIPException;
 import it.cnr.iit.ucs.pipreader.PIPReader;
 import it.cnr.iit.ucs.properties.UCFPipProperties;
 import it.cnr.iit.utility.JAXBUtility;

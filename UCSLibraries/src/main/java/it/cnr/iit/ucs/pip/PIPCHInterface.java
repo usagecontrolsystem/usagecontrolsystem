@@ -18,7 +18,7 @@ package it.cnr.iit.ucs.pip;
 import java.util.List;
 
 import it.cnr.iit.ucs.contexthandler.ContextHandlerPIPInterface;
-import it.cnr.iit.ucs.pip.exception.PIPException;
+import it.cnr.iit.ucs.exceptions.PIPException;
 import it.cnr.iit.xacmlutilities.Attribute;
 
 import oasis.names.tc.xacml.core.schema.wd_17.RequestType;

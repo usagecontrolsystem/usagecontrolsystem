@@ -37,18 +37,8 @@ import it.cnr.iit.utility.errorhandling.exception.PreconditionException;
 
 /**
  * This is the abstract representation of the context handler object.
- *
- * <p>
  * In order to work properly, a context handler requires the interfaces offered
- * by other components:
- * <ol>
- * <li>SessionManager</li>
- * <li>PolicyInformationPoint</li>
- * <li>PolicyDecisionPoint</li>
- * <li>PolicyAdministrationPoint</li>
- * <li>RequestManager</li>
- * </ol>
- * </p>
+ * by other components.
  *
  * @author Antonio La Marra, Alessandro Rosetti
  *

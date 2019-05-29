@@ -20,13 +20,10 @@ import it.cnr.iit.ucs.message.reevaluation.ReevaluationResponse;
 
 /**
  * Interface offered to the UCS by the PEP.
- *
- * <p>
  * The PEP offers a single function to the UCS, the one that allows the UCS to
  * ask for a revoke of a certain session
- * </p>
  *
- * @author antonio
+ * @author Antonio La Marra
  *
  */
 public interface PEPInterface {
