@@ -52,7 +52,7 @@ class InputStreamBasedPolicyFinderModule extends PolicyFinderModule {
     private Map<URI, AbstractPolicy> policies = new HashMap<>();
 
     // the policy is stored here
-    private String dataUsagePolicy = "";
+    private String policy = "";
 
     private PolicyCombiningAlgorithm combiningAlg;
 
@@ -60,7 +60,7 @@ class InputStreamBasedPolicyFinderModule extends PolicyFinderModule {
 
     public InputStreamBasedPolicyFinderModule( String policy ) {
         try {
-            dataUsagePolicy = policy;
+            this.policy = policy;
 
             documentBuilderFactory = DocumentBuilderFactory.newInstance();
             documentBuilderFactory.setFeature( XMLConstants.FEATURE_SECURE_PROCESSING, true );
@@ -166,27 +166,27 @@ class InputStreamBasedPolicyFinderModule extends PolicyFinderModule {
      * null if any error occurs.
      */
     private AbstractPolicy loadPolicy( PolicyFinder finder ) {
-        AbstractPolicy policy = null;
+        AbstractPolicy abstractPolicy = null;
 
-        try (InputStream stream = new ByteArrayInputStream( dataUsagePolicy.getBytes() )) {
+        try (InputStream stream = new ByteArrayInputStream( policy.getBytes() )) {
             DocumentBuilder db = documentBuilderFactory.newDocumentBuilder();
             Document doc = db.parse( stream );
             Element root = doc.getDocumentElement();
             String name = root.getLocalName();
 
             if( name.equals( "Policy" ) ) {
-                policy = Policy.getInstance( root );
+                abstractPolicy = Policy.getInstance( root );
             } else if( name.equals( "PolicySet" ) ) {
-                policy = PolicySet.getInstance( root, finder );
+                abstractPolicy = PolicySet.getInstance( root, finder );
             }
         } catch( Exception e ) {
             log.warning( "fail to load UXACML policy : " + e.getLocalizedMessage() );
         }
 
-        if( policy != null ) {
-            policies.put( policy.getId(), policy );
+        if( abstractPolicy != null ) {
+            policies.put( abstractPolicy.getId(), abstractPolicy );
         }
 
-        return policy;
+        return abstractPolicy;
     }
 }

@@ -30,11 +30,12 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import it.cnr.iit.ucs.exceptions.PIPException;
 import it.cnr.iit.ucs.message.PART;
 import it.cnr.iit.ucs.message.attributechange.AttributeChangeMessage;
 import it.cnr.iit.ucs.obligationmanager.ObligationInterface;
 import it.cnr.iit.ucs.pip.PIPBase;
-import it.cnr.iit.ucs.pip.exception.PIPException;
+import it.cnr.iit.ucs.pip.PIPKeywords;
 import it.cnr.iit.ucs.properties.components.PipProperties;
 import it.cnr.iit.utility.Utility;
 import it.cnr.iit.utility.errorhandling.Reject;
@@ -92,13 +93,13 @@ public final class PIPReader extends PIPBase {
         try {
             Map<String, String> attributeMap = properties.getAttributes().get( 0 );
             Attribute attribute = new Attribute();
-            attribute.setAttributeId( attributeMap.get( ATTRIBUTE_ID ) );
-            Category category = Category.toCATEGORY( attributeMap.get( CATEGORY ) );
+            attribute.setAttributeId( attributeMap.get( PIPKeywords.ATTRIBUTE_ID ) );
+            Category category = Category.toCATEGORY( attributeMap.get( PIPKeywords.CATEGORY ) );
             attribute.setCategory( category );
-            DataType dataType = DataType.toDATATYPE( attributeMap.get( DATA_TYPE ) );
+            DataType dataType = DataType.toDATATYPE( attributeMap.get( PIPKeywords.DATA_TYPE ) );
             attribute.setDataType( dataType );
             if( attribute.getCategory() != Category.ENVIRONMENT ) {
-                expectedCategory = Category.toCATEGORY( attributeMap.get( EXPECTED_CATEGORY ) );
+                expectedCategory = Category.toCATEGORY( attributeMap.get( PIPKeywords.EXPECTED_CATEGORY ) );
                 Reject.ifNull( expectedCategory, "missing expected category" );
             }
             Reject.ifFalse( attributeMap.containsKey( FILE_PATH ), "missing file path" );
@@ -162,7 +163,6 @@ public final class PIPReader extends PIPBase {
     @Override
     public void subscribe( RequestType request ) throws PIPException {
         Reject.ifNull( request );
-        Reject.ifNull( contextHandler );
 
         Attribute attribute = getAttributes().get( 0 );
         addAdditionalInformation( request, attribute );
@@ -179,7 +179,6 @@ public final class PIPReader extends PIPBase {
     @Override
     public String subscribe( Attribute attribute ) throws PIPException {
         Reject.ifNull( attribute );
-        Reject.ifNull( contextHandler );
 
         String value = retrieve( attribute );
         DataType dataType = attribute.getDataType();
@@ -349,6 +348,6 @@ public final class PIPReader extends PIPBase {
         AttributeChangeMessage attrChangeMessage = new AttributeChangeMessage( PART.PIP.toString(), PART.CH.toString() );
         ArrayList<Attribute> attrList = new ArrayList<>( Arrays.asList( attribute ) );
         attrChangeMessage.setAttributes( attrList );
-        contextHandler.attributeChanged( attrChangeMessage );
+        getContextHandler().attributeChanged( attrChangeMessage );
     }
 }
