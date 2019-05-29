@@ -149,9 +149,9 @@ public class CoverageTest {
         testRetrieve();
         testSubscribe();
         try {
-            Thread.sleep( 11000 ); // NOSONAR
+            Thread.sleep( 4000 ); // NOSONAR
             changeAttributeValue();
-            Thread.sleep( 10000 ); // NOSONAR
+            Thread.sleep( 3000 ); // NOSONAR
             resetAttributeValue();
             testUnsubscribe();
         } catch( InterruptedException e ) {
