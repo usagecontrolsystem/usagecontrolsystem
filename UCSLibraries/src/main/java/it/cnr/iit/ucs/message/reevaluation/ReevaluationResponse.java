@@ -39,30 +39,11 @@ public class ReevaluationResponse extends Message implements EvaluatedResponse {
 
     private String pepId;
 
-    /**
-     * Constructor for the message sent from the context handler to the pep
-     *
-     * @param source
-     *          source of the message
-     * @param destination
-     *          destination of the message
-     */
     public ReevaluationResponse( String source, String destination ) {
         super( source, destination );
         purpose = PURPOSE.REEVALUATION_RESPONSE;
     }
 
-    /**
-     * Constructor for the message sent from the context handler to the pep
-     *
-     * @param source
-     *          source of the message
-     * @param destination
-     *          destination of the message
-     * @param messageId
-     *          the id to identify this message
-     *
-     */
     public ReevaluationResponse( String source, String destination, String messageId ) {
         super( source, destination, messageId );
         purpose = PURPOSE.REEVALUATION_RESPONSE;
@@ -96,4 +77,5 @@ public class ReevaluationResponse extends Message implements EvaluatedResponse {
     public String getPepId() {
         return pepId;
     }
+
 }

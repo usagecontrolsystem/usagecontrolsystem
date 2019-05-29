@@ -21,7 +21,7 @@ import it.cnr.iit.ucs.message.PURPOSE;
 
 /**
  * Structure of the startaccess message.
- * <p> This is the structure of the startaccess message.</p>
+ * This is the structure of the startaccess message.
  *
  * @author Antonio La Marra, Alessandro Rosetti
  *

@@ -41,23 +41,11 @@ public class EndAccessResponse extends Message implements EvaluatedResponse {
         purpose = PURPOSE.ENDACCESS_RESPONSE;
     }
 
-    /**
-     * Constructor for an EndAccessResponse
-     *
-     * @param source      source of the message
-     * @param destination destination of the message
-     * @param messageId          id of the message
-     */
     public EndAccessResponse( String source, String destination, String messageId ) {
         super( source, destination, messageId );
         purpose = PURPOSE.ENDACCESS_RESPONSE;
     }
 
-    /**
-     * Constructor for an EndAccessResponse
-     *
-     * @param messageId the id of the message
-     */
     public EndAccessResponse( String messageId ) {
         super( PART.CH.toString(), PART.PEP.toString(), messageId );
         purpose = PURPOSE.ENDACCESS_RESPONSE;

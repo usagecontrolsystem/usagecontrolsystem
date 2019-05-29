@@ -27,11 +27,8 @@ import it.cnr.iit.xacmlutilities.Attribute;
 
 /**
  * This is the message a PIP sends to a CH and vice versa.
- * <p>
  * We have defined a single class for both local and remote messages, in this
- * way it is a lot easier to pass messages from one source to the other. <br>
- *
- * </p>
+ * way it is a lot easier to pass messages from one source to the other.
  *
  * @author Antonio La Marra, Alessandro Rosetti
  *
