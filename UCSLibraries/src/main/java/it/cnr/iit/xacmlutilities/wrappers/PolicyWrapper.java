@@ -27,6 +27,7 @@ import it.cnr.iit.utility.errorhandling.Reject;
 import it.cnr.iit.xacmlutilities.Attribute;
 import it.cnr.iit.xacmlutilities.Category;
 import it.cnr.iit.xacmlutilities.DataType;
+import it.cnr.iit.xacmlutilities.constants.PolicyTags;
 
 import oasis.names.tc.xacml.core.schema.wd_17.ApplyType;
 import oasis.names.tc.xacml.core.schema.wd_17.AttributeDesignatorType;
@@ -238,7 +239,7 @@ public class PolicyWrapper implements PolicyWrapperInterface {
         List<Object> list = policyType
             .getCombinerParametersOrRuleCombinerParametersOrVariableDefinition();
         for( Object obj : list ) {
-            if( obj.getClass().toString().contains( "RuleType" ) ) {
+            if( obj.getClass().toString().contains( PolicyTags.RULE_TYPE ) ) {
                 RuleType ruleType = (RuleType) obj;
                 // check if the ruletype contians any conditions
                 if( ruleType.getCondition() != null
@@ -247,7 +248,7 @@ public class PolicyWrapper implements PolicyWrapperInterface {
                     for( ConditionType conditionType : conditions ) {
 
                         if( conditionType.getDecisionTime() == null ) {
-                            if( conditionName.equals( "pre" ) ) {
+                            if( conditionName.equals( PolicyTags.CONDITION_PRE ) ) {
                                 RuleType tmpRuleType = copyRuleType( ruleType, conditionType );
                                 clonedPolicy.getCombinerParametersOrRuleCombinerParametersOrVariableDefinition()
                                     .add( tmpRuleType );
@@ -289,7 +290,7 @@ public class PolicyWrapper implements PolicyWrapperInterface {
 
     public static String marshalPolicyType( PolicyType policy ) {
         try {
-            return JAXBUtility.marshalToString( PolicyType.class, policy, "Policy",
+            return JAXBUtility.marshalToString( PolicyType.class, policy, PolicyTags.POLICY,
                 JAXBUtility.SCHEMA );
         } catch( JAXBException e ) {
             log.severe( String.format( MSG_ERR_MARSHAL, e.getMessage() ) );

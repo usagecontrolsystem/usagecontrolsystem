@@ -49,10 +49,8 @@ import org.wso2.balana.finder.PolicyFinderResult;
 import org.wso2.balana.xacml3.MultipleCtxResult;
 
 import it.cnr.iit.ucs.constants.STATUS;
-import it.cnr.iit.ucs.pdp.AbstractPDP;
-import it.cnr.iit.ucs.pdp.PDPEvaluation;
-import it.cnr.iit.ucs.pdp.PDPResponse;
 import it.cnr.iit.ucs.properties.components.PdpProperties;
+import it.cnr.iit.xacmlutilities.constants.PolicyTags;
 import it.cnr.iit.xacmlutilities.wrappers.PolicyWrapper;
 import it.cnr.iit.xacmlutilities.wrappers.RequestWrapper;
 
@@ -61,20 +59,14 @@ import journal.io.api.Journal.WriteType;
 import journal.io.api.JournalBuilder;
 
 /**
- * Implementation of the PDP.
- * <p>
- * The pdp is basically a wrapper around the one offered by BALANA. <br>
+ * This PDP is a wrapper around the one offered by BALANA.
  * In our implementation we are able to evaluate single condition policies only,
  * hence we need the context handler to pass to the PDP only the condition it
  * effectively wants to be evaluated. This because BALANA is designed for XACML
  * that is slightly different than UXACML. In particular, in the former, it is
  * allowed to have only one condition per rule.
- * </p>
- * <p>
- * NOTE: MOST of this code has been implemented by Fabio and Filippo
- * </p>
  *
- * @author Antonio La Marra, Fabio Bindi, Filippo Lauria
+ * @author Antonio La Marra, Fabio Bindi, Filippo Lauria, Alessandro Rosetti
  *
  */
 public final class PolicyDecisionPoint extends AbstractPDP {
@@ -106,28 +98,13 @@ public final class PolicyDecisionPoint extends AbstractPDP {
         }
     }
 
-    private String extractFromStatus( STATUS status ) {
-        switch( status ) {
-            case TRYACCESS:
-                return "pre";
-            case STARTACCESS:
-            case REEVALUATION:
-            case REVOKE:
-                return "ongoing";
-            case ENDACCESS:
-                return "post";
-            default:
-                return null;
-        }
-    }
-
     /**
      * This is the effective evaluation function.
      */
     @Override
     public PDPEvaluation evaluate( RequestWrapper request, PolicyWrapper policy, STATUS status ) {
         try {
-            String conditionName = extractFromStatus( status );
+            String conditionName = PolicyTags.getCondition( status );
             String policyToEvaluate = policy.getPolicy( conditionName ).getPolicy();
 
             ArrayList<ResponseCtx> responses = new ArrayList<>();
@@ -337,11 +314,6 @@ public final class PolicyDecisionPoint extends AbstractPDP {
         return finderResult.getPolicy().evaluate( context );
     }
 
-    /**
-     *
-     * @param policy
-     * @param references
-     */
     private void processPolicyReferences( AbstractPolicy policy,
             Set<PolicyReference> references ) {
         if( policy instanceof Policy ) {

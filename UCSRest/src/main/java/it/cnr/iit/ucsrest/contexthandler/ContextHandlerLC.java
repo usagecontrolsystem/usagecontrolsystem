@@ -45,7 +45,7 @@ import it.cnr.iit.ucs.sessionmanager.SessionInterface;
 import it.cnr.iit.utility.errorhandling.Reject;
 import it.cnr.iit.xacmlutilities.Attribute;
 import it.cnr.iit.xacmlutilities.Category;
-import it.cnr.iit.xacmlutilities.constants.PolicyCondition;
+import it.cnr.iit.xacmlutilities.constants.PolicyTags;
 import it.cnr.iit.xacmlutilities.wrappers.PolicyWrapper;
 import it.cnr.iit.xacmlutilities.wrappers.RequestWrapper;
 
@@ -200,7 +200,7 @@ public final class ContextHandlerLC extends AbstractContextHandler {
         // retrieve the id of ongoing attributes
         SessionAttributesBuilder sessionAttributeBuilder = new SessionAttributesBuilder();
 
-        List<Attribute> onGoingAttributes = policy.getAttributesForCondition( PolicyCondition.STARTACCESS );
+        List<Attribute> onGoingAttributes = policy.getAttributesForCondition( PolicyTags.getCondition( STATUS.STARTACCESS ) );
         sessionAttributeBuilder.setOnGoingAttributesForSubject( getAttributesForCategory( onGoingAttributes, Category.SUBJECT ) )
             .setOnGoingAttributesForAction( getAttributesForCategory( onGoingAttributes, Category.ACTION ) )
             .setOnGoingAttributesForResource( getAttributesForCategory( onGoingAttributes, Category.RESOURCE ) )
@@ -268,7 +268,7 @@ public final class ContextHandlerLC extends AbstractContextHandler {
         RequestWrapper request = RequestWrapper.build( session.getOriginalRequest() );
         RequestWrapper fatRequest = fattenRequest( request, STATUS.STARTACCESS );
 
-        PDPEvaluation evaluation = getPdp().evaluate( fatRequest, policy.getPolicy( PolicyCondition.STARTACCESS ) );
+        PDPEvaluation evaluation = getPdp().evaluate( fatRequest, policy, STATUS.STARTACCESS );
         Reject.ifNull( evaluation );
         log.log( Level.INFO, "StartAccess evaluated at {0} pdp response : {1}",
             new Object[] { System.currentTimeMillis(), evaluation.getResult() } );
@@ -281,7 +281,7 @@ public final class ContextHandlerLC extends AbstractContextHandler {
                 log.log( Level.SEVERE, "StartAccess error, sessionId {0} status update failed", message.getSessionId() );
             }
         } else {
-            List<Attribute> attributes = policy.getAttributesForCondition( PolicyCondition.STARTACCESS );
+            List<Attribute> attributes = policy.getAttributesForCondition( PolicyTags.getCondition( STATUS.STARTACCESS ) );
             if( revoke( session, attributes ) && !getSessionManager().deleteEntry( message.getSessionId() ) ) {
                 log.log( Level.SEVERE, "StartAccess error, sessionId {0} deletion failed",
                     message.getSessionId() );
@@ -439,7 +439,7 @@ public final class ContextHandlerLC extends AbstractContextHandler {
         RequestWrapper request = RequestWrapper.build( session.getOriginalRequest() );
         RequestWrapper fatRequest = fattenRequest( request, STATUS.ENDACCESS );
 
-        PDPEvaluation evaluation = getPdp().evaluate( fatRequest, policy.getPolicy( PolicyCondition.ENDACCESS ) );
+        PDPEvaluation evaluation = getPdp().evaluate( fatRequest, policy, STATUS.ENDACCESS );
         Reject.ifNull( evaluation );
         log.log( Level.INFO, "EndAccess evaluated at {0} pdp response : {1}",
             new Object[] { System.currentTimeMillis(), evaluation.getResult() } );
@@ -448,7 +448,7 @@ public final class ContextHandlerLC extends AbstractContextHandler {
         getObligationManager().translateObligations( evaluation, ContextHandlerConstants.END_STATUS );
 
         // access must be revoked
-        if( revoke( session, policy.getAttributesForCondition( PolicyCondition.ENDACCESS ) ) ) {
+        if( revoke( session, policy.getAttributesForCondition( PolicyTags.getCondition( STATUS.ENDACCESS ) ) ) ) {
             log.log( Level.INFO, "EndAccess evaluation with revoke ends at {0}", System.currentTimeMillis() );
         }
 
@@ -510,7 +510,7 @@ public final class ContextHandlerLC extends AbstractContextHandler {
         RequestWrapper request = RequestWrapper.build( session.getOriginalRequest() );
         RequestWrapper fatRequest = fattenRequest( request, STATUS.STARTACCESS );
 
-        PDPEvaluation evaluation = getPdp().evaluate( fatRequest, policy.getPolicy( PolicyCondition.STARTACCESS ) );
+        PDPEvaluation evaluation = getPdp().evaluate( fatRequest, policy, STATUS.STARTACCESS );
         Reject.ifNull( evaluation );
         evaluation.setSessionId( session.getId() );
         getObligationManager().translateObligations( evaluation, ContextHandlerConstants.START_STATUS );

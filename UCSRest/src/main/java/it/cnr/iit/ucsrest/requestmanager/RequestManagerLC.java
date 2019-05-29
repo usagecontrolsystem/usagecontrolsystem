@@ -100,7 +100,7 @@ public class RequestManagerLC extends AbstractRequestManager {
     }
 
     /**
-     * The context handler inquirers basically perform an infinite loop in order
+     * The context handler inquirers perform an infinite loop in order
      * to retrieve the messages coming to the request manager and sends those
      * requests to the context handler which will be in charge of answer to the
      * requests
