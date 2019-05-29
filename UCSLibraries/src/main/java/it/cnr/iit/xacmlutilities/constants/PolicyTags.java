@@ -28,14 +28,14 @@ public final class PolicyTags {
     private PolicyTags() {}
 
     public static final String ATTRIBUTE_ID = "AttributeId";
+    public static final String ATTRIBUTE_DESIGNATOR = "AttributeDesignator";
+    public static final String ATTRIBUTE_VALUE = "AttributeValue";
     public static final String RESOURCE = "resource";
     public static final String ACTION = "action";
     public static final String SUBJECT = "subject";
     public static final String ENVIRONMENT = "environment";
     public static final String CATEGORY = "Category";
     public static final String DATA_TYPE = "DataType";
-    public static final String ATTRIBUTE_DESIGNATOR = "AttributeDesignator";
-    public static final String DECISION_TIME = "DecisionTime";
     public static final String EFFECT = "Effect";
     public static final String POLICY = "Policy";
     public static final String POLICY_ID = "PolicyId";
@@ -50,6 +50,7 @@ public final class PolicyTags {
     public static final String CONDITION_PRE = "pre";
     public static final String CONDITION_POST = "post";
     public static final String CONDITION_ONGOING = "ongoing";
+    public static final String DECISION_TIME = "DecisionTime";
     public static final String VERSION = "Version";
 
     public static String getCondition( STATUS status ) {

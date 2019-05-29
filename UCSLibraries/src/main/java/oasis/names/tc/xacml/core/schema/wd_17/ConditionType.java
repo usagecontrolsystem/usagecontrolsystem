@@ -68,7 +68,7 @@ public class ConditionType {
 
     /**
      * Recupera il valore della proprietà expression.
-     * 
+     *
      * @return possible object is {@link JAXBElement
      *         }{@code <}{@link AttributeSelectorType }{@code >}
      *         {@link JAXBElement }{@code <}{@link AttributeDesignatorType
@@ -78,7 +78,7 @@ public class ConditionType {
      *         {@link JAXBElement }{@code <}{@link AttributeValueType }{@code >}
      *         {@link JAXBElement }{@code <}{@link ApplyType }{@code >}
      *         {@link JAXBElement }{@code <}{@link ExpressionType }{@code >}
-     * 
+     *
      */
     public JAXBElement<?> getExpression() { // NOSONAR
         return expression;
@@ -86,7 +86,7 @@ public class ConditionType {
 
     /**
      * Imposta il valore della proprietà expression.
-     * 
+     *
      * @param value
      *          allowed object is {@link JAXBElement
      *          }{@code <}{@link AttributeSelectorType }{@code >}
@@ -97,7 +97,7 @@ public class ConditionType {
      *          {@link JAXBElement }{@code <}{@link AttributeValueType }{@code >}
      *          {@link JAXBElement }{@code <}{@link ApplyType }{@code >}
      *          {@link JAXBElement }{@code <}{@link ExpressionType }{@code >}
-     * 
+     *
      */
     public void setExpression( JAXBElement<?> value ) {
         this.expression = value;
@@ -105,9 +105,9 @@ public class ConditionType {
 
     /**
      * Recupera il valore della proprietà decisionTime.
-     * 
+     *
      * @return possible object is {@link String }
-     * 
+     *
      */
     public String getDecisionTime() {
         return decisionTime;
@@ -115,15 +115,12 @@ public class ConditionType {
 
     /**
      * Imposta il valore della proprietà decisionTime.
-     * 
+     *
      * @param value
      *          allowed object is {@link String }
-     * 
+     *
      */
     public void setDecisionTime( String value ) {
-        if( value == null ) {
-            return;
-        }
         this.decisionTime = value;
     }
 
