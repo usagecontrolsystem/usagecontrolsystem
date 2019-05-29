@@ -48,7 +48,7 @@ import it.cnr.iit.ucs.message.tryaccess.TryAccessResponse;
  * attribute.</li>
  * <li>messageForPIP: this function is triggered from the RequestManager
  * whenever there is a message that asks something from a PIP. The
- * ContextHandler is in fact the only entity in hcarge of allowing the various
+ * ContextHandler is in fact the only entity in charge of allowing the various
  * PIPs to communicate with the external world</li>
  * </ol>
  * </p>
