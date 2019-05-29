@@ -48,8 +48,8 @@ public interface PAPInterface {
      * Add a new policy to the table
      *
      * @param policy
-     *          the plicy to be added
-     * @return true if everything goes fina, false otherwise
+     *          the policy to be added
+     * @return true if everything goes fine, false otherwise
      */
     public boolean addPolicy( String policy );
 

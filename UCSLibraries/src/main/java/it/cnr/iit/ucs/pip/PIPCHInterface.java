@@ -136,6 +136,8 @@ public interface PIPCHInterface extends PIPBaseInterface {
      */
     public void setContextHandler( ContextHandlerPIPInterface contextHandler );
 
+    public ContextHandlerPIPInterface getContextHandler();
+
     @Override
     public List<String> getAttributeIds();
 

@@ -31,7 +31,7 @@ import it.cnr.iit.utility.errorhandling.Reject;
  * correctly created or not.
  * </p>
  *
- * @author antonio
+ * @author Antonio La Marra
  *
  */
 public abstract class AbstractPDP implements PDPInterface {
