@@ -113,7 +113,7 @@
 		</dependency>
 
 		<dependency>
-			<groupId>it.cnr.iit.ucslibraries</groupId>
+			<groupId>it.cnr.iit.ucs</groupId>
 			<artifactId>UCSLibraries</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
 		</dependency>

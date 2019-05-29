@@ -24,8 +24,8 @@
 		<module>PIPReader</module>
 		<module>PolicyAdministrationPoint</module>
 		<module>PolicyDecisionPoint</module>
-		<module>SessionManagerDesktop</module>
-		<module>UsageControlFramework</module>
+		<module>SessionManager</module>
+		<module>UCSRest</module>
 		<module>PEPRest</module>
 	</modules>
 

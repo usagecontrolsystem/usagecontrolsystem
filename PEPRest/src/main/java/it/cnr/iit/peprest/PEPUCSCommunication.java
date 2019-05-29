@@ -11,10 +11,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import it.cnr.iit.ucs.constants.OperationNames;
-import it.cnr.iit.ucsinterface.message.endaccess.EndAccessResponse;
-import it.cnr.iit.ucsinterface.message.reevaluation.ReevaluationResponse;
-import it.cnr.iit.ucsinterface.message.startaccess.StartAccessResponse;
-import it.cnr.iit.ucsinterface.message.tryaccess.TryAccessResponse;
+import it.cnr.iit.ucs.message.endaccess.EndAccessResponse;
+import it.cnr.iit.ucs.message.reevaluation.ReevaluationResponse;
+import it.cnr.iit.ucs.message.startaccess.StartAccessResponse;
+import it.cnr.iit.ucs.message.tryaccess.TryAccessResponse;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiOperation;

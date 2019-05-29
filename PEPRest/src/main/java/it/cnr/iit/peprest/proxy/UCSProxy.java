@@ -23,8 +23,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
 import it.cnr.iit.peprest.configuration.UCSProxyProperties;
-import it.cnr.iit.ucsinterface.message.Message;
-import it.cnr.iit.ucsinterface.message.PURPOSE;
+import it.cnr.iit.ucs.message.Message;
+import it.cnr.iit.ucs.message.PURPOSE;
 import it.cnr.iit.utility.RESTUtils;
 
 @Component
