@@ -50,7 +50,7 @@ import org.wso2.balana.xacml3.MultipleCtxResult;
 
 import it.cnr.iit.ucs.constants.STATUS;
 import it.cnr.iit.ucs.properties.components.PdpProperties;
-import it.cnr.iit.utility.Utility;
+import it.cnr.iit.utility.FileUtility;
 import it.cnr.iit.xacmlutilities.constants.PolicyTags;
 import it.cnr.iit.xacmlutilities.wrappers.PolicyWrapper;
 import it.cnr.iit.xacmlutilities.wrappers.RequestWrapper;
@@ -73,9 +73,6 @@ import journal.io.api.JournalBuilder;
 public final class PolicyDecisionPoint extends AbstractPDP {
 
     private static Logger log = Logger.getLogger( PolicyDecisionPoint.class.getName() );
-
-    private static final String MSG_ERR_EVAL_RULES = "Error evaluating single rules : {0}";
-    private static final String MSG_ERR_MARSHAL_POLICY = "Error marshalling to string : {0}";
 
     private PDPConfig pdpConfig;
     private Journal journal = null;
@@ -148,8 +145,7 @@ public final class PolicyDecisionPoint extends AbstractPDP {
 
         try {
             // TODO UCS-36 NOSONAR
-            requestCtx = RequestCtxFactory.getFactory()
-                .getRequestCtx( request.replaceAll( ">\\s+<", "><" ) );
+            requestCtx = RequestCtxFactory.getFactory().getRequestCtx( request.replaceAll( ">\\s+<", "><" ) );
             responseCtx = evaluate( requestCtx, policyFinder );
         } catch( ParsingException e ) {
             String error = "Invalid request  : " + e.getMessage();
@@ -319,7 +315,7 @@ public final class PolicyDecisionPoint extends AbstractPDP {
     private void buildJournal( String journalDir ) {
         try {
             File file = new File( journalDir ); // TODO UCS-33 NOSONAR
-            Utility.createPathIfNotExists( file );
+            FileUtility.createPathIfNotExists( file );
             journal = JournalBuilder.of( file ).open();
         } catch( Exception e ) {
             throw new IllegalArgumentException( e.getMessage() );

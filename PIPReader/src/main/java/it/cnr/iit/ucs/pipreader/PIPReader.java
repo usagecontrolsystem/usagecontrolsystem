@@ -37,7 +37,7 @@ import it.cnr.iit.ucs.obligationmanager.ObligationInterface;
 import it.cnr.iit.ucs.pip.PIPBase;
 import it.cnr.iit.ucs.pip.PIPKeywords;
 import it.cnr.iit.ucs.properties.components.PipProperties;
-import it.cnr.iit.utility.Utility;
+import it.cnr.iit.utility.FileUtility;
 import it.cnr.iit.utility.errorhandling.Reject;
 import it.cnr.iit.xacmlutilities.Attribute;
 import it.cnr.iit.xacmlutilities.Category;
@@ -276,7 +276,7 @@ public final class PIPReader extends PIPBase {
     }
 
     private final void setFilePath( String filePath ) {
-        String absFilePath = Utility.findFileAbsPathUsingClassLoader( filePath );
+        String absFilePath = FileUtility.findFileAbsPathUsingClassLoader( filePath );
         if( absFilePath != null ) {
             this.filePath = absFilePath;
         } else {

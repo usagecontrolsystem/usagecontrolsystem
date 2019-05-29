@@ -26,7 +26,7 @@ import it.cnr.iit.ucs.properties.UCSProperties;
 import it.cnr.iit.ucsrest.contexthandler.ContextHandlerLC;
 import it.cnr.iit.ucsrest.coverage.properties.TestProperties;
 import it.cnr.iit.ucsrest.properties.UCSRestProperties;
-import it.cnr.iit.utility.Utility;
+import it.cnr.iit.utility.FileUtility;
 import it.cnr.iit.utility.errorhandling.exception.PreconditionException;
 import it.cnr.iit.xacmlutilities.Category;
 import it.cnr.iit.xacmlutilities.DataType;
@@ -51,8 +51,8 @@ public class ContextHandlerCoverageTests extends UCSRestBaseTests {
     private void init() throws URISyntaxException, IOException, JAXBException {
         log.info( "Init tests " );
         Thread.interrupted(); // Avoid a nasty exception
-        policy = Utility.readFileAsString( testProperties.getPolicyFile() );
-        request = Utility.readFileAsString( testProperties.getRequestFile() );
+        policy = FileUtility.readFileAsString( testProperties.getPolicyFile() );
+        request = FileUtility.readFileAsString( testProperties.getRequestFile() );
     }
 
     @Test( expected = PreconditionException.class )

@@ -16,6 +16,7 @@
 package it.cnr.iit.utility;
 
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URL;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
@@ -54,6 +55,14 @@ public final class RESTUtils {
 
     public static Optional<ResponseEntity<Void>> post( String baseUri, String api, Object obj ) {
         return post( baseUri, api, obj, Void.class );
+    }
+
+    public static Optional<URI> parseUri( String str ) {
+        try {
+            URI uri = new URI( str );
+            return Optional.of( uri );
+        } catch( Exception e ) {}
+        return Optional.empty();
     }
 
     public static Optional<String> joinUrl( String base, String api ) {

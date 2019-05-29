@@ -30,7 +30,6 @@ import it.cnr.iit.ucs.message.endaccess.EndAccessMessage;
 import it.cnr.iit.ucs.message.startaccess.StartAccessMessage;
 import it.cnr.iit.ucs.message.tryaccess.TryAccessMessage;
 import it.cnr.iit.ucs.ucs.UCSInterface;
-import it.cnr.iit.utility.LogProfiler;
 import it.cnr.iit.utility.errorhandling.Reject;
 
 import io.swagger.annotations.ApiModel;
@@ -65,9 +64,7 @@ public class UCSRestController {
     // TODO UCS-34 NOSONAR
     public void sendMessage( @RequestBody( ) TryAccessMessage message ) {
         Reject.ifNull( message );
-        LogProfiler.getInstance().log( "REST CALLED" );
         ucs.tryAccess( message );
-
     }
 
     @ApiOperation( httpMethod = "POST", value = "Receives request from PEP for startaccess operation" )
