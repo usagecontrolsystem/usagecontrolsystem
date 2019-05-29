@@ -15,7 +15,7 @@
  ******************************************************************************/
 package it.cnr.iit.ucs.contexthandler;
 
-import it.cnr.iit.ucs.exceptions.UsageControlStatusException;
+import it.cnr.iit.ucs.exceptions.StatusException;
 import it.cnr.iit.ucs.message.endaccess.EndAccessMessage;
 import it.cnr.iit.ucs.message.endaccess.EndAccessResponse;
 import it.cnr.iit.ucs.message.startaccess.StartAccessMessage;
@@ -94,8 +94,8 @@ public interface ContextHandlerInterface extends ContextHandlerPIPInterface {
      * @param message
      *          the message received by the RequestManager
      * @return a message stating the response of the PDP to the request
-     * @throws UsageControlStatusException
+     * @throws StatusException
      */
-    public EndAccessResponse endAccess( EndAccessMessage message ) throws UsageControlStatusException;
+    public EndAccessResponse endAccess( EndAccessMessage message ) throws StatusException;
 
 }

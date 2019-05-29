@@ -15,10 +15,10 @@
  ******************************************************************************/
 package it.cnr.iit.ucs.exceptions;
 
-public class UsageControlStatusException extends Exception {
+public class StatusException extends Exception {
     private static final long serialVersionUID = 1L;
 
-    public UsageControlStatusException( String string ) {
+    public StatusException( String string ) {
         super( string );
     }
 }

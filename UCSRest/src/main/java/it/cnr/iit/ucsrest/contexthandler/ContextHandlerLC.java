@@ -28,7 +28,7 @@ import it.cnr.iit.ucs.constants.STATUS;
 import it.cnr.iit.ucs.contexthandler.AbstractContextHandler;
 import it.cnr.iit.ucs.contexthandler.ContextHandlerConstants;
 import it.cnr.iit.ucs.exceptions.SessionManagerException;
-import it.cnr.iit.ucs.exceptions.UsageControlStatusException;
+import it.cnr.iit.ucs.exceptions.StatusException;
 import it.cnr.iit.ucs.message.attributechange.AttributeChangeMessage;
 import it.cnr.iit.ucs.message.endaccess.EndAccessMessage;
 import it.cnr.iit.ucs.message.endaccess.EndAccessResponse;
@@ -251,7 +251,7 @@ public final class ContextHandlerLC extends AbstractContextHandler {
      */
     @Override
     public StartAccessResponse startAccess( StartAccessMessage message )
-            throws UsageControlStatusException, SessionManagerException {
+            throws StatusException, SessionManagerException {
         Optional<SessionInterface> optSession = getSessionManager().getSessionForId( message.getSessionId() );
         Reject.ifAbsent( optSession, "StartAccess: no session for id " + message.getSessionId() );
         SessionInterface session = optSession.get(); // NOSONAR
@@ -261,7 +261,7 @@ public final class ContextHandlerLC extends AbstractContextHandler {
         // Check if the session has the correct status
         if( !session.isStatus( ContextHandlerConstants.TRY_STATUS ) ) {
             log.log( Level.SEVERE, "StartAccess: wrong status for session {0}", message.getSessionId() );
-            throw new UsageControlStatusException( "StartAccess: tryaccess must be performed yet for session " + message.getSessionId() );
+            throw new StatusException( "StartAccess: tryaccess must be performed yet for session " + message.getSessionId() );
         }
 
         PolicyWrapper policy = PolicyWrapper.build( session.getPolicySet() );
@@ -420,7 +420,7 @@ public final class ContextHandlerLC extends AbstractContextHandler {
     }
 
     @Override
-    public EndAccessResponse endAccess( EndAccessMessage message ) throws UsageControlStatusException {
+    public EndAccessResponse endAccess( EndAccessMessage message ) throws StatusException {
         log.log( Level.INFO, "EndAccess begins at {0}", System.currentTimeMillis() );
         Optional<SessionInterface> optSession = getSessionManager().getSessionForId( message.getSessionId() );
         Reject.ifAbsent( optSession, "EndAccess: no session for id " + message.getSessionId() );
@@ -430,7 +430,7 @@ public final class ContextHandlerLC extends AbstractContextHandler {
         if( !( session.isStatus( ContextHandlerConstants.START_STATUS )
                 || session.isStatus( ContextHandlerConstants.REVOKE_STATUS ) ) ) {
             log.log( Level.INFO, "EndAccess: wrong status for session {0}", message.getSessionId() );
-            throw new UsageControlStatusException( "EndAccess: wrong status for session " + message.getSessionId() );
+            throw new StatusException( "EndAccess: wrong status for session " + message.getSessionId() );
         }
 
         log.log( Level.INFO, "EndAccess evaluation starts at {0}", System.currentTimeMillis() );

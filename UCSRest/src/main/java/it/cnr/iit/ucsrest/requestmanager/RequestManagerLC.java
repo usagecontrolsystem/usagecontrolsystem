@@ -82,10 +82,8 @@ public class RequestManagerLC extends AbstractRequestManager {
 
     /**
      * Handles the case of a message received from outside
-     * <p>
      * Once a message coming from outside is received from the request manager, it
      * puts it in the priority queue of messages
-     * </p>
      */
     @Override
     public synchronized Message sendMessageToCH( Message message ) {
