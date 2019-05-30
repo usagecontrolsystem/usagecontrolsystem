@@ -6,8 +6,6 @@ import static it.cnr.iit.ucs.constants.RestOperation.START_ACCESS;
 import static it.cnr.iit.ucs.constants.RestOperation.START_ACCESS_RESPONSE;
 import static it.cnr.iit.ucs.constants.RestOperation.TRY_ACCESS;
 import static it.cnr.iit.ucs.constants.RestOperation.TRY_ACCESS_RESPONSE;
-import static it.cnr.iit.ucs.contexthandler.ContextHandlerConstants.START_STATUS;
-import static it.cnr.iit.ucs.contexthandler.ContextHandlerConstants.TRY_STATUS;
 
 import org.apache.http.HttpStatus;
 import org.junit.Test;
@@ -17,7 +15,8 @@ import org.springframework.mock.web.MockServletContext;
 import com.tngtech.jgiven.annotation.ScenarioStage;
 import com.tngtech.jgiven.integration.spring.SpringRuleScenarioTest;
 
-import it.cnr.iit.ucs.constants.OperationNames;
+import it.cnr.iit.ucs.constants.OperationName;
+import it.cnr.iit.ucs.constants.STATUS;
 import it.cnr.iit.ucsrest.rest.jgiven.stages.GivenMessage;
 import it.cnr.iit.ucsrest.rest.jgiven.stages.GivenPEPRestSimulator;
 import it.cnr.iit.ucsrest.rest.jgiven.stages.ThenMessage;
@@ -38,14 +37,14 @@ public class UCSRestScenarioIntegrationTest
     public void a_tryAccess_request_sends_PEP_tryAccessResponse_containg_Permit_decision() {
         given().a_$_request( TRY_ACCESS );
         givenPEPRestSimulator
-            .and().a_mocked_PEPRest_listening_on_$( OperationNames.TRYACCESSRESPONSE_REST )
+            .and().a_mocked_PEPRest_listening_on_$( OperationName.TRYACCESSRESPONSE_REST )
             .with().a_success_response_status_code_of_$( HttpStatus.SC_OK );
 
         when().the_UCF_is_executed_for_$( TRY_ACCESS.getOperationUri() );
 
-        then().an_entry_for_session_with_status_$_is_persisted( TRY_STATUS )
+        then().an_entry_for_session_with_status_$_is_persisted( STATUS.TRY.name() )
             .and().the_asynch_post_request_for_$_with_decision_$_was_received_by_PEPRest(
-                OperationNames.TRYACCESSRESPONSE_REST, DECISION_PERMIT );
+                OperationName.TRYACCESSRESPONSE_REST, DECISION_PERMIT );
     }
 
     @Test
@@ -60,7 +59,7 @@ public class UCSRestScenarioIntegrationTest
 
         when().the_UCF_is_executed_for_$( START_ACCESS.getOperationUri() );
 
-        then().the_session_entry_status_is_updated_to_$( START_STATUS )
+        then().the_session_entry_status_is_updated_to_$( STATUS.START.name() )
             .and().the_asynch_post_request_for_$_with_decision_$_was_received_by_PEPRest(
                 START_ACCESS_RESPONSE.getOperationUri(), DECISION_PERMIT );
     }
@@ -92,7 +91,7 @@ public class UCSRestScenarioIntegrationTest
 
         when().the_UCF_is_executed_for_$( TRY_ACCESS.getOperationUri() );
 
-        then().no_entry_for_session_with_status_$_is_persisted( TRY_STATUS )
+        then().no_entry_for_session_with_status_$_is_persisted( STATUS.TRY.name() )
             .and().the_asynch_post_request_for_$_with_decision_$_was_received_by_PEPRest(
                 TRY_ACCESS_RESPONSE.getOperationUri(), DecisionType.DENY.toValue() );
     }

@@ -49,9 +49,6 @@ import org.wso2.balana.finder.PolicyFinderResult;
 import org.wso2.balana.xacml3.MultipleCtxResult;
 
 import it.cnr.iit.ucs.constants.STATUS;
-import it.cnr.iit.ucs.pdp.AbstractPDP;
-import it.cnr.iit.ucs.pdp.PDPEvaluation;
-import it.cnr.iit.ucs.pdp.PDPResponse;
 import it.cnr.iit.ucs.properties.components.PdpProperties;
 import it.cnr.iit.xacmlutilities.wrappers.PolicyWrapper;
 import it.cnr.iit.xacmlutilities.wrappers.RequestWrapper;
@@ -108,13 +105,12 @@ public final class PolicyDecisionPoint extends AbstractPDP {
 
     private String extractFromStatus( STATUS status ) {
         switch( status ) {
-            case TRYACCESS:
+            case TRY:
                 return "pre";
-            case STARTACCESS:
-            case REEVALUATION:
+            case START:
             case REVOKE:
                 return "ongoing";
-            case ENDACCESS:
+            case END:
                 return "post";
             default:
                 return null;

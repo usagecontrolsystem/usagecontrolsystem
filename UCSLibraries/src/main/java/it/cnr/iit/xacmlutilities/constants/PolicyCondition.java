@@ -11,11 +11,11 @@ public class PolicyCondition {
 
     public static String fromStatus( STATUS status ) {
         switch( status ) {
-            case TRYACCESS:
+            case TRY:
                 return PolicyCondition.TRYACCESS;
-            case STARTACCESS:
+            case START:
                 return PolicyCondition.STARTACCESS;
-            case ENDACCESS:
+            case END:
                 return PolicyCondition.ENDACCESS;
             default:
                 return "";

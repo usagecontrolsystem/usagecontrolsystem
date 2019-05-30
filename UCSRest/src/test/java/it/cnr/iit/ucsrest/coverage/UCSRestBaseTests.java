@@ -22,9 +22,8 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import it.cnr.iit.ucs.constants.OperationNames;
+import it.cnr.iit.ucs.constants.OperationName;
 import it.cnr.iit.ucs.constants.STATUS;
-import it.cnr.iit.ucs.contexthandler.ContextHandlerConstants;
 import it.cnr.iit.ucs.contexthandler.ContextHandlerInterface;
 import it.cnr.iit.ucs.forwardingqueue.ForwardingQueueToCHInterface;
 import it.cnr.iit.ucs.forwardingqueue.ForwardingQueueToRMInterface;
@@ -92,7 +91,7 @@ public class UCSRestBaseTests {
         contextHandler.setPdp( getMockedPDP( getMockedPDPEvaluation( DecisionType.PERMIT ) ) );
         contextHandler.setPap( getMockedPAP( null ) );
         contextHandler.setRequestManager( getMockedRequestManagerToChInterface() );
-        contextHandler.setSessionManager( getSessionManagerForStatus( "", "", "", ContextHandlerConstants.TRY_STATUS ) );
+        contextHandler.setSessionManager( getSessionManagerForStatus( "", "", "", STATUS.TRY.name() ) );
         contextHandler.setObligationManager( getMockedObligationManager() );
     }
 
@@ -102,7 +101,7 @@ public class UCSRestBaseTests {
         ContextHandlerLC contextHandler = getContextHandler( prop );
         initContextHandler( contextHandler );
         contextHandler.setSessionManager(
-            getSessionManagerForStatus( "a", policy, request, ContextHandlerConstants.TRY_STATUS ) );
+            getSessionManagerForStatus( "a", policy, request, STATUS.TRY.name() ) );
 
         contextHandler.verify();
         /* must be called after initialisation */
@@ -177,9 +176,9 @@ public class UCSRestBaseTests {
         return forwardingQueueToCHInterface;
     }
 
-    protected OperationNames getMockedNodeInterface() {
-        OperationNames nodeInterface = Mockito
-            .mock( OperationNames.class );
+    protected OperationName getMockedNodeInterface() {
+        OperationName nodeInterface = Mockito
+            .mock( OperationName.class );
 
         return nodeInterface;
     }

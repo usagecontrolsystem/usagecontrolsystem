@@ -100,19 +100,19 @@ public class PDPTest {
         assertThat( testEvaluation( requestIndeterminate, policy ) ).contains( "indeterminate" );
         assertThat( testEvaluation( requestPermit, policy ) ).contains( "permit" );
         assertThat( testEvaluation( requestNotApplicable, PolicyWrapper.build( policyNotApplicable ) ) ).contains( "notapplicable" );
-        assertThat( testEvaluation( requestDeny, policy, STATUS.TRYACCESS ) ).contains( "deny" );
-        assertThat( testEvaluation( requestPermit, policy, STATUS.TRYACCESS ) ).contains( "permit" );
-        assertThat( testEvaluation( requestIndeterminate, policy, STATUS.TRYACCESS ) ).contains( "indeterminate" );
-        assertThat( testEvaluation( requestDeny, policy, STATUS.STARTACCESS ) ).contains( "deny" );
-        assertThat( testEvaluation( requestPermit, policy, STATUS.STARTACCESS ) ).contains( "permit" );
-        assertThat( testEvaluation( requestIndeterminate, policy, STATUS.STARTACCESS ) ).contains( "indeterminate" );
-        assertThat( testEvaluation( requestDeny, policy, STATUS.ENDACCESS ) ).contains( "deny" );
-        assertThat( testEvaluation( requestPermit, policy, STATUS.ENDACCESS ) ).contains( "permit" );
-        assertThat( testEvaluation( requestIndeterminate, policy, STATUS.ENDACCESS ) ).contains( "indeterminate" );
-        assertTrue( testEvaluation( requestIndeterminate, null, STATUS.ENDACCESS ) == null );
-        assertTrue( testEvaluation( null, policy, STATUS.ENDACCESS ) == null );
+        assertThat( testEvaluation( requestDeny, policy, STATUS.TRY ) ).contains( "deny" );
+        assertThat( testEvaluation( requestPermit, policy, STATUS.TRY ) ).contains( "permit" );
+        assertThat( testEvaluation( requestIndeterminate, policy, STATUS.TRY ) ).contains( "indeterminate" );
+        assertThat( testEvaluation( requestDeny, policy, STATUS.START ) ).contains( "deny" );
+        assertThat( testEvaluation( requestPermit, policy, STATUS.START ) ).contains( "permit" );
+        assertThat( testEvaluation( requestIndeterminate, policy, STATUS.START ) ).contains( "indeterminate" );
+        assertThat( testEvaluation( requestDeny, policy, STATUS.END ) ).contains( "deny" );
+        assertThat( testEvaluation( requestPermit, policy, STATUS.END ) ).contains( "permit" );
+        assertThat( testEvaluation( requestIndeterminate, policy, STATUS.END ) ).contains( "indeterminate" );
+        assertTrue( testEvaluation( requestIndeterminate, null, STATUS.END ) == null );
+        assertTrue( testEvaluation( null, policy, STATUS.END ) == null );
         PolicyWrapper policyHelperDup = PolicyWrapper.build( policyDup );
-        assertThat( testEvaluation( requestPermit, policyHelperDup, STATUS.TRYACCESS ) ).contains( "permit" );
+        assertThat( testEvaluation( requestPermit, policyHelperDup, STATUS.TRY ) ).contains( "permit" );
     }
 
     private String testEvaluation( String request, PolicyWrapper policy ) {

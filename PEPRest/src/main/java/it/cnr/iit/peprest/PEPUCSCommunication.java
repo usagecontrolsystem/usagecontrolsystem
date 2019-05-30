@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import it.cnr.iit.ucs.constants.OperationNames;
+import it.cnr.iit.ucs.constants.OperationName;
 import it.cnr.iit.ucs.message.endaccess.EndAccessResponse;
 import it.cnr.iit.ucs.message.reevaluation.ReevaluationResponse;
 import it.cnr.iit.ucs.message.startaccess.StartAccessResponse;
@@ -34,7 +34,7 @@ public class PEPUCSCommunication {
     @ApiResponses( value = {
         @ApiResponse( code = 500, message = "Invalid message received" ),
         @ApiResponse( code = 200, message = "OK" ) } )
-    @PostMapping( value = OperationNames.ONGOINGRESPONSE_REST, consumes = MediaType.APPLICATION_JSON_VALUE )
+    @PostMapping( value = OperationName.ONGOINGRESPONSE_REST, consumes = MediaType.APPLICATION_JSON_VALUE )
     // TODO UCS-34 NOSONAR
     public void onGoingEvaluation( @RequestBody( ) ReevaluationResponse message ) {
         pepRest.onGoingEvaluation( message );
