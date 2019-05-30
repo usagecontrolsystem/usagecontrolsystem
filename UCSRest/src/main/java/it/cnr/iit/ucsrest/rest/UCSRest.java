@@ -202,7 +202,6 @@ public class UCSRest implements UCSInterface {
             contextHandler.setPdp( proxyPDP );
             contextHandler.setObligationManager( obligationManager );
             contextHandler.setPIPs( new ArrayList<PIPCHInterface>( pipList ) );
-            contextHandler.verify();
 
             contextHandler.startMonitoringThread();
             requestManager.setInterfaces( contextHandler, proxyPEPMap );

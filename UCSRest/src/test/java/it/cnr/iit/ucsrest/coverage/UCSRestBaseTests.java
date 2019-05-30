@@ -26,8 +26,6 @@ import it.cnr.iit.ucs.constants.OperationNames;
 import it.cnr.iit.ucs.constants.STATUS;
 import it.cnr.iit.ucs.contexthandler.ContextHandlerConstants;
 import it.cnr.iit.ucs.contexthandler.ContextHandlerInterface;
-import it.cnr.iit.ucs.forwardingqueue.ForwardingQueueToCHInterface;
-import it.cnr.iit.ucs.forwardingqueue.ForwardingQueueToRMInterface;
 import it.cnr.iit.ucs.message.Message;
 import it.cnr.iit.ucs.message.attributechange.AttributeChangeMessage;
 import it.cnr.iit.ucs.message.endaccess.EndAccessMessage;
@@ -104,7 +102,6 @@ public class UCSRestBaseTests {
         contextHandler.setSessionManager(
             getSessionManagerForStatus( "a", policy, request, ContextHandlerConstants.TRY_STATUS ) );
 
-        contextHandler.verify();
         /* must be called after initialisation */
         addMockedPips( prop, contextHandler );
         contextHandler.startMonitoringThread();
@@ -172,24 +169,11 @@ public class UCSRestBaseTests {
         return requestManagerToChInterface;
     }
 
-    protected ForwardingQueueToCHInterface getMockedForwardingQueueToCHInterface() {
-        ForwardingQueueToCHInterface forwardingQueueToCHInterface = Mockito.mock( ForwardingQueueToCHInterface.class );
-        return forwardingQueueToCHInterface;
-    }
-
     protected OperationNames getMockedNodeInterface() {
         OperationNames nodeInterface = Mockito
             .mock( OperationNames.class );
 
         return nodeInterface;
-    }
-
-    protected ForwardingQueueToRMInterface getMockedForwardingQueueToRMInterface( Message message ) {
-        ForwardingQueueToRMInterface forwardingQueue = Mockito
-            .mock( ForwardingQueueToRMInterface.class );
-        Mockito.when( forwardingQueue.getOriginalSource( ArgumentMatchers.anyString() ) ).thenReturn( message );
-
-        return forwardingQueue;
     }
 
     protected HashMap<String, PEPInterface> getMockedPEPMap( String key, String response ) {
