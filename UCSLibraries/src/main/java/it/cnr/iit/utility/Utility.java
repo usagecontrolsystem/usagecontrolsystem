@@ -145,6 +145,13 @@ public final class Utility {
         return new String( data );
     }
 
+    public static String stripExtension( String name ) {
+        if( name.contains( "." ) ) {
+            return name.substring( 0, name.lastIndexOf( '.' ) );
+        }
+        return name;
+    }
+
     public static Optional<String> getPropertiesValue( String key ) {
         return getPropertiesValue( "application.properties", key );
     }

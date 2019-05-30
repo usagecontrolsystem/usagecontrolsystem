@@ -28,25 +28,8 @@ import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 
 /**
- * This is the class devoted to store the utility required to deal with the
- * JAXB.
- *
- * <p>
- * Basically with this class we wrap the methods we use to marshal and unmarshal
- * xml files and objects. In this way we avoid the repetition of the same
- * private methods over and over.
- *
- * <br>
- *
- * This is an utility class, hence it will not be possible to instantiate it or
- * to extend it.
- * </p>
- *
- * <p>
- * Exceptions are not amanged here in order to force the user to manage them
- * </p>
- *
- * @author antonio
+ * This is the class devoted to store the utility required to deal with XML.
+ * @author Antonio La Marra
  *
  */
 public final class JAXBUtility {
@@ -79,8 +62,8 @@ public final class JAXBUtility {
         Marshaller jaxbMarshaller = jaxbContext.createMarshaller();
         jaxbMarshaller.setProperty( Marshaller.JAXB_FORMATTED_OUTPUT, true );
 
-        QName qNAME = new QName( schema, name );
-        JAXBElement<T> elem = new JAXBElement<>( qNAME, clazz, null, object );
+        QName qName = new QName( schema, name );
+        JAXBElement<T> elem = new JAXBElement<>( qName, clazz, null, object );
 
         StringWriter stringWriter = new StringWriter();
         jaxbMarshaller.marshal( elem, stringWriter );
