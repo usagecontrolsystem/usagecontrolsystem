@@ -56,7 +56,7 @@ public abstract class AbstractContextHandler implements ContextHandlerInterface 
     protected URI uri;
 
     protected AbstractContextHandler( ContextHandlerProperties properties ) {
-        Reject.ifNull( properties );
+        Reject.ifNull( properties, ContextHandlerProperties.class.getName() );
         this.properties = properties;
 
         Optional<URI> uri = RESTUtils.parseUri( properties.getBaseUri() );
@@ -75,7 +75,7 @@ public abstract class AbstractContextHandler implements ContextHandlerInterface 
     }
 
     public void setSessionManager( SessionManagerInterface sessionManager ) {
-        Reject.ifNull( sessionManager, sessionManager.getClass().getName() );
+        Reject.ifNull( sessionManager, SessionManagerInterface.class.getName() );
         this.sessionManager = sessionManager;
     }
 
@@ -84,7 +84,7 @@ public abstract class AbstractContextHandler implements ContextHandlerInterface 
     }
 
     public void setPdp( PDPInterface pdp ) {
-        Reject.ifNull( pdp, pdp.getClass().getName() );
+        Reject.ifNull( pdp, PDPInterface.class.getName() );
         this.pdp = pdp;
     }
 
@@ -93,7 +93,7 @@ public abstract class AbstractContextHandler implements ContextHandlerInterface 
     }
 
     public void setPap( PAPInterface pap ) {
-        Reject.ifNull( pap, pap.getClass().getName() );
+        Reject.ifNull( pap, PAPInterface.class.getName() );
         this.pap = pap;
     }
 
@@ -103,7 +103,7 @@ public abstract class AbstractContextHandler implements ContextHandlerInterface 
 
     public void setRequestManager(
             RequestManagerToCHInterface requestManager ) {
-        Reject.ifNull( requestManager );
+        Reject.ifNull( requestManager, RequestManagerToCHInterface.class.getName() );
         this.requestManager = requestManager;
     }
 
@@ -116,7 +116,7 @@ public abstract class AbstractContextHandler implements ContextHandlerInterface 
     }
 
     protected void setPipRegistry( PIPRegistryInterface pipRegistry ) {
-        Reject.ifNull( pipRegistry, pipRegistry.getClass().getName() );
+        Reject.ifNull( pipRegistry, PIPRegistryInterface.class.getName() );
         this.pipRegistry = pipRegistry;
     }
 
@@ -125,7 +125,7 @@ public abstract class AbstractContextHandler implements ContextHandlerInterface 
     }
 
     public void setObligationManager( ObligationManagerInterface obligationManager ) {
-        Reject.ifNull( obligationManager, obligationManager.getClass().getName() );
+        Reject.ifNull( obligationManager, ObligationManagerInterface.class.getName() );
         this.obligationManager = obligationManager;
     }
 
