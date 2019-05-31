@@ -16,9 +16,7 @@
 package it.cnr.iit.ucs.contexthandler;
 
 import java.net.URI;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.logging.Logger;
 
@@ -33,7 +31,6 @@ import it.cnr.iit.ucs.requestmanager.RequestManagerToCHInterface;
 import it.cnr.iit.ucs.sessionmanager.SessionManagerInterface;
 import it.cnr.iit.utility.RESTUtils;
 import it.cnr.iit.utility.errorhandling.Reject;
-import it.cnr.iit.utility.errorhandling.exception.PreconditionException;
 
 /**
  * This is the abstract representation of the context handler object.
@@ -74,37 +71,33 @@ public abstract class AbstractContextHandler implements ContextHandlerInterface 
     public abstract void stopMonitoringThread();
 
     protected final SessionManagerInterface getSessionManager() {
-        Reject.ifNull( sessionManager );
         return sessionManager;
     }
 
     public void setSessionManager( SessionManagerInterface sessionManager ) {
-        Reject.ifNull( sessionManager );
+        Reject.ifNull( sessionManager, sessionManager.getClass().getName() );
         this.sessionManager = sessionManager;
     }
 
     protected final PDPInterface getPdp() {
-        Reject.ifNull( pdp );
         return pdp;
     }
 
     public void setPdp( PDPInterface pdp ) {
-        Reject.ifNull( pdp );
+        Reject.ifNull( pdp, pdp.getClass().getName() );
         this.pdp = pdp;
     }
 
     protected final PAPInterface getPap() {
-        Reject.ifNull( pap );
         return pap;
     }
 
     public void setPap( PAPInterface pap ) {
-        Reject.ifNull( pap );
+        Reject.ifNull( pap, pap.getClass().getName() );
         this.pap = pap;
     }
 
     protected final RequestManagerToCHInterface getRequestManager() {
-        Reject.ifNull( requestManager );
         return requestManager;
     }
 
@@ -115,30 +108,28 @@ public abstract class AbstractContextHandler implements ContextHandlerInterface 
     }
 
     public void setPIPs( List<PIPCHInterface> pipList ) {
-        Reject.ifNull( pipList );
+        Reject.ifNull( pipList, PIPCHInterface.class.getName() + " list" );
         for( PIPCHInterface pip : pipList ) {
             pip.setContextHandler( this );
             pipRegistry.add( pip );
         }
     }
 
-    public PIPRegistryInterface getPipRegistry() {
-        Reject.ifNull( pipRegistry );
-        return pipRegistry;
-    }
-
     protected void setPipRegistry( PIPRegistryInterface pipRegistry ) {
-        Reject.ifNull( pipRegistry );
+        Reject.ifNull( pipRegistry, pipRegistry.getClass().getName() );
         this.pipRegistry = pipRegistry;
     }
 
+    public PIPRegistryInterface getPipRegistry() {
+        return pipRegistry;
+    }
+
     public void setObligationManager( ObligationManagerInterface obligationManager ) {
-        Reject.ifNull( obligationManager );
+        Reject.ifNull( obligationManager, obligationManager.getClass().getName() );
         this.obligationManager = obligationManager;
     }
 
     protected final ObligationManagerInterface getObligationManager() {
-        Reject.ifNull( obligationManager );
         return obligationManager;
     }
 
