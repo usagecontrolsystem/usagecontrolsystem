@@ -53,8 +53,8 @@ import it.cnr.iit.ucsrest.proxies.ProxyPDP;
 import it.cnr.iit.ucsrest.proxies.ProxySessionManager;
 import it.cnr.iit.ucsrest.requestmanager.RequestManagerLC;
 import it.cnr.iit.ucsrest.rest.UCSRest;
-import it.cnr.iit.utility.JAXBUtility;
 import it.cnr.iit.utility.FileUtility;
+import it.cnr.iit.utility.JAXBUtility;
 import it.cnr.iit.xacmlutilities.Attribute;
 import it.cnr.iit.xacmlutilities.Category;
 import it.cnr.iit.xacmlutilities.DataType;
@@ -169,9 +169,8 @@ public class UCSRestBaseTests {
         return requestManagerToChInterface;
     }
 
-    protected OperationNames getMockedNodeInterface() {
-        OperationNames nodeInterface = Mockito
-            .mock( OperationNames.class );
+    protected OperationName getMockedNodeInterface() {
+        OperationName nodeInterface = Mockito.mock( OperationName.class );
 
         return nodeInterface;
     }
