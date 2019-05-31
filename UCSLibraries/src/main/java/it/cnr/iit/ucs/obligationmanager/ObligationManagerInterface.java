@@ -22,12 +22,9 @@ import it.cnr.iit.ucs.pip.PIPOMInterface;
 
 /**
  * This is the Interface provided by the ObligationManager.
- *
- * <p>
  * Also the obligation manager provides a single function, the
  * translateObligations one. It is called by the PDP when there are some
  * obligations in the policy that have to be managed by the ObligationManager.
- * </p>
  *
  * @author Antonio La Marra, Alessandro Rosetti
  *
@@ -56,7 +53,7 @@ public interface ObligationManagerInterface {
      *          the list of pips
      * @param pipRetrieval
      *          the eventual pip retrieval to be used
-     * @return true if everything goes alright, false otherwise
+     * @return true if everything behaves correctly, false otherwise
      */
     public boolean setPIPs( List<PIPOMInterface> pips );
 

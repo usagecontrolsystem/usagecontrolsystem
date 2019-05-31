@@ -23,10 +23,8 @@ import it.cnr.iit.ucs.pdp.PDPEvaluation;
 
 /**
  * This is the tryAccess response message
- * <p>
  * This message will be sent from the ContextHandler to the PEP to tell to it
  * which is the exit of the tryaccess it has performed
- * </p>
  *
  * @author Antonio La Marra, Alessandro Rosetti
  *

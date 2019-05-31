@@ -4,7 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.logging.Logger;
 
-import it.cnr.iit.utility.Utility;
+import it.cnr.iit.utility.FileUtility;
 import it.cnr.iit.utility.errorhandling.Reject;
 
 import journal.io.api.Journal;
@@ -25,7 +25,7 @@ public class PIPJournalHelper {
         try {
             File file = new File( journalDir );
             // TODO UCS-33 NOSONAR
-            if( !Utility.createPathIfNotExists( file ) ) {
+            if( !FileUtility.createPathIfNotExists( file ) ) {
                 return false;
             }
             journal = JournalBuilder.of( file ).open();

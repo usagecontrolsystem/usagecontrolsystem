@@ -16,17 +16,12 @@
 package it.cnr.iit.utility;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Optional;
-import java.util.PropertyResourceBundle;
 import java.util.Scanner;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import it.cnr.iit.utility.errorhandling.Reject;
@@ -37,11 +32,11 @@ import it.cnr.iit.utility.errorhandling.Reject;
  * @author antonio
  *
  */
-public final class Utility {
+public final class FileUtility {
 
-    private static final Logger log = Logger.getLogger( Utility.class.getName() );
+    private static final Logger log = Logger.getLogger( FileUtility.class.getName() );
 
-    private Utility() {} // NOSONAR
+    private FileUtility() {} // NOSONAR
 
     /**
      * Reads a file using the passed parameter as absolute path. Returns a String
@@ -139,48 +134,10 @@ public final class Utility {
     }
 
     public static String readFileAsString( String resource ) throws URISyntaxException, IOException {
-        ClassLoader classLoader = Utility.class.getClassLoader();
+        ClassLoader classLoader = FileUtility.class.getClassLoader();
         Path path = Paths.get( classLoader.getResource( resource ).toURI() );
         byte[] data = Files.readAllBytes( path );
         return new String( data );
-    }
-
-    public static Optional<String> getPropertiesValue( String key ) {
-        return getPropertiesValue( "application.properties", key );
-    }
-
-    public static Optional<String> getPropertiesValue( String propertiesFile, String key ) {
-        FileInputStream fis = null;
-        Optional<String> value = Optional.empty();
-        try {
-            File confFile = new File( Utility.class.getClassLoader()
-                .getResource( propertiesFile ).getFile() );
-            fis = new FileInputStream( confFile );
-            PropertyResourceBundle rb = new PropertyResourceBundle( fis );
-            if( rb.containsKey( key ) ) {
-                value = Optional.of( rb.getString( key ) );
-            }
-        } catch( IOException e ) {
-            log.log( Level.SEVERE, "Error reading key : {0}", e.getMessage() );
-        }
-
-        if( fis != null ) {
-            try {
-                fis.close();
-            } catch( Exception e ) {
-                // nothing to do here
-            }
-        }
-
-        return value;
-    }
-
-    public static Optional<URI> parseUri( String str ) {
-        try {
-            URI uri = new URI( str );
-            return Optional.of( uri );
-        } catch( Exception e ) {}
-        return Optional.empty();
     }
 
 }

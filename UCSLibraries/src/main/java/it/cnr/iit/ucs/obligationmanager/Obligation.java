@@ -21,15 +21,15 @@ import java.util.Map;
 
 public class Obligation {
 
-    private List<TRAN> TRANS = null;
+    private List<Action> actionList = null;
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
-    public List<TRAN> getTRANS() {
-        return TRANS;
+    public List<Action> getActionList() {
+        return actionList;
     }
 
-    public void setTRANS( List<TRAN> tRANS ) {
-        this.TRANS = tRANS;
+    public void setActionList( List<Action> actionList ) {
+        this.actionList = actionList;
     }
 
     public Map<String, Object> getAdditionalProperties() {

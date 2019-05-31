@@ -15,7 +15,7 @@
  ******************************************************************************/
 package it.cnr.iit.ucs.contexthandler;
 
-import it.cnr.iit.ucs.exceptions.WrongOrderException;
+import it.cnr.iit.ucs.exceptions.StatusException;
 import it.cnr.iit.ucs.message.endaccess.EndAccessMessage;
 import it.cnr.iit.ucs.message.endaccess.EndAccessResponse;
 import it.cnr.iit.ucs.message.startaccess.StartAccessMessage;
@@ -48,7 +48,7 @@ import it.cnr.iit.ucs.message.tryaccess.TryAccessResponse;
  * attribute.</li>
  * <li>messageForPIP: this function is triggered from the RequestManager
  * whenever there is a message that asks something from a PIP. The
- * ContextHandler is in fact the only entity in hcarge of allowing the various
+ * ContextHandler is in fact the only entity in charge of allowing the various
  * PIPs to communicate with the external world</li>
  * </ol>
  * </p>
@@ -94,8 +94,8 @@ public interface ContextHandlerInterface extends ContextHandlerPIPInterface {
      * @param message
      *          the message received by the RequestManager
      * @return a message stating the response of the PDP to the request
-     * @throws WrongOrderException
+     * @throws StatusException
      */
-    public EndAccessResponse endAccess( EndAccessMessage message ) throws WrongOrderException;
+    public EndAccessResponse endAccess( EndAccessMessage message ) throws StatusException;
 
 }

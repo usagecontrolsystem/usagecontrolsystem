@@ -40,16 +40,6 @@ import it.cnr.iit.utility.errorhandling.Reject;
  * Obviously depending on the situation the message may have other fields.
  * </p>
  *
- * <p>
- * In the framework we want that all parties can communicate by passing JSONs,
- * because it is very simple to convert an object to a JSON and vice versa in
- * JAVA. Moreover JSONs are lighter than XML.
- * </p>
- *
- * <p>
- * TODO ASAP switch to this schema to builders for message!!
- * </p>
- *
  * @author Antonio La Marra, Alessandro Rosetti
  *
  */
