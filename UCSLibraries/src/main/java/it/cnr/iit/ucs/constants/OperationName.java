@@ -26,4 +26,6 @@ public final class OperationName {
     public static final String ENDACCESSRESPONSE_REST = "/endAccessResponse";
     public static final String ONGOINGRESPONSE_REST = "/onGoingResponse";
 
+    private OperationName() {}
+
 }

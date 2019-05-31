@@ -20,11 +20,9 @@ import it.cnr.iit.ucs.obligationmanager.ObligationInterface;
 
 /**
  * This is the interface offered by the PIP to the obligation manager
- * <p>
  * The obligation manager, even if is a component that can be considered inside
  * the ContextHandler, has an interface to force the PIPs to update the
  * attribute they're monitoring
- * </p>
  * 
  * @author antonio
  *

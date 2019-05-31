@@ -28,7 +28,7 @@ import java.util.stream.Collectors;
 import it.cnr.iit.ucs.properties.components.PapProperties;
 import it.cnr.iit.utility.FileUtility;
 import it.cnr.iit.utility.errorhandling.Reject;
-import it.cnr.iit.xacmlutilities.wrappers.PolicyWrapper;
+import it.cnr.iit.xacml.wrappers.PolicyWrapper;
 
 import oasis.names.tc.xacml.core.schema.wd_17.PolicyType;
 

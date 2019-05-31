@@ -1,7 +1,6 @@
 package it.cnr.iit.peprest.messagetrack;
 
 /**
- * <p>
  * This object holds many useful informations:
  * <ol>
  * <li>The status of the message</li>
@@ -10,7 +9,6 @@ package it.cnr.iit.peprest.messagetrack;
  * <li>The id of the derived message (only after a tryAccess) that makes it easier for the caller to track the
  * evaluation of its session</li>
  * </ol>
- * </p>
  *
  * @author Antonio La Marra
  *

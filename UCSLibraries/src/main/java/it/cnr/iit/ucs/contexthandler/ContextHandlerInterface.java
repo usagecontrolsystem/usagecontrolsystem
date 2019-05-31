@@ -26,7 +26,6 @@ import it.cnr.iit.ucs.message.tryaccess.TryAccessResponse;
 /**
  * This is the interface provided by the ContextHandler.
  *
- * <p>
  * The contexthandler allows other parties to communicate with it using these
  * functions::
  * <ol>
@@ -51,7 +50,6 @@ import it.cnr.iit.ucs.message.tryaccess.TryAccessResponse;
  * ContextHandler is in fact the only entity in charge of allowing the various
  * PIPs to communicate with the external world</li>
  * </ol>
- * </p>
  *
  * @author Antonio La Marra
  *

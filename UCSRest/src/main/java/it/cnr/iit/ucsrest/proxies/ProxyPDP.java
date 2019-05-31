@@ -28,8 +28,8 @@ import it.cnr.iit.ucs.pdp.PDPInterface;
 import it.cnr.iit.ucs.properties.components.PdpProperties;
 import it.cnr.iit.ucsrest.rest.UCSRest;
 import it.cnr.iit.utility.errorhandling.Reject;
-import it.cnr.iit.xacmlutilities.wrappers.PolicyWrapper;
-import it.cnr.iit.xacmlutilities.wrappers.RequestWrapper;
+import it.cnr.iit.xacml.wrappers.PolicyWrapper;
+import it.cnr.iit.xacml.wrappers.RequestWrapper;
 
 /**
  * This is the class implementing the proxy towards the PDP.

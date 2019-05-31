@@ -73,11 +73,14 @@ public final class TryAccessMessage extends Message {
         return request;
     }
 
-    public void setPolicy( String policy ) {
+    public boolean setPolicy( String policy ) {
         try {
             JAXBUtility.unmarshalToObject( PolicyType.class, policy );
             this.policy = policy;
-        } catch( Exception exception ) {}
+            return true;
+        } catch( Exception exception ) {
+            return false;
+        }
     }
 
     public String getPolicy() {

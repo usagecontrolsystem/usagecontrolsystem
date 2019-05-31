@@ -13,11 +13,11 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  ******************************************************************************/
-package it.cnr.iit.xacmlutilities.wrappers;
+package it.cnr.iit.xacml.wrappers;
 
 import java.util.List;
 
-import it.cnr.iit.xacmlutilities.Attribute;
+import it.cnr.iit.xacml.Attribute;
 
 /**
  * This is the interface provided by a PolicyWapper.

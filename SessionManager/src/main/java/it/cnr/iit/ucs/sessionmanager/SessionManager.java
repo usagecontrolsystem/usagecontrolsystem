@@ -29,7 +29,7 @@ import it.cnr.iit.ucs.sessionmanager.SessionInterface;
 import it.cnr.iit.ucs.sessionmanager.SessionManagerInterface;
 import it.cnr.iit.ucs.sessionmanager.OnGoingAttribute.COLUMN;
 import it.cnr.iit.utility.errorhandling.Reject;
-import it.cnr.iit.xacmlutilities.Attribute;
+import it.cnr.iit.xacml.Attribute;
 
 /**
  * Creates, updates, deletes and retrieves Sessions by waiting for Context

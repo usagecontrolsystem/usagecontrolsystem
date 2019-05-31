@@ -8,7 +8,7 @@ import java.util.logging.Logger;
 import com.google.common.base.Throwables;
 
 import it.cnr.iit.ucs.pip.PIPCHInterface;
-import it.cnr.iit.xacmlutilities.Attribute;
+import it.cnr.iit.xacml.Attribute;
 
 import oasis.names.tc.xacml.core.schema.wd_17.RequestType;
 

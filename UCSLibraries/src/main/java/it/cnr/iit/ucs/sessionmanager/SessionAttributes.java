@@ -17,8 +17,6 @@ public class SessionAttributes {
     private String resourceName;
     private String actionName;
 
-    public SessionAttributes() {}
-
     public String getSessionId() {
         return sessionId;
     }

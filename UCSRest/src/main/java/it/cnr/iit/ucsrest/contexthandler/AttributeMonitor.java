@@ -8,11 +8,10 @@ import java.util.logging.Logger;
 
 import it.cnr.iit.ucs.message.attributechange.AttributeChangeMessage;
 import it.cnr.iit.utility.errorhandling.Reject;
-import it.cnr.iit.xacmlutilities.Attribute;
+import it.cnr.iit.xacml.Attribute;
 
 /**
  * This class represents the object in charge of performing reevaluation.
- * <p>
  * The thread waits for notifications coming from PIPs, when it
  * receives a notification, it starts reevaluating all the sessions that are
  * interested in that attribute.
@@ -23,7 +22,6 @@ import it.cnr.iit.xacmlutilities.Attribute;
  * subject) obviously check if the additional information stored in the
  * policy is the same.</li>
  * </ol><br>
- * </p>
  * @author Antonio La Marra, Alessandro Rosetti
  *
  */

@@ -23,13 +23,11 @@ import it.cnr.iit.utility.errorhandling.Reject;
 /**
  * This is the abstract class providing a schema for the PDP.
  *
- * <p>
  * The PDP requires an interface to deal with the obligation manager and another
  * to deal with the PAP. <br>
  * Also in this case, following the CERT guidelines, we will implement this
  * class using a volatile variable in charge of saying if the object has been
  * correctly created or not.
- * </p>
  *
  * @author Antonio La Marra
  *

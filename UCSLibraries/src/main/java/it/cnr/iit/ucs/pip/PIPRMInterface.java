@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.Map;
 
 import it.cnr.iit.ucs.message.attributechange.AttributeChangeMessage;
-import it.cnr.iit.xacmlutilities.Attribute;
+import it.cnr.iit.xacml.Attribute;
 
 /**
  * Thsi is the interface offered by the PIP to the request manager

@@ -32,7 +32,6 @@ import it.cnr.iit.utility.errorhandling.Reject;
 
 /**
  * The request manager is an asynchronous component.
- * <p>
  * All the requests coming to the context handler have to reach the request
  * manager first. It will parse and prioritise them. <br>
  * It is an ASYNCHRONOUS component (otherwise it would be impossible to
@@ -40,7 +39,6 @@ import it.cnr.iit.utility.errorhandling.Reject;
  * to the caller. Then it will call the interface of the PEP. As you know behind
  * this interface there is a Proxy that abstracts the real communication link
  * between the UCS and the PEP.
- * </p>
  *
  * @author Antonio La Marra, Alessandro Rosetti
  *
@@ -76,7 +74,7 @@ public class RequestManagerLC extends AbstractRequestManager {
         Reject.ifNull( reevaluation, "Invalid message" );
 
         log.info( "Sending on going reevaluation." );
-        getPEPInterface().get( ( reevaluation ).getPepId() )
+        getPEPMap().get( ( reevaluation ).getPepId() )
             .onGoingEvaluation( reevaluation );
     }
 
@@ -125,7 +123,7 @@ public class RequestManagerLC extends AbstractRequestManager {
                     } else {
                         throw new IllegalArgumentException( "Invalid message arrived" );
                     }
-                    getPEPInterface().get( responseMessage.getDestination() ).receiveResponse( responseMessage );
+                    getPEPMap().get( responseMessage.getDestination() ).receiveResponse( responseMessage );
                 }
             } catch( Exception e ) {
                 log.severe( e.getMessage() );

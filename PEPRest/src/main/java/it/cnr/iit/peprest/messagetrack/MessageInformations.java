@@ -1,7 +1,5 @@
 package it.cnr.iit.peprest.messagetrack;
 
-import java.util.logging.Logger;
-
 import it.cnr.iit.ucs.message.EvaluatedResponse;
 import it.cnr.iit.ucs.message.Message;
 import it.cnr.iit.ucs.message.endaccess.EndAccessMessage;
@@ -21,11 +19,8 @@ import oasis.names.tc.xacml.core.schema.wd_17.DecisionType;
  * the session.
  *
  * @author Antonio La Marra, Alessandro Rosetti
- *
  */
 public class MessageInformations {
-
-    private static Logger log = Logger.getLogger( MessageInformations.class.getName() );
 
     private CallerResponse callerResponse;
     private String messageId;

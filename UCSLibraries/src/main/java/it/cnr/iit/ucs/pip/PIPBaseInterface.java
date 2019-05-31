@@ -18,15 +18,13 @@ package it.cnr.iit.ucs.pip;
 import java.util.List;
 import java.util.Map;
 
-import it.cnr.iit.xacmlutilities.Attribute;
+import it.cnr.iit.xacml.Attribute;
 
 /**
  * Base interface for a PIP.
- * <p>
  * Basically each PIP has to offer as interfaces some getters that allow the
  * context handelr to know in advance the characteristics of the PIP with which
  * it's dealing with.
- * </p>
  *
  * @author antonio
  *
@@ -44,11 +42,9 @@ public interface PIPBaseInterface {
 
     /**
      * This function retrieves the list of attributes this PIP can monitor.
-     * <p>
-     * This function has been added in order to allow the possibility of having
+         * This function has been added in order to allow the possibility of having
      * Multi-Attributes attribute managers.
-     * </p>
-     *
+         *
      * @return the list of attributes this PIP is in charge of monitoring
      */
     public List<Attribute> getAttributes();

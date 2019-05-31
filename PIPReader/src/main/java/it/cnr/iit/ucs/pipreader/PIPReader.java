@@ -39,9 +39,9 @@ import it.cnr.iit.ucs.pip.PIPKeywords;
 import it.cnr.iit.ucs.properties.components.PipProperties;
 import it.cnr.iit.utility.FileUtility;
 import it.cnr.iit.utility.errorhandling.Reject;
-import it.cnr.iit.xacmlutilities.Attribute;
-import it.cnr.iit.xacmlutilities.Category;
-import it.cnr.iit.xacmlutilities.DataType;
+import it.cnr.iit.xacml.Attribute;
+import it.cnr.iit.xacml.Category;
+import it.cnr.iit.xacml.DataType;
 
 import oasis.names.tc.xacml.core.schema.wd_17.RequestType;
 

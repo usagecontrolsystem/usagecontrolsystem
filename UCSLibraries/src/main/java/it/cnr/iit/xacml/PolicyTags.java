@@ -13,7 +13,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  ******************************************************************************/
-package it.cnr.iit.xacmlutilities.constants;
+package it.cnr.iit.xacml;
 
 import it.cnr.iit.ucs.constants.STATUS;
 

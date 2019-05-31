@@ -31,9 +31,9 @@ import it.cnr.iit.ucs.properties.UCFPipProperties;
 import it.cnr.iit.utility.JAXBUtility;
 import it.cnr.iit.utility.JsonUtility;
 import it.cnr.iit.utility.errorhandling.exception.PreconditionException;
-import it.cnr.iit.xacmlutilities.Attribute;
-import it.cnr.iit.xacmlutilities.Category;
-import it.cnr.iit.xacmlutilities.DataType;
+import it.cnr.iit.xacml.Attribute;
+import it.cnr.iit.xacml.Category;
+import it.cnr.iit.xacml.DataType;
 
 import oasis.names.tc.xacml.core.schema.wd_17.AttributeType;
 import oasis.names.tc.xacml.core.schema.wd_17.AttributeValueType;

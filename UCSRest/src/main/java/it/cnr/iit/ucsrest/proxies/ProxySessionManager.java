@@ -29,11 +29,10 @@ import it.cnr.iit.ucs.sessionmanager.SessionInterface;
 import it.cnr.iit.ucs.sessionmanager.SessionManagerInterface;
 import it.cnr.iit.ucsrest.rest.UCSRest;
 import it.cnr.iit.utility.errorhandling.Reject;
-import it.cnr.iit.xacmlutilities.Attribute;
+import it.cnr.iit.xacml.Attribute;
 
 /**
  * This is the proxy to be used to communicate with the session manager.
- * <p>
  * The session manager is basically a database which can be implemented in
  * various forms:
  * <ol>
@@ -49,7 +48,6 @@ import it.cnr.iit.xacmlutilities.Attribute;
  * </ol>
  * The first two cases are indistinguishable also form the PROXY perspective, it
  * just knows that to deal with the session manager it can use the api.
- * </p>
  *
  * @author Antonio La Marra, Alessandro Rosetti
  *

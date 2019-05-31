@@ -22,10 +22,8 @@ import java.util.Optional;
  * This is the interface the Context Handler uses to deal with the Session
  * Manager
  *
- * <p>
  * The session manager has to provide to the context handler all the functions
  * to add, retrieve, delete records from/to the database table.
- * </p>
  * <br>
  * The id suffix is used only in the case in which the string under
  * consideration is an unique identifier, hence it can be used in the case of
