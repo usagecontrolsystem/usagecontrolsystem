@@ -26,7 +26,7 @@ import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import it.cnr.iit.ucs.properties.components.PapProperties;
-import it.cnr.iit.utility.Utility;
+import it.cnr.iit.utility.FileUtility;
 import it.cnr.iit.utility.errorhandling.Reject;
 import it.cnr.iit.xacmlutilities.wrappers.PolicyWrapper;
 
@@ -134,7 +134,7 @@ public class PolicyAdministrationPoint implements PAPInterface {
         File[] files = directory.listFiles( ( dir, name ) -> name.toLowerCase().endsWith( POLICY_FILE_EXTENSION ) );
         return Arrays.asList( files ).parallelStream()
             .map( File::getName )
-            .map( Utility::stripExtension )
+            .map( FileUtility::stripExtension )
             .collect( Collectors.toList() );
     }
 
