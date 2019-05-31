@@ -22,30 +22,22 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
-import it.cnr.iit.ucs.pap.PAPInterface;
 import it.cnr.iit.ucs.properties.components.PapProperties;
-import it.cnr.iit.utility.JAXBUtility;
+import it.cnr.iit.utility.Utility;
 import it.cnr.iit.utility.errorhandling.Reject;
+import it.cnr.iit.xacmlutilities.wrappers.PolicyWrapper;
 
 import oasis.names.tc.xacml.core.schema.wd_17.PolicyType;
 
 /**
- * This is one of the possible implementations of the PAP.
- * <p>
- * The PAP is basically a storage of policies. Its only task is to store policy
- * and give them to the ContextHandler or the PDP when they request them. In
- * this implementation the PAP is synchronous and does not use any thread to
- * perform its task. Of course it can be possible to have multithreading if we
- * want. <br>
- * By assumption all the policies the PAP can handle are stored inside the
- * resources folder, where the name of the file corresponds to the policy id.
- * </p>
+ * The PAP is a storage of policies.
+ * All the policies are stored inside a folder, where the name of the file corresponds
+ * to the policy id.
  *
- * @author antonio
+ * @author Antonio La Marra, Alessandro Rosetti
  *
  */
 public class PolicyAdministrationPoint implements PAPInterface {
@@ -58,22 +50,15 @@ public class PolicyAdministrationPoint implements PAPInterface {
 
     private static final String MSG_ERR_POLICY_READ = "Error reading policy file : {0} -> {1}";
     private static final String MSG_ERR_POLICY_WRITE = "Error writing policy file : {0} -> {1}";
-    private static final String MSG_ERR_POLICY_INVALID = "Invalid policy contents : {0}";
     private static final String MSG_WARN_POLICY_EXISTS = "Policy file already existent";
 
-    /**
-     * Constructor for the policy administration point
-     *
-     * @param properties
-     *          the properties that describes this PAP
-     */
     public PolicyAdministrationPoint( PapProperties properties ) {
         Reject.ifNull( properties );
         this.properties = properties;
     }
 
     /**
-     * retrieves the policy that has as id the policyId passed as parameter
+     * Retrieves the policy that has as id the policyId passed as parameter
      *
      * @param the policyId to be used
      * @return the policy in string format
@@ -99,25 +84,30 @@ public class PolicyAdministrationPoint implements PAPInterface {
      */
     @Override
     public boolean addPolicy( String policy ) {
-        Reject.ifNull( policy );
-
-        Optional<PolicyType> optPolicyType = getXACMLPolicyFromString( policy );
-        if( !optPolicyType.isPresent() ) {
+        Reject.ifBlank( policy );
+        PolicyWrapper policyWrapper = PolicyWrapper.build( policy );
+        if( policyWrapper == null ) {
             return false;
         }
-        PolicyType policyType = optPolicyType.get();
 
-        if( getPolicyPath( policyType.getPolicyId() ).toFile().exists() ) {
+        PolicyType policyType = policyWrapper.getPolicyType();
+        String id = policyType.getPolicyId();
+        if( id == null || id.isEmpty() ) {
+            return false;
+        }
+
+        Path policyPath = getPolicyPath( id );
+        if( policyPath.toFile().exists() ) {
             log.warning( MSG_WARN_POLICY_EXISTS );
             return true;
         }
-        return writePolicy( policyType.getPolicyId(), policy );
+
+        return writePolicy( policyPath, policy );
     }
 
-    private boolean writePolicy( String policyId, String policy ) {
-        String path = getPolicyPath( policyId ).toString();
+    private boolean writePolicy( Path path, String policy ) {
         // TODO UCS-33 NOSONAR
-        try (FileOutputStream fos = new FileOutputStream( path )) {
+        try (FileOutputStream fos = new FileOutputStream( path.toString() )) {
             fos.write( policy.getBytes() );
         } catch( Exception e ) {
             log.severe( String.format( MSG_ERR_POLICY_WRITE, path, e.getMessage() ) );
@@ -132,16 +122,6 @@ public class PolicyAdministrationPoint implements PAPInterface {
         return Paths.get( properties.getPath(), policyId, POLICY_FILE_EXTENSION );
     }
 
-    private Optional<PolicyType> getXACMLPolicyFromString( String policy ) {
-        try {
-            PolicyType policyType = JAXBUtility.unmarshalToObject( PolicyType.class, policy );
-            return Optional.of( policyType );
-        } catch( Exception e ) {
-            log.severe( MSG_ERR_POLICY_INVALID );
-        }
-        return Optional.empty();
-    }
-
     /**
      * Retrieves the IDs of the policy stored
      *
@@ -153,7 +133,9 @@ public class PolicyAdministrationPoint implements PAPInterface {
         File directory = new File( properties.getPath() );
         File[] files = directory.listFiles( ( dir, name ) -> name.toLowerCase().endsWith( POLICY_FILE_EXTENSION ) );
         return Arrays.asList( files ).parallelStream()
-            .map( File::getName ).collect( Collectors.toList() );
+            .map( File::getName )
+            .map( Utility::stripExtension )
+            .collect( Collectors.toList() );
     }
 
 }

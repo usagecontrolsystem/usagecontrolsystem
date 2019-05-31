@@ -64,8 +64,8 @@ public final class JAXBUtility {
         Marshaller jaxbMarshaller = jaxbContext.createMarshaller();
         jaxbMarshaller.setProperty( Marshaller.JAXB_FORMATTED_OUTPUT, true );
 
-        QName qNAME = new QName( schema, name );
-        JAXBElement<T> elem = new JAXBElement<>( qNAME, clazz, null, object );
+        QName qName = new QName( schema, name );
+        JAXBElement<T> elem = new JAXBElement<>( qName, clazz, null, object );
 
         StringWriter stringWriter = new StringWriter();
         jaxbMarshaller.marshal( elem, stringWriter );
