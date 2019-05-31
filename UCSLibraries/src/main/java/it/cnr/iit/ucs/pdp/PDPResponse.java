@@ -17,6 +17,7 @@ package it.cnr.iit.ucs.pdp;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.xml.bind.JAXBException;
@@ -39,7 +40,7 @@ import oasis.names.tc.xacml.core.schema.wd_17.ResponseType;
  * which the evaluation is referred to and a boolean that states if the object is in a correct state
  * </p>
  *
- * @author antonio
+ * @author Antonio La Marra, Alessandro Rosetti
  *
  */
 
@@ -89,7 +90,7 @@ public final class PDPResponse implements PDPEvaluation {
         try {
             responseType = JAXBUtility.unmarshalToObject( ResponseType.class, string );
         } catch( Exception e ) {
-            log.severe( String.format( MSG_ERR_UNMARSHAL, e.getMessage() ) );
+            log.log( Level.SEVERE, MSG_ERR_UNMARSHAL, e.getMessage() );
         }
     }
 
@@ -109,7 +110,7 @@ public final class PDPResponse implements PDPEvaluation {
         try {
             return JAXBUtility.marshalToString( ResponseType.class, responseType, "Response", JAXBUtility.SCHEMA );
         } catch( JAXBException e ) {
-            log.severe( String.format( MSG_ERR_MARSHAL, e.getMessage() ) );
+            log.log( Level.SEVERE, MSG_ERR_MARSHAL, e.getMessage() );
         }
         return "";
     }

@@ -24,13 +24,10 @@ import it.cnr.iit.ucs.sessionmanager.SessionInterface;
 
 /**
  * This is the message the CH sends to ask a reevaluation.
- * <p>
  * A reevaluation occurs whenever the value of one of the ongoing attributes
  * changes. For this reason in the reevaluation message it is sufficient to put
  * the String representing the ID of the session under consideration. In this
  * way we save bandwidth and memory.
- *
- * <br>
  *
  * Since it may happens that a node asks to another node to perform a
  * reevaluation task, it is reasonable to allow to have an entire session as
@@ -38,7 +35,6 @@ import it.cnr.iit.ucs.sessionmanager.SessionInterface;
  * was already retrieved from the database, thus it makes to sense to repeat the
  * same operation once again. Of course we're considering here reasonable
  * policies.
- * </p>
  *
  * @author Antonio La Marra, Alessandro Rosetti
  *
@@ -50,12 +46,6 @@ public class ReevaluationMessage extends Message {
     private List<String> sessionIds;
     private SessionInterface session;
 
-    /**
-     * Constructor for the reevaluation message
-     *
-     * @param source      is the source of the message
-     * @param destination is the destination of the message
-     */
     public ReevaluationMessage( String source, String destination ) {
         super( source, destination );
         purpose = PURPOSE.REEVALUATION;

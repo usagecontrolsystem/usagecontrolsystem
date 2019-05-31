@@ -27,18 +27,6 @@ import oasis.names.tc.xacml.core.schema.wd_17.RequestType;
 /**
  * This is the whole object that arrives as a message to the tryaccess.
  *
- * <p>
- * We assume that the tryaccess message wraps in a single point many different
- * aspects:
- * <ol>
- * <li>The uri of the pep in string format</li>
- * <li>The uxacml policy in the xml format converted as a string</li>
- * <li>The uxacml request in the xml format converted as a string</li>
- * </ol>
- * All this parts are wrapped inside the motivation that is the access point for
- * all theses parts.
- * </p>
- *
  * @author Antonio La Marra, Alessandro Rosetti
  *
  */
@@ -51,14 +39,6 @@ public final class TryAccessMessage extends Message {
     private String policy;
     private String request;
 
-    /**
-     * Constructor for a TryAccessMessage
-     *
-     * @param source
-     *          the source of the message
-     * @param destination
-     *          the destination of the message
-     */
     public TryAccessMessage( String source, String destination ) {
         super( source, destination );
         purpose = PURPOSE.TRYACCESS;
@@ -79,13 +59,6 @@ public final class TryAccessMessage extends Message {
         return pepUri;
     }
 
-    /**
-     * Set the request to be sent to the UCS
-     *
-     * @param request
-     *          a string representing the request
-     * @return true if everything goes fine, false otherwise
-     */
     public boolean setRequest( String request ) {
         Reject.ifBlank( request );
         try {
@@ -101,14 +74,6 @@ public final class TryAccessMessage extends Message {
         return request;
     }
 
-    /**
-     * Set the policy to be used, in this case instead of having the id of the
-     * policy we have the real policy.
-     *
-     * @param policy
-     *          the policy to be used
-     * @return true if everything goes fine, false otherwise
-     */
     public void setPolicy( String policy ) {
         try {
             JAXBUtility.unmarshalToObject( PolicyType.class, policy );

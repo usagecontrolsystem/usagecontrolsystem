@@ -30,7 +30,6 @@ import it.cnr.iit.ucs.message.endaccess.EndAccessMessage;
 import it.cnr.iit.ucs.message.startaccess.StartAccessMessage;
 import it.cnr.iit.ucs.message.tryaccess.TryAccessMessage;
 import it.cnr.iit.ucs.ucs.UCSInterface;
-import it.cnr.iit.utility.LogProfiler;
 import it.cnr.iit.utility.errorhandling.Reject;
 
 import io.swagger.annotations.ApiModel;
@@ -40,12 +39,10 @@ import io.swagger.annotations.ApiResponses;
 
 /**
  * This class includes all the interfaces we will offer via rest.
- * <p>
  * Maybe it is better to offer an interface for each possible request that can
  * be sent to the UCS. In this way we will have many entry points. However all
  * these will be mapped on the same RequestManager function so that it becomes a
  * lot easier to perform task as prioritising between the queues and so on.
- * </p>
  *
  * @author Antonio La Marra, Alessandro Rosetti
  *
@@ -67,9 +64,7 @@ public class UCSRestController {
     // TODO UCS-34 NOSONAR
     public void sendMessage( @RequestBody( ) TryAccessMessage message ) {
         Reject.ifNull( message );
-        LogProfiler.getInstance().log( "REST CALLED" );
         ucs.tryAccess( message );
-
     }
 
     @ApiOperation( httpMethod = "POST", value = "Receives request from PEP for startaccess operation" )

@@ -18,44 +18,44 @@ package it.cnr.iit.ucs.obligationmanager;
 import java.util.HashMap;
 import java.util.Map;
 
-public class TRAN {
+public class Action {
 
-    private Integer ACTION_TYPE;
-    private String ST_FROM;
-    private String ST_TO;
-    private String RULE_ID;
+    private Integer actionType;
+    private String stFrom;
+    private String stTo;
+    private String ruleId;
     private Map<String, Object> additionalProperties = new HashMap<>();
 
-    public Integer getACTIONTYPE() {
-        return ACTION_TYPE;
+    public Integer getActionType() {
+        return actionType;
     }
 
-    public void setACTIONTYPE( Integer aCTIONTYPE ) {
-        ACTION_TYPE = aCTIONTYPE;
+    public void setActionType( Integer actionType ) {
+        this.actionType = actionType;
     }
 
-    public String getSTFROM() {
-        return ST_FROM;
+    public String getStFrom() {
+        return stFrom;
     }
 
-    public void setSTFROM( String sTFROM ) {
-        ST_FROM = sTFROM;
+    public void setStFrom( String stFrom ) {
+        this.stFrom = stFrom;
     }
 
-    public String getSTTO() {
-        return ST_TO;
+    public String getStTo() {
+        return stTo;
     }
 
-    public void setSTTO( String sTTO ) {
-        ST_TO = sTTO;
+    public void setStTo( String stTo ) {
+        this.stTo = stTo;
     }
 
-    public String getRULEID() {
-        return RULE_ID;
+    public String getRuleId() {
+        return ruleId;
     }
 
-    public void setRULEID( String rULEID ) {
-        RULE_ID = rULEID;
+    public void setRuleId( String ruleId ) {
+        this.ruleId = ruleId;
     }
 
     public Map<String, Object> getAdditionalProperties() {

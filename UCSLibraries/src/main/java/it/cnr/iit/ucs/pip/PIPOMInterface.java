@@ -15,8 +15,8 @@
  ******************************************************************************/
 package it.cnr.iit.ucs.pip;
 
+import it.cnr.iit.ucs.exceptions.PIPException;
 import it.cnr.iit.ucs.obligationmanager.ObligationInterface;
-import it.cnr.iit.ucs.pip.exception.PIPException;
 
 /**
  * This is the interface offered by the PIP to the obligation manager

@@ -25,7 +25,7 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import it.cnr.iit.ucs.contexthandler.ContextHandlerInterface;
-import it.cnr.iit.ucs.pip.exception.PIPException;
+import it.cnr.iit.ucs.exceptions.PIPException;
 import it.cnr.iit.ucs.pipreader.PIPReader;
 import it.cnr.iit.ucs.properties.UCFPipProperties;
 import it.cnr.iit.utility.JAXBUtility;
@@ -149,9 +149,9 @@ public class CoverageTest {
         testRetrieve();
         testSubscribe();
         try {
-            Thread.sleep( 11000 ); // NOSONAR
+            Thread.sleep( 4000 ); // NOSONAR
             changeAttributeValue();
-            Thread.sleep( 10000 ); // NOSONAR
+            Thread.sleep( 3000 ); // NOSONAR
             resetAttributeValue();
             testUnsubscribe();
         } catch( InterruptedException e ) {

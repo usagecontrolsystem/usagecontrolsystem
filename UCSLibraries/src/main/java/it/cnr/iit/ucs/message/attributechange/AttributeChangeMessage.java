@@ -27,11 +27,8 @@ import it.cnr.iit.xacmlutilities.Attribute;
 
 /**
  * This is the message a PIP sends to a CH and vice versa.
- * <p>
  * We have defined a single class for both local and remote messages, in this
- * way it is a lot easier to pass messages from one source to the other. <br>
- *
- * </p>
+ * way it is a lot easier to pass messages from one source to the other.
  *
  * @author Antonio La Marra, Alessandro Rosetti
  *
@@ -46,41 +43,15 @@ public final class AttributeChangeMessage extends Message {
 
     private ACTION action;
 
-    /**
-     * Message exchanged between PIP and CH
-     *
-     * @param source
-     *          source of the message
-     * @param destination
-     *          destination of the message
-     * @param motivation
-     *          motivation of the message (most likely it is a json describing the
-     *          motivation)
-     */
     public AttributeChangeMessage( String source, String destination ) {
         super( source, destination );
     }
 
-    /**
-     * Message exchanged between PIP and CH
-     *
-     * @param source
-     *          source of the message
-     * @param destination
-     *          destination of the message
-     * @param content
-     *          content of the message (most likely it is a json describing the
-     *          motivation)
-     */
     public AttributeChangeMessage( PART source, PART destination, List<Attribute> attributes ) {
         super( source.toString(), destination.toString() );
         if( super.isInitialized() ) {
             setAttributes( attributes );
         }
-    }
-
-    public void setAttributes( List<Attribute> attributes ) {
-        this.attributes = attributes;
     }
 
     @Override
@@ -89,13 +60,10 @@ public final class AttributeChangeMessage extends Message {
         return optObj.isPresent() ? optObj.get() : "";
     }
 
-    /**
-     * Adds a new attribute to the motivation of the message.
-     *
-     * @param attribute
-     *          the attribute to be added
-     * @return true if everything goes ok, false otherwise
-     */
+    public void setAttributes( List<Attribute> attributes ) {
+        this.attributes = attributes;
+    }
+
     public boolean addAttribute( Attribute attribute ) {
         return attributes.add( attribute );
     }
