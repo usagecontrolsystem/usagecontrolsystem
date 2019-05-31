@@ -55,13 +55,12 @@ public final class PolicyTags {
 
     public static String getCondition( STATUS status ) {
         switch( status ) {
-            case TRYACCESS:
+            case TRY:
                 return PolicyTags.CONDITION_PRE;
-            case REEVALUATION:
             case REVOKE:
-            case STARTACCESS:
+            case START:
                 return PolicyTags.CONDITION_ONGOING;
-            case ENDACCESS:
+            case END:
                 return PolicyTags.CONDITION_POST;
             default:
                 return "";

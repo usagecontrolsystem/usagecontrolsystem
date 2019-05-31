@@ -1,6 +1,6 @@
 package it.cnr.iit.peprest;
 
-import static it.cnr.iit.ucs.constants.OperationNames.TRYACCESSRESPONSE_REST;
+import static it.cnr.iit.ucs.constants.OperationName.TRYACCESSRESPONSE_REST;
 import static oasis.names.tc.xacml.core.schema.wd_17.DecisionType.PERMIT;
 import static org.apache.http.HttpStatus.SC_OK;
 import static org.junit.Assert.assertEquals;

@@ -35,7 +35,7 @@ import it.cnr.iit.peprest.messagetrack.MessageStorage;
 import it.cnr.iit.peprest.messagetrack.MessageStorageInterface;
 import it.cnr.iit.peprest.messagetrack.MessagesPerSession;
 import it.cnr.iit.peprest.proxy.UCSProxy;
-import it.cnr.iit.ucs.constants.OperationNames;
+import it.cnr.iit.ucs.constants.OperationName;
 import it.cnr.iit.ucs.message.EvaluatedResponse;
 import it.cnr.iit.ucs.message.MEAN;
 import it.cnr.iit.ucs.message.Message;
@@ -142,19 +142,19 @@ public class PEPRest implements PEPInterface {
         message.setPepUri( buildResponseApi( pep.getApiStatusChanged() ) );
         message.setPolicy( policy.getPolicy() );
         message.setRequest( request.getRequest() );
-        message.setCallback( buildResponseApi( OperationNames.TRYACCESSRESPONSE_REST ), MEAN.REST );
+        message.setCallback( buildResponseApi( OperationName.TRYACCESSRESPONSE_REST ), MEAN.REST );
         return message;
     }
 
     private StartAccessMessage buildStartAccessMessage( String sessionId ) {
         StartAccessMessage message = new StartAccessMessage( pep.getId(), pep.getBaseUri() );
         message.setSessionId( sessionId );
-        message.setCallback( buildResponseApi( OperationNames.STARTACCESSRESPONSE_REST ), MEAN.REST );
+        message.setCallback( buildResponseApi( OperationName.STARTACCESSRESPONSE_REST ), MEAN.REST );
         return message;
     }
 
     private EndAccessMessage buildEndAccessMessage( String sessionId ) {
-        return buildEndAccessMessage( sessionId, buildResponseApi( OperationNames.ENDACCESSRESPONSE_REST ) );
+        return buildEndAccessMessage( sessionId, buildResponseApi( OperationName.ENDACCESSRESPONSE_REST ) );
     }
 
     private EndAccessMessage buildEndAccessMessage( String sessionId, String responseInterface ) {

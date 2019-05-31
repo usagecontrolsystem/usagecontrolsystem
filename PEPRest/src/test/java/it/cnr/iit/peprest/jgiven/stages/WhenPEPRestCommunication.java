@@ -1,7 +1,5 @@
 package it.cnr.iit.peprest.jgiven.stages;
 
-import static it.cnr.iit.ucs.constants.RestOperation.FLOW_STATUS;
-import static it.cnr.iit.ucs.constants.RestOperation.START_EVALUATION;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
 
@@ -22,6 +20,7 @@ import com.tngtech.jgiven.annotation.ProvidedScenarioState;
 import com.tngtech.jgiven.annotation.Quoted;
 import com.tngtech.jgiven.integration.spring.JGivenStage;
 
+import it.cnr.iit.ucs.constants.RestOperation;
 import it.cnr.iit.ucs.message.Message;
 
 @JGivenStage
@@ -58,7 +57,7 @@ public class WhenPEPRestCommunication extends Stage<WhenPEPRestCommunication> {
     public WhenPEPRestCommunication the_PEP_startEvaluation_is_executed() {
         try {
             assertNotNull( mvc );
-            mvcResponse = postToPEPRestcommunicationViaMockMvc( START_EVALUATION.getOperationUri() );
+            mvcResponse = postToPEPRestcommunicationViaMockMvc( RestOperation.START.getOperationUri() );
             messageId = mvcResponse.getContentAsString();
         } catch( Exception e ) {
             fail( e.getLocalizedMessage() );
@@ -69,7 +68,7 @@ public class WhenPEPRestCommunication extends Stage<WhenPEPRestCommunication> {
     public WhenPEPRestCommunication the_PEP_messageStatus_for_tryAccess_is_executed() {
         try {
             assertNotNull( mvc );
-            MockHttpServletResponse mvcResponse = getFromPEPRestcommunication( FLOW_STATUS.getOperationUri(), "messageId",
+            MockHttpServletResponse mvcResponse = getFromPEPRestcommunication( RestOperation.STATUS.getOperationUri(), "messageId",
                 messageId );
             messageBody = mvcResponse.getContentAsString();
         } catch( Exception e ) {

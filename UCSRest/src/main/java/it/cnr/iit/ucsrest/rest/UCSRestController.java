@@ -25,7 +25,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import it.cnr.iit.ucs.constants.OperationNames;
+import it.cnr.iit.ucs.constants.OperationName;
 import it.cnr.iit.ucs.message.endaccess.EndAccessMessage;
 import it.cnr.iit.ucs.message.startaccess.StartAccessMessage;
 import it.cnr.iit.ucs.message.tryaccess.TryAccessMessage;
@@ -60,7 +60,7 @@ public class UCSRestController {
     @ApiResponses( value = {
         @ApiResponse( code = 500, message = "Invalid message received" ),
         @ApiResponse( code = 200, message = "OK" ) } )
-    @PostMapping( value = OperationNames.TRYACCESS_REST, consumes = MediaType.APPLICATION_JSON_VALUE )
+    @PostMapping( value = OperationName.TRYACCESS_REST, consumes = MediaType.APPLICATION_JSON_VALUE )
     // TODO UCS-34 NOSONAR
     public void sendMessage( @RequestBody( ) TryAccessMessage message ) {
         Reject.ifNull( message );
@@ -71,7 +71,7 @@ public class UCSRestController {
     @ApiResponses( value = {
         @ApiResponse( code = 500, message = "Invalid message received" ),
         @ApiResponse( code = 200, message = "OK" ) } )
-    @PostMapping( value = OperationNames.STARTACCESS_REST, consumes = MediaType.APPLICATION_JSON_VALUE )
+    @PostMapping( value = OperationName.STARTACCESS_REST, consumes = MediaType.APPLICATION_JSON_VALUE )
     // TODO UCS-34 NOSONAR
     public void sendMessage( @RequestBody( ) StartAccessMessage message ) {
         Reject.ifNull( message );
@@ -83,7 +83,7 @@ public class UCSRestController {
     @ApiResponses( value = {
         @ApiResponse( code = 500, message = "Invalid message received" ),
         @ApiResponse( code = 200, message = "OK" ) } )
-    @PostMapping( value = OperationNames.ENDACCESS_REST, consumes = MediaType.APPLICATION_JSON_VALUE )
+    @PostMapping( value = OperationName.ENDACCESS_REST, consumes = MediaType.APPLICATION_JSON_VALUE )
     // TODO UCS-34 NOSONAR
     public void sendMessage( @RequestBody( ) EndAccessMessage message ) {
         Reject.ifNull( message );

@@ -22,9 +22,8 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import it.cnr.iit.ucs.constants.OperationNames;
+import it.cnr.iit.ucs.constants.OperationName;
 import it.cnr.iit.ucs.constants.STATUS;
-import it.cnr.iit.ucs.contexthandler.ContextHandlerConstants;
 import it.cnr.iit.ucs.contexthandler.ContextHandlerInterface;
 import it.cnr.iit.ucs.message.Message;
 import it.cnr.iit.ucs.message.attributechange.AttributeChangeMessage;
@@ -54,8 +53,8 @@ import it.cnr.iit.ucsrest.proxies.ProxyPDP;
 import it.cnr.iit.ucsrest.proxies.ProxySessionManager;
 import it.cnr.iit.ucsrest.requestmanager.RequestManagerLC;
 import it.cnr.iit.ucsrest.rest.UCSRest;
-import it.cnr.iit.utility.JAXBUtility;
 import it.cnr.iit.utility.FileUtility;
+import it.cnr.iit.utility.JAXBUtility;
 import it.cnr.iit.xacmlutilities.Attribute;
 import it.cnr.iit.xacmlutilities.Category;
 import it.cnr.iit.xacmlutilities.DataType;
@@ -90,7 +89,7 @@ public class UCSRestBaseTests {
         contextHandler.setPdp( getMockedPDP( getMockedPDPEvaluation( DecisionType.PERMIT ) ) );
         contextHandler.setPap( getMockedPAP( null ) );
         contextHandler.setRequestManager( getMockedRequestManagerToChInterface() );
-        contextHandler.setSessionManager( getSessionManagerForStatus( "", "", "", ContextHandlerConstants.TRY_STATUS ) );
+        contextHandler.setSessionManager( getSessionManagerForStatus( "", "", "", STATUS.TRY.name() ) );
         contextHandler.setObligationManager( getMockedObligationManager() );
     }
 
@@ -100,7 +99,7 @@ public class UCSRestBaseTests {
         ContextHandlerLC contextHandler = getContextHandler( prop );
         initContextHandler( contextHandler );
         contextHandler.setSessionManager(
-            getSessionManagerForStatus( "a", policy, request, ContextHandlerConstants.TRY_STATUS ) );
+            getSessionManagerForStatus( "a", policy, request, STATUS.TRY.name() ) );
 
         /* must be called after initialisation */
         addMockedPips( prop, contextHandler );
@@ -169,9 +168,8 @@ public class UCSRestBaseTests {
         return requestManagerToChInterface;
     }
 
-    protected OperationNames getMockedNodeInterface() {
-        OperationNames nodeInterface = Mockito
-            .mock( OperationNames.class );
+    protected OperationName getMockedNodeInterface() {
+        OperationName nodeInterface = Mockito.mock( OperationName.class );
 
         return nodeInterface;
     }
