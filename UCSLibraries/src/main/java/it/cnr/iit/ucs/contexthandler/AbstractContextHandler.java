@@ -16,9 +16,7 @@
 package it.cnr.iit.ucs.contexthandler;
 
 import java.net.URI;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.logging.Logger;
 
@@ -33,7 +31,6 @@ import it.cnr.iit.ucs.requestmanager.RequestManagerToCHInterface;
 import it.cnr.iit.ucs.sessionmanager.SessionManagerInterface;
 import it.cnr.iit.utility.RESTUtils;
 import it.cnr.iit.utility.errorhandling.Reject;
-import it.cnr.iit.utility.errorhandling.exception.PreconditionException;
 
 /**
  * This is the abstract representation of the context handler object.
@@ -58,15 +55,8 @@ public abstract class AbstractContextHandler implements ContextHandlerInterface 
     protected ContextHandlerProperties properties;
     protected URI uri;
 
-    /**
-     * The constructor requires the various interfaces the
-     * ContextHandler will have to deal with to work properly.
-     *
-     * @param the only parameter is the configuration of the actual context handler.
-     *
-     */
     protected AbstractContextHandler( ContextHandlerProperties properties ) {
-        Reject.ifNull( properties );
+        Reject.ifNull( properties, ContextHandlerProperties.class.getName() );
         this.properties = properties;
 
         Optional<URI> uri = RESTUtils.parseUri( properties.getBaseUri() );
@@ -85,6 +75,7 @@ public abstract class AbstractContextHandler implements ContextHandlerInterface 
     }
 
     public void setSessionManager( SessionManagerInterface sessionManager ) {
+        Reject.ifNull( sessionManager, SessionManagerInterface.class.getName() );
         this.sessionManager = sessionManager;
     }
 
@@ -92,16 +83,18 @@ public abstract class AbstractContextHandler implements ContextHandlerInterface 
         return pdp;
     }
 
-    public void setPdp( PDPInterface pdpInterface ) {
-        this.pdp = pdpInterface;
+    public void setPdp( PDPInterface pdp ) {
+        Reject.ifNull( pdp, PDPInterface.class.getName() );
+        this.pdp = pdp;
     }
 
     protected final PAPInterface getPap() {
         return pap;
     }
 
-    public void setPap( PAPInterface papInterface ) {
-        this.pap = papInterface;
+    public void setPap( PAPInterface pap ) {
+        Reject.ifNull( pap, PAPInterface.class.getName() );
+        this.pap = pap;
     }
 
     protected final RequestManagerToCHInterface getRequestManager() {
@@ -109,60 +102,35 @@ public abstract class AbstractContextHandler implements ContextHandlerInterface 
     }
 
     public void setRequestManager(
-            RequestManagerToCHInterface requestManagerToChInterface ) {
-        this.requestManager = requestManagerToChInterface;
+            RequestManagerToCHInterface requestManager ) {
+        Reject.ifNull( requestManager, RequestManagerToCHInterface.class.getName() );
+        this.requestManager = requestManager;
     }
 
     public void setPIPs( List<PIPCHInterface> pipList ) {
+        Reject.ifNull( pipList, PIPCHInterface.class.getName() + " list" );
         for( PIPCHInterface pip : pipList ) {
             pip.setContextHandler( this );
             pipRegistry.add( pip );
         }
     }
 
+    protected void setPipRegistry( PIPRegistryInterface pipRegistry ) {
+        Reject.ifNull( pipRegistry, PIPRegistryInterface.class.getName() );
+        this.pipRegistry = pipRegistry;
+    }
+
     public PIPRegistryInterface getPipRegistry() {
         return pipRegistry;
     }
 
-    protected void setPipRegistry( PIPRegistryInterface pipRegistry ) {
-        this.pipRegistry = pipRegistry;
-    }
-
     public void setObligationManager( ObligationManagerInterface obligationManager ) {
-        // Reject.ifNull( obligationManager );
+        Reject.ifNull( obligationManager, ObligationManagerInterface.class.getName() );
         this.obligationManager = obligationManager;
     }
 
     protected final ObligationManagerInterface getObligationManager() {
         return obligationManager;
-    }
-
-    /**
-     * Verifies that the status of the context handler is consistent.
-     * @throws Exception
-     */
-    @Deprecated
-    public void verify() throws PreconditionException {
-        final Map<String, Boolean> checkMap = new HashMap<String, Boolean>() {
-            private static final long serialVersionUID = 1L;
-            {
-                put( "sessionManager", sessionManager == null );
-                put( "requestManager", requestManager == null );
-                put( "obligationManager", obligationManager == null );
-                put( "pap", pap == null );
-                put( "pdp", pdp == null );
-            }
-        };
-
-        StringBuilder sb = new StringBuilder();
-        for( Map.Entry<String, Boolean> entry : checkMap.entrySet() ) {
-            if( entry.getValue() ) {
-                sb.append( entry.getKey() ).append( " " );
-            }
-        }
-
-        Reject.ifFalse( sb.length() == 0, "Context handler initialization error : " + sb );
-        log.info( "ContextHandler correctly initialized" );
     }
 
 }

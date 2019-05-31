@@ -101,7 +101,6 @@ public class UCSRestBaseTests {
         contextHandler.setSessionManager(
             getSessionManagerForStatus( "a", policy, request, STATUS.TRY.name() ) );
 
-        contextHandler.verify();
         /* must be called after initialisation */
         addMockedPips( prop, contextHandler );
         contextHandler.startMonitoringThread();
