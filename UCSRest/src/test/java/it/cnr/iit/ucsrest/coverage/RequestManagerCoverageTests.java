@@ -53,8 +53,6 @@ public class RequestManagerCoverageTests extends UCSRestBaseTests {
             getMockedPEPMap( "a", "" ) );
 
         testRequestManager( requestManager );
-        message.setUCSDestination();
-        testRequestManager( requestManager );
     }
 
     public void testRequestManager( RequestManagerLC requestManager ) throws URISyntaxException, IOException {

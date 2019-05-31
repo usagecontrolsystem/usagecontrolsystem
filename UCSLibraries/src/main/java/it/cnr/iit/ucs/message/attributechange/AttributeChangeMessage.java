@@ -17,12 +17,8 @@ package it.cnr.iit.ucs.message.attributechange;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
-import java.util.logging.Logger;
 
 import it.cnr.iit.ucs.message.Message;
-import it.cnr.iit.ucs.message.PART;
-import it.cnr.iit.utility.JsonUtility;
 import it.cnr.iit.xacmlutilities.Attribute;
 
 /**
@@ -35,8 +31,6 @@ import it.cnr.iit.xacmlutilities.Attribute;
  */
 public final class AttributeChangeMessage extends Message {
 
-    private static final Logger log = Logger.getLogger( AttributeChangeMessage.class.getName() );
-
     private static final long serialVersionUID = 1L;
 
     List<Attribute> attributes = new ArrayList<>();
@@ -47,17 +41,9 @@ public final class AttributeChangeMessage extends Message {
         super( source, destination );
     }
 
-    public AttributeChangeMessage( PART source, PART destination, List<Attribute> attributes ) {
-        super( source.toString(), destination.toString() );
-        if( super.isInitialized() ) {
-            setAttributes( attributes );
-        }
-    }
-
-    @Override
-    public String getMotivation() {
-        Optional<String> optObj = JsonUtility.getJsonStringFromObject( attributes, false );
-        return optObj.isPresent() ? optObj.get() : "";
+    public AttributeChangeMessage( String source, String destination, List<Attribute> attributes ) {
+        super( source, destination );
+        setAttributes( attributes );
     }
 
     public void setAttributes( List<Attribute> attributes ) {

@@ -16,8 +16,8 @@
 package it.cnr.iit.ucs.constants;
 
 public enum CONNECTION {
-    API( "API" ),
-    REST_API( "REST_API" ),
+    LOCAL( "LOCAL" ),
+    REST( "REST" ),
     SOCKET( "SOCKET" );
 
     private String string;

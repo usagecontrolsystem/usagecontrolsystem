@@ -15,16 +15,15 @@
  ******************************************************************************/
 package it.cnr.iit.ucs.message.startaccess;
 
+import it.cnr.iit.ucs.constants.ENTITIES;
+import it.cnr.iit.ucs.constants.PURPOSE;
 import it.cnr.iit.ucs.message.Message;
-import it.cnr.iit.ucs.message.PART;
-import it.cnr.iit.ucs.message.PURPOSE;
 
 /**
  * Structure of the startaccess message.
  * This is the structure of the startaccess message.
  *
  * @author Antonio La Marra, Alessandro Rosetti
- *
  */
 public final class StartAccessMessage extends Message {
 
@@ -34,12 +33,12 @@ public final class StartAccessMessage extends Message {
 
     public StartAccessMessage( String source, String destination ) {
         super( source, destination );
-        purpose = PURPOSE.STARTACCESS;
+        purpose = PURPOSE.START;
     }
 
     public StartAccessMessage() {
-        super( PART.PEP.toString(), PART.CH.toString() );
-        purpose = PURPOSE.STARTACCESS;
+        super( ENTITIES.PEP.toString(), ENTITIES.CH.toString() );
+        purpose = PURPOSE.START;
     }
 
     public void setSessionId( String sessionId ) {

@@ -30,8 +30,8 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import it.cnr.iit.ucs.constants.ENTITIES;
 import it.cnr.iit.ucs.exceptions.PIPException;
-import it.cnr.iit.ucs.message.PART;
 import it.cnr.iit.ucs.message.attributechange.AttributeChangeMessage;
 import it.cnr.iit.ucs.obligationmanager.ObligationInterface;
 import it.cnr.iit.ucs.pip.PIPBase;
@@ -345,7 +345,7 @@ public final class PIPReader extends PIPBase {
     }
 
     public void notifyContextHandler( Attribute attribute ) {
-        AttributeChangeMessage attrChangeMessage = new AttributeChangeMessage( PART.PIP.toString(), PART.CH.toString() );
+        AttributeChangeMessage attrChangeMessage = new AttributeChangeMessage( ENTITIES.PIP.toString(), ENTITIES.CH.toString() );
         ArrayList<Attribute> attrList = new ArrayList<>( Arrays.asList( attribute ) );
         attrChangeMessage.setAttributes( attrList );
         getContextHandler().attributeChanged( attrChangeMessage );

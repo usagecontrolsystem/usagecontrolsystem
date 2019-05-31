@@ -15,9 +15,9 @@
  ******************************************************************************/
 package it.cnr.iit.ucs.message.tryaccess;
 
+import it.cnr.iit.ucs.constants.ENTITIES;
+import it.cnr.iit.ucs.constants.PURPOSE;
 import it.cnr.iit.ucs.message.Message;
-import it.cnr.iit.ucs.message.PART;
-import it.cnr.iit.ucs.message.PURPOSE;
 import it.cnr.iit.utility.JAXBUtility;
 import it.cnr.iit.utility.errorhandling.Reject;
 
@@ -28,7 +28,6 @@ import oasis.names.tc.xacml.core.schema.wd_17.RequestType;
  * This is the whole object that arrives as a message to the tryaccess.
  *
  * @author Antonio La Marra, Alessandro Rosetti
- *
  */
 public final class TryAccessMessage extends Message {
 
@@ -41,12 +40,12 @@ public final class TryAccessMessage extends Message {
 
     public TryAccessMessage( String source, String destination ) {
         super( source, destination );
-        purpose = PURPOSE.TRYACCESS;
+        purpose = PURPOSE.TRY;
     }
 
     public TryAccessMessage() {
-        super( PART.PEP.toString(), PART.CH.toString() );
-        purpose = PURPOSE.TRYACCESS;
+        super( ENTITIES.PEP.toString(), ENTITIES.CH.toString() );
+        purpose = PURPOSE.TRY;
     }
 
     public boolean setPepUri( String pepUri ) {

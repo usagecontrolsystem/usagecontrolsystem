@@ -17,10 +17,10 @@ package it.cnr.iit.ucs.message.reevaluation;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import it.cnr.iit.ucs.constants.ENTITIES;
+import it.cnr.iit.ucs.constants.PURPOSE;
 import it.cnr.iit.ucs.message.EvaluatedResponse;
 import it.cnr.iit.ucs.message.Message;
-import it.cnr.iit.ucs.message.PART;
-import it.cnr.iit.ucs.message.PURPOSE;
 import it.cnr.iit.ucs.pdp.PDPEvaluation;
 import it.cnr.iit.utility.errorhandling.Reject;
 
@@ -28,7 +28,6 @@ import it.cnr.iit.utility.errorhandling.Reject;
  * Structure of the message that the CH sends to the PEP in case of reevaluation
  *
  * @author Antonio La Marra, Alessandro Rosetti
- *
  */
 public class ReevaluationResponse extends Message implements EvaluatedResponse {
 
@@ -50,12 +49,12 @@ public class ReevaluationResponse extends Message implements EvaluatedResponse {
     }
 
     public ReevaluationResponse() {
-        super( PART.CH.toString(), PART.PEP.toString() );
+        super( ENTITIES.CH.toString(), ENTITIES.PEP.toString() );
         purpose = PURPOSE.REEVALUATION_RESPONSE;
     }
 
     public ReevaluationResponse( String id ) {
-        super( PART.CH.toString(), PART.PEP.toString(), id );
+        super( ENTITIES.CH.toString(), ENTITIES.PEP.toString(), id );
         purpose = PURPOSE.REEVALUATION_RESPONSE;
     }
 

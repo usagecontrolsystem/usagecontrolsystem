@@ -35,9 +35,9 @@ import it.cnr.iit.peprest.messagetrack.MessageStorage;
 import it.cnr.iit.peprest.messagetrack.MessageStorageInterface;
 import it.cnr.iit.peprest.messagetrack.MessagesPerSession;
 import it.cnr.iit.peprest.proxy.UCSProxy;
+import it.cnr.iit.ucs.constants.CONNECTION;
 import it.cnr.iit.ucs.constants.OperationName;
 import it.cnr.iit.ucs.message.EvaluatedResponse;
-import it.cnr.iit.ucs.message.MEAN;
 import it.cnr.iit.ucs.message.Message;
 import it.cnr.iit.ucs.message.endaccess.EndAccessMessage;
 import it.cnr.iit.ucs.message.reevaluation.ReevaluationResponse;
@@ -133,7 +133,6 @@ public class PEPRest implements PEPInterface {
                 log.info( "STOP EXECUTION" );
             }
         }
-        message.setMotivation( "OK" );
         return message;
     }
 
@@ -142,14 +141,14 @@ public class PEPRest implements PEPInterface {
         message.setPepUri( buildResponseApi( pep.getApiStatusChanged() ) );
         message.setPolicy( policy.getPolicy() );
         message.setRequest( request.getRequest() );
-        message.setCallback( buildResponseApi( OperationName.TRYACCESSRESPONSE_REST ), MEAN.REST );
+        message.setCallback( buildResponseApi( OperationName.TRYACCESSRESPONSE_REST ), CONNECTION.REST );
         return message;
     }
 
     private StartAccessMessage buildStartAccessMessage( String sessionId ) {
         StartAccessMessage message = new StartAccessMessage( pep.getId(), pep.getBaseUri() );
         message.setSessionId( sessionId );
-        message.setCallback( buildResponseApi( OperationName.STARTACCESSRESPONSE_REST ), MEAN.REST );
+        message.setCallback( buildResponseApi( OperationName.STARTACCESSRESPONSE_REST ), CONNECTION.REST );
         return message;
     }
 
@@ -160,7 +159,7 @@ public class PEPRest implements PEPInterface {
     private EndAccessMessage buildEndAccessMessage( String sessionId, String responseInterface ) {
         EndAccessMessage message = new EndAccessMessage( pep.getId(), pep.getBaseUri() );
         message.setSessionId( sessionId );
-        message.setCallback( responseInterface, MEAN.REST );
+        message.setCallback( responseInterface, CONNECTION.REST );
         return message;
     }
 

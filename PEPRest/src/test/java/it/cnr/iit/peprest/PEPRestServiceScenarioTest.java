@@ -98,7 +98,6 @@ public class PEPRestServiceScenarioTest
         when().PEPRest_service_$_is_executed( ON_GOING_RESPONSE );
 
         then().the_$_message_is_put_in_the_unanswered_queue( END_ACCESS )
-            .and().the_Message_motivation_is_OK()
             .and().the_asynch_post_request_for_$_was_received_by_context_handler( END_ACCESS.getOperationUri() );
     }
 
@@ -111,8 +110,7 @@ public class PEPRestServiceScenarioTest
 
         when().PEPRest_service_$_execution_fails( ON_GOING_RESPONSE );
 
-        then().the_Message_motivation_is_NOT_OK()
-            .and().the_Message_is_not_placed_into_the_unanswered_queue()
+        then().the_Message_is_not_placed_into_the_unanswered_queue()
             .but().the_asynch_post_request_for_$_was_received_by_context_handler( END_ACCESS.getOperationUri() );
     }
 

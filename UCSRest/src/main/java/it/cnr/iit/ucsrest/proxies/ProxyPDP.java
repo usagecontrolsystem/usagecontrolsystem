@@ -35,7 +35,6 @@ import it.cnr.iit.xacmlutilities.wrappers.RequestWrapper;
  * This is the class implementing the proxy towards the PDP.
  *
  * @author Antonio La Marra, Alessandro Rosetti
- *
  */
 public final class ProxyPDP implements PDPInterface {
 
@@ -49,11 +48,11 @@ public final class ProxyPDP implements PDPInterface {
         this.properties = properties;
 
         switch( getConnection() ) {
-            case API:
+            case LOCAL:
                 Reject.ifFalse( buildLocalPdp( properties ), "Error building PDP" );
                 break;
             case SOCKET:
-            case REST_API:
+            case REST:
                 log.log( Level.SEVERE, CONNECTION.MSG_ERR_UNIMPLEMENTED, properties.getCommunicationType() );
                 break;
             default:
@@ -73,7 +72,7 @@ public final class ProxyPDP implements PDPInterface {
     @Override
     public PDPEvaluation evaluate( RequestWrapper request, PolicyWrapper policy ) {
         switch( getConnection() ) {
-            case API:
+            case LOCAL:
                 Reject.ifNull( pdp );
                 return pdp.evaluate( request, policy );
             default:
@@ -84,7 +83,7 @@ public final class ProxyPDP implements PDPInterface {
     @Override
     public PDPEvaluation evaluate( RequestWrapper request, PolicyWrapper policy, STATUS status ) {
         switch( getConnection() ) {
-            case API:
+            case LOCAL:
                 Reject.ifNull( pdp );
                 return pdp.evaluate( request, policy, status );
             default:

@@ -23,8 +23,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
 import it.cnr.iit.peprest.configuration.UCSProxyProperties;
+import it.cnr.iit.ucs.constants.PURPOSE;
 import it.cnr.iit.ucs.message.Message;
-import it.cnr.iit.ucs.message.PURPOSE;
 import it.cnr.iit.utility.RESTUtils;
 
 @Component
@@ -50,11 +50,11 @@ public class UCSProxy {
 
     private String getApiNameFromPurpose( PURPOSE purpose ) {
         switch( purpose ) {
-            case TRYACCESS:
+            case TRY:
                 return ucs.getApiTryAccess();
-            case STARTACCESS:
+            case START:
                 return ucs.getApiStartAccess();
-            case ENDACCESS:
+            case END:
                 return ucs.getApiEndAccess();
             default:
                 return "";
