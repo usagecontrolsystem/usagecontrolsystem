@@ -24,8 +24,8 @@ import it.cnr.iit.ucs.constants.STATUS;
 import it.cnr.iit.ucs.pdp.PDPEvaluation;
 import it.cnr.iit.ucs.pdp.PolicyDecisionPoint;
 import it.cnr.iit.ucs.properties.components.PdpProperties;
-import it.cnr.iit.xacmlutilities.wrappers.PolicyWrapper;
-import it.cnr.iit.xacmlutilities.wrappers.RequestWrapper;
+import it.cnr.iit.xacml.wrappers.PolicyWrapper;
+import it.cnr.iit.xacml.wrappers.RequestWrapper;
 
 @EnableConfigurationProperties
 @TestPropertySource( properties = "application-test.properties" )

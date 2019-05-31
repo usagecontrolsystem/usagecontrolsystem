@@ -13,7 +13,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  ******************************************************************************/
-package it.cnr.iit.xacmlutilities.wrappers;
+package it.cnr.iit.xacml.wrappers;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,10 +24,10 @@ import javax.xml.bind.JAXBException;
 
 import it.cnr.iit.utility.JAXBUtility;
 import it.cnr.iit.utility.errorhandling.Reject;
-import it.cnr.iit.xacmlutilities.Attribute;
-import it.cnr.iit.xacmlutilities.Category;
-import it.cnr.iit.xacmlutilities.DataType;
-import it.cnr.iit.xacmlutilities.constants.PolicyTags;
+import it.cnr.iit.xacml.Attribute;
+import it.cnr.iit.xacml.Category;
+import it.cnr.iit.xacml.DataType;
+import it.cnr.iit.xacml.PolicyTags;
 
 import oasis.names.tc.xacml.core.schema.wd_17.ApplyType;
 import oasis.names.tc.xacml.core.schema.wd_17.AttributeDesignatorType;

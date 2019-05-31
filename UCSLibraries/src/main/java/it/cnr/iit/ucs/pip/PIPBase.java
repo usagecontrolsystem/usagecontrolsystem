@@ -11,7 +11,7 @@ import java.util.HashMap;
 import it.cnr.iit.ucs.contexthandler.ContextHandlerPIPInterface;
 import it.cnr.iit.ucs.properties.components.PipProperties;
 import it.cnr.iit.utility.errorhandling.Reject;
-import it.cnr.iit.xacmlutilities.Attribute;
+import it.cnr.iit.xacml.Attribute;
 
 /**
  * General PIP abstract class

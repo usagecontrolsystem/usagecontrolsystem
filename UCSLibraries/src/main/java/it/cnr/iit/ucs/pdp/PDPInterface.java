@@ -16,8 +16,8 @@
 package it.cnr.iit.ucs.pdp;
 
 import it.cnr.iit.ucs.constants.STATUS;
-import it.cnr.iit.xacmlutilities.wrappers.PolicyWrapper;
-import it.cnr.iit.xacmlutilities.wrappers.RequestWrapper;
+import it.cnr.iit.xacml.wrappers.PolicyWrapper;
+import it.cnr.iit.xacml.wrappers.RequestWrapper;
 
 /**
  * This is the interface offered by the PDP. The only task the PDP has to

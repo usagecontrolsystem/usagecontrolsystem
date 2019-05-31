@@ -13,14 +13,12 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  ******************************************************************************/
-package it.cnr.iit.xacmlutilities;
+package it.cnr.iit.xacml;
 
 /**
  * This is enumerate represents the dataType enumerate
- * <p>
  * In UXACML syntax data-types can be many, we list here the ones that we will
  * use.
- * </p>
  *
  * @author Antonio La Marra, Alessandro Rosetti
  *
@@ -32,15 +30,8 @@ public enum DataType {
     ANYURI( "http://www.w3.org/2001/XMLSchema#anyURI" ),
     DATE( "http://www.w3.org/2001/XMLSchema#date" );
 
-    // the string that describes the dataType
     private final String payload;
 
-    /**
-     * Constructor for the dataType object
-     *
-     * @param payload
-     *          the string that describes the dataType
-     */
     DataType( String payload ) {
         this.payload = payload;
     }
@@ -60,17 +51,13 @@ public enum DataType {
     public static DataType toDATATYPE( String payload ) {
         if( payload.equalsIgnoreCase( INTEGER.toString() ) ) {
             return INTEGER;
-        }
-        if( payload.equalsIgnoreCase( DOUBLE.toString() ) ) {
+        } else if( payload.equalsIgnoreCase( DOUBLE.toString() ) ) {
             return DOUBLE;
-        }
-        if( payload.equalsIgnoreCase( STRING.toString() ) ) {
+        } else if( payload.equalsIgnoreCase( STRING.toString() ) ) {
             return STRING;
-        }
-        if( payload.equalsIgnoreCase( ANYURI.toString() ) ) {
+        } else if( payload.equalsIgnoreCase( ANYURI.toString() ) ) {
             return ANYURI;
-        }
-        if( payload.equalsIgnoreCase( DATE.toString() ) ) {
+        } else if( payload.equalsIgnoreCase( DATE.toString() ) ) {
             return DATE;
         }
         return null;

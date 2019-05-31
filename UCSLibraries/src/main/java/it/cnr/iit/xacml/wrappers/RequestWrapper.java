@@ -1,4 +1,4 @@
-package it.cnr.iit.xacmlutilities.wrappers;
+package it.cnr.iit.xacml.wrappers;
 
 import java.util.logging.Logger;
 
@@ -6,7 +6,7 @@ import javax.xml.bind.JAXBException;
 
 import it.cnr.iit.utility.JAXBUtility;
 import it.cnr.iit.utility.errorhandling.Reject;
-import it.cnr.iit.xacmlutilities.Attribute;
+import it.cnr.iit.xacml.Attribute;
 
 import oasis.names.tc.xacml.core.schema.wd_17.AttributeType;
 import oasis.names.tc.xacml.core.schema.wd_17.AttributesType;
@@ -23,8 +23,6 @@ public class RequestWrapper {
 
     private RequestWrapper() {}
 
-    // TODO use optional
-    // TODO add pip registry
     public static RequestWrapper build( String request ) {
         Reject.ifBlank( request );
 
@@ -32,6 +30,10 @@ public class RequestWrapper {
         requestHelper.setRequest( request );
 
         return requestHelper.requestType != null ? requestHelper : null;
+    }
+
+    public static RequestWrapper build( RequestWrapper request ) {
+        return RequestWrapper.build( request.getRequest() );
     }
 
     public static RequestType unmarshalRequestType( String request ) {
@@ -79,11 +81,6 @@ public class RequestWrapper {
             }
         }
         return false;
-    }
-
-    @Override
-    public RequestWrapper clone() {
-        return RequestWrapper.build( this.getRequest() );
     }
 
 }

@@ -25,8 +25,8 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 
-import it.cnr.iit.xacmlutilities.Attribute;
-import it.cnr.iit.xacmlutilities.Category;
+import it.cnr.iit.xacml.Attribute;
+import it.cnr.iit.xacml.Category;
 
 @XmlAccessorType( XmlAccessType.FIELD )
 @XmlType( name = "RequestType",

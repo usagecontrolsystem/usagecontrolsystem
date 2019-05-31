@@ -28,8 +28,8 @@ import it.cnr.iit.ucsrest.coverage.properties.TestProperties;
 import it.cnr.iit.ucsrest.properties.UCSRestProperties;
 import it.cnr.iit.utility.FileUtility;
 import it.cnr.iit.utility.errorhandling.exception.PreconditionException;
-import it.cnr.iit.xacmlutilities.Category;
-import it.cnr.iit.xacmlutilities.DataType;
+import it.cnr.iit.xacml.Category;
+import it.cnr.iit.xacml.DataType;
 
 import oasis.names.tc.xacml.core.schema.wd_17.DecisionType;
 

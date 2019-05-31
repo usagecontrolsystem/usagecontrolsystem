@@ -19,7 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import it.cnr.iit.ucs.message.Message;
-import it.cnr.iit.xacmlutilities.Attribute;
+import it.cnr.iit.xacml.Attribute;
 
 /**
  * This is the message a PIP sends to a CH and vice versa.

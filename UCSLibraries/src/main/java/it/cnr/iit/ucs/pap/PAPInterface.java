@@ -21,7 +21,6 @@ import java.util.List;
  * This is the interface to be used to communicate with the Policy
  * Administration Point.
  *
- * <p>
  * The PAP is a storage of Policy, hence all the methods regarding the PAP are
  * methods to add, retrieve or list the policy it stores. <br>
  * TODO For the moment the policies are expressed as String, however it might be
@@ -29,7 +28,6 @@ import java.util.List;
  * useful to use POJOs in this case because the PDP evaluates Strings in the XML
  * format, hence we may have to perform parsing and parsing and this would not
  * make any sense.
- * </p>
  *
  * @author antonio
  *

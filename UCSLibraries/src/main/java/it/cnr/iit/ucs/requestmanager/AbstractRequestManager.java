@@ -30,12 +30,10 @@ import it.cnr.iit.utility.errorhandling.Reject;
 
 /**
  * This is the abstract class representing the request manager.
- * <p>
  * Since we may have different flavours of the request manager, each with its own
  * characteristics (single thread or multiple threads, algorithms used to
  * prioritise the queue and so on), this is a way to provide all the
  * RequestManagers the same basics characteristics
- * </p>
  *
  * @author Antonio La Marra, Alessandro Rosetti
  *
@@ -45,23 +43,19 @@ public abstract class AbstractRequestManager
 
     protected static final Logger log = Logger.getLogger( AbstractRequestManager.class.getName() );
 
-    // queue of messages received from the context handler
     private final BlockingQueue<Message> queueFromCH = new LinkedBlockingQueue<>();
-    // queue of messages to be passed to the context handler
     private final BlockingQueue<Message> queueToCH = new LinkedBlockingQueue<>();
-    // interface provided by the context handler
     private final BlockingQueue<AttributeChangeMessage> retrieveRequests = new LinkedBlockingQueue<>();
 
     private ContextHandlerInterface contextHandler;
-    // interface provided by the PEP
-    private HashMap<String, PEPInterface> pep;
+    private HashMap<String, PEPInterface> pepMap;
 
     protected RequestManagerProperties properties;
 
     protected AbstractRequestManager( RequestManagerProperties properties ) {
         Reject.ifNull( properties );
         this.properties = properties;
-        pep = new HashMap<>();
+        pepMap = new HashMap<>();
     }
 
     /**
@@ -78,15 +72,15 @@ public abstract class AbstractRequestManager
             Map<String, PEPInterface> proxyPEPMap ) {
         Reject.ifNull( contextHandler, proxyPEPMap );
         this.contextHandler = contextHandler;
-        pep.putAll( proxyPEPMap );
+        pepMap.putAll( proxyPEPMap );
     }
 
     protected ContextHandlerInterface getContextHandler() {
         return contextHandler;
     }
 
-    protected HashMap<String, PEPInterface> getPEPInterface() {
-        return pep;
+    protected HashMap<String, PEPInterface> getPEPMap() {
+        return pepMap;
     }
 
     protected BlockingQueue<Message> getQueueFromCH() {

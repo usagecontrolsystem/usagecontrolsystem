@@ -3,7 +3,7 @@
  *
  * @authors Fabio Bindi and Filippo Lauria and Antonio La Marra
  */
-package it.cnr.iit.xacmlutilities;
+package it.cnr.iit.xacml;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -23,7 +23,7 @@ import it.cnr.iit.utility.errorhandling.Reject;
  * Creates an Attribute object compliant with the XACML standard Embeds
  * AttributeDesignator and AttributeValue.
  *
- * @author Fabio Bindi and Filippo Lauria and Antonio La Marra and Alessandro Rosetti
+ * @author Fabio Bindi, Filippo Lauria, Antonio La Marra, Alessandro Rosetti
  */
 public final class Attribute implements Cloneable {
     private final Logger log = Logger.getLogger( Attribute.class.getName() );
@@ -55,11 +55,6 @@ public final class Attribute implements Cloneable {
         this.attributeId = attributeId;
     }
 
-    /**
-     * Retrieves the attribute type (i.e String, Integer, AnyURI, Date)
-     *
-     * @return
-     */
     public DataType getDataType() {
         return dataType;
     }
@@ -117,7 +112,7 @@ public final class Attribute implements Cloneable {
      * @return a list of attribute values
      */
     public List<String> getAttributeValues( String dataType ) {
-        ifNotValidDataType( dataType );
+        checkValidDataType( dataType );
         return attributeValueMap.get( dataType );
     }
 
@@ -134,12 +129,12 @@ public final class Attribute implements Cloneable {
      * Creates the values of an attribute given its type
      *
      * @param type
-     *          a string representig the attribute type
+     *          a string representing the attribute type
      * @param value
      *          value to set
      */
     public void setAttributeValues( String type, String value ) {
-        ifNotValidDataType( type );
+        checkValidDataType( type );
         Reject.ifBlank( value );
         List<String> valueList = attributeValueMap.get( type );
         if( valueList == null ) {
@@ -156,7 +151,7 @@ public final class Attribute implements Cloneable {
         attributeValueMap.put( type, valueList );
     }
 
-    private void ifNotValidDataType( String type ) {
+    private void checkValidDataType( String type ) {
         Reject.ifBlank( type );
         DataType tmpDataType = DataType.toDATATYPE( type );
         Reject.ifNull( tmpDataType );
@@ -243,8 +238,7 @@ public final class Attribute implements Cloneable {
     public boolean equals( Object obj ) {
         if( this == obj ) {
             return true;
-        }
-        if( obj == null || getClass() != obj.getClass() ) {
+        } else if( obj == null || getClass() != obj.getClass() ) {
             return false;
         }
         final Attribute other = (Attribute) obj;
@@ -253,12 +247,7 @@ public final class Attribute implements Cloneable {
 
     @Override
     public int hashCode() {
-        String s = toString();
-        int result = 0;
-        for( int i = 0; i < s.length(); i++ ) {
-            result += s.charAt( i );
-        }
-        return result;
+        return this.toString().hashCode();
     }
 
     @Override

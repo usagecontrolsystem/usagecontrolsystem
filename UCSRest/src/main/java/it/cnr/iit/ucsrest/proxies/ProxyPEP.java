@@ -36,12 +36,10 @@ import it.cnr.iit.utility.errorhandling.Reject;
 
 /**
  * This is the proxy towards the PEP.
- * <p>
  * This proxy is useful because in this way the UCS can assume that everything
  * is local and so call the interfaces provided by the various classes. The only
  * class to modify in the case in which we have a brand new communication link
  * is this one
- * </p>
  *
  * @author Antonio La Marra, Alessandro Rosetti
  *

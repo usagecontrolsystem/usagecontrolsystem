@@ -10,11 +10,9 @@ import java.util.UUID;
 /**
  *
  * The class representing an on going attribute in the database.
- * <p>
  * We have kept the OrmLite annotations since this kind of object has to easily
  * represent an entry in a SQL database. <br>
  * Names of the fields have been changed a little. <br>
- * </p>
  *
  * @author Fabio Bindi and Filippo Lauria and Antonio La Marra
  */

@@ -48,8 +48,8 @@ import it.cnr.iit.ucs.pdp.PDPEvaluation;
 import it.cnr.iit.ucs.pep.PEPInterface;
 import it.cnr.iit.utility.FileUtility;
 import it.cnr.iit.utility.errorhandling.Reject;
-import it.cnr.iit.xacmlutilities.wrappers.PolicyWrapper;
-import it.cnr.iit.xacmlutilities.wrappers.RequestWrapper;
+import it.cnr.iit.xacml.wrappers.PolicyWrapper;
+import it.cnr.iit.xacml.wrappers.RequestWrapper;
 
 import oasis.names.tc.xacml.core.schema.wd_17.DecisionType;
 

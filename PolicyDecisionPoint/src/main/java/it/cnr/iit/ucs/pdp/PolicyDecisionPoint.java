@@ -51,9 +51,9 @@ import org.wso2.balana.xacml3.MultipleCtxResult;
 import it.cnr.iit.ucs.constants.STATUS;
 import it.cnr.iit.ucs.properties.components.PdpProperties;
 import it.cnr.iit.utility.FileUtility;
-import it.cnr.iit.xacmlutilities.constants.PolicyTags;
-import it.cnr.iit.xacmlutilities.wrappers.PolicyWrapper;
-import it.cnr.iit.xacmlutilities.wrappers.RequestWrapper;
+import it.cnr.iit.xacml.PolicyTags;
+import it.cnr.iit.xacml.wrappers.PolicyWrapper;
+import it.cnr.iit.xacml.wrappers.RequestWrapper;
 
 import journal.io.api.Journal;
 import journal.io.api.Journal.WriteType;
@@ -129,8 +129,7 @@ public final class PolicyDecisionPoint extends AbstractPDP {
      * most people will provide what you want. If you need any special handling,
      * you should look at the version of this method that takes an
      * <code>EvaluationCtx</code>.
-     * <p>
-     * Note that if the request is somehow invalid (it was missing a required
+         * Note that if the request is somehow invalid (it was missing a required
      * attribute, it was using an unsupported scope, etc), then the result will be
      * a decision of INDETERMINATE.
      *
@@ -169,8 +168,7 @@ public final class PolicyDecisionPoint extends AbstractPDP {
      * most people will provide what you want. If you need any special handling,
      * you should look at the version of this method that takes an
      * <code>EvaluationCtx</code>.
-     * <p>
-     * Note that if the request is somehow invalid (it was missing a required
+         * Note that if the request is somehow invalid (it was missing a required
      * attribute, it was using an unsupported scope, etc), then the result will be
      * a decision of INDETERMINATE.
      *

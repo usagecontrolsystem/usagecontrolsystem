@@ -13,25 +13,15 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  ******************************************************************************/
-package it.cnr.iit.xacmlutilities;
+package it.cnr.iit.xacml;
 
 /**
- * This is the category enumerate.
- *
- * <p>
- * In XACML syntax Category can be one of these 4 possible values:
- * <ol>
- * <li>Subject</li>
- * <li>Resource</li>
- * <li>Action</li>
- * <li>Environment</li>
- * </ol>
+ * In XACML syntax the category can be one of:
+ * Subject, Resource, Action, Environment.
  * This enumerate is used to hold the String that represents the category in the
  * UXACML format
- * </p>
  *
- * @author antonio
- *
+ * @author Antonio La Marra
  */
 public enum Category {
     ACTION( "urn:oasis:names:tc:xacml:3.0:attribute-category:action" ),
@@ -39,15 +29,8 @@ public enum Category {
     SUBJECT( "urn:oasis:names:tc:xacml:1.0:subject-category:access-subject" ),
     ENVIRONMENT( "urn:oasis:names:tc:xacml:3.0:attribute-category:environment" );
 
-    // the string representing the category in xacmlformat
     private final String payload;
 
-    /**
-     * constructor for the category enumerate
-     *
-     * @param payload
-     *          the string that identifies the category
-     */
     Category( String payload ) {
         this.payload = payload;
     }
@@ -68,14 +51,11 @@ public enum Category {
     public static Category toCATEGORY( String payload ) {
         if( payload.equalsIgnoreCase( ACTION.toString() ) ) {
             return ACTION;
-        }
-        if( payload.equalsIgnoreCase( RESOURCE.toString() ) ) {
+        } else if( payload.equalsIgnoreCase( RESOURCE.toString() ) ) {
             return RESOURCE;
-        }
-        if( payload.equalsIgnoreCase( SUBJECT.toString() ) ) {
+        } else if( payload.equalsIgnoreCase( SUBJECT.toString() ) ) {
             return SUBJECT;
-        }
-        if( payload.equalsIgnoreCase( ENVIRONMENT.toString() ) ) {
+        } else if( payload.equalsIgnoreCase( ENVIRONMENT.toString() ) ) {
             return ENVIRONMENT;
         }
         return null;

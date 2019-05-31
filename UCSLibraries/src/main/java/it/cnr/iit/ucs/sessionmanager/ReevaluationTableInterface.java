@@ -15,17 +15,15 @@
  ******************************************************************************/
 package it.cnr.iit.ucs.sessionmanager;
 
-import it.cnr.iit.xacmlutilities.Attribute;
+import it.cnr.iit.xacml.Attribute;
 
 /**
  * This is the interface used to deal with the reevaluation interface.
- * <p>
  * The ReevaluationTable is used to keep a track of the sessions under
  * evaluation in order to avoid sessions reevaluated at the same time by
  * different nodes. The ReevaluationTable must provide, to sum up, some methods
  * to insert a session, if that session is not already under evaluation. and
  * methods to retrieve the sessions that are already under evaluation.
- * </p>
  * 
  * @author antonio
  *

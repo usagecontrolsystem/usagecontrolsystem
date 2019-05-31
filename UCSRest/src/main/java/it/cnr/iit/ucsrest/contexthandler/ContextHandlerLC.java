@@ -42,33 +42,26 @@ import it.cnr.iit.ucs.sessionmanager.OnGoingAttributesInterface;
 import it.cnr.iit.ucs.sessionmanager.SessionAttributesBuilder;
 import it.cnr.iit.ucs.sessionmanager.SessionInterface;
 import it.cnr.iit.utility.errorhandling.Reject;
-import it.cnr.iit.xacmlutilities.Attribute;
-import it.cnr.iit.xacmlutilities.Category;
-import it.cnr.iit.xacmlutilities.constants.PolicyTags;
-import it.cnr.iit.xacmlutilities.wrappers.PolicyWrapper;
-import it.cnr.iit.xacmlutilities.wrappers.RequestWrapper;
+import it.cnr.iit.xacml.Attribute;
+import it.cnr.iit.xacml.Category;
+import it.cnr.iit.xacml.PolicyTags;
+import it.cnr.iit.xacml.wrappers.PolicyWrapper;
+import it.cnr.iit.xacml.wrappers.RequestWrapper;
 
 import oasis.names.tc.xacml.core.schema.wd_17.DecisionType;
 
 /**
- * This is the class implementing a context-handler with low concurrency.
- * <p>
- * We will provide some different implementations of the context handler, so
- * that the user can pick up the most suitable to its case.
- * The context handler spawns a thread in charge of  monitoring eventual changes
- * in the value of the attributes. This thread stays  in a sleeping state unless
- * it is waken up by the calling of a proper function performed by the PIP.
- * </p> <p>
- * This implementation of the context handler can handle a single request per
- * time. This single thread is represented by the AttributeMonitor
- * actor which implements the Callable<String> interface.
+ * The context handler coordinates the ucs operations and spawns a thread in charge of  monitoring
+ * eventual changes in the value of the attributes.
+ * This implementation of the context handler can handle a single request per time.
+ * This single thread is represented by the AttributeMonitor actor which implements
+ * the Callable<String> interface.
  * This context handler has a blocking queue that will be used for notifications by the
  * various PIPs, since once a notification has been received, all the PIPs will
  * be queried, then this queue MUST contain, unless something changes in the
- * architecture a single element only.</p>
+ * architecture a single element only.
  *
  * @author Antonio La Marra, Alessandro Rosetti
- *
  */
 public final class ContextHandlerLC extends AbstractContextHandler {
 
@@ -77,7 +70,6 @@ public final class ContextHandlerLC extends AbstractContextHandler {
     @Deprecated
     public static final String PEP_ID_SEPARATOR = "#";
 
-    // monitors if the value of an attribute changes
     private AttributeMonitor attributeMonitor;
 
     public ContextHandlerLC( ContextHandlerProperties properties ) {
@@ -87,9 +79,6 @@ public final class ContextHandlerLC extends AbstractContextHandler {
 
     /**
      * TryAccess method invoked by the PEP
-     *
-     * @param message
-     *            the TryAccessMessage received
      */
     @Override
     public TryAccessResponse tryAccess( TryAccessMessage message ) {
@@ -131,16 +120,8 @@ public final class ContextHandlerLC extends AbstractContextHandler {
         return response;
     }
 
-    /**
-     * Attempt to fill the request in order to let the PDP evaluate it.
-     *
-     * @param request
-     *            the request
-     * @param status
-     *            the status
-     */
     private synchronized RequestWrapper fattenRequest( RequestWrapper request, STATUS status ) {
-        RequestWrapper fatRequest = request.clone();
+        RequestWrapper fatRequest = RequestWrapper.build( request );
 
         if( status == STATUS.START ) {
             getPipRegistry().subscribeAll( fatRequest.getRequestType() );
@@ -244,9 +225,6 @@ public final class ContextHandlerLC extends AbstractContextHandler {
 
     /**
      * startAccess method invoked by PEP
-     *
-     * @param message
-     *            the StartAccessMessage
      */
     @Override
     public StartAccessResponse startAccess( StartAccessMessage message )
@@ -298,11 +276,7 @@ public final class ContextHandlerLC extends AbstractContextHandler {
 
     /**
      * This is the code for the revoke. A revoke is always triggered by and
-     * EndAccess, in this function, all the attributes are unsubscribed
-     *
-     * @param session
-     *            the session for which the revoke has to occur
-     * @return true if everything goes ok, false otherwise
+     * EndAccess, in this function, all the attributes are un-subscribed.
      */
     private synchronized boolean revoke( SessionInterface session, List<Attribute> attributes ) {
         log.log( Level.INFO, "Revoke begins at {0}", System.currentTimeMillis() );
@@ -330,8 +304,6 @@ public final class ContextHandlerLC extends AbstractContextHandler {
      * @param attributes
      *            the JSON object to be filled by this function
      * @return true if there are attributes to unsubscribe, false otherwise
-     *         <br>
-     *
      */
     private boolean attributesToUnsubscribe( String sessionId, ArrayList<Attribute> attributes ) {
         String subjectName = "";
@@ -418,6 +390,9 @@ public final class ContextHandlerLC extends AbstractContextHandler {
         return attribute;
     }
 
+    /**
+     * endAccess method invoked by PEP
+     */
     @Override
     public EndAccessResponse endAccess( EndAccessMessage message ) throws StatusException {
         log.log( Level.INFO, "EndAccess begins at {0}", System.currentTimeMillis() );
@@ -461,10 +436,7 @@ public final class ContextHandlerLC extends AbstractContextHandler {
     }
 
     /**
-     * API offered by the context handler to the PIP in case some attribute gets
-     * changed
-     *
-     * @param message
+     * API offered by the context handler to the PIP in case some attribute changes
      */
     @Override
     public void attributeChanged( AttributeChangeMessage message ) {
@@ -475,16 +447,6 @@ public final class ContextHandlerLC extends AbstractContextHandler {
 
     /**
      * This is the function where the effective reevaluation takes place.
-     * The reevaluation process is divided in the following steps:
-     * <ol>
-     * <li>Retrieve all the required informations</li>
-     * <li>Retrieve the list of interested sessions the sessionManager</li>
-     * <li>Reevaluate each session</li>
-     * </ol>
-     *
-     * @param Attribute
-     *            the attribute changed
-     * @return true if there haven't been any error
      */
     public boolean reevaluateSessions( Attribute attribute ) {
         try {

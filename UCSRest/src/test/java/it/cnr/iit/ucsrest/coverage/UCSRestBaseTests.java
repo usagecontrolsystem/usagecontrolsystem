@@ -55,11 +55,11 @@ import it.cnr.iit.ucsrest.requestmanager.RequestManagerLC;
 import it.cnr.iit.ucsrest.rest.UCSRest;
 import it.cnr.iit.utility.FileUtility;
 import it.cnr.iit.utility.JAXBUtility;
-import it.cnr.iit.xacmlutilities.Attribute;
-import it.cnr.iit.xacmlutilities.Category;
-import it.cnr.iit.xacmlutilities.DataType;
-import it.cnr.iit.xacmlutilities.wrappers.PolicyWrapper;
-import it.cnr.iit.xacmlutilities.wrappers.RequestWrapper;
+import it.cnr.iit.xacml.Attribute;
+import it.cnr.iit.xacml.Category;
+import it.cnr.iit.xacml.DataType;
+import it.cnr.iit.xacml.wrappers.PolicyWrapper;
+import it.cnr.iit.xacml.wrappers.RequestWrapper;
 
 import oasis.names.tc.xacml.core.schema.wd_17.DecisionType;
 import oasis.names.tc.xacml.core.schema.wd_17.PolicyType;

@@ -30,7 +30,6 @@ import it.cnr.iit.utility.errorhandling.Reject;
 
 /**
  * This class represents a possible implementation of the ObligationManager
- * <p>
  * The obligation manager is the component in charge of handling the various
  * obligations we can have in the policy. Since an obligation manager can handle
  * two different types of obligations, one directed to the PEP and the other
@@ -46,7 +45,6 @@ import it.cnr.iit.utility.errorhandling.Reject;
  * evaluation</li>
  * </ol>
  *
- * </p>
  *
  * @author antonio
  *
