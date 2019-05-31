@@ -17,7 +17,7 @@ import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import it.cnr.iit.ucs.contexthandler.ContextHandlerConstants;
+import it.cnr.iit.ucs.constants.STATUS;
 import it.cnr.iit.ucs.message.attributechange.AttributeChangeMessage;
 import it.cnr.iit.ucs.message.endaccess.EndAccessMessage;
 import it.cnr.iit.ucs.message.startaccess.StartAccessMessage;
@@ -84,7 +84,7 @@ public class ContextHandlerCoverageTests extends UCSRestBaseTests {
 
         /* startAccess */
         contextHandler.setSessionManager(
-            getSessionManagerForStatus( testProperties.getSessionId(), policy, request, ContextHandlerConstants.TRY_STATUS ) );
+            getSessionManagerForStatus( testProperties.getSessionId(), policy, request, STATUS.TRY.name() ) );
         // this line makes the start access to take the deny path
         contextHandler.setPdp( getMockedPDP( getMockedPDPEvaluation( DecisionType.DENY ) ) );
         StartAccessMessage startAccessMessage = buildStartAccessMessage( testProperties.getSessionId(), "a", "a" );
@@ -99,7 +99,7 @@ public class ContextHandlerCoverageTests extends UCSRestBaseTests {
 
         /* endAccess */
         contextHandler.setSessionManager(
-            getSessionManagerForStatus( testProperties.getSessionId(), policy, request, ContextHandlerConstants.START_STATUS ) );
+            getSessionManagerForStatus( testProperties.getSessionId(), policy, request, STATUS.START.name() ) );
         contextHandler.setPdp( getMockedPDP( getMockedPDPEvaluation( DecisionType.DENY ) ) );
         EndAccessMessage endAccessMessage = buildEndAccessMessage( testProperties.getSessionId(), "a", "a" );
         contextHandler.endAccess( endAccessMessage );
@@ -118,12 +118,12 @@ public class ContextHandlerCoverageTests extends UCSRestBaseTests {
 
         /* startAccess */
         contextHandler.setSessionManager(
-            getSessionManagerForStatus( testProperties.getSessionId(), policy, request, ContextHandlerConstants.TRY_STATUS ) );
+            getSessionManagerForStatus( testProperties.getSessionId(), policy, request, STATUS.TRY.name() ) );
         StartAccessMessage startAccessMessage = buildStartAccessMessage( testProperties.getSessionId(), "a", "a" );
         contextHandler.startAccess( startAccessMessage );
 
         /* reevaluate */
-        contextHandler.reevaluate( getMockedSessionInterface( policy, request, ContextHandlerConstants.START_STATUS ) );
+        contextHandler.reevaluate( getMockedSessionInterface( policy, request, STATUS.START.name() ) );
 
         AttributeChangeMessage PipChmessage = buildPipChMessage( testProperties.getSessionId(), "a", "a" );
         PipChmessage.addAttribute( getNewAttribute( "virus", Category.ENVIRONMENT, DataType.INTEGER, "1" ) );
@@ -131,7 +131,7 @@ public class ContextHandlerCoverageTests extends UCSRestBaseTests {
 
         /* endAccess */
         contextHandler.setSessionManager(
-            getSessionManagerForStatus( testProperties.getSessionId(), policy, request, ContextHandlerConstants.START_STATUS ) );
+            getSessionManagerForStatus( testProperties.getSessionId(), policy, request, STATUS.START.name() ) );
         EndAccessMessage endAccessMessage = buildEndAccessMessage( testProperties.getSessionId(), "a", "a" );
         contextHandler.endAccess( endAccessMessage );
 

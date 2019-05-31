@@ -15,7 +15,7 @@
  ******************************************************************************/
 package it.cnr.iit.ucs.constants;
 
-public final class OperationNames {
+public final class OperationName {
 
     public static final String TRYACCESS_REST = "/tryAccess";
     public static final String STARTACCESS_REST = "/startAccess";

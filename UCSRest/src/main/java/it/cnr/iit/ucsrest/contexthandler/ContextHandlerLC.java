@@ -26,7 +26,6 @@ import java.util.logging.Logger;
 
 import it.cnr.iit.ucs.constants.STATUS;
 import it.cnr.iit.ucs.contexthandler.AbstractContextHandler;
-import it.cnr.iit.ucs.contexthandler.ContextHandlerConstants;
 import it.cnr.iit.ucs.exceptions.SessionManagerException;
 import it.cnr.iit.ucs.exceptions.StatusException;
 import it.cnr.iit.ucs.message.attributechange.AttributeChangeMessage;
@@ -104,18 +103,18 @@ public final class ContextHandlerLC extends AbstractContextHandler {
         Reject.ifAbsent( optPolicy );
         PolicyWrapper policy = optPolicy.get(); // NOSONAR
         RequestWrapper request = RequestWrapper.build( message.getRequest() );
-        RequestWrapper fatRequest = fattenRequest( request, STATUS.TRYACCESS );
+        RequestWrapper fatRequest = fattenRequest( request, STATUS.TRY );
         log.info( "TryAccess fattened request contents : \n" + fatRequest.getRequest() );
 
         // Perform the PDP evaluation
-        PDPEvaluation evaluation = getPdp().evaluate( fatRequest, policy, STATUS.TRYACCESS );
+        PDPEvaluation evaluation = getPdp().evaluate( fatRequest, policy, STATUS.TRY );
         Reject.ifNull( evaluation );
         log.log( Level.INFO, "TryAccess evaluated at {0} pdp response : {1}",
             new Object[] { System.currentTimeMillis(), evaluation.getResult() } );
 
         String sessionId = generateNewSessionId();
         evaluation.setSessionId( sessionId );
-        getObligationManager().translateObligations( evaluation, ContextHandlerConstants.TRY_STATUS );
+        getObligationManager().translateObligations( evaluation, STATUS.TRY.name() );
 
         if( evaluation.isDecision( DecisionType.PERMIT ) ) {
             // If access decision is PERMIT create entry in SessionManager
@@ -143,7 +142,7 @@ public final class ContextHandlerLC extends AbstractContextHandler {
     private synchronized RequestWrapper fattenRequest( RequestWrapper request, STATUS status ) {
         RequestWrapper fatRequest = request.clone();
 
-        if( status == STATUS.STARTACCESS ) {
+        if( status == STATUS.START ) {
             getPipRegistry().subscribeAll( fatRequest.getRequestType() );
         } else {
             getPipRegistry().retrieveAll( fatRequest.getRequestType() );
@@ -200,7 +199,7 @@ public final class ContextHandlerLC extends AbstractContextHandler {
         // retrieve the id of ongoing attributes
         SessionAttributesBuilder sessionAttributeBuilder = new SessionAttributesBuilder();
 
-        List<Attribute> onGoingAttributes = policy.getAttributesForCondition( PolicyTags.getCondition( STATUS.STARTACCESS ) );
+        List<Attribute> onGoingAttributes = policy.getAttributesForCondition( PolicyTags.getCondition( STATUS.START ) );
         sessionAttributeBuilder.setOnGoingAttributesForSubject( getAttributesForCategory( onGoingAttributes, Category.SUBJECT ) )
             .setOnGoingAttributesForAction( getAttributesForCategory( onGoingAttributes, Category.ACTION ) )
             .setOnGoingAttributesForResource( getAttributesForCategory( onGoingAttributes, Category.RESOURCE ) )
@@ -211,7 +210,7 @@ public final class ContextHandlerLC extends AbstractContextHandler {
             .setActionName( request.getRequestType().extractValue( Category.ACTION ) );
 
         sessionAttributeBuilder.setSessionId( sessionId ).setPolicySet( policy.getPolicy() ).setOriginalRequest( request.getRequest() )
-            .setStatus( ContextHandlerConstants.TRY_STATUS ).setPepURI( pepUri ).setMyIP( uri.getHost() );
+            .setStatus( STATUS.TRY.name() ).setPepURI( pepUri ).setMyIP( uri.getHost() );
 
         // insert all the values inside the session manager
         if( !getSessionManager().createEntry( sessionAttributeBuilder.build() ) ) {
@@ -259,29 +258,29 @@ public final class ContextHandlerLC extends AbstractContextHandler {
         log.log( Level.INFO, "StartAccess begin scheduling at {0}", new Object[] { System.currentTimeMillis() } );
 
         // Check if the session has the correct status
-        if( !session.isStatus( ContextHandlerConstants.TRY_STATUS ) ) {
+        if( !session.isStatus( STATUS.TRY.name() ) ) {
             log.log( Level.SEVERE, "StartAccess: wrong status for session {0}", message.getSessionId() );
             throw new StatusException( "StartAccess: tryaccess must be performed yet for session " + message.getSessionId() );
         }
 
         PolicyWrapper policy = PolicyWrapper.build( session.getPolicySet() );
         RequestWrapper request = RequestWrapper.build( session.getOriginalRequest() );
-        RequestWrapper fatRequest = fattenRequest( request, STATUS.STARTACCESS );
+        RequestWrapper fatRequest = fattenRequest( request, STATUS.START );
 
-        PDPEvaluation evaluation = getPdp().evaluate( fatRequest, policy, STATUS.STARTACCESS );
+        PDPEvaluation evaluation = getPdp().evaluate( fatRequest, policy, STATUS.START );
         Reject.ifNull( evaluation );
         log.log( Level.INFO, "StartAccess evaluated at {0} pdp response : {1}",
             new Object[] { System.currentTimeMillis(), evaluation.getResult() } );
 
         evaluation.setSessionId( message.getSessionId() );
-        getObligationManager().translateObligations( evaluation, ContextHandlerConstants.START_STATUS );
+        getObligationManager().translateObligations( evaluation, STATUS.START.name() );
 
         if( evaluation.isDecision( DecisionType.PERMIT ) ) {
-            if( !getSessionManager().updateEntry( message.getSessionId(), ContextHandlerConstants.START_STATUS ) ) {
+            if( !getSessionManager().updateEntry( message.getSessionId(), STATUS.START.name() ) ) {
                 log.log( Level.SEVERE, "StartAccess error, sessionId {0} status update failed", message.getSessionId() );
             }
         } else {
-            List<Attribute> attributes = policy.getAttributesForCondition( PolicyTags.getCondition( STATUS.STARTACCESS ) );
+            List<Attribute> attributes = policy.getAttributesForCondition( PolicyTags.getCondition( STATUS.START ) );
             if( revoke( session, attributes ) && !getSessionManager().deleteEntry( message.getSessionId() ) ) {
                 log.log( Level.SEVERE, "StartAccess error, sessionId {0} deletion failed",
                     message.getSessionId() );
@@ -427,8 +426,8 @@ public final class ContextHandlerLC extends AbstractContextHandler {
         SessionInterface session = optSession.get(); // NOSONAR
 
         // Check if the session has the correct status
-        if( !( session.isStatus( ContextHandlerConstants.START_STATUS )
-                || session.isStatus( ContextHandlerConstants.REVOKE_STATUS ) ) ) {
+        if( !( session.isStatus( STATUS.START.name() )
+                || session.isStatus( STATUS.REVOKE.name() ) ) ) {
             log.log( Level.INFO, "EndAccess: wrong status for session {0}", message.getSessionId() );
             throw new StatusException( "EndAccess: wrong status for session " + message.getSessionId() );
         }
@@ -437,18 +436,18 @@ public final class ContextHandlerLC extends AbstractContextHandler {
 
         PolicyWrapper policy = PolicyWrapper.build( session.getPolicySet() );
         RequestWrapper request = RequestWrapper.build( session.getOriginalRequest() );
-        RequestWrapper fatRequest = fattenRequest( request, STATUS.ENDACCESS );
+        RequestWrapper fatRequest = fattenRequest( request, STATUS.END );
 
-        PDPEvaluation evaluation = getPdp().evaluate( fatRequest, policy, STATUS.ENDACCESS );
+        PDPEvaluation evaluation = getPdp().evaluate( fatRequest, policy, STATUS.END );
         Reject.ifNull( evaluation );
         log.log( Level.INFO, "EndAccess evaluated at {0} pdp response : {1}",
             new Object[] { System.currentTimeMillis(), evaluation.getResult() } );
 
         evaluation.setSessionId( message.getSessionId() );
-        getObligationManager().translateObligations( evaluation, ContextHandlerConstants.END_STATUS );
+        getObligationManager().translateObligations( evaluation, STATUS.END.name() );
 
         // access must be revoked
-        if( revoke( session, policy.getAttributesForCondition( PolicyTags.getCondition( STATUS.ENDACCESS ) ) ) ) {
+        if( revoke( session, policy.getAttributesForCondition( PolicyTags.getCondition( STATUS.END ) ) ) ) {
             log.log( Level.INFO, "EndAccess evaluation with revoke ends at {0}", System.currentTimeMillis() );
         }
 
@@ -508,25 +507,25 @@ public final class ContextHandlerLC extends AbstractContextHandler {
         log.log( Level.INFO, "Reevaluation begins at {0}", System.currentTimeMillis() );
         PolicyWrapper policy = PolicyWrapper.build( session.getPolicySet() );
         RequestWrapper request = RequestWrapper.build( session.getOriginalRequest() );
-        RequestWrapper fatRequest = fattenRequest( request, STATUS.STARTACCESS );
+        RequestWrapper fatRequest = fattenRequest( request, STATUS.START );
 
-        PDPEvaluation evaluation = getPdp().evaluate( fatRequest, policy, STATUS.STARTACCESS );
+        PDPEvaluation evaluation = getPdp().evaluate( fatRequest, policy, STATUS.START );
         Reject.ifNull( evaluation );
         evaluation.setSessionId( session.getId() );
-        getObligationManager().translateObligations( evaluation, ContextHandlerConstants.START_STATUS );
+        getObligationManager().translateObligations( evaluation, STATUS.START.name() );
 
         log.log( Level.INFO, "Reevaluate evaluated at {0} pdp response : {1}",
             new Object[] { System.currentTimeMillis(), evaluation.getResult() } );
 
-        if( session.isStatus( ContextHandlerConstants.START_STATUS )
+        if( session.isStatus( STATUS.START.name() )
                 && evaluation.isDecision( DecisionType.DENY ) ) {
             log.log( Level.INFO, "Revoke at {0}", System.currentTimeMillis() );
-            getSessionManager().updateEntry( session.getId(), ContextHandlerConstants.REVOKE_STATUS );
+            getSessionManager().updateEntry( session.getId(), STATUS.REVOKE.name() );
 
-        } else if( session.isStatus( ContextHandlerConstants.REVOKE_STATUS )
+        } else if( session.isStatus( STATUS.REVOKE.name() )
                 && evaluation.isDecision( DecisionType.PERMIT ) ) {
             log.log( Level.INFO, "Resume at {0}", System.currentTimeMillis() );
-            getSessionManager().updateEntry( session.getId(), ContextHandlerConstants.START_STATUS );
+            getSessionManager().updateEntry( session.getId(), STATUS.START.name() );
         } else {
             log.log( Level.INFO, "Reevaluation ends without change at {0}", System.currentTimeMillis() );
             return;
