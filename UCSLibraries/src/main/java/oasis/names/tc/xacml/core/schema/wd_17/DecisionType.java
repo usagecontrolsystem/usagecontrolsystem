@@ -13,13 +13,6 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  ******************************************************************************/
-//
-// Questo file è stato generato dall'architettura JavaTM per XML Binding (JAXB) Reference Implementation, v2.2.8-b130911.1802
-// Vedere <a href="http://java.sun.com/xml/jaxb">http://java.sun.com/xml/jaxb</a>
-// Qualsiasi modifica a questo file andrà persa durante la ricompilazione dello schema di origine.
-// Generato il: 2017.04.24 alle 12:34:54 PM CEST
-//
-
 package oasis.names.tc.xacml.core.schema.wd_17;
 
 import java.util.HashMap;
@@ -33,23 +26,6 @@ import javax.xml.bind.annotation.XmlType;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
-/**
- * <p>Classe Java per DecisionType.
- *
- * <p>Il seguente frammento di schema specifica il contenuto previsto contenuto in questa classe.
- * <p>
- * <pre>
- * &lt;simpleType name="DecisionType">
- *   &lt;restriction base="{http://www.w3.org/2001/XMLSchema}string">
- *     &lt;enumeration value="Permit"/>
- *     &lt;enumeration value="Deny"/>
- *     &lt;enumeration value="Indeterminate"/>
- *     &lt;enumeration value="NotApplicable"/>
- *   &lt;/restriction>
- * &lt;/simpleType>
- * </pre>
- *
- */
 @XmlType( name = "DecisionType" )
 @XmlEnum
 public enum DecisionType {
@@ -80,7 +56,6 @@ public enum DecisionType {
                 return entry.getValue();
             }
         }
-
         return null; // or fail
     }
 
@@ -91,7 +66,6 @@ public enum DecisionType {
                 return entry.getKey();
             }
         }
-
         return null; // or fail
     }
 
