@@ -27,7 +27,7 @@ import it.cnr.iit.ucs.properties.components.PepProperties;
 import it.cnr.iit.ucs.sessionmanager.SessionManager;
 import it.cnr.iit.ucs.sessionmanager.SessionManagerInterface;
 import it.cnr.iit.ucsrest.rest.UCSRestTestContext;
-import it.cnr.iit.utility.Utility;
+import it.cnr.iit.utility.FileUtility;
 
 @JGivenStage
 public class GivenMessage extends Stage<GivenMessage> {
@@ -57,8 +57,8 @@ public class GivenMessage extends Stage<GivenMessage> {
     @BeforeScenario
     public void init() throws URISyntaxException, IOException {
         Thread.interrupted(); // Avoid a nasty exception
-        policy = Utility.readFileAsString( testContext.getPolicyFile() );
-        request = Utility.readFileAsString( testContext.getRequestFile() );
+        policy = FileUtility.readFileAsString( testContext.getPolicyFile() );
+        request = FileUtility.readFileAsString( testContext.getRequestFile() );
 
         pepProps = properties.getPepList().get( Integer.parseInt( testContext.getPepId() ) );
 
@@ -101,7 +101,7 @@ public class GivenMessage extends Stage<GivenMessage> {
     public GivenMessage a_policy_that_will_trigger_a_Deny_response() {
         try {
             Thread.interrupted(); // Avoid a nasty exception
-            policy = Utility.readFileAsString( testContext.getPolicyFileDeny() );
+            policy = FileUtility.readFileAsString( testContext.getPolicyFileDeny() );
         } catch( URISyntaxException | IOException e ) {
             policy = null;
         }

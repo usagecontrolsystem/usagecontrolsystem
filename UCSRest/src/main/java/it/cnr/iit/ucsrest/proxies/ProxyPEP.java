@@ -32,7 +32,6 @@ import it.cnr.iit.ucs.properties.components.PepProperties;
 import it.cnr.iit.ucs.requestmanager.UCSCHInterface;
 import it.cnr.iit.ucsrest.rest.UCSRest;
 import it.cnr.iit.utility.RESTUtils;
-import it.cnr.iit.utility.Utility;
 import it.cnr.iit.utility.errorhandling.Reject;
 
 /**
@@ -60,7 +59,7 @@ public class ProxyPEP implements PEPInterface {
         Reject.ifNull( properties );
         this.properties = properties;
 
-        Optional<URI> optUri = Utility.parseUri( properties.getBaseUri() );
+        Optional<URI> optUri = RESTUtils.parseUri( properties.getBaseUri() );
         Reject.ifAbsent( optUri );
         this.uri = optUri.get(); // NOSONAR
 

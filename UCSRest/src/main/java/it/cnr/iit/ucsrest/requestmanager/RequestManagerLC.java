@@ -82,10 +82,8 @@ public class RequestManagerLC extends AbstractRequestManager {
 
     /**
      * Handles the case of a message received from outside
-     * <p>
      * Once a message coming from outside is received from the request manager, it
      * puts it in the priority queue of messages
-     * </p>
      */
     @Override
     public synchronized Message sendMessageToCH( Message message ) {
@@ -102,7 +100,7 @@ public class RequestManagerLC extends AbstractRequestManager {
     }
 
     /**
-     * The context handler inquirers basically perform an infinite loop in order
+     * The context handler inquirers perform an infinite loop in order
      * to retrieve the messages coming to the request manager and sends those
      * requests to the context handler which will be in charge of answer to the
      * requests

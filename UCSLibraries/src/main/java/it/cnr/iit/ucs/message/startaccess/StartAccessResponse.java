@@ -43,23 +43,11 @@ public final class StartAccessResponse extends Message implements EvaluatedRespo
         purpose = PURPOSE.STARTACCESS_RESPONSE;
     }
 
-    /**
-     * Constructor of the StartAccessResponse
-     *
-     * @param source      the source
-     * @param destination the destination
-     * @param messageId          the id of the message
-     */
     public StartAccessResponse( String source, String destination, String messageId ) {
         super( source, destination, messageId );
         purpose = PURPOSE.STARTACCESS_RESPONSE;
     }
 
-    /**
-     * Constructor of the StartAccessResponse
-     *
-     * @param messageId the id of the response
-     */
     public StartAccessResponse( String messageId ) {
         super( PART.CH.toString(), PART.PEP.toString(), messageId );
         purpose = PURPOSE.STARTACCESS_RESPONSE;

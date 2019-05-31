@@ -26,8 +26,6 @@ import it.cnr.iit.ucs.constants.OperationNames;
 import it.cnr.iit.ucs.constants.STATUS;
 import it.cnr.iit.ucs.contexthandler.ContextHandlerConstants;
 import it.cnr.iit.ucs.contexthandler.ContextHandlerInterface;
-import it.cnr.iit.ucs.forwardingqueue.ForwardingQueueToCHInterface;
-import it.cnr.iit.ucs.forwardingqueue.ForwardingQueueToRMInterface;
 import it.cnr.iit.ucs.message.Message;
 import it.cnr.iit.ucs.message.attributechange.AttributeChangeMessage;
 import it.cnr.iit.ucs.message.endaccess.EndAccessMessage;
@@ -57,7 +55,7 @@ import it.cnr.iit.ucsrest.proxies.ProxySessionManager;
 import it.cnr.iit.ucsrest.requestmanager.RequestManagerLC;
 import it.cnr.iit.ucsrest.rest.UCSRest;
 import it.cnr.iit.utility.JAXBUtility;
-import it.cnr.iit.utility.Utility;
+import it.cnr.iit.utility.FileUtility;
 import it.cnr.iit.xacmlutilities.Attribute;
 import it.cnr.iit.xacmlutilities.Category;
 import it.cnr.iit.xacmlutilities.DataType;
@@ -172,24 +170,11 @@ public class UCSRestBaseTests {
         return requestManagerToChInterface;
     }
 
-    protected ForwardingQueueToCHInterface getMockedForwardingQueueToCHInterface() {
-        ForwardingQueueToCHInterface forwardingQueueToCHInterface = Mockito.mock( ForwardingQueueToCHInterface.class );
-        return forwardingQueueToCHInterface;
-    }
-
     protected OperationNames getMockedNodeInterface() {
         OperationNames nodeInterface = Mockito
             .mock( OperationNames.class );
 
         return nodeInterface;
-    }
-
-    protected ForwardingQueueToRMInterface getMockedForwardingQueueToRMInterface( Message message ) {
-        ForwardingQueueToRMInterface forwardingQueue = Mockito
-            .mock( ForwardingQueueToRMInterface.class );
-        Mockito.when( forwardingQueue.getOriginalSource( ArgumentMatchers.anyString() ) ).thenReturn( message );
-
-        return forwardingQueue;
     }
 
     protected HashMap<String, PEPInterface> getMockedPEPMap( String key, String response ) {
@@ -391,7 +376,7 @@ public class UCSRestBaseTests {
 
     private Object loadXMLFromFile( String fileName, Class<?> className )
             throws JAXBException, URISyntaxException, IOException {
-        String data = Utility.readFileAsString( fileName );
+        String data = FileUtility.readFileAsString( fileName );
         return JAXBUtility.unmarshalToObject( className, data );
     }
 }

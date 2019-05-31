@@ -15,32 +15,12 @@ import it.cnr.iit.xacmlutilities.Attribute;
 
 /**
  * General PIP abstract class
- * <p>
- * In provides basics implementations of getters function
- * </p>
  *
  * @author Fabio Bindi and Filippo Lauria and Antonio La Marra and Alessandro Rosetti
  */
 public abstract class PIPBase implements PIPCHInterface, PIPOMInterface {
 
-    /**
-     * Whenever a PIP has to retrieve some informations related to an attribute
-     * that is stored inside the request, the only information it requires in
-     * order to retrieve the value from the request is the category of the
-     * attribute
-     */
-    public static final String EXPECTED_CATEGORY = "EXPECTED_CATEGORY";
-
-    /**
-     * Since we have designed a general PIPReader which is able to read basically
-     * all the files, we have to tell this PIP all the characteristics of the
-     * attribute it is in charge of reading
-     */
-    public static final String ATTRIBUTE_ID = "ATTRIBUTE_ID";
-    public static final String CATEGORY = "CATEGORY";
-    public static final String DATA_TYPE = "DATA_TYPE";
-
-    protected ContextHandlerPIPInterface contextHandler;
+    private ContextHandlerPIPInterface contextHandler;
     private HashMap<String, Attribute> attributesMap = new HashMap<>();
 
     private PipProperties properties;
@@ -73,6 +53,12 @@ public abstract class PIPBase implements PIPCHInterface, PIPOMInterface {
     @Override
     public final HashMap<String, Attribute> getAttributesCharacteristics() {
         return attributesMap;
+    }
+
+    @Override
+    public ContextHandlerPIPInterface getContextHandler() {
+        Reject.ifNull( contextHandler );
+        return contextHandler;
     }
 
     @Override

@@ -28,8 +28,10 @@ import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 
 /**
- * This is the class devoted to store the utility required to deal with XML.
- * @author Antonio La Marra
+ * This is the class devoted to store the utility required to deal with the
+ * JAXB.
+ *
+ * @author antonio
  *
  */
 public final class JAXBUtility {

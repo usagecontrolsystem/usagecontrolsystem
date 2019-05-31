@@ -31,22 +31,11 @@ public class EndAccessMessage extends Message {
 
     private String sessionId;
 
-    /**
-     * Constructor for an EndAccessMessage
-     *
-     * @param source
-     *  source of the message
-     * @param destination
-     *  destination of the message
-     */
     public EndAccessMessage( String source, String destination ) {
         super( source, destination );
         purpose = PURPOSE.ENDACCESS;
     }
 
-    /**
-     * Constructor for an EndAccessMessage
-     */
     public EndAccessMessage() {
         super( PART.PEP.toString(), PART.CH.toString() );
         purpose = PURPOSE.ENDACCESS;

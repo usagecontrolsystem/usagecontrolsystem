@@ -21,7 +21,6 @@ import java.util.UUID;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 
-import it.cnr.iit.ucs.sessionmanager.OnGoingAttributesInterface;
 import it.cnr.iit.utility.errorhandling.Reject;
 
 @DatabaseTable( tableName = "on_going_attributes" )
@@ -62,24 +61,11 @@ public class OnGoingAttribute implements OnGoingAttributesInterface {
     // @DatabaseField(columnName = SESSION_ID_FIELD_NAME)
     private String sessionId;
 
-    /**
-     * Empty constructor
-     */
     public OnGoingAttribute() {
         attributeId = "";
         subjectName = resourceName = actionName = null;
     }
 
-    /**
-     * Constructor
-     *
-     * @param attributeId
-     *          subject or object attribute name
-     * @param subjectName
-     *          subject ID (null if it's an object attribute)
-     * @param resourceName
-     *          object ID (null if it's a subject attribute)
-     */
     private OnGoingAttribute( String attributeId, String subjectName, String resourceName,
             String actionName ) {
         setId( UUID.randomUUID().toString() );

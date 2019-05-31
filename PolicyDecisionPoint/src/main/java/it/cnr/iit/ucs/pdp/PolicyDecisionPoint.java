@@ -49,10 +49,9 @@ import org.wso2.balana.finder.PolicyFinderResult;
 import org.wso2.balana.xacml3.MultipleCtxResult;
 
 import it.cnr.iit.ucs.constants.STATUS;
-import it.cnr.iit.ucs.pdp.AbstractPDP;
-import it.cnr.iit.ucs.pdp.PDPEvaluation;
-import it.cnr.iit.ucs.pdp.PDPResponse;
 import it.cnr.iit.ucs.properties.components.PdpProperties;
+import it.cnr.iit.utility.FileUtility;
+import it.cnr.iit.xacmlutilities.constants.PolicyTags;
 import it.cnr.iit.xacmlutilities.wrappers.PolicyWrapper;
 import it.cnr.iit.xacmlutilities.wrappers.RequestWrapper;
 
@@ -61,96 +60,67 @@ import journal.io.api.Journal.WriteType;
 import journal.io.api.JournalBuilder;
 
 /**
- * Implementation of the PDP.
- * <p>
- * The pdp is basically a wrapper around the one offered by BALANA. <br>
+ * This PDP is a wrapper around the one offered by BALANA.
  * In our implementation we are able to evaluate single condition policies only,
  * hence we need the context handler to pass to the PDP only the condition it
  * effectively wants to be evaluated. This because BALANA is designed for XACML
  * that is slightly different than UXACML. In particular, in the former, it is
  * allowed to have only one condition per rule.
- * </p>
- * <p>
- * NOTE: MOST of this code has been implemented by Fabio and Filippo
- * </p>
  *
- * @author Antonio La Marra, Fabio Bindi, Filippo Lauria
+ * @author Antonio La Marra, Fabio Bindi, Filippo Lauria, Alessandro Rosetti
  *
  */
 public final class PolicyDecisionPoint extends AbstractPDP {
 
     private static Logger log = Logger.getLogger( PolicyDecisionPoint.class.getName() );
 
-    private static final String MSG_ERR_EVAL_RULES = "Error evaluating single rules : {0}";
-    private static final String MSG_ERR_MARSHAL_POLICY = "Error marshalling to string : {0}";
-
-    // Configuration of the PDP
     private PDPConfig pdpConfig;
     private Journal journal = null;
 
     public PolicyDecisionPoint( PdpProperties properties ) {
         super( properties );
-        configure( properties.getJournalDir() );
+        buildJournal( properties.getJournalDir() );
     }
 
-    private void configure( String journalFolder ) {
-        try {
-            // TODO UCS-33 NOSONAR
-            File file = new File( journalFolder );
-            if( !file.exists() ) {
-                file.mkdir();
-            }
-            journal = JournalBuilder.of( file ).open();
-        } catch( Exception e ) {
-            throw new IllegalArgumentException( e.getMessage() );
-        }
-    }
-
-    private String extractFromStatus( STATUS status ) {
-        switch( status ) {
-            case TRYACCESS:
-                return "pre";
-            case STARTACCESS:
-            case REEVALUATION:
-            case REVOKE:
-                return "ongoing";
-            case ENDACCESS:
-                return "post";
-            default:
-                return null;
-        }
-    }
-
-    /**
-     * This is the effective evaluation function.
-     */
     @Override
     public PDPEvaluation evaluate( RequestWrapper request, PolicyWrapper policy, STATUS status ) {
+        String conditionName = PolicyTags.getCondition( status );
+        PolicyWrapper policyToEvaluate = policy.getPolicy( conditionName );
+        return evaluate( request, policyToEvaluate );
+    }
+
+    @Override
+    public PDPEvaluation evaluate( RequestWrapper request, PolicyWrapper policy ) {
         try {
-            String conditionName = extractFromStatus( status );
-            String policyToEvaluate = policy.getPolicy( conditionName ).getPolicy();
-
-            ArrayList<ResponseCtx> responses = new ArrayList<>();
-
-            PolicyFinder policyFinder = new PolicyFinder();
-            Set<PolicyFinderModule> policyFinderModules = new HashSet<>();
-            InputStreamBasedPolicyFinderModule dataUCONPolicyFinderModule = new InputStreamBasedPolicyFinderModule(
-                policyToEvaluate );
-            policyFinderModules.add( dataUCONPolicyFinderModule );
-            policyFinder.setModules( policyFinderModules );
-            policyFinder.init();
-            ResponseCtx response = evaluate( request.getRequest(), policyFinder );
-            log.info( response.encode() );
-            journal.write( policyToEvaluate.getBytes(), WriteType.ASYNC );
+            PolicyFinder policyFinder = getPolicyFinder( policy );
+            ResponseCtx responseCtx = evaluate( request.getRequest(), policyFinder );
+            journal.write( policy.getPolicy().getBytes(), WriteType.ASYNC );
             journal.write( request.getRequest().getBytes(), WriteType.ASYNC );
-            journal.write( response.encode().getBytes(), WriteType.ASYNC );
+            journal.write( responseCtx.encode().getBytes(), WriteType.ASYNC );
             journal.sync();
-            responses.add( response );
-            return new PDPResponse( response.encode() );
+            return new PDPResponse( responseCtx.encode() );
         } catch( Exception e ) {
-            log.severe( e.getMessage() );
+            log.severe( "Error in evaluation : " + e.getMessage() );
         }
+
         return null;
+    }
+
+    @Override
+    public PDPEvaluation evaluate( RequestWrapper request ) {
+        log.info( "evaluate( request ) not implemented" );
+        return null;
+    }
+
+    private PolicyFinder getPolicyFinder( PolicyWrapper policy ) {
+        PolicyFinder policyFinder = new PolicyFinder();
+        Set<PolicyFinderModule> policyFinderModulesSet = new HashSet<>();
+        InputStreamBasedPolicyFinderModule finderModule = new InputStreamBasedPolicyFinderModule(
+            policy.getPolicy() );
+        policyFinderModulesSet.add( finderModule );
+        policyFinder.setModules( policyFinderModulesSet );
+        policyFinder.init();
+        return policyFinder;
     }
 
     /**
@@ -175,8 +145,7 @@ public final class PolicyDecisionPoint extends AbstractPDP {
 
         try {
             // TODO UCS-36 NOSONAR
-            requestCtx = RequestCtxFactory.getFactory()
-                .getRequestCtx( request.replaceAll( ">\\s+<", "><" ) );
+            requestCtx = RequestCtxFactory.getFactory().getRequestCtx( request.replaceAll( ">\\s+<", "><" ) );
             responseCtx = evaluate( requestCtx, policyFinder );
         } catch( ParsingException e ) {
             String error = "Invalid request  : " + e.getMessage();
@@ -210,9 +179,7 @@ public final class PolicyDecisionPoint extends AbstractPDP {
      *
      * @return a response paired to the request
      */
-    private ResponseCtx evaluate( AbstractRequestCtx request,
-            PolicyFinder policyFinder ) {
-
+    private ResponseCtx evaluate( AbstractRequestCtx request, PolicyFinder policyFinder ) {
         EvaluationCtx evalContext = null;
         try {
             Balana balana = Balana.getInstance();
@@ -248,12 +215,9 @@ public final class PolicyDecisionPoint extends AbstractPDP {
      *
      * @return a response based on the contents of the context
      */
-    private ResponseCtx evaluate( EvaluationCtx context,
-            PolicyFinder policyFinder ) {
-
-        // check whether this PDP configure to support multiple decision profile
+    private ResponseCtx evaluate( EvaluationCtx context, PolicyFinder policyFinder ) {
+        // check whether this PDP is configured to support multiple decision profiles
         if( pdpConfig.isMultipleRequestHandle() ) {
-
             Set<EvaluationCtx> evaluationCtxSet;
             MultipleCtxResult multipleCtxResult = context.getMultipleEvaluationCtx();
             if( multipleCtxResult.isIndeterminate() ) {
@@ -264,12 +228,9 @@ public final class PolicyDecisionPoint extends AbstractPDP {
                 evaluationCtxSet = multipleCtxResult.getEvaluationCtxSet();
                 HashSet<AbstractResult> results = new HashSet<>();
                 for( EvaluationCtx ctx : evaluationCtxSet ) {
-                    // do the evaluation, for all evaluate context
                     AbstractResult result = evaluateContext( ctx, policyFinder );
-                    // add the result
                     results.add( result );
                 }
-                // XACML 3.0.version
                 return new ResponseCtx( results, XACMLConstants.XACML_VERSION_3_0 );
             }
         } else {
@@ -306,26 +267,19 @@ public final class PolicyDecisionPoint extends AbstractPDP {
      *          context
      * @return a response
      */
-    private AbstractResult evaluateContext( EvaluationCtx context,
-            PolicyFinder policyFinder ) {
-        // first off, try to find a policy
+    private AbstractResult evaluateContext( EvaluationCtx context, PolicyFinder policyFinder ) {
         PolicyFinderResult finderResult = policyFinder.findPolicy( context );
 
-        // see if there weren't any applicable policies
         if( finderResult.notApplicable() ) {
             return ResultFactory.getFactory()
                 .getResult( AbstractResult.DECISION_NOT_APPLICABLE, context );
         }
-        // see if there were any errors in trying to get a policy
         if( finderResult.indeterminate() ) {
             return ResultFactory.getFactory().getResult(
                 AbstractResult.DECISION_INDETERMINATE, finderResult.getStatus(),
                 context );
         }
-
-        // we found a valid policy,
-
-        // list all found policies if XACML 3.0
+        // we found a valid policy, list all found policies if XACML 3.0
         if( context instanceof XACML3EvaluationCtx
                 && ( (RequestCtx) context.getRequestCtx() ).isReturnPolicyIdList() ) {
             Set<PolicyReference> references = new HashSet<>();
@@ -333,15 +287,10 @@ public final class PolicyDecisionPoint extends AbstractPDP {
             ( (XACML3EvaluationCtx) context ).setPolicyReferences( references );
         }
 
-        // so we can do the evaluation
+        // we can perform the evaluation
         return finderResult.getPolicy().evaluate( context );
     }
 
-    /**
-     *
-     * @param policy
-     * @param references
-     */
     private void processPolicyReferences( AbstractPolicy policy,
             Set<PolicyReference> references ) {
         if( policy instanceof Policy ) {
@@ -363,33 +312,14 @@ public final class PolicyDecisionPoint extends AbstractPDP {
         }
     }
 
-    @Override
-    public PDPEvaluation evaluate( RequestWrapper request ) {
-        log.info( "evaluate( String request ) not implemented" );
-        return null;
-    }
-
-    @Override
-    public PDPEvaluation evaluate( RequestWrapper request, PolicyWrapper policy ) {
+    private void buildJournal( String journalDir ) {
         try {
-            PolicyFinder policyFinder = new PolicyFinder();
-            Set<PolicyFinderModule> policyFinderModules = new HashSet<>();
-            InputStreamBasedPolicyFinderModule dataUCONPolicyFinderModule = new InputStreamBasedPolicyFinderModule(
-                policy.getPolicy() );
-            policyFinderModules.add( dataUCONPolicyFinderModule );
-            policyFinder.setModules( policyFinderModules );
-            policyFinder.init();
-            ResponseCtx responseCtx = evaluate( request.getRequest(), policyFinder );
-            journal.write( policy.getPolicy().getBytes(), WriteType.ASYNC );
-            journal.write( request.getRequest().getBytes(), WriteType.ASYNC );
-            journal.write( responseCtx.encode().getBytes(), WriteType.ASYNC );
-            journal.sync();
-            return new PDPResponse( responseCtx.encode() );
+            File file = new File( journalDir ); // TODO UCS-33 NOSONAR
+            FileUtility.createPathIfNotExists( file );
+            journal = JournalBuilder.of( file ).open();
         } catch( Exception e ) {
-            log.severe( e.getMessage() );
+            throw new IllegalArgumentException( e.getMessage() );
         }
-
-        return null;
     }
 
 }
