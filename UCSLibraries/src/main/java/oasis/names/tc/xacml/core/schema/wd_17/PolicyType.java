@@ -18,7 +18,6 @@ package oasis.names.tc.xacml.core.schema.wd_17;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Logger;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -66,8 +65,6 @@ public class PolicyType {
     protected String ruleCombiningAlgId;
     @XmlAttribute( name = "MaxDelegationDepth" )
     protected BigInteger maxDelegationDepth;
-
-    private static final Logger log = Logger.getLogger( PolicyType.class.getName() );
 
     public String getDescription() {
         return description;

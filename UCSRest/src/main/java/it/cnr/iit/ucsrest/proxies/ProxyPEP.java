@@ -66,12 +66,12 @@ public class ProxyPEP implements PEPInterface {
         String connectionType = properties.getCommunicationType();
         Reject.ifBlank( connectionType );
         switch( getConnection() ) {
-            case API:
+            case LOCAL:
                 if( buildLocalPep( properties ) ) {
                     initialized = true;
                 }
                 break;
-            case REST_API:
+            case REST:
                 initialized = true;
                 break;
             case SOCKET:
@@ -103,8 +103,8 @@ public class ProxyPEP implements PEPInterface {
     public void setRequestManagerInterface(
             UCSCHInterface requestManager ) {
         switch( getConnection() ) {
-            case API:
-            case REST_API:
+            case LOCAL:
+            case REST:
             case SOCKET:
                 break;
             default:
@@ -118,13 +118,13 @@ public class ProxyPEP implements PEPInterface {
     public Message onGoingEvaluation( ReevaluationResponse message ) {
         switch( getConnection() ) {
 
-            case REST_API:
+            case REST:
                 RESTUtils.asyncPost(
                     uri.toString(),
                     OperationName.ONGOINGRESPONSE_REST,
                     message );
                 break;
-            case API:
+            case LOCAL:
             default:
                 break;
         }
@@ -134,7 +134,7 @@ public class ProxyPEP implements PEPInterface {
     @Override
     public String receiveResponse( Message message ) {
         switch( getConnection() ) {
-            case REST_API:
+            case REST:
                 Optional<String> api = getApi( message );
                 try {
                     RESTUtils.asyncPost(
@@ -146,7 +146,7 @@ public class ProxyPEP implements PEPInterface {
                     return "KO";
                 }
                 break;
-            case API:
+            case LOCAL:
             default:
                 log.severe( "Error in the receive response" );
                 break;
@@ -168,7 +168,7 @@ public class ProxyPEP implements PEPInterface {
 
     public void start() {
         switch( getConnection() ) {
-            case REST_API:
+            case REST:
             case SOCKET:
             default:
                 break;

@@ -28,19 +28,9 @@ import it.cnr.iit.ucsrest.rest.UCSRest;
 import it.cnr.iit.utility.errorhandling.Reject;
 
 /**
- * This is the proxy to deal with the PAP.
- * <p>
- * The core of this class is basically the same of the ProxyPDP. Also here we
- * have to manage all the possible ways in which we can communicate with the
- * PAP. <br>
- * For now the only implemented way of communication is the local one, hence the
- * ContextHandler can call the PAP via API. <br>
- * TODO: Since it is possible not to have a PAP we have to implement also that
- * feature
- * </p>
+ * This is the class implementing the proxy towards the PAP.
  *
- * @author antonio
- *
+ * @author Antonio La Marra, Alessandro Rosetti
  */
 public final class ProxyPAP implements PAPInterface {
 
@@ -56,13 +46,13 @@ public final class ProxyPAP implements PAPInterface {
         this.properties = properties;
 
         switch( getConnection() ) {
-            case API:
+            case LOCAL:
                 if( setLocalPAP( properties ) ) {
                     initialized = true;
                 }
                 break;
             case SOCKET:
-            case REST_API:
+            case REST:
                 initialized = true;
                 break;
             default:
@@ -92,11 +82,11 @@ public final class ProxyPAP implements PAPInterface {
         }
 
         switch( getConnection() ) {
-            case API:
+            case LOCAL:
                 return papInterface.retrievePolicy( policyId );
             case SOCKET:
                 return null;
-            case REST_API:
+            case REST:
                 return null;
         }
         return null;
@@ -112,11 +102,11 @@ public final class ProxyPAP implements PAPInterface {
         }
 
         switch( getConnection() ) {
-            case API:
+            case LOCAL:
                 return papInterface.addPolicy( policy );
             case SOCKET:
                 return false;
-            case REST_API:
+            case REST:
                 return false;
         }
         return false;
@@ -126,7 +116,7 @@ public final class ProxyPAP implements PAPInterface {
     public List<String> listPolicies() {
         if( initialized ) {
             switch( getConnection() ) {
-                case API:
+                case LOCAL:
                     return papInterface.listPolicies();
                 default:
                     break;

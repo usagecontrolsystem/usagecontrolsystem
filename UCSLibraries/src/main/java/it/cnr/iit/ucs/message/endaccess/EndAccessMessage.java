@@ -15,9 +15,9 @@
  ******************************************************************************/
 package it.cnr.iit.ucs.message.endaccess;
 
+import it.cnr.iit.ucs.constants.ENTITIES;
+import it.cnr.iit.ucs.constants.PURPOSE;
 import it.cnr.iit.ucs.message.Message;
-import it.cnr.iit.ucs.message.PART;
-import it.cnr.iit.ucs.message.PURPOSE;
 
 /**
  * Structure of the endaccess message
@@ -33,12 +33,12 @@ public class EndAccessMessage extends Message {
 
     public EndAccessMessage( String source, String destination ) {
         super( source, destination );
-        purpose = PURPOSE.ENDACCESS;
+        purpose = PURPOSE.END;
     }
 
     public EndAccessMessage() {
-        super( PART.PEP.toString(), PART.CH.toString() );
-        purpose = PURPOSE.ENDACCESS;
+        super( ENTITIES.PEP.toString(), ENTITIES.CH.toString() );
+        purpose = PURPOSE.END;
     }
 
     public void setSessionId( String sessionId ) {

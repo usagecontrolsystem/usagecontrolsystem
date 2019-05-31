@@ -89,7 +89,6 @@ public interface SessionInterface {
      *
      * @return list of mutable attributes
      */
-
     public void setRequest( String request );
 
 }

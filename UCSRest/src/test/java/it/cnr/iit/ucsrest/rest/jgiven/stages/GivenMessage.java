@@ -16,8 +16,8 @@ import com.tngtech.jgiven.annotation.ProvidedScenarioState;
 import com.tngtech.jgiven.annotation.Quoted;
 import com.tngtech.jgiven.integration.spring.JGivenStage;
 
+import it.cnr.iit.ucs.constants.CONNECTION;
 import it.cnr.iit.ucs.constants.RestOperation;
-import it.cnr.iit.ucs.message.MEAN;
 import it.cnr.iit.ucs.message.Message;
 import it.cnr.iit.ucs.message.endaccess.EndAccessMessage;
 import it.cnr.iit.ucs.message.startaccess.StartAccessMessage;
@@ -112,7 +112,7 @@ public class GivenMessage extends Stage<GivenMessage> {
         assertNotNull( sessionId );
         EndAccessMessage endAccessMessage = new EndAccessMessage( pepProps.getId(), pepProps.getBaseUri() );
         endAccessMessage.setSessionId( sessionId );
-        endAccessMessage.setCallback( buildResponseInterface( pepProps, "endAccessResponse" ), MEAN.REST );
+        endAccessMessage.setCallback( buildResponseInterface( pepProps, "endAccessResponse" ), CONNECTION.REST );
         return endAccessMessage;
     }
 
@@ -120,7 +120,7 @@ public class GivenMessage extends Stage<GivenMessage> {
         assertNotNull( sessionId );
         StartAccessMessage startAccessMessage = new StartAccessMessage( pepProps.getId(), pepProps.getBaseUri() );
         startAccessMessage.setSessionId( sessionId );
-        startAccessMessage.setCallback( buildResponseInterface( pepProps, "startAccessResponse" ), MEAN.REST );
+        startAccessMessage.setCallback( buildResponseInterface( pepProps, "startAccessResponse" ), CONNECTION.REST );
         return startAccessMessage;
     }
 
@@ -129,7 +129,7 @@ public class GivenMessage extends Stage<GivenMessage> {
         tryAccessMessage.setPepUri( buildOnGoingEvaluationInterface( pepProps ) );
         tryAccessMessage.setPolicy( policy );
         tryAccessMessage.setRequest( request );
-        tryAccessMessage.setCallback( buildResponseInterface( pepProps, "tryAccessResponse" ), MEAN.REST );
+        tryAccessMessage.setCallback( buildResponseInterface( pepProps, "tryAccessResponse" ), CONNECTION.REST );
         return tryAccessMessage;
     }
 

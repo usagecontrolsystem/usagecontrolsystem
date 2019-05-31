@@ -18,17 +18,16 @@ package it.cnr.iit.ucs.message.startaccess;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import it.cnr.iit.ucs.constants.ENTITIES;
+import it.cnr.iit.ucs.constants.PURPOSE;
 import it.cnr.iit.ucs.message.EvaluatedResponse;
 import it.cnr.iit.ucs.message.Message;
-import it.cnr.iit.ucs.message.PART;
-import it.cnr.iit.ucs.message.PURPOSE;
 import it.cnr.iit.ucs.pdp.PDPEvaluation;
 
 /**
  * This is the structure of a message used to response to a start access
  *
  * @author Antonio La Marra, Alessandro Rosetti
- *
  */
 @JsonIgnoreProperties( ignoreUnknown = true )
 public final class StartAccessResponse extends Message implements EvaluatedResponse {
@@ -40,17 +39,17 @@ public final class StartAccessResponse extends Message implements EvaluatedRespo
 
     public StartAccessResponse() {
         super();
-        purpose = PURPOSE.STARTACCESS_RESPONSE;
+        purpose = PURPOSE.START_RESPONSE;
     }
 
     public StartAccessResponse( String source, String destination, String messageId ) {
         super( source, destination, messageId );
-        purpose = PURPOSE.STARTACCESS_RESPONSE;
+        purpose = PURPOSE.START_RESPONSE;
     }
 
     public StartAccessResponse( String messageId ) {
-        super( PART.CH.toString(), PART.PEP.toString(), messageId );
-        purpose = PURPOSE.STARTACCESS_RESPONSE;
+        super( ENTITIES.CH.toString(), ENTITIES.PEP.toString(), messageId );
+        purpose = PURPOSE.START_RESPONSE;
     }
 
     @Override

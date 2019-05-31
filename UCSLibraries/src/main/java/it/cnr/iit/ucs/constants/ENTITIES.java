@@ -13,25 +13,21 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  ******************************************************************************/
-package it.cnr.iit.ucs.message;
+package it.cnr.iit.ucs.constants;
 
 /**
- * Enumerate to handle in quick and easy way the source and the destination
- * string
+ * Enumerate to handle default source and destination
  *
- * @author antonio
- *
+ * @author Antonio La Marra
  */
-public enum PART {
+public enum ENTITIES {
     PIP( "PIP" ),
     CH( "CH" ),
-    PIPRetrieval( "PIPRetrieval" ),
-    PEP( "PEP" ),
-    ADVERTISING( "ADVERTISING" );
+    PEP( "PEP" );
 
     private String value;
 
-    PART( String value ) {
+    ENTITIES( String value ) {
         this.value = value;
     }
 

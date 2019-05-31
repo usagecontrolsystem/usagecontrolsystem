@@ -35,13 +35,9 @@ import it.cnr.iit.utility.errorhandling.Reject;
  *
  */
 public abstract class AbstractPDP implements PDPInterface {
-    // the interface to the obligation manager
     private ObligationManagerInterface obligationManager;
-    // the interface to the pap
     private PAPInterface pap;
-    // variable in charge of storing the status of this class.
     private volatile boolean initialized = false;
-    // configuration of the pdp
     private PdpProperties properties;
 
     /**

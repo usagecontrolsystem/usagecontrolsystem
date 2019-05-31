@@ -15,19 +15,16 @@
  ******************************************************************************/
 package it.cnr.iit.ucs.message.tryaccess;
 
+import it.cnr.iit.ucs.constants.ENTITIES;
+import it.cnr.iit.ucs.constants.PURPOSE;
 import it.cnr.iit.ucs.message.EvaluatedResponse;
 import it.cnr.iit.ucs.message.Message;
-import it.cnr.iit.ucs.message.PART;
-import it.cnr.iit.ucs.message.PURPOSE;
 import it.cnr.iit.ucs.pdp.PDPEvaluation;
 
 /**
  * This is the tryAccess response message
- * This message will be sent from the ContextHandler to the PEP to tell to it
- * which is the exit of the tryaccess it has performed
  *
  * @author Antonio La Marra, Alessandro Rosetti
- *
  */
 public final class TryAccessResponse extends Message implements EvaluatedResponse {
 
@@ -38,13 +35,13 @@ public final class TryAccessResponse extends Message implements EvaluatedRespons
     private String sessionId;
 
     public TryAccessResponse() {
-        super( PART.CH.toString(), PART.PEP.toString() );
-        purpose = PURPOSE.TRYACCESS_RESPONSE;
+        super( ENTITIES.CH.toString(), ENTITIES.PEP.toString() );
+        purpose = PURPOSE.TRY_RESPONSE;
     }
 
     public TryAccessResponse( String messageId ) {
-        super( PART.CH.toString(), PART.PEP.toString(), messageId );
-        purpose = PURPOSE.TRYACCESS_RESPONSE;
+        super( ENTITIES.CH.toString(), ENTITIES.PEP.toString(), messageId );
+        purpose = PURPOSE.TRY_RESPONSE;
     }
 
     public TryAccessResponse( String source, String dest, String messageId ) {

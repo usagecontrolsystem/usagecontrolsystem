@@ -24,25 +24,10 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import oasis.names.tc.xacml.core.schema.wd_17.DecisionType;
 
 /**
- * This is the interface offered by the object returned by a PDP after
- * evaluation.
+ * This is the interface offered by the object returned by a PDP after evaluation.
  *
- * <p>
- * This object will offer three functions directed to the ContextHandler:
- * <ol>
- * <li>getResponse: is meant to be used by the ContextHandelr to gather the
- * response provided by the PDP</li>
- * <li>getPIPObligations: is meant to be used by the ContextHandler to gather
- * the obligations PIPs have to perform</li>
- * <li>getPEPObligations: is meant to be used by the ContextHandler to gather
- * the obligations the PEP has to perform</li>
- * </ol>
- * </p>
- *
- * @author antonio
- *
+ * @author Antonio La Marra, Alessandro Rosetti
  */
-
 @JsonIgnoreProperties( ignoreUnknown = true )
 @JsonTypeInfo( use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "evaluationType" )
 @JsonSubTypes( {

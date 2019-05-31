@@ -41,9 +41,7 @@ import oasis.names.tc.xacml.core.schema.wd_17.ResponseType;
  * </p>
  *
  * @author Antonio La Marra, Alessandro Rosetti
- *
  */
-
 @JsonIgnoreProperties( ignoreUnknown = true )
 public final class PDPResponse implements PDPEvaluation {
 

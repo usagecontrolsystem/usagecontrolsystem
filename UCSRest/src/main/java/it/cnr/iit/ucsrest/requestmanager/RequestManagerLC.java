@@ -20,8 +20,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.logging.Logger;
 
+import it.cnr.iit.ucs.constants.PURPOSE;
 import it.cnr.iit.ucs.message.Message;
-import it.cnr.iit.ucs.message.PURPOSE;
 import it.cnr.iit.ucs.message.endaccess.EndAccessMessage;
 import it.cnr.iit.ucs.message.reevaluation.ReevaluationResponse;
 import it.cnr.iit.ucs.message.startaccess.StartAccessMessage;
@@ -116,11 +116,11 @@ public class RequestManagerLC extends AbstractRequestManager {
             try {
                 while( ( message = getQueueToCH().take() ) != null ) {
                     Message responseMessage = null;
-                    if( message.getPurpose() == PURPOSE.TRYACCESS ) {
+                    if( message.getPurpose() == PURPOSE.TRY ) {
                         responseMessage = getContextHandler().tryAccess( (TryAccessMessage) message );
-                    } else if( message.getPurpose() == PURPOSE.STARTACCESS ) {
+                    } else if( message.getPurpose() == PURPOSE.START ) {
                         responseMessage = getContextHandler().startAccess( (StartAccessMessage) message );
-                    } else if( message.getPurpose() == PURPOSE.ENDACCESS ) {
+                    } else if( message.getPurpose() == PURPOSE.END ) {
                         responseMessage = getContextHandler().endAccess( (EndAccessMessage) message );
                     } else {
                         throw new IllegalArgumentException( "Invalid message arrived" );

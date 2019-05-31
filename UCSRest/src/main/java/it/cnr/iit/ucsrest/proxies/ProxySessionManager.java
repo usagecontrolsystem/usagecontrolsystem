@@ -71,13 +71,13 @@ public class ProxySessionManager implements SessionManagerInterface {
         this.properties = properties;
 
         switch( getConnection() ) {
-            case API:
+            case LOCAL:
                 if( buildLocalSessionManager( properties ) ) {
                     initialized = true;
                 }
                 break;
             case SOCKET:
-            case REST_API:
+            case REST:
                 log.log( Level.WARNING, CONNECTION.MSG_ERR_UNIMPLEMENTED, properties.getCommunicationType() );
                 break;
             default:
@@ -86,15 +86,6 @@ public class ProxySessionManager implements SessionManagerInterface {
         }
     }
 
-    /**
-     * In this case the SessionManager is implemented as a local database. This
-     * database can be distributed or not, we don't care, the only thing we care
-     * about is that in this case we can use the API of the SessionManager to deal
-     * with it.
-     *
-     * @param properties
-     * @return
-     */
     private boolean buildLocalSessionManager( SessionManagerProperties properties ) {
         Optional<SessionManagerProperties> optSm = UCSRest.buildComponent( properties );
 
@@ -113,11 +104,11 @@ public class ProxySessionManager implements SessionManagerInterface {
         }
 
         switch( getConnection() ) {
-            case API:
+            case LOCAL:
                 started = sessionManager.start();
                 return started;
             case SOCKET:
-            case REST_API:
+            case REST:
                 return false;
             default:
                 log.log( Level.SEVERE, CONNECTION.MSG_ERR_INCORRECT, properties.getCommunicationType() );
@@ -132,11 +123,11 @@ public class ProxySessionManager implements SessionManagerInterface {
         }
 
         switch( getConnection() ) {
-            case API:
+            case LOCAL:
                 started = !sessionManager.stop();
                 return !started;
             case SOCKET:
-            case REST_API:
+            case REST:
                 return false;
             default:
                 log.log( Level.SEVERE, CONNECTION.MSG_ERR_INCORRECT, properties.getCommunicationType() );
@@ -153,12 +144,12 @@ public class ProxySessionManager implements SessionManagerInterface {
         }
 
         switch( getConnection() ) {
-            case API:
+            case LOCAL:
                 return sessionManager.createEntryForSubject( sessionId,
                     policySet, originalRequest, onGoingAttributesForSubject, status,
                     pepURI, myIP, subjectName );
             case SOCKET:
-            case REST_API:
+            case REST:
                 return false;
             default:
                 return sessionManager.createEntryForSubject( sessionId,
@@ -176,12 +167,12 @@ public class ProxySessionManager implements SessionManagerInterface {
         }
 
         switch( getConnection() ) {
-            case API:
+            case LOCAL:
                 return sessionManager.createEntryForResource( sessionId,
                     policySet, originalRequest, onGoingAttributesForObject, status,
                     pepURI, myIP, objectName );
             case SOCKET:
-            case REST_API:
+            case REST:
                 return false;
             default:
                 log.severe( "Incorrect communication medium : " + properties.getCommunicationType() );
@@ -197,10 +188,10 @@ public class ProxySessionManager implements SessionManagerInterface {
         }
 
         switch( getConnection() ) {
-            case API:
+            case LOCAL:
                 return sessionManager.createEntry( parameterObject );
             case SOCKET:
-            case REST_API:
+            case REST:
                 return false;
             default:
                 return sessionManager
@@ -217,12 +208,12 @@ public class ProxySessionManager implements SessionManagerInterface {
         }
 
         switch( getConnection() ) {
-            case API:
+            case LOCAL:
                 return sessionManager.createEntryForAction( sessionId,
                     policySet, originalRequest, onGoingAttributesForAction, status,
                     pepURI, myIP, actionName );
             case SOCKET:
-            case REST_API:
+            case REST:
                 return false;
             default:
                 return sessionManager.createEntryForAction( sessionId,
@@ -240,12 +231,12 @@ public class ProxySessionManager implements SessionManagerInterface {
         }
 
         switch( getConnection() ) {
-            case API:
+            case LOCAL:
                 return sessionManager.createEntryForEnvironment( sessionId,
                     policySet, originalRequest, onGoingAttributesForEnvironment, status,
                     pepURI, myIP );
             case SOCKET:
-            case REST_API:
+            case REST:
                 return false;
             default:
                 return sessionManager.createEntryForEnvironment( sessionId,
@@ -261,10 +252,10 @@ public class ProxySessionManager implements SessionManagerInterface {
         }
 
         switch( getConnection() ) {
-            case API:
+            case LOCAL:
                 return sessionManager.updateEntry( sessionId, status );
             case SOCKET:
-            case REST_API:
+            case REST:
                 return false;
             default:
                 return sessionManager.updateEntry( sessionId, status );
@@ -278,10 +269,10 @@ public class ProxySessionManager implements SessionManagerInterface {
         }
 
         switch( getConnection() ) {
-            case API:
+            case LOCAL:
                 return sessionManager.deleteEntry( sessionId );
             case SOCKET:
-            case REST_API:
+            case REST:
                 return false;
             default:
                 return sessionManager.deleteEntry( sessionId );
@@ -295,10 +286,10 @@ public class ProxySessionManager implements SessionManagerInterface {
         }
 
         switch( getConnection() ) {
-            case API:
+            case LOCAL:
                 return sessionManager.getSessionsForAttribute( attributeId );
             case SOCKET:
-            case REST_API:
+            case REST:
                 return new ArrayList<>();
             default:
                 return sessionManager.getSessionsForAttribute( attributeId );
@@ -313,11 +304,11 @@ public class ProxySessionManager implements SessionManagerInterface {
         }
 
         switch( getConnection() ) {
-            case API:
+            case LOCAL:
                 return sessionManager
                     .getSessionsForSubjectAttributes( subjectName, attributeId );
             case SOCKET:
-            case REST_API:
+            case REST:
                 return new ArrayList<>();
             default:
                 return sessionManager
@@ -333,11 +324,11 @@ public class ProxySessionManager implements SessionManagerInterface {
         }
 
         switch( getConnection() ) {
-            case API:
+            case LOCAL:
                 return sessionManager
                     .getSessionsForResourceAttributes( objectName, attributeId );
             case SOCKET:
-            case REST_API:
+            case REST:
                 return new ArrayList<>();
             default:
                 return sessionManager
@@ -353,11 +344,11 @@ public class ProxySessionManager implements SessionManagerInterface {
         }
 
         switch( getConnection() ) {
-            case API:
+            case LOCAL:
                 return sessionManager
                     .getSessionsForActionAttributes( actionName, attributeId );
             case SOCKET:
-            case REST_API:
+            case REST:
                 return new ArrayList<>();
             default:
                 return sessionManager
@@ -372,10 +363,10 @@ public class ProxySessionManager implements SessionManagerInterface {
         }
 
         switch( getConnection() ) {
-            case API:
+            case LOCAL:
                 return sessionManager.getSessionForId( sessionId );
             case SOCKET:
-            case REST_API:
+            case REST:
                 return Optional.empty();
             default:
                 return sessionManager.getSessionForId( sessionId );
@@ -389,10 +380,10 @@ public class ProxySessionManager implements SessionManagerInterface {
         }
 
         switch( getConnection() ) {
-            case API:
+            case LOCAL:
                 return sessionManager.getSessionsForStatus( status );
             case SOCKET:
-            case REST_API:
+            case REST:
                 return new ArrayList<>();
             default:
                 return sessionManager.getSessionsForStatus( status );
@@ -407,11 +398,11 @@ public class ProxySessionManager implements SessionManagerInterface {
         }
 
         switch( getConnection() ) {
-            case API:
+            case LOCAL:
                 return sessionManager
                     .getSessionsForEnvironmentAttributes( attributeId );
             case SOCKET:
-            case REST_API:
+            case REST:
                 return new ArrayList<>();
             default:
                 return sessionManager
@@ -426,10 +417,10 @@ public class ProxySessionManager implements SessionManagerInterface {
         }
 
         switch( getConnection() ) {
-            case API:
+            case LOCAL:
                 return sessionManager.getOnGoingAttributes( sessionId );
             case SOCKET:
-            case REST_API:
+            case REST:
                 return new ArrayList<>();
             default:
                 return sessionManager.getOnGoingAttributes( sessionId );
@@ -443,10 +434,10 @@ public class ProxySessionManager implements SessionManagerInterface {
         }
 
         switch( getConnection() ) {
-            case API:
+            case LOCAL:
                 return sessionManager.checkSession( sessionId, attribute );
             case SOCKET:
-            case REST_API:
+            case REST:
                 return null;
             default:
                 return sessionManager.checkSession( sessionId, attribute );
@@ -460,10 +451,10 @@ public class ProxySessionManager implements SessionManagerInterface {
         }
 
         switch( getConnection() ) {
-            case API:
+            case LOCAL:
                 return sessionManager.insertSession( session, attribute );
             case SOCKET:
-            case REST_API:
+            case REST:
                 return false;
             default:
                 return sessionManager.insertSession( session, attribute );
@@ -477,10 +468,10 @@ public class ProxySessionManager implements SessionManagerInterface {
         }
 
         switch( getConnection() ) {
-            case API:
+            case LOCAL:
                 return sessionManager.stopSession( session );
             case SOCKET:
-            case REST_API:
+            case REST:
                 return false;
             default:
                 return sessionManager.stopSession( session );

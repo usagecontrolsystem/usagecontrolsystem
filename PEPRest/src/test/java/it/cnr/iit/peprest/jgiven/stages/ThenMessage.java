@@ -7,7 +7,6 @@ import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static it.cnr.iit.ucs.constants.RestOperation.TRY_ACCESS_RESPONSE;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -115,22 +114,6 @@ public class ThenMessage extends Stage<ThenMessage> {
     public ThenMessage an_illegal_access_exception_is_thrown() {
         assertNotNull( expectedException );
         assertTrue( expectedException.getMessage().contains( "IllegalAccessException" ) );
-        return self();
-    }
-
-    public ThenMessage the_Message_motivation_is_NOT_OK() {
-        assertNotNull( message );
-        assertNull( message.getMotivation() );
-        return self();
-    }
-
-    public ThenMessage the_Message_motivation_is_OK() {
-        assertNotNull( message );
-        try {
-            assertEquals( "OK", new ObjectMapper().readValue( message.getMotivation(), String.class ) );
-        } catch( Exception e ) {
-            fail( e.getLocalizedMessage() );
-        }
         return self();
     }
 

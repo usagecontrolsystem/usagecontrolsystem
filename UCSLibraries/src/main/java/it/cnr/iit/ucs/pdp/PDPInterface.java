@@ -20,9 +20,6 @@ import it.cnr.iit.xacmlutilities.wrappers.PolicyWrapper;
 import it.cnr.iit.xacmlutilities.wrappers.RequestWrapper;
 
 /**
- * This is the interface to the PDP.
- *
- * <p>
  * This is the interface offered by the PDP. The only task the PDP has to
  * accomplish is that of evaluating a request versus a policy. The PDP can work
  * in two different ways: the policy can be provided by the ContextHandler or it
@@ -31,7 +28,6 @@ import it.cnr.iit.xacmlutilities.wrappers.RequestWrapper;
  * to convert eventual obligation in a PEP-friendly and PIP-friendly format.
  * Only after this step the response with the obligations can be send to the
  * ContextHandler.
- * </p>
  *
  * @author Antonio La Marra, Alessandro Rosetti
  *

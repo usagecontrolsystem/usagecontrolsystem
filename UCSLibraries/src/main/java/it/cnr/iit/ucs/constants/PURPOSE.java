@@ -13,10 +13,23 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  ******************************************************************************/
-package it.cnr.iit.ucs.message;
+package it.cnr.iit.ucs.constants;
 
-public enum MEAN {
-    REST,
-    RMI,
-    API;
+/**
+ * Possible purposes of messages
+ *
+ * @author Antonio La Marra
+ */
+public enum PURPOSE {
+    TRY,
+    START,
+    END,
+    REEVALUATION,
+    REVOKE,
+    TRY_RESPONSE,
+    START_RESPONSE,
+    END_RESPONSE,
+    REEVALUATION_RESPONSE,
+    ATTRIBUTE_RETRIEVAL,
+    ATTRIBUTE_RETRIEVAL_RESPONSE,
 }
