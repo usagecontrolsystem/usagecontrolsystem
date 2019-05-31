@@ -52,7 +52,7 @@ public class PEPRestCommunication {
     @ApiResponses( value = {
         @ApiResponse( code = 500, message = "Invalid message received" ),
         @ApiResponse( code = 200, message = "OK" ) } )
-    @PostMapping( value = "/startEvaluation" )
+    @PostMapping( value = "/start" )
     // TODO UCS-34 NOSONAR
     public String startEvaluation() {
         return pepRest.tryAccess();
@@ -69,7 +69,7 @@ public class PEPRestCommunication {
     @ApiResponses( value = {
         @ApiResponse( code = 500, message = "Invalid message received" ),
         @ApiResponse( code = 200, message = "OK" ) } )
-    @GetMapping( value = "/flowStatus" )
+    @GetMapping( value = "/status" )
     // TODO UCS-34 NOSONAR
     public CallerResponse getMessageStatus( @RequestParam( value = "messageId" ) String messageId ) {
         if( messageId == null || messageId.isEmpty() ) {

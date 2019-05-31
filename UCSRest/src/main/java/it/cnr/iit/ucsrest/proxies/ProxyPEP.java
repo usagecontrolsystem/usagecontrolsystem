@@ -21,7 +21,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import it.cnr.iit.ucs.constants.CONNECTION;
-import it.cnr.iit.ucs.constants.OperationNames;
+import it.cnr.iit.ucs.constants.OperationName;
 import it.cnr.iit.ucs.message.Message;
 import it.cnr.iit.ucs.message.endaccess.EndAccessResponse;
 import it.cnr.iit.ucs.message.reevaluation.ReevaluationResponse;
@@ -121,7 +121,7 @@ public class ProxyPEP implements PEPInterface {
             case REST_API:
                 RESTUtils.asyncPost(
                     uri.toString(),
-                    OperationNames.ONGOINGRESPONSE_REST,
+                    OperationName.ONGOINGRESPONSE_REST,
                     message );
                 break;
             case API:

@@ -1,7 +1,6 @@
 package it.cnr.iit.peprest;
 
 import static it.cnr.iit.ucs.constants.RestOperation.FINISH;
-import static it.cnr.iit.ucs.constants.RestOperation.FLOW_STATUS;
 import static org.apache.http.HttpStatus.SC_BAD_REQUEST;
 import static org.apache.http.HttpStatus.SC_OK;
 import static org.assertj.core.api.Assertions.fail;
@@ -19,6 +18,7 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.web.client.HttpClientErrorException;
 
 import it.cnr.iit.peprest.messagetrack.MessageStorage;
+import it.cnr.iit.ucs.constants.RestOperation;
 
 @RunWith( SpringJUnit4ClassRunner.class )
 @WebAppConfiguration
@@ -49,7 +49,7 @@ public class PEPRestCommunicationTest extends PEPRestAbstractTest {
     @Test( expected = HttpClientErrorException.class )
     public void flowStatusRequestWithoutMessageIdResultsInBadRequestResponse() throws Throwable {
         try {
-            postGetRequestToPEPRest( "", FLOW_STATUS.getOperationUri() );
+            postGetRequestToPEPRest( "", RestOperation.STATUS.getOperationUri() );
             fail( "Should have thrown HttpClientErrorException: 204 NO_CONTENT" );
         } catch( Exception e ) {
             throw e.getCause();
@@ -60,7 +60,7 @@ public class PEPRestCommunicationTest extends PEPRestAbstractTest {
     public void flowStatusRequestWithWrongMessageIdResultsInBadRequestResponse() throws Throwable {
         when( pepRest.getMessageStorage() ).thenReturn( new MessageStorage() );
         try {
-            postGetRequestToPEPRest( " ", FLOW_STATUS.getOperationUri() ).getStatus();
+            postGetRequestToPEPRest( " ", RestOperation.STATUS.getOperationUri() ).getStatus();
             fail( "Should have thrown IllegalArgumentException" );
         } catch( Exception e ) {
             throw e.getCause();

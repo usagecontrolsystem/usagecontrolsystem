@@ -16,9 +16,8 @@
 package it.cnr.iit.ucs.constants;
 
 public enum STATUS {
-    TRYACCESS,
-    STARTACCESS,
-    ENDACCESS,
-    REVOKE,
-    REEVALUATION;
+    TRY,
+    START,
+    END,
+    REVOKE;
 }
