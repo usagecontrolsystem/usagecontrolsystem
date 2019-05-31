@@ -37,6 +37,9 @@ final class PIPReaderSubscriberTimer extends TimerTask {
     private Timer timer;
     PIPReader pip;
 
+    private static final long DEFAULT_RATE = 3L * 1000;
+    private long rate = DEFAULT_RATE;
+
     PIPReaderSubscriberTimer( PIPReader pip ) {
         this.timer = new Timer();
         this.pip = pip;
@@ -48,6 +51,18 @@ final class PIPReaderSubscriberTimer extends TimerTask {
     }
 
     public void start() {
-        timer.scheduleAtFixedRate( this, 0, 10L * 1000 );
+        timer.scheduleAtFixedRate( this, 0, rate );
     }
+
+    public long getRate() {
+        return rate;
+    }
+
+    public void setRate( long rate ) {
+        if( rate <= 0 ) {
+            this.rate = DEFAULT_RATE;
+        }
+        this.rate = rate;
+    }
+
 }

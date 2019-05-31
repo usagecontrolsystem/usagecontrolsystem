@@ -55,7 +55,7 @@ import it.cnr.iit.ucsrest.proxies.ProxySessionManager;
 import it.cnr.iit.ucsrest.requestmanager.RequestManagerLC;
 import it.cnr.iit.ucsrest.rest.UCSRest;
 import it.cnr.iit.utility.JAXBUtility;
-import it.cnr.iit.utility.Utility;
+import it.cnr.iit.utility.FileUtility;
 import it.cnr.iit.xacmlutilities.Attribute;
 import it.cnr.iit.xacmlutilities.Category;
 import it.cnr.iit.xacmlutilities.DataType;
@@ -375,7 +375,7 @@ public class UCSRestBaseTests {
 
     private Object loadXMLFromFile( String fileName, Class<?> className )
             throws JAXBException, URISyntaxException, IOException {
-        String data = Utility.readFileAsString( fileName );
+        String data = FileUtility.readFileAsString( fileName );
         return JAXBUtility.unmarshalToObject( className, data );
     }
 }

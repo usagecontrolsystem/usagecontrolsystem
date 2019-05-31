@@ -20,31 +20,14 @@ import java.util.List;
 import it.cnr.iit.xacmlutilities.Attribute;
 
 /**
- * This is the interface provided by a PolicyHelper.
- * <p>
- * The methods we will need to extract the informations from the xml are:
- * <ol>
- * <li>retrieve attributes needed to evaluate a policy</li>
- * <li>retrieve obligations</li>
- * <li>the rule combining algorithm id</li>
- * </ol>
- *
- * This class needs to be employed because in this way we can abstract the
- * underlying implementation, this means that if, in the future, we do not want
- * to use JAXB anymore but other methods we will have just to change the
- * implementation of those methods.
- *
- * <br>
- *
- * </p>
+ * This is the interface provided by a PolicyWapper.
  *
  * @author Antonio La Marra, Alessandro Rosetti
  *
  */
 public interface PolicyWrapperInterface {
     /**
-     * Retrieves the list of attributes to be used to evaluate a certain
-     * condition.
+     * Retrieves the list of attributes to be used to evaluate a certain condition.
      *
      * @param conditionName
      *          the name of the condition
@@ -59,10 +42,8 @@ public interface PolicyWrapperInterface {
 
     /**
      * Retrieves the ruleCombiningAlgorithmID.
-     * <p>
      * The rule combining algorithm is necessary whenever we need to couple
      * together a set of rules to provide a single decision.
-     * </p>
      *
      * @return the id of the rule combining algorithm
      */

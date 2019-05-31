@@ -16,7 +16,9 @@
 package it.cnr.iit.ucs.contexthandler;
 
 import java.net.URI;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.logging.Logger;
 
@@ -29,13 +31,14 @@ import it.cnr.iit.ucs.pip.PIPCHInterface;
 import it.cnr.iit.ucs.properties.components.ContextHandlerProperties;
 import it.cnr.iit.ucs.requestmanager.RequestManagerToCHInterface;
 import it.cnr.iit.ucs.sessionmanager.SessionManagerInterface;
-import it.cnr.iit.utility.Utility;
+import it.cnr.iit.utility.RESTUtils;
 import it.cnr.iit.utility.errorhandling.Reject;
+import it.cnr.iit.utility.errorhandling.exception.PreconditionException;
 
 /**
  * This is the abstract representation of the context handler object.
  * In order to work properly, a context handler requires the interfaces offered
- * by other components:
+ * by other components.
  *
  * @author Antonio La Marra, Alessandro Rosetti
  *
@@ -59,7 +62,7 @@ public abstract class AbstractContextHandler implements ContextHandlerInterface 
         Reject.ifNull( properties );
         this.properties = properties;
 
-        Optional<URI> uri = Utility.parseUri( properties.getBaseUri() );
+        Optional<URI> uri = RESTUtils.parseUri( properties.getBaseUri() );
         Reject.ifAbsent( uri );
         this.uri = uri.get(); // NOSONAR
 

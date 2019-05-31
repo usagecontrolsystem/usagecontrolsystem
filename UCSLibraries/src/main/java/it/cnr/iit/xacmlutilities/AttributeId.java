@@ -45,19 +45,6 @@ public final class AttributeId {
         return this.toString().hashCode();
     }
 
-    /**
-     * Gets the name of the attribute from the whole attributeId
-     *
-     * @return the attribute name
-     */
-    public String getSplittedAttribute() {
-        String[] tokens = attributeId.split( "#" );
-        if( tokens.length > 1 ) {
-            return tokens[1];
-        }
-        return attributeId;
-    }
-
     @Override
     public AttributeId clone() throws CloneNotSupportedException {
         return new AttributeId( attributeId );

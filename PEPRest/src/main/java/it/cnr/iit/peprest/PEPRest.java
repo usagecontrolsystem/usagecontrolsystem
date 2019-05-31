@@ -46,7 +46,7 @@ import it.cnr.iit.ucs.message.tryaccess.TryAccessMessage;
 import it.cnr.iit.ucs.message.tryaccess.TryAccessResponse;
 import it.cnr.iit.ucs.pdp.PDPEvaluation;
 import it.cnr.iit.ucs.pep.PEPInterface;
-import it.cnr.iit.utility.Utility;
+import it.cnr.iit.utility.FileUtility;
 import it.cnr.iit.utility.errorhandling.Reject;
 import it.cnr.iit.xacmlutilities.wrappers.PolicyWrapper;
 import it.cnr.iit.xacmlutilities.wrappers.RequestWrapper;
@@ -93,8 +93,8 @@ public class PEPRest implements PEPInterface {
     }
 
     public String tryAccess() {
-        RequestWrapper request = RequestWrapper.build( Utility.readFileAbsPath( pep.getRequestPath() ) );
-        PolicyWrapper policy = PolicyWrapper.build( Utility.readFileAbsPath( pep.getPolicyPath() ) );
+        RequestWrapper request = RequestWrapper.build( FileUtility.readFileAbsPath( pep.getRequestPath() ) );
+        PolicyWrapper policy = PolicyWrapper.build( FileUtility.readFileAbsPath( pep.getPolicyPath() ) );
         log.log( Level.INFO, "tryAccess at {0} ", System.currentTimeMillis() );
         TryAccessMessage message = buildTryAccessMessage( request, policy );
         return handleRequest( message );

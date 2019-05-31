@@ -24,7 +24,7 @@ import com.tngtech.jgiven.integration.spring.JGivenStage;
 
 import it.cnr.iit.ucs.properties.UCSProperties;
 import it.cnr.iit.ucs.testing.jgiven.rules.MockedHttpServiceTestRule;
-import it.cnr.iit.utility.Utility;
+import it.cnr.iit.utility.RESTUtils;
 import it.cnr.iit.utility.errorhandling.Reject;
 
 @JGivenStage
@@ -47,7 +47,7 @@ public class GivenPEPRestSimulator extends Stage<GivenPEPRestSimulator> {
 
     @BeforeScenario
     public void init() {
-        Optional<URI> uri = Utility.parseUri( properties.getPepList().get( 0 ).getBaseUri() );
+        Optional<URI> uri = RESTUtils.parseUri( properties.getPepList().get( 0 ).getBaseUri() );
         Reject.ifAbsent( uri );
         restSimulatorTestRule.start( uri.get().getPort() );
     }
@@ -57,7 +57,7 @@ public class GivenPEPRestSimulator extends Stage<GivenPEPRestSimulator> {
     }
 
     public GivenPEPRestSimulator a_mocked_PEPRest_listening_on_$( @Quoted String operationUri ) {
-        Optional<URI> uri = Utility.parseUri( properties.getPepList().get( 0 ).getBaseUri() );
+        Optional<URI> uri = RESTUtils.parseUri( properties.getPepList().get( 0 ).getBaseUri() );
         Reject.ifAbsent( uri );
 
         wireMockContextHandler = new WireMock( uri.get().getHost(), uri.get().getPort() );

@@ -3,7 +3,7 @@
  *
  * @authors Fabio Bindi and Filippo Lauria
  */
-package it.cnr.iit.ucs.pip.exception;
+package it.cnr.iit.ucs.exceptions;
 
 /**
  * A wrapper for exceptions related to the PIP operations (i.e. errors occurred

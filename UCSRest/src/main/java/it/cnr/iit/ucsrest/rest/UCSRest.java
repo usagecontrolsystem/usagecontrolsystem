@@ -51,41 +51,11 @@ import it.cnr.iit.utility.errorhandling.Reject;
 import it.cnr.iit.utility.errorhandling.exception.PreconditionException;
 
 /**
- * This is the usage control framework class.
- * <p>
- * This class is in charge of instantiating all the classes and of providing
- * communication means to each component. In order to have a framework that is
- * highly configurable, instead of leaving this class in charge of instantiating
- * the various components, we will have some classes (following the so-called
- * <i>proxy pattern</i>) in charge of providing the effective implementation.
+ * This class is in charge of instantiating all the components.
  *
- * Hence the task this class has to accomplish is to instantiate the proxy class
- * and linking together the various classes. In this way this object will be
- * agnostic about the implementation. Moreover the various classes will be built
- * using the informations provided in the configuration file, hence, if the
- * implementation of the configuration is available, it is very easy to
- * configure the framework.
- * </p>
- * <p>
- * Only some objects do not require to have a proxy, since they're the basic
- * components of an UCS:
- * <ol>
- * <li>the Request Manager</li>
- * <li>the Context Handler</li>
- * <li>the various PIPs</li>
- * </ol>
- * Without these components, in fact, it doesn't exist an UCS system.
- * </p>
- * <p>
- * In the implementation we've tried to follow the CERT guidelines to secure
- * coding as much as possible <a href=
- * "https://www.securecoding.cert.org/confluence/display/java/1+Front+Matter">link</a>.
- * </p>
- *
- * @author antonio
+ * @author Antonio La Marra, Alessandro Rosetti
  *
  */
-
 @Component
 public class UCSRest implements UCSInterface {
 
@@ -100,8 +70,6 @@ public class UCSRest implements UCSInterface {
     private ProxySessionManager proxySessionManager;
     private ProxyPDP proxyPDP;
     private ProxyPAP proxyPAP;
-
-    // private ForwardingQueue forwardingQueue = new ForwardingQueue();
 
     private boolean initialised = false;
 
@@ -186,6 +154,7 @@ public class UCSRest implements UCSInterface {
                 failures++;
                 continue;
             }
+            initialised = true;
 
             PIPBase pipBase = optPip.get();
             pipBase.setContextHandler( contextHandler );

@@ -24,7 +24,7 @@ import com.tngtech.jgiven.integration.spring.JGivenStage;
 
 import it.cnr.iit.peprest.integration.PEPRestTestContext;
 import it.cnr.iit.ucs.testing.jgiven.rules.MockedHttpServiceTestRule;
-import it.cnr.iit.utility.Utility;
+import it.cnr.iit.utility.RESTUtils;
 import it.cnr.iit.utility.errorhandling.Reject;
 
 @JGivenStage
@@ -47,7 +47,7 @@ public class GivenContextHandlerRestSimulator extends Stage<GivenContextHandlerR
 
     @BeforeScenario
     public void init() {
-        Optional<URI> uri = Utility.parseUri( properties.getUcsBaseUri() );
+        Optional<URI> uri = RESTUtils.parseUri( properties.getUcsBaseUri() );
         Reject.ifAbsent( uri );
         restSimulatorTestRule.start( uri.get().getPort() );
     }
@@ -57,7 +57,7 @@ public class GivenContextHandlerRestSimulator extends Stage<GivenContextHandlerR
     }
 
     public GivenContextHandlerRestSimulator a_mocked_context_handler_for_$( @Quoted String operationUri ) {
-        Optional<URI> uri = Utility.parseUri( properties.getUcsBaseUri() );
+        Optional<URI> uri = RESTUtils.parseUri( properties.getUcsBaseUri() );
         Reject.ifAbsent( uri );
 
         wireMockContextHandler = new WireMock( uri.get().getHost(), uri.get().getPort() );
