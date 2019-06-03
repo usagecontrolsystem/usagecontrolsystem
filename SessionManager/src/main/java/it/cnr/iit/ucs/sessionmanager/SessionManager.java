@@ -21,12 +21,8 @@ import com.j256.ormlite.stmt.QueryBuilder;
 import com.j256.ormlite.support.ConnectionSource;
 import com.j256.ormlite.table.TableUtils;
 
+import it.cnr.iit.ucs.constants.STATUS;
 import it.cnr.iit.ucs.properties.components.SessionManagerProperties;
-import it.cnr.iit.ucs.sessionmanager.OnGoingAttributesInterface;
-import it.cnr.iit.ucs.sessionmanager.SessionAttributes;
-import it.cnr.iit.ucs.sessionmanager.SessionAttributesBuilder;
-import it.cnr.iit.ucs.sessionmanager.SessionInterface;
-import it.cnr.iit.ucs.sessionmanager.SessionManagerInterface;
 import it.cnr.iit.ucs.sessionmanager.OnGoingAttribute.COLUMN;
 import it.cnr.iit.utility.errorhandling.Reject;
 import it.cnr.iit.xacml.Attribute;
@@ -373,8 +369,8 @@ public final class SessionManager implements SessionManagerInterface {
             List<SessionInterface> sessions = new LinkedList<>();
             for( OnGoingAttribute attr : attributes ) {
                 // add the considered session only if its status is equal to 's'
-                if( attr.getSession().getStatus().equals( "s" )
-                        || attr.getSession().getStatus().equals( "r" ) ) {
+                if( attr.getSession().isStatus( STATUS.START.name() )
+                        || attr.getSession().isStatus( STATUS.REVOKE.name() ) ) {
                     sessions.add( attr.getSession() );
                 }
             }
@@ -419,8 +415,8 @@ public final class SessionManager implements SessionManagerInterface {
             List<SessionInterface> sessions = new LinkedList<>();
             for( OnGoingAttribute attr : attributes ) {
                 // add the considered session only if its status is equal to 's'
-                if( attr.getSession().getStatus().equals( "s" )
-                        || attr.getSession().getStatus().equals( "r" ) ) {
+                if( attr.getSession().isStatus( STATUS.START.name() )
+                        || attr.getSession().isStatus( STATUS.REVOKE.name() ) ) {
                     sessions.add( attr.getSession() );
                 }
             }
@@ -460,9 +456,8 @@ public final class SessionManager implements SessionManagerInterface {
 
             List<SessionInterface> sessions = new LinkedList<>();
             for( OnGoingAttribute attr : attributes ) {
-                // add the considered session only if its status is equal to 's'
-                if( attr.getSession().getStatus().equals( "s" )
-                        || attr.getSession().getStatus().equals( "r" ) ) {
+                if( attr.getSession().isStatus( STATUS.START.name() )
+                        || attr.getSession().isStatus( STATUS.REVOKE.name() ) ) {
                     sessions.add( attr.getSession() );
                 }
             }
@@ -502,9 +497,8 @@ public final class SessionManager implements SessionManagerInterface {
 
             List<SessionInterface> sessions = new LinkedList<>();
             for( OnGoingAttribute attr : attributes ) {
-                // add the considered session only if its status is equal to 's'
-                if( attr.getSession().getStatus().equals( "s" )
-                        || attr.getSession().getStatus().equals( "r" ) ) {
+                if( attr.getSession().isStatus( STATUS.START.name() )
+                        || attr.getSession().isStatus( STATUS.REVOKE.name() ) ) {
                     sessions.add( attr.getSession() );
                 }
             }
@@ -583,8 +577,8 @@ public final class SessionManager implements SessionManagerInterface {
             List<SessionInterface> sessions = new LinkedList<>();
             for( OnGoingAttribute attr : attributes ) {
                 // add the considered session only if its status is equal to 's'
-                if( attr.getSession().getStatus().equals( "s" )
-                        || attr.getSession().getStatus().equals( "r" ) ) {
+                if( attr.getSession().isStatus( STATUS.START.name() )
+                        || attr.getSession().isStatus( STATUS.REVOKE.name() ) ) {
                     sessions.add( attr.getSession() );
                 }
             }
@@ -609,7 +603,7 @@ public final class SessionManager implements SessionManagerInterface {
     }
 
     @Override
-    public STATUS checkSession( String sessionId, Attribute attribute ) {
+    public REEV_STATUS checkSession( String sessionId, Attribute attribute ) {
         return null;
     }
 
