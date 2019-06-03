@@ -19,6 +19,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import it.cnr.iit.ucs.constants.STATUS;
 import it.cnr.iit.ucs.properties.components.SessionManagerProperties;
 import it.cnr.iit.ucs.sessionmanager.OnGoingAttributesInterface;
 import it.cnr.iit.ucs.sessionmanager.SessionAttributesBuilder;
@@ -41,9 +42,6 @@ public class SessionManagerTest {
     @Value( "${ucf.session-manager.communication-type}" )
     private String communicationType;
 
-    @Value( "${ucf.session-manager.type}" )
-    private String type;
-
     @Value( "${ucf.session-manager.db-uri}" )
     private String dbUri;
 
@@ -55,18 +53,6 @@ public class SessionManagerTest {
 
     @Value( "${session.request}" )
     private String request;
-
-    @Value( "${session.status.try}" )
-    private String tryStatus;
-
-    @Value( "${session.status.start}" )
-    private String startStatus;
-
-    @Value( "${session.status.revoke}" )
-    private String revokeStatus;
-
-    @Value( "${session.status.end}" )
-    private String endStatus;
 
     @Value( "${session.pepuri}" )
     private String pepuri;
@@ -117,7 +103,7 @@ public class SessionManagerTest {
     public void testDBConnection() throws Exception {
         boolean status = sessionManager.createEntry( new SessionAttributesBuilder().setSessionId( sessionId )
             .setPolicySet( policy )
-            .setOriginalRequest( request ).setStatus( tryStatus )
+            .setOriginalRequest( request ).setStatus( STATUS.TRY.name() )
             .setPepURI( pepuri ).setMyIP( myip ).setActionName( action ).setSubjectName( subject ).setResourceName( resource ).build() );
         Assert.assertEquals( true, status );
         SessionInterface sessionInterface = sessionManager.getSessionForId( sessionId ).get();
@@ -129,12 +115,12 @@ public class SessionManagerTest {
     public void testSameSessionId() throws Exception {
         boolean status = sessionManager.createEntry( new SessionAttributesBuilder().setSessionId( sessionId )
             .setPolicySet( policy )
-            .setOriginalRequest( request ).setStatus( tryStatus )
+            .setOriginalRequest( request ).setStatus( STATUS.TRY.name() )
             .setPepURI( pepuri ).setMyIP( myip ).setActionName( action ).setSubjectName( subject ).setResourceName( resource ).build() );
         Assert.assertEquals( true, status );
         status = sessionManager.createEntry( new SessionAttributesBuilder().setSessionId( sessionId )
             .setPolicySet( policy )
-            .setOriginalRequest( request ).setStatus( tryStatus )
+            .setOriginalRequest( request ).setStatus( STATUS.TRY.name() )
             .setPepURI( pepuri ).setMyIP( myip ).setActionName( action ).setSubjectName( subject ).setResourceName( resource ).build() );
         Assert.assertEquals( false, status );
     }
@@ -144,13 +130,13 @@ public class SessionManagerTest {
         log.info( "*******TESTING OGA PER SUBJECT: " + subject + "****" );
         String[] attributesPerSubject = new String[] { "role" };
         boolean status = sessionManager.createEntryForSubject( sessionId, policy, request,
-            Arrays.asList( attributesPerSubject ), tryStatus, pepuri, myip, subject );
+            Arrays.asList( attributesPerSubject ), STATUS.TRY.name(), pepuri, myip, subject );
         Assert.assertEquals( true, status );
-        status = sessionManager.updateEntry( sessionId, startStatus );
+        status = sessionManager.updateEntry( sessionId, STATUS.START.name() );
         Assert.assertEquals( true, status );
         SessionInterface sessionInterface = sessionManager.getSessionForId( sessionId ).get();
         Assert.assertNotNull( sessionInterface );
-        Assert.assertEquals( sessionInterface.getStatus(), startStatus );
+        Assert.assertEquals( sessionInterface.getStatus(), STATUS.START.name() );
         sessionInterface = sessionManager.getSessionsForSubjectAttributes( subject, "role" ).get( 0 );
         assertTrue( sessionInterface.getId().equals( sessionId ) );
         sessionInterface = sessionManager.getSessionsForAttribute( "role" ).get( 0 );
@@ -163,13 +149,13 @@ public class SessionManagerTest {
         log.info( "*******TESTING OGA PER ACTION: " + action + "****" );
         String[] attributesPerAction = new String[] { "action" };
         boolean status = sessionManager.createEntryForAction( sessionId, policy, request,
-            Arrays.asList( attributesPerAction ), tryStatus, pepuri, myip, action );
+            Arrays.asList( attributesPerAction ), STATUS.TRY.name(), pepuri, myip, action );
         Assert.assertEquals( true, status );
-        status = sessionManager.updateEntry( sessionId, startStatus );
+        status = sessionManager.updateEntry( sessionId, STATUS.START.name() );
         Assert.assertEquals( true, status );
         SessionInterface sessionInterface = sessionManager.getSessionForId( sessionId ).get();
         Assert.assertNotNull( sessionInterface );
-        Assert.assertEquals( sessionInterface.getStatus(), startStatus );
+        Assert.assertEquals( sessionInterface.getStatus(), STATUS.START.name() );
         sessionInterface = sessionManager.getSessionsForActionAttributes( action, "action" ).get( 0 );
         assertTrue( sessionInterface.getId().equals( sessionId ) );
         log.info( "*******END TESTING OGA PER ACTION****" );
@@ -180,13 +166,13 @@ public class SessionManagerTest {
         log.info( "*******TESTING OGA PER RESOURCE: " + resource + "****" );
         String[] attributesPerResource = new String[] { "resource" };
         boolean status = sessionManager.createEntryForResource( sessionId, policy, request,
-            Arrays.asList( attributesPerResource ), tryStatus, pepuri, myip, resource );
+            Arrays.asList( attributesPerResource ), STATUS.TRY.name(), pepuri, myip, resource );
         Assert.assertEquals( true, status );
-        status = sessionManager.updateEntry( sessionId, startStatus );
+        status = sessionManager.updateEntry( sessionId, STATUS.START.name() );
         Assert.assertEquals( true, status );
         SessionInterface sessionInterface = sessionManager.getSessionForId( sessionId ).get();
         Assert.assertNotNull( sessionInterface );
-        Assert.assertEquals( sessionInterface.getStatus(), startStatus );
+        Assert.assertEquals( sessionInterface.getStatus(), STATUS.START.name() );
         sessionInterface = sessionManager.getSessionsForResourceAttributes( resource, "resource" ).get( 0 );
         assertTrue( sessionInterface.getId().equals( sessionId ) );
         log.info( "*******END TESTING OGA PER RESOURCE****" );
@@ -197,13 +183,13 @@ public class SessionManagerTest {
         log.info( "*******TESTING OGA PER ENVIRONMENT****" );
         String[] attributesPerEnvironment = new String[] { "temperature" };
         boolean status = sessionManager.createEntryForEnvironment( sessionId, policy, request,
-            Arrays.asList( attributesPerEnvironment ), tryStatus, pepuri, myip );
+            Arrays.asList( attributesPerEnvironment ), STATUS.TRY.name(), pepuri, myip );
         Assert.assertEquals( true, status );
-        status = sessionManager.updateEntry( sessionId, startStatus );
+        status = sessionManager.updateEntry( sessionId, STATUS.START.name() );
         Assert.assertEquals( true, status );
         SessionInterface sessionInterface = sessionManager.getSessionForId( sessionId ).orElse( null );
         Assert.assertNotNull( sessionInterface );
-        Assert.assertEquals( sessionInterface.getStatus(), startStatus );
+        Assert.assertEquals( sessionInterface.getStatus(), STATUS.START.name() );
         sessionInterface = sessionManager.getSessionsForEnvironmentAttributes( "temperature" ).get( 0 );
         assertTrue( sessionInterface.getId().equals( sessionId ) );
         log.info( "*******END TESTING OGA PER SUBJECT****" );
@@ -214,11 +200,11 @@ public class SessionManagerTest {
         log.info( "*******TESTING GET SESSIOn****" );
         String[] attributesPerEnvironment = new String[] { "temperature" };
         boolean status = sessionManager.createEntryForEnvironment( sessionId, policy, request,
-            Arrays.asList( attributesPerEnvironment ), tryStatus, pepuri, myip );
+            Arrays.asList( attributesPerEnvironment ), STATUS.TRY.name(), pepuri, myip );
         Assert.assertEquals( true, status );
-        List<SessionInterface> sessions = sessionManager.getSessionsForStatus( tryStatus );
+        List<SessionInterface> sessions = sessionManager.getSessionsForStatus( STATUS.TRY.name() );
         Assert.assertTrue( sessions.size() > 0 );
-        sessions = sessionManager.getSessionsForStatus( startStatus );
+        sessions = sessionManager.getSessionsForStatus( STATUS.START.name() );
         Assert.assertTrue( sessions == null || sessions.size() == 0 );
         log.info( "*******END TESTING GET SESSION****" );
     }
@@ -228,7 +214,7 @@ public class SessionManagerTest {
         log.info( "*******TESTING DELETE SESSIOn****" );
         String[] attributesPerEnvironment = new String[] { "temperature" };
         boolean status = sessionManager.createEntryForEnvironment( sessionId, policy, request,
-            Arrays.asList( attributesPerEnvironment ), tryStatus, pepuri, myip );
+            Arrays.asList( attributesPerEnvironment ), STATUS.TRY.name(), pepuri, myip );
         Assert.assertEquals( true, status );
         status = sessionManager.deleteEntry( sessionId );
         Assert.assertTrue( status );
@@ -241,7 +227,7 @@ public class SessionManagerTest {
         log.info( "*******TESTING GET On going Attributes****" );
         String[] attributesPerEnvironment = new String[] { "temperature" };
         boolean status = sessionManager.createEntryForEnvironment( sessionId, policy, request,
-            Arrays.asList( attributesPerEnvironment ), tryStatus, pepuri, myip );
+            Arrays.asList( attributesPerEnvironment ), STATUS.TRY.name(), pepuri, myip );
         Assert.assertEquals( true, status );
         List<OnGoingAttributesInterface> attributes = sessionManager.getOnGoingAttributes( sessionId );
         Assert.assertTrue( attributes.size() > 0 );
@@ -249,7 +235,7 @@ public class SessionManagerTest {
             Assert.assertTrue( attribute.getId() != null );
             Assert.assertTrue( attribute.getId().length() > 0 );
         }
-        attributes = sessionManager.getOnGoingAttributes( startStatus );
+        attributes = sessionManager.getOnGoingAttributes( STATUS.START.name() );
         Assert.assertTrue( attributes == null || attributes.size() == 0 );
         log.info( "*******END TESTING GET On going Attributes****" );
     }
@@ -259,15 +245,15 @@ public class SessionManagerTest {
         log.info( "*******TESTING OGA PER SUBJECT: " + subject + "****" );
         String[] attributesPerSubject = new String[] { "role" };
         boolean status = sessionManager.createEntryForSubject( sessionId, policy, request,
-            Arrays.asList( attributesPerSubject ), tryStatus, pepuri, myip, subject );
+            Arrays.asList( attributesPerSubject ), STATUS.TRY.name(), pepuri, myip, subject );
         Assert.assertEquals( true, status );
         List<SessionInterface> list = null;
         try {
-            status = sessionManager.updateEntry( null, startStatus );
+            status = sessionManager.updateEntry( null, STATUS.START.name() );
         } catch( Exception e ) {
             status = false;
         }
-        status = sessionManager.updateEntry( sessionId, startStatus );
+        status = sessionManager.updateEntry( sessionId, STATUS.START.name() );
         list = sessionManager.getSessionsForSubjectAttributes( subject, "dasda" );
         Assert.assertEquals( 0, list.size() );
         Optional<SessionInterface> sessionInterface = sessionManager.getSessionForId( "dasdsa" );
