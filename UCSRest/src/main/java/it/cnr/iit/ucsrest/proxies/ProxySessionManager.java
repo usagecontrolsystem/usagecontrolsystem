@@ -426,7 +426,7 @@ public class ProxySessionManager implements SessionManagerInterface {
     }
 
     @Override
-    public STATUS checkSession( String sessionId, Attribute attribute ) {
+    public REEV_STATUS checkSession( String sessionId, Attribute attribute ) {
         if( !initialized || !started ) {
             return null;
         }
