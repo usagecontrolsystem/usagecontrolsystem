@@ -12,9 +12,6 @@ public class UCSRestSessionManagerProperties implements SessionManagerProperties
     @Value( "${communication-type}" )
     private String communicationType;
 
-    @Value( "${type}" )
-    private String type;
-
     @Value( "${db-uri}" )
     private String dbUri;
 
@@ -34,15 +31,6 @@ public class UCSRestSessionManagerProperties implements SessionManagerProperties
 
     public void setCommunicationType( String communicationType ) {
         this.communicationType = communicationType;
-    }
-
-    @Override
-    public String getType() {
-        return type;
-    }
-
-    public void setType( String type ) {
-        this.type = type;
     }
 
     @Override

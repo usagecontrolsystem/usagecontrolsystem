@@ -104,11 +104,6 @@ public class SessionManagerTest {
             }
 
             @Override
-            public String getType() {
-                return type;
-            }
-
-            @Override
             public String getDbUri() {
                 return dbUri;
             }
