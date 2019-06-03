@@ -48,48 +48,44 @@ public final class TryAccessMessage extends Message {
         purpose = PURPOSE.TRY;
     }
 
-    public boolean setPepUri( String pepUri ) {
+    public void setPepUri( String pepUri ) {
         Reject.ifBlank( pepUri );
         this.pepUri = pepUri;
-        return true;
     }
 
     public String getPepUri() {
         return pepUri;
     }
 
-    public boolean setRequest( String request ) {
+    public void setRequest( String request ) {
         Reject.ifBlank( request );
         try {
             JAXBUtility.unmarshalToObject( RequestType.class, request );
-            this.request = request;
-            return true;
         } catch( Exception exception ) {
-            return false;
+            throw new IllegalStateException( exception.getLocalizedMessage() );
         }
+        this.request = request;
     }
 
     public String getRequest() {
         return request;
     }
 
-    public boolean setPolicy( String policy ) {
+    public void setPolicy( String policy ) {
         try {
             JAXBUtility.unmarshalToObject( PolicyType.class, policy );
-            this.policy = policy;
-            return true;
         } catch( Exception exception ) {
-            return false;
+            throw new IllegalStateException( exception.getLocalizedMessage() );
         }
+        this.policy = policy;
     }
 
     public String getPolicy() {
         return policy;
     }
 
-    public boolean setPolicyId( String policyId ) {
+    public void setPolicyId( String policyId ) {
         this.policyId = policyId;
-        return true;
     }
 
     public String getPolicyId() {
