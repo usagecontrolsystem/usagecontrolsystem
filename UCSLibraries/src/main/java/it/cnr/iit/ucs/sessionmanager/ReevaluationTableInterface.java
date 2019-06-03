@@ -30,7 +30,7 @@ import it.cnr.iit.xacml.Attribute;
  */
 public interface ReevaluationTableInterface {
 
-    public enum STATUS {
+    public enum REEV_STATUS {
         NOT_IN_REEVALUATION, IN_REEVALUATION_DIFFERENT_ATTRIBUTE, IN_REEVALUATION_SAME_ATTRIBUTE, IN_REEVALUATION
     }
 
@@ -46,7 +46,7 @@ public interface ReevaluationTableInterface {
      *          already under evaluation
      * @return the status of the session.
      */
-    public STATUS checkSession( String sessionId, Attribute attribute );
+    public REEV_STATUS checkSession( String sessionId, Attribute attribute );
 
     /**
      * Tries to insert the session along with the Attribute that has triggered the
