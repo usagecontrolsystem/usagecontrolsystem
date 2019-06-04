@@ -307,6 +307,8 @@ public class UCSRestBaseTests {
     protected TryAccessMessage buildTryAccessMessage( String pepId, String ucsUri, String policy, String request )
             throws URISyntaxException, IOException {
         TryAccessMessage message = new TryAccessMessage( pepId, ucsUri );
+        policy = FileUtility.readFileAsString( "xmls/policy_1.xml" );
+        request = FileUtility.readFileAsString( "xmls/request_1.xml" );
         message.setPolicy( policy );
         message.setRequest( request );
 
