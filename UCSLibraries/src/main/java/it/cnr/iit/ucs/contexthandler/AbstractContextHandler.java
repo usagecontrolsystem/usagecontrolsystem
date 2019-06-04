@@ -18,7 +18,6 @@ package it.cnr.iit.ucs.contexthandler;
 import java.net.URI;
 import java.util.List;
 import java.util.Optional;
-import java.util.logging.Logger;
 
 import it.cnr.iit.ucs.contexthandler.pipregistry.PIPRegistry;
 import it.cnr.iit.ucs.contexthandler.pipregistry.PIPRegistryInterface;
@@ -42,8 +41,6 @@ import it.cnr.iit.utility.errorhandling.Reject;
  */
 public abstract class AbstractContextHandler implements ContextHandlerInterface {
 
-    private static final Logger log = Logger.getLogger( AbstractContextHandler.class.getName() );
-
     private SessionManagerInterface sessionManager;
     private RequestManagerToCHInterface requestManager;
     private ObligationManagerInterface obligationManager;
@@ -59,9 +56,9 @@ public abstract class AbstractContextHandler implements ContextHandlerInterface 
         Reject.ifNull( properties, ContextHandlerProperties.class.getName() );
         this.properties = properties;
 
-        Optional<URI> uri = RESTUtils.parseUri( properties.getBaseUri() );
-        Reject.ifAbsent( uri );
-        this.uri = uri.get(); // NOSONAR
+        Optional<URI> baseUri = RESTUtils.parseUri( properties.getBaseUri() );
+        Reject.ifAbsent( baseUri );
+        this.uri = baseUri.get(); // NOSONAR
 
         pipRegistry = new PIPRegistry();
     }

@@ -1,4 +1,4 @@
-package it.cnr.iit.ucs.message.tryaccess;
+package it.cnr.iit.ucs;
 
 import static pl.pojo.tester.api.assertion.Assertions.assertPojoMethodsFor;
 

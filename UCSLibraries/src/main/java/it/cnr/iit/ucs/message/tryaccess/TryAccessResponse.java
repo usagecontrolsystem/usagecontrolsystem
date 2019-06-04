@@ -30,7 +30,7 @@ public final class TryAccessResponse extends Message implements EvaluatedRespons
 
     private static final long serialVersionUID = 1L;
 
-    private PDPEvaluation pdpEvaluation;
+    private PDPEvaluation evaluation;
 
     private String sessionId;
 
@@ -49,13 +49,13 @@ public final class TryAccessResponse extends Message implements EvaluatedRespons
     }
 
     @Override
-    public void setPDPEvaluation( PDPEvaluation pdpEvaluation ) {
-        this.pdpEvaluation = pdpEvaluation;
+    public void setEvaluation( PDPEvaluation pdpEvaluation ) {
+        this.evaluation = pdpEvaluation;
     }
 
     @Override
-    public PDPEvaluation getPDPEvaluation() {
-        return pdpEvaluation;
+    public PDPEvaluation getEvaluation() {
+        return evaluation;
     }
 
     public void setSessionId( String sessionId ) {

@@ -4,8 +4,8 @@ import it.cnr.iit.ucs.pdp.PDPEvaluation;
 
 public interface EvaluatedResponse {
 
-    public PDPEvaluation getPDPEvaluation();
+    public PDPEvaluation getEvaluation();
 
-    public void setPDPEvaluation( PDPEvaluation evaluation );
+    public void setEvaluation( PDPEvaluation evaluation );
 
 }

@@ -74,7 +74,7 @@ public class MessageStorage implements MessageStorageInterface, MessagesPerSessi
             addMessageId( ( (EndAccessMessage) message ).getSessionId(), message.getMessageId() );
             return addNewMessage( message );
         } else if( message instanceof ReevaluationResponse ) {
-            addMessageId( ( (ReevaluationResponse) message ).getPDPEvaluation().getSessionId(), message.getMessageId() );
+            addMessageId( ( (ReevaluationResponse) message ).getEvaluation().getSessionId(), message.getMessageId() );
             return addNewMessage( message );
         } else {
             throw new IllegalArgumentException( "Invalid message" );
@@ -133,7 +133,7 @@ public class MessageStorage implements MessageStorageInterface, MessagesPerSessi
     }
 
     private void addMessagePerSession( TryAccessResponse message ) {
-        if( message.getPDPEvaluation().getResult().equals( DecisionType.PERMIT.value() ) ) {
+        if( message.getEvaluation().getResult().equals( DecisionType.PERMIT.value() ) ) {
             messagesPerSession.put( message.getSessionId(), new LinkedList<>() );
             addMessageId( message.getSessionId(), message.getMessageId() );
         }

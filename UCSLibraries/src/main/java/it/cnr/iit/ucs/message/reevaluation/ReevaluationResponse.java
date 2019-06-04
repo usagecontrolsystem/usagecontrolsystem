@@ -34,7 +34,7 @@ public class ReevaluationResponse extends Message implements EvaluatedResponse {
     private static final long serialVersionUID = 1L;
 
     @JsonProperty
-    private PDPEvaluation pdpEvaluation;
+    private PDPEvaluation evaluation;
 
     private String pepId;
 
@@ -59,14 +59,14 @@ public class ReevaluationResponse extends Message implements EvaluatedResponse {
     }
 
     @Override
-    public void setPDPEvaluation( PDPEvaluation pdpEvaluation ) {
+    public void setEvaluation( PDPEvaluation pdpEvaluation ) {
         Reject.ifNull( pdpEvaluation );
-        this.pdpEvaluation = pdpEvaluation;
+        this.evaluation = pdpEvaluation;
     }
 
     @Override
-    public PDPEvaluation getPDPEvaluation() {
-        return pdpEvaluation;
+    public PDPEvaluation getEvaluation() {
+        return evaluation;
     }
 
     public void setPepId( String pepId ) {
