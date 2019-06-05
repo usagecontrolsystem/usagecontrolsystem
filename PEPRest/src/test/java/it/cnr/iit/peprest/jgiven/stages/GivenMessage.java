@@ -73,7 +73,7 @@ public class GivenMessage extends Stage<GivenMessage> {
         PDPResponse pdpEvaluation = buildPDPResponse( decisionType );
         pdpEvaluation.setSessionId( sessionId );
         ReevaluationResponse reevaluationResponse = new ReevaluationResponse( sessionId );
-        reevaluationResponse.setPDPEvaluation( pdpEvaluation );
+        reevaluationResponse.setEvaluation( pdpEvaluation );
         reevaluationResponse.setMessageId( UUID.randomUUID().toString() );
         return reevaluationResponse;
     }
@@ -113,7 +113,7 @@ public class GivenMessage extends Stage<GivenMessage> {
         TryAccessResponse tryAccessResponse = new TryAccessResponse( sessionId );
         tryAccessResponse.setMessageId( messageId );
         tryAccessResponse.setSessionId( sessionId );
-        tryAccessResponse.setPDPEvaluation( pdpEvaluation );
+        tryAccessResponse.setEvaluation( pdpEvaluation );
         return tryAccessResponse;
     }
 
@@ -123,7 +123,7 @@ public class GivenMessage extends Stage<GivenMessage> {
         }
         PDPResponse pdpEvaluation = buildPDPResponse( decisionType );
         StartAccessResponse startAccessResponse = new StartAccessResponse( sessionId );
-        startAccessResponse.setPDPEvaluation( pdpEvaluation );
+        startAccessResponse.setEvaluation( pdpEvaluation );
         startAccessResponse.setMessageId( messageId );
         return startAccessResponse;
     }
@@ -134,7 +134,7 @@ public class GivenMessage extends Stage<GivenMessage> {
         }
         PDPResponse pdpEvaluation = buildPDPResponse( decisionType );
         EndAccessResponse endAccessResponse = new EndAccessResponse( sessionId );
-        endAccessResponse.setPDPEvaluation( pdpEvaluation );
+        endAccessResponse.setEvaluation( pdpEvaluation );
         endAccessResponse.setMessageId( messageId );
         return endAccessResponse;
     }

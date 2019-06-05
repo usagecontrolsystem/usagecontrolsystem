@@ -1,7 +1,9 @@
-package it.cnr.iit.ucs.message.tryaccess;
+package it.cnr.iit.ucs.message;
 
 import org.junit.Test;
 
+import it.cnr.iit.ucs.AbstractPojoTest;
+import it.cnr.iit.ucs.message.attributechange.AttributeChangeMessage;
 import it.cnr.iit.ucs.message.endaccess.EndAccessMessage;
 import it.cnr.iit.ucs.message.reevaluation.ReevaluationMessage;
 import it.cnr.iit.ucs.message.startaccess.StartAccessMessage;
@@ -25,4 +27,8 @@ public class StartEndReevaluateAccessMessagesPojoTest extends AbstractPojoTest {
         super.shouldPassAllPojoTests( ReevaluationMessage.class, FieldPredicate.exclude() );
     }
 
+    @Test
+    public void shouldPassAllAttributeChangeMessagePojoTests() {
+        super.shouldPassAllPojoTests( AttributeChangeMessage.class, FieldPredicate.exclude() );
+    }
 }

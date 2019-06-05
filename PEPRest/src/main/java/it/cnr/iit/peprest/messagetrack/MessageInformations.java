@@ -73,7 +73,7 @@ public class MessageInformations {
     }
 
     public static MessageInformations build( ReevaluationResponse message ) {
-        if( message.getPDPEvaluation().isDecision( DecisionType.PERMIT ) ) {
+        if( message.getEvaluation().isDecision( DecisionType.PERMIT ) ) {
             return build( message, STATUS.SESSION_RESUMED );
         } else {
             return build( message, STATUS.REVOKED );
@@ -84,7 +84,7 @@ public class MessageInformations {
         if( callerResponse.getStatus() != status ) {
             throw new IllegalArgumentException( "Wrong flow of messages!! \n status is: " + callerResponse.getStatus() );
         }
-        evaluation = message.getPDPEvaluation();
+        evaluation = message.getEvaluation();
         if( evaluation.isDecision( DecisionType.PERMIT ) ) {
             callerResponse.setStatus( positiveStatus );
         } else {

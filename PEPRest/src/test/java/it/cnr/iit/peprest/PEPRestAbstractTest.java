@@ -86,14 +86,14 @@ public abstract class PEPRestAbstractTest {
         PDPResponse pdpEvaluation = buildPDPResponse( DecisionType.DENY );
         TryAccessResponse tryAccessResponse = new TryAccessResponse( SESSION_ID_01 );
         tryAccessResponse.setSessionId( SESSION_ID_01 );
-        tryAccessResponse.setPDPEvaluation( pdpEvaluation );
+        tryAccessResponse.setEvaluation( pdpEvaluation );
         return tryAccessResponse;
     }
 
     protected StartAccessResponse buildStartAccessResponsePermit() {
         PDPResponse pdpEvaluation = buildPDPResponse( DecisionType.PERMIT );
         StartAccessResponse startAccessResponse = new StartAccessResponse( SESSION_ID_01 );
-        startAccessResponse.setPDPEvaluation( pdpEvaluation );
+        startAccessResponse.setEvaluation( pdpEvaluation );
         return startAccessResponse;
     }
 

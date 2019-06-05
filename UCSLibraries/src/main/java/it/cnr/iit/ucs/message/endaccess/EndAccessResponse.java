@@ -34,7 +34,7 @@ public class EndAccessResponse extends Message implements EvaluatedResponse {
     private static final long serialVersionUID = 1L;
 
     @JsonProperty
-    private PDPEvaluation pdpEvaluation;
+    private PDPEvaluation evaluation;
 
     public EndAccessResponse() {
         super( ENTITIES.CH.toString(), ENTITIES.PEP.toString() );
@@ -52,13 +52,13 @@ public class EndAccessResponse extends Message implements EvaluatedResponse {
     }
 
     @Override
-    public PDPEvaluation getPDPEvaluation() {
-        return pdpEvaluation;
+    public PDPEvaluation getEvaluation() {
+        return evaluation;
     }
 
     @Override
-    public void setPDPEvaluation( PDPEvaluation pdpEvaluation ) {
-        this.pdpEvaluation = pdpEvaluation;
+    public void setEvaluation( PDPEvaluation pdpEvaluation ) {
+        this.evaluation = pdpEvaluation;
     }
 
 }

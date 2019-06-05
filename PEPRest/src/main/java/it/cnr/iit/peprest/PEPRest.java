@@ -116,7 +116,7 @@ public class PEPRest implements PEPInterface {
     @Async
     public Message onGoingEvaluation( ReevaluationResponse message ) {
         Reject.ifNull( message );
-        PDPEvaluation evaluation = message.getPDPEvaluation();
+        PDPEvaluation evaluation = message.getEvaluation();
         Reject.ifNull( evaluation );
         log.log( Level.INFO, "onGoingEvaluation at {0} ", System.currentTimeMillis() );
         responsesMap.put( message.getMessageId(), message );
@@ -194,7 +194,7 @@ public class PEPRest implements PEPInterface {
         if( message instanceof TryAccessResponse ) {
             response = handleTryAccessResponse( (TryAccessResponse) message );
         } else if( message instanceof EvaluatedResponse ) {
-            response = ( (EvaluatedResponse) message ).getPDPEvaluation().getResult();
+            response = ( (EvaluatedResponse) message ).getEvaluation().getResult();
         } else {
             throw new IllegalArgumentException( "INVALID MESSAGE: " + message.toString() );
         }
@@ -209,7 +209,7 @@ public class PEPRest implements PEPInterface {
      * @return a String stating the result of the evaluation or the ID of the startaccess message
      */
     private String handleTryAccessResponse( TryAccessResponse response ) {
-        PDPEvaluation evaluation = response.getPDPEvaluation();
+        PDPEvaluation evaluation = response.getEvaluation();
         if( evaluation.isDecision( DecisionType.PERMIT ) ) {
             return startAccess( response.getSessionId() );
         }

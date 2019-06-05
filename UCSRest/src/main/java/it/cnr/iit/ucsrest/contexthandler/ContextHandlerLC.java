@@ -116,7 +116,7 @@ public final class ContextHandlerLC extends AbstractContextHandler {
     private TryAccessResponse buildTryAccessResponse( TryAccessMessage message, PDPEvaluation evaluation, String sessionId ) {
         TryAccessResponse response = new TryAccessResponse( uri.getHost(), message.getSource(), message.getMessageId() );
         response.setSessionId( sessionId );
-        response.setPDPEvaluation( evaluation );
+        response.setEvaluation( evaluation );
         return response;
     }
 
@@ -270,7 +270,7 @@ public final class ContextHandlerLC extends AbstractContextHandler {
 
     private StartAccessResponse buildStartAccessResponse( StartAccessMessage message, PDPEvaluation evaluation ) {
         StartAccessResponse response = new StartAccessResponse( message.getDestination(), message.getSource(), message.getMessageId() );
-        response.setPDPEvaluation( evaluation );
+        response.setEvaluation( evaluation );
         return response;
     }
 
@@ -431,7 +431,7 @@ public final class ContextHandlerLC extends AbstractContextHandler {
 
     private EndAccessResponse buildEndAccessResponse( EndAccessMessage message, PDPEvaluation evaluation ) {
         EndAccessResponse response = new EndAccessResponse( message.getDestination(), message.getSource(), message.getMessageId() );
-        response.setPDPEvaluation( evaluation );
+        response.setEvaluation( evaluation );
         return response;
     }
 
@@ -503,7 +503,7 @@ public final class ContextHandlerLC extends AbstractContextHandler {
         String[] destSplitted = dest.split( PEP_ID_SEPARATOR );
         ReevaluationResponse response = new ReevaluationResponse( uri.getHost(), destSplitted[0] );
         response.setPepId( destSplitted[destSplitted.length - 1] );
-        response.setPDPEvaluation( evaluation );
+        response.setEvaluation( evaluation );
         return response;
     }
 

@@ -164,7 +164,7 @@ public class ThenMessage extends Stage<ThenMessage> {
         if( optional.isPresent() ) {
             Message message = optional.get();
             if( message instanceof EvaluatedResponse ) {
-                String result = ( (EvaluatedResponse) message ).getPDPEvaluation().getResult();
+                String result = ( (EvaluatedResponse) message ).getEvaluation().getResult();
                 return Optional.of( result );
             }
         }

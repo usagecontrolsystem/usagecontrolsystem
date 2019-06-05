@@ -1,10 +1,12 @@
-package it.cnr.iit.ucs.message.tryaccess;
+package it.cnr.iit.ucs.message;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
 import org.junit.Test;
 
+import it.cnr.iit.ucs.AbstractPojoTest;
+import it.cnr.iit.ucs.message.tryaccess.TryAccessMessage;
 import it.cnr.iit.utility.FileUtility;
 
 import pl.pojo.tester.api.FieldPredicate;

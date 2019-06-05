@@ -20,7 +20,7 @@ public class Utility {
     protected ReevaluationResponse buildReevaluationResponse( DecisionType decisionType ) {
         PDPResponse pdpEvaluation = buildPDPResponse( decisionType );
         ReevaluationResponse reevaluationResponse = new ReevaluationResponse();
-        reevaluationResponse.setPDPEvaluation( pdpEvaluation );
+        reevaluationResponse.setEvaluation( pdpEvaluation );
         return reevaluationResponse;
     }
 
@@ -38,7 +38,7 @@ public class Utility {
         PDPResponse pdpEvaluation = buildPDPResponse( decisionType );
         TryAccessResponse tryAccessResponse = new TryAccessResponse( message.getMessageId() );
         tryAccessResponse.setSessionId( sessionId );
-        tryAccessResponse.setPDPEvaluation( pdpEvaluation );
+        tryAccessResponse.setEvaluation( pdpEvaluation );
         return tryAccessResponse;
     }
 
@@ -46,7 +46,7 @@ public class Utility {
             DecisionType decisionType, String sessionId ) {
         PDPResponse pdpEvaluation = buildPDPResponse( decisionType );
         StartAccessResponse startAccessResponse = new StartAccessResponse( startAccessMessage.getMessageId() );
-        startAccessResponse.setPDPEvaluation( pdpEvaluation );
+        startAccessResponse.setEvaluation( pdpEvaluation );
         return startAccessResponse;
     }
 
@@ -54,7 +54,7 @@ public class Utility {
             DecisionType decisionType, String sessionId ) {
         PDPResponse pdpEvaluation = buildPDPResponse( decisionType );
         EndAccessResponse endAccessResponse = new EndAccessResponse( endAccessMessage.getMessageId() );
-        endAccessResponse.setPDPEvaluation( pdpEvaluation );
+        endAccessResponse.setEvaluation( pdpEvaluation );
         return endAccessResponse;
     }
 
@@ -79,7 +79,7 @@ public class Utility {
         PDPResponse pdpResponse = buildPDPResponse( decisionType );
         pdpResponse.setSessionId( sessionId );
         ReevaluationResponse reevaluationResponse = new ReevaluationResponse();
-        reevaluationResponse.setPDPEvaluation( pdpResponse );
+        reevaluationResponse.setEvaluation( pdpResponse );
         return reevaluationResponse;
     }
 
