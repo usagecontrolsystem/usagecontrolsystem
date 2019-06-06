@@ -77,34 +77,32 @@ public class UCSRest implements UCSInterface {
     @PostConstruct
     private void init() {
         try {
+            log.info( "[INIT] usage control initialisation" );
             buildComponents();
+            setupConnections();
+            log.info( "[DONE] building components completed." );
             initialised = true;
         } catch( PreconditionException e ) {
-            log.severe( e.getLocalizedMessage() );
+            log.severe( "[ERROR] " + e.getMessage() );
             Thread.currentThread().interrupt();
         }
     }
 
-    private boolean buildComponents() {
-        log.info( "UsageControlFramework init" );
-
+    private void buildComponents() {
         buildContextHandler();
         buildRequestManager();
         buildSessionManager();
-        buildPDP();
+        buildPolicyDecisionPoint();
         buildPolicyAdministrationPoint();
         buildPEPList();
-        Reject.ifFalse( buildPIPList(), "Error in building the pips" );
+        buildPIPList();
         buildObligationManager();
-
-        log.info( "UsageControlFramework building components completed." );
-
-        return setupComponentsConnections();
     }
 
     private <T> Optional<T> buildComponent( PluginProperties property, Class<T> clazz ) {
+        log.info( "[BUILD] " + property.getName() );
         Optional<T> component = ReflectionsUtility.buildComponent( property, clazz );
-        Reject.ifAbsent( component, "Error in building " + clazz.getSimpleName() );
+        Reject.ifAbsent( component, "Error building " + property.getName() );
         return component;
     }
 
@@ -122,7 +120,7 @@ public class UCSRest implements UCSInterface {
         sessionManager.start();
     }
 
-    private void buildPDP() {
+    private void buildPolicyDecisionPoint() {
         this.pdp = buildComponent( properties.getPolicyDecisionPoint(), PDPInterface.class ).get(); // NOSONAR
     }
 
@@ -130,63 +128,40 @@ public class UCSRest implements UCSInterface {
         this.pap = buildComponent( properties.getPolicyAdministrationPoint(), PAPInterface.class ).get(); // NOSONAR
     }
 
+    private void buildObligationManager() {
+        this.obligationManager = buildComponent( properties.getObligationManager(), ObligationManagerInterface.class ).get(); // NOSONAR
+        this.obligationManager.setPIPs( new ArrayList<PIPOMInterface>( pipList ) );
+    }
+
     private void buildPEPList() {
         for( PepProperties pepProp : properties.getPepList() ) {
-            Optional<PEPInterface> pep = ReflectionsUtility.buildComponent( pepProp, PEPInterface.class );
-            if( pep.isPresent() ) {
-                pepMap.put( pepProp.getId(), pep.get() );
-            } else {
-                log.severe( "building PEP failed" );
-            }
+            Optional<PEPInterface> pep = buildComponent( pepProp, PEPInterface.class ); // NOSONAR
+            pepMap.put( pepProp.getId(), pep.get() );
         }
     }
 
-    private void buildObligationManager() {
-        Optional<ObligationManagerInterface> optOM = ReflectionsUtility.buildComponent( properties.getObligationManager(),
-            ObligationManagerInterface.class );
-        Reject.ifAbsent( optOM, "Error in building the request manager" );
-        obligationManager = optOM.get(); // NOSONAR
-        obligationManager.setPIPs( new ArrayList<PIPOMInterface>( pipList ) );
+    private void buildPIPList() {
+        for( PipProperties pipProp : properties.getPipList() ) {
+            Optional<PIPBase> pip = buildComponent( pipProp, PIPBase.class );
+            pipList.add( pip.get() );
+        }
     }
 
-    private boolean buildPIPList() {
-        int failures = 0;
-
-        for( PipProperties pip : properties.getPipList() ) {
-            Optional<PIPBase> optPip = ReflectionsUtility.buildComponent( pip, PIPBase.class );
-
-            if( !optPip.isPresent() ) {
-                log.severe( "Error building pip" );
-                failures++;
-                continue;
-            }
-            initialised = true;
-
-            PIPBase pipBase = optPip.get();
-            pipBase.setContextHandler( contextHandler );
-            pipList.add( pipBase );
+    private void setupConnections() {
+        contextHandler.setSessionManager( sessionManager );
+        contextHandler.setRequestManager( requestManager );
+        contextHandler.setPap( pap );
+        contextHandler.setPdp( pdp );
+        contextHandler.setObligationManager( obligationManager );
+        contextHandler.setPIPs( new ArrayList<PIPCHInterface>( pipList ) );
+        contextHandler.startMonitoringThread();
+        requestManager.setContextHandler( contextHandler );
+        requestManager.setPEPMap( pepMap );
+        for( PIPBase pip : pipList ) {
+            pip.setContextHandler( contextHandler );
         }
-        return failures == 0;
-    }
-
-    private boolean setupComponentsConnections() {
-        try {
-            contextHandler.setSessionManager( sessionManager );
-            contextHandler.setRequestManager( requestManager );
-            contextHandler.setPap( pap );
-            contextHandler.setPdp( pdp );
-            contextHandler.setObligationManager( obligationManager );
-            contextHandler.setPIPs( new ArrayList<PIPCHInterface>( pipList ) );
-
-            contextHandler.startMonitoringThread();
-            requestManager.setInterfaces( contextHandler, pepMap );
-            // pdp.setInterfaces( pap );
-        } catch( Exception e ) {
-            log.severe( "Error starting context handler : " + e.getMessage() );
-            return false;
-        }
-
-        return true;
+        pdp.setPap( pap );
+        pdp.setObligationManager( obligationManager );
     }
 
     @Override

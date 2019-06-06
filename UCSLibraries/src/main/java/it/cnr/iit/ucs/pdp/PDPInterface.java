@@ -16,6 +16,8 @@
 package it.cnr.iit.ucs.pdp;
 
 import it.cnr.iit.ucs.constants.STATUS;
+import it.cnr.iit.ucs.obligationmanager.ObligationManagerInterface;
+import it.cnr.iit.ucs.pap.PAPInterface;
 import it.cnr.iit.xacml.wrappers.PolicyWrapper;
 import it.cnr.iit.xacml.wrappers.RequestWrapper;
 
@@ -70,5 +72,9 @@ public interface PDPInterface {
      * @return
      */
     public PDPEvaluation evaluate( RequestWrapper request );
+
+    public void setPap( PAPInterface pap );
+
+    public void setObligationManager( ObligationManagerInterface obligationManager );
 
 }

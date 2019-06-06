@@ -17,9 +17,6 @@ import com.tngtech.jgiven.integration.spring.EnableJGiven;
 @SpringBootConfiguration
 public class PEPRestTestContext {
 
-    @Value( "${ucs-config-file}" )
-    private String ucsConfigFile;
-
     @Value( "${policy-file}" )
     private String policyFile;
 
@@ -32,16 +29,8 @@ public class PEPRestTestContext {
     @Value( "${session-id}" )
     private String sessionId;
 
-    @Value( "${ucs.base-uri}" )
-    private String ucsBaseUri;
-
-    public String getUcsConfigFile() {
-        return ucsConfigFile;
-    }
-
-    public void setUcsConfigFile( String ucsConfigFile ) {
-        this.ucsConfigFile = ucsConfigFile;
-    }
+    @Value( "${ucs.uri}" )
+    private String ucsUri;
 
     public String getPolicyFile() {
         return policyFile;
@@ -75,11 +64,11 @@ public class PEPRestTestContext {
         this.sessionId = sessionId;
     }
 
-    public String getUcsBaseUri() {
-        return ucsBaseUri;
+    public String getUcsUri() {
+        return ucsUri;
     }
 
-    public void setUcsBaseUri( String ucsUri ) {
-        ucsBaseUri = ucsUri;
+    public void setUcsUri( String ucsUri ) {
+        this.ucsUri = ucsUri;
     }
 }

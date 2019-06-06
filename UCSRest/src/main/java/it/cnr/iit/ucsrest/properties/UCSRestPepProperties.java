@@ -9,10 +9,7 @@ public class UCSRestPepProperties implements PepProperties {
     @Value( "${name}" )
     private String name;
 
-    @Value( "${communication:LOCAL}" )
-    private String communication;
-
-    @Value( "${base-uri}" )
+    @Value( "${uri}" )
     private String uri;
 
     @Value( "${id:1}" )

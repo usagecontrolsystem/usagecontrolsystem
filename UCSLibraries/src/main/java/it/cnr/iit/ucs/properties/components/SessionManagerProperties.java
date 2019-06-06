@@ -18,7 +18,5 @@ package it.cnr.iit.ucs.properties.components;
 import it.cnr.iit.ucs.properties.base.PluginProperties;
 
 public interface SessionManagerProperties extends PluginProperties {
-
     public String getDbUri();
-
 }

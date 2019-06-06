@@ -48,10 +48,8 @@ public class RequestManagerCoverageTests extends UCSRestBaseTests {
             throws JAXBException, URISyntaxException, IOException, NoSuchMethodException, SecurityException,
             InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
         RequestManagerLC requestManager = getRequestManager( properties );
-        Message message = new Message( "a", "a", "a" );
-        requestManager.setInterfaces( getMockedContextHandlerInterface(),
-            getMockedPEPMap( "a", "" ) );
-
+        requestManager.setContextHandler( getMockedContextHandlerInterface() );
+        requestManager.setPEPMap( getMockedPEPMap( "a", "" ) );
         testRequestManager( requestManager );
     }
 

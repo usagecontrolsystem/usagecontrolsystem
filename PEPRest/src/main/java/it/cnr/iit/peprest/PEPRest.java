@@ -95,19 +95,19 @@ public class PEPRest implements PEPInterface {
     public String tryAccess() {
         RequestWrapper request = RequestWrapper.build( FileUtility.readFileAbsPath( pep.getRequestPath() ) );
         PolicyWrapper policy = PolicyWrapper.build( FileUtility.readFileAbsPath( pep.getPolicyPath() ) );
-        log.log( Level.INFO, "tryAccess at {0} ", System.currentTimeMillis() );
+        log.log( Level.INFO, "TryAccess at {0} ", System.currentTimeMillis() );
         TryAccessMessage message = buildTryAccessMessage( request, policy );
         return handleRequest( message );
     }
 
     public String startAccess( String sessionId ) {
-        log.log( Level.INFO, "startAccess at {0} ", System.currentTimeMillis() );
+        log.log( Level.INFO, "StartAccess at {0} ", System.currentTimeMillis() );
         StartAccessMessage message = buildStartAccessMessage( sessionId );
         return handleRequest( message );
     }
 
     public String endAccess( String sessionId ) {
-        log.log( Level.INFO, "endAccess at {0} ", System.currentTimeMillis() );
+        log.log( Level.INFO, "EndAccess at {0} ", System.currentTimeMillis() );
         EndAccessMessage message = buildEndAccessMessage( sessionId );
         return handleRequest( message );
     }
@@ -118,11 +118,11 @@ public class PEPRest implements PEPInterface {
         Reject.ifNull( message );
         PDPEvaluation evaluation = message.getEvaluation();
         Reject.ifNull( evaluation );
-        log.log( Level.INFO, "onGoingEvaluation at {0} ", System.currentTimeMillis() );
+        log.log( Level.INFO, "OnGoingEvaluation at {0} ", System.currentTimeMillis() );
         responsesMap.put( message.getMessageId(), message );
         messageStorage.addMessage( message );
         if( pep.getRevokeType().equals( "HARD" ) ) {
-            log.log( Level.INFO, "endAcces sent at {0} ", System.currentTimeMillis() );
+            log.log( Level.INFO, "EndAcces sent at {0} ", System.currentTimeMillis() );
             EndAccessMessage endAccess = buildEndAccessMessage( evaluation.getSessionId(), null );
             handleRequest( endAccess );
         } else {
@@ -137,7 +137,7 @@ public class PEPRest implements PEPInterface {
     }
 
     private TryAccessMessage buildTryAccessMessage( RequestWrapper request, PolicyWrapper policy ) {
-        TryAccessMessage message = new TryAccessMessage( pep.getId(), pep.getBaseUri() );
+        TryAccessMessage message = new TryAccessMessage( pep.getId(), pep.getUri() );
         message.setPepUri( buildResponseApi( pep.getApiStatusChanged() ) );
         message.setPolicy( policy.getPolicy() );
         message.setRequest( request.getRequest() );
@@ -146,7 +146,7 @@ public class PEPRest implements PEPInterface {
     }
 
     private StartAccessMessage buildStartAccessMessage( String sessionId ) {
-        StartAccessMessage message = new StartAccessMessage( pep.getId(), pep.getBaseUri() );
+        StartAccessMessage message = new StartAccessMessage( pep.getId(), pep.getUri() );
         message.setSessionId( sessionId );
         message.setCallback( buildResponseApi( OperationName.STARTACCESSRESPONSE_REST ), CONNECTION.REST );
         return message;
@@ -157,7 +157,7 @@ public class PEPRest implements PEPInterface {
     }
 
     private EndAccessMessage buildEndAccessMessage( String sessionId, String responseInterface ) {
-        EndAccessMessage message = new EndAccessMessage( pep.getId(), pep.getBaseUri() );
+        EndAccessMessage message = new EndAccessMessage( pep.getId(), pep.getUri() );
         message.setSessionId( sessionId );
         message.setCallback( responseInterface, CONNECTION.REST );
         return message;
@@ -218,7 +218,7 @@ public class PEPRest implements PEPInterface {
 
     private final String buildResponseApi( String name ) {
         try {
-            return new URL( new URL( pep.getBaseUri() ), name ).toString();
+            return new URL( new URL( pep.getUri() ), name ).toString();
         } catch( MalformedURLException e ) {
             return null;
         }

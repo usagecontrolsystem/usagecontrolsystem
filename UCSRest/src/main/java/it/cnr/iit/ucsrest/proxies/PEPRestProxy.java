@@ -47,7 +47,7 @@ public class PEPRestProxy implements PEPInterface {
         Reject.ifNull( properties );
         this.properties = properties;
         Optional<URI> opturi = RESTUtils.parseUri( properties.getUri() );
-        Reject.ifAbsent( opturi );
+        Reject.ifAbsent( opturi, "error parsing uri" );
         this.uri = opturi.get(); // NOSONAR
     }
 

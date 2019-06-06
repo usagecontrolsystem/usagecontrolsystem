@@ -9,9 +9,6 @@ public class UCSRestContextHandlerProperties implements ContextHandlerProperties
     @Value( "${name}" )
     private String name;
 
-    @Value( "${communication}" )
-    private String communication;
-
     @Value( "${uri}" )
     private String uri;
 

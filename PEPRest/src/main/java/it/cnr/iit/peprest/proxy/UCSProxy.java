@@ -38,7 +38,7 @@ public class UCSProxy {
     public boolean sendMessage( Message message ) {
         try {
             Optional<ResponseEntity<Void>> response = RESTUtils.post(
-                ucs.getBaseUri(),
+                ucs.getUri(),
                 getApiNameFromPurpose( message.getPurpose() ),
                 message );
             return response.isPresent() && response.get().getStatusCode().is2xxSuccessful();

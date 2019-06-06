@@ -18,6 +18,4 @@ package it.cnr.iit.ucs.properties.components;
 import it.cnr.iit.ucs.properties.base.JournalProperties;
 import it.cnr.iit.ucs.properties.base.PluginProperties;
 
-public interface PdpProperties extends PluginProperties, JournalProperties {
-
-}
+public interface PdpProperties extends PluginProperties, JournalProperties {}

@@ -9,9 +9,6 @@ public class UCSRestObligationManagerProperties implements ObligationManagerProp
     @Value( "${name}" )
     private String name;
 
-    @Value( "${communication}" )
-    private String communication;
-
     @Override
     public String getName() {
         return name;

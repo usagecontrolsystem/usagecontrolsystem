@@ -9,9 +9,6 @@ public class UCSRestSessionManagerProperties implements SessionManagerProperties
     @Value( "${name}" )
     private String name;
 
-    @Value( "${communication}" )
-    private String communication;
-
     @Value( "${db-uri}" )
     private String dbUri;
 

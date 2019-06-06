@@ -9,9 +9,6 @@ public class UCSRestPdpProperties implements PdpProperties {
     @Value( "${name}" )
     private String name;
 
-    @Value( "${communication}" )
-    private String communication;
-
     @Value( "${journal-dir}" )
     private String journalDir;
 

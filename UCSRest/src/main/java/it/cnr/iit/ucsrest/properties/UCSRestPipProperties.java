@@ -12,9 +12,6 @@ public class UCSRestPipProperties implements PipProperties {
     @Value( "${name}" )
     private String name;
 
-    @Value( "${communication}" )
-    private String communication;
-
     @Value( "${id}" )
     private String id;
 

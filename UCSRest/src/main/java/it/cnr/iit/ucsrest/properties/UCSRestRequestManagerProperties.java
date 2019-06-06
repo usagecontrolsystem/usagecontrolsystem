@@ -9,9 +9,6 @@ public class UCSRestRequestManagerProperties implements RequestManagerProperties
     @Value( "${name}" )
     private String name;
 
-    @Value( "${communication}" )
-    private String communication;
-
     @Value( "${api-remote-response}" )
     private String apiRemoteResponse;
 

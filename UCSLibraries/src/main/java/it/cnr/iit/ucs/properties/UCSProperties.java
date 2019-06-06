@@ -28,7 +28,6 @@ import it.cnr.iit.ucs.properties.components.RequestManagerProperties;
 import it.cnr.iit.ucs.properties.components.SessionManagerProperties;
 
 public interface UCSProperties {
-
     public CoreProperties getCore();
 
     public ContextHandlerProperties getContextHandler();
@@ -46,5 +45,4 @@ public interface UCSProperties {
     public List<PipProperties> getPipList();
 
     public List<PepProperties> getPepList();
-
 }

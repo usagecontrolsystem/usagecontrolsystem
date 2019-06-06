@@ -9,9 +9,6 @@ public class UCSRestPapProperties implements PapProperties {
     @Value( "${name}" )
     private String name;
 
-    @Value( "${communication}" )
-    private String communication;
-
     @Value( "${path}" )
     private String path;
 
