@@ -12,14 +12,11 @@ import it.cnr.iit.ucs.properties.components.PepProperties;
 import it.cnr.iit.ucs.properties.components.PipProperties;
 
 @Component
-@ConfigurationProperties(
-    prefix = "ucf",
-    ignoreUnknownFields = true,
-    ignoreInvalidFields = true )
+@ConfigurationProperties( prefix = "ucs", ignoreUnknownFields = true, ignoreInvalidFields = true )
 public class UCSRestProperties implements UCSProperties {
 
     @NestedConfigurationProperty
-    private UCSRestGeneralProperties general;
+    private UCSRestCoreProperties core;
 
     @NestedConfigurationProperty
     private UCSRestContextHandlerProperties contextHandler;
@@ -64,12 +61,12 @@ public class UCSRestProperties implements UCSProperties {
     }
 
     @Override
-    public UCSRestGeneralProperties getGeneral() {
-        return general;
+    public UCSRestCoreProperties getCore() {
+        return core;
     }
 
-    public void setGeneral( UCSRestGeneralProperties general ) {
-        this.general = general;
+    public void setCore( UCSRestCoreProperties core ) {
+        this.core = core;
     }
 
     @Override

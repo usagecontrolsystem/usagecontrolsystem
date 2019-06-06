@@ -6,14 +6,14 @@ import it.cnr.iit.ucs.properties.components.PepProperties;
 
 public class UCSRestPepProperties implements PepProperties {
 
-    @Value( "${class-name}" )
-    private String className;
+    @Value( "${name}" )
+    private String name;
 
-    @Value( "${communication-type:API}" )
-    private String communicationType;
+    @Value( "${communication:LOCAL}" )
+    private String communication;
 
     @Value( "${base-uri}" )
-    private String baseUri;
+    private String uri;
 
     @Value( "${id:1}" )
     private String id;
@@ -34,30 +34,21 @@ public class UCSRestPepProperties implements PepProperties {
     private String apiEndAccessResponse;
 
     @Override
-    public String getClassName() {
-        return className;
+    public String getName() {
+        return name;
+    }
+
+    public void setName( String name ) {
+        this.name = name;
     }
 
     @Override
-    public String getCommunicationType() {
-        return communicationType;
+    public String getUri() {
+        return uri;
     }
 
-    @Override
-    public String getBaseUri() {
-        return baseUri;
-    }
-
-    public void setClassName( String className ) {
-        this.className = className;
-    }
-
-    public void setCommunicationType( String communicationType ) {
-        this.communicationType = communicationType;
-    }
-
-    public void setBaseUri( String baseUri ) {
-        this.baseUri = baseUri;
+    public void setUri( String uri ) {
+        this.uri = uri;
     }
 
     @Override

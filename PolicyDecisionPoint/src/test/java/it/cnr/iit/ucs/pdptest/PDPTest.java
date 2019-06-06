@@ -58,13 +58,13 @@ public class PDPTest {
     @Value( "${policy.dup}" )
     private String policyDup;
 
-    @Value( "${ucf.policy-decision-point.class-name}" )
+    @Value( "${ucs.policy-decision-point.name}" )
     private String className;
 
-    @Value( "${ucf.policy-decision-point.communication-type}" )
+    @Value( "${ucs.policy-decision-point.communication}" )
     private String communication;
 
-    @Value( "${ucf.policy-decision-point.journal-dir}" )
+    @Value( "${ucs.policy-decision-point.journal-dir}" )
     private String journalDir;
 
     private PolicyDecisionPoint policyDecisionpoint;
@@ -80,12 +80,7 @@ public class PDPTest {
             }
 
             @Override
-            public String getCommunicationType() {
-                return communication;
-            }
-
-            @Override
-            public String getClassName() {
+            public String getName() {
                 return className;
             }
         };

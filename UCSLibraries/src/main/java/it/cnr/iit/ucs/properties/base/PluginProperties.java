@@ -16,9 +16,5 @@
 package it.cnr.iit.ucs.properties.base;
 
 public interface PluginProperties {
-
-    public String getClassName();
-
-    public String getCommunicationType();
-
+    public String getName();
 }

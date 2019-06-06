@@ -16,7 +16,5 @@
 package it.cnr.iit.ucs.properties.base;
 
 public interface JournalProperties {
-
     public String getJournalDir();
-
 }

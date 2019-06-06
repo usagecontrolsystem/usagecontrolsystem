@@ -103,7 +103,7 @@ public class ContextHandlerCoverageTests extends UCSRestBaseTests {
         ContextHandlerLC contextHandler = getContextHandlerCorrectlyInitialized( properties, policy, request );
 
         /* tryAccess */
-        TryAccessMessage tryAccessMessage = buildTryAccessMessage( testProperties.getPepId(), properties.getGeneral().getBaseUri(), policy,
+        TryAccessMessage tryAccessMessage = buildTryAccessMessage( testProperties.getPepId(), properties.getCore().getUri(), policy,
             request );
         contextHandler.tryAccess( tryAccessMessage );
 

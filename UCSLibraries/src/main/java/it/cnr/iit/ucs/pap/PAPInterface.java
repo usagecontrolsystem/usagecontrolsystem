@@ -22,15 +22,9 @@ import java.util.List;
  * Administration Point.
  *
  * The PAP is a storage of Policy, hence all the methods regarding the PAP are
- * methods to add, retrieve or list the policy it stores. <br>
- * TODO For the moment the policies are expressed as String, however it might be
- * beneficial to express them in a different way, even though it might not be
- * useful to use POJOs in this case because the PDP evaluates Strings in the XML
- * format, hence we may have to perform parsing and parsing and this would not
- * make any sense.
+ * methods to add, retrieve or list the policy it stores.
  *
- * @author antonio
- *
+ * @author Antonio La Marra
  */
 public interface PAPInterface {
     /**

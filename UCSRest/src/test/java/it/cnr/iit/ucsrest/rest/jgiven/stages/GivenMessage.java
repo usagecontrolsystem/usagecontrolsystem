@@ -110,7 +110,7 @@ public class GivenMessage extends Stage<GivenMessage> {
 
     private Message buildEndAccessMessage() {
         assertNotNull( sessionId );
-        EndAccessMessage endAccessMessage = new EndAccessMessage( pepProps.getId(), pepProps.getBaseUri() );
+        EndAccessMessage endAccessMessage = new EndAccessMessage( pepProps.getId(), pepProps.getUri() );
         endAccessMessage.setSessionId( sessionId );
         endAccessMessage.setCallback( buildResponseInterface( pepProps, "endAccessResponse" ), CONNECTION.REST );
         return endAccessMessage;
@@ -118,14 +118,14 @@ public class GivenMessage extends Stage<GivenMessage> {
 
     private StartAccessMessage buildStartAccessMessage() {
         assertNotNull( sessionId );
-        StartAccessMessage startAccessMessage = new StartAccessMessage( pepProps.getId(), pepProps.getBaseUri() );
+        StartAccessMessage startAccessMessage = new StartAccessMessage( pepProps.getId(), pepProps.getUri() );
         startAccessMessage.setSessionId( sessionId );
         startAccessMessage.setCallback( buildResponseInterface( pepProps, "startAccessResponse" ), CONNECTION.REST );
         return startAccessMessage;
     }
 
     private TryAccessMessage buildTryAccessMessage() {
-        TryAccessMessage tryAccessMessage = new TryAccessMessage( pepProps.getId(), pepProps.getBaseUri() );
+        TryAccessMessage tryAccessMessage = new TryAccessMessage( pepProps.getId(), pepProps.getUri() );
         tryAccessMessage.setPepUri( buildOnGoingEvaluationInterface( pepProps ) );
         tryAccessMessage.setPolicy( policy );
         tryAccessMessage.setRequest( request );
@@ -135,8 +135,8 @@ public class GivenMessage extends Stage<GivenMessage> {
 
     private final String buildResponseInterface( PepProperties pepProps, String name ) {
         StringBuilder response = new StringBuilder();
-        response.append( pepProps.getBaseUri() );
-        if( !( pepProps.getBaseUri().endsWith( "/" ) || name.startsWith( "/" ) ) ) {
+        response.append( pepProps.getUri() );
+        if( !( pepProps.getUri().endsWith( "/" ) || name.startsWith( "/" ) ) ) {
             response.append( "/" );
         }
         response.append( name );

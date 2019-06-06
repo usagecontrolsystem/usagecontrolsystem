@@ -3,7 +3,7 @@ package it.cnr.iit.ucsrest.coverage.properties;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
-@ConfigurationProperties( prefix = "ucftest" )
+@ConfigurationProperties( prefix = "ucstest" )
 public class TestProperties {
 
     @Value( "${policy-file}" )

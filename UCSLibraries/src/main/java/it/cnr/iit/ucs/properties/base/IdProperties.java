@@ -16,6 +16,5 @@
 package it.cnr.iit.ucs.properties.base;
 
 public interface IdProperties {
-
     public String getId();
 }

@@ -1,7 +1,6 @@
 package it.cnr.iit.ucsrest.coverage;
 
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.lang.reflect.Constructor;
@@ -40,6 +39,7 @@ import it.cnr.iit.ucs.pap.PAPInterface;
 import it.cnr.iit.ucs.pdp.PDPEvaluation;
 import it.cnr.iit.ucs.pdp.PDPInterface;
 import it.cnr.iit.ucs.pep.PEPInterface;
+import it.cnr.iit.ucs.pip.PIPBase;
 import it.cnr.iit.ucs.pip.PIPCHInterface;
 import it.cnr.iit.ucs.properties.UCSProperties;
 import it.cnr.iit.ucs.properties.components.PipProperties;
@@ -48,13 +48,10 @@ import it.cnr.iit.ucs.sessionmanager.SessionInterface;
 import it.cnr.iit.ucs.sessionmanager.SessionManagerInterface;
 import it.cnr.iit.ucsrest.contexthandler.ContextHandlerLC;
 import it.cnr.iit.ucsrest.coverage.properties.TestProperties;
-import it.cnr.iit.ucsrest.proxies.ProxyPAP;
-import it.cnr.iit.ucsrest.proxies.ProxyPDP;
-import it.cnr.iit.ucsrest.proxies.ProxySessionManager;
 import it.cnr.iit.ucsrest.requestmanager.RequestManagerLC;
-import it.cnr.iit.ucsrest.rest.UCSRest;
 import it.cnr.iit.utility.FileUtility;
 import it.cnr.iit.utility.JAXBUtility;
+import it.cnr.iit.utility.ReflectionsUtility;
 import it.cnr.iit.xacml.Attribute;
 import it.cnr.iit.xacml.Category;
 import it.cnr.iit.xacml.DataType;
@@ -253,8 +250,6 @@ public class UCSRestBaseTests {
         }
     }
 
-    /* Non mocked components created from configuration */
-
     protected Attribute getNewAttribute( String id, Category category, DataType type, String val ) {
         Attribute attr = new Attribute();
         attr.setAttributeId( id );
@@ -268,31 +263,12 @@ public class UCSRestBaseTests {
         ArrayList<PIPCHInterface> pips = new ArrayList<>();
 
         for( PipProperties pipProp : prop.getPipList() ) {
-            log.info( "Loading pip" );
-            PIPCHInterface pip = (PIPCHInterface) UCSRest.buildComponent( pipProp ).get();
+            PIPCHInterface pip = ReflectionsUtility.buildComponent( pipProp, PIPBase.class ).get();
             assertNotNull( pip );
             pips.add( pip );
         }
 
         return pips;
-    }
-
-    protected SessionManagerInterface getSessionManager( UCSProperties prop ) {
-        SessionManagerInterface sessionManager = new ProxySessionManager( prop.getSessionManager() );
-        assertTrue( sessionManager.isInitialized() );
-        return sessionManager;
-    }
-
-    protected PDPInterface getPDP( UCSProperties prop ) {
-        PDPInterface pdp = new ProxyPDP( prop.getPolicyDecisionPoint() );
-        assertNotNull( pdp );
-        return pdp;
-    }
-
-    protected PAPInterface getPAP( UCSProperties prop ) {
-        PAPInterface pap = new ProxyPAP( prop.getPolicyAdministrationPoint() );
-        assertNotNull( pap );
-        return pap;
     }
 
     /* Messages functions */

@@ -195,8 +195,7 @@ public final class ContextHandlerLC extends AbstractContextHandler {
 
         // insert all the values inside the session manager
         if( !getSessionManager().createEntry( sessionAttributeBuilder.build() ) ) {
-            log.log( Level.SEVERE, "TryAccess: session \"{0}\" has not been stored correctly",
-                sessionId );
+            log.log( Level.SEVERE, "TryAccess: session \"{0}\" has not been stored correctly", sessionId );
         }
     }
 
