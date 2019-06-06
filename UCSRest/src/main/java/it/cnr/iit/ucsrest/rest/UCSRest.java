@@ -106,7 +106,7 @@ public class UCSRest implements UCSInterface {
         Reject.ifFalse( buildPIPList(), "Error in building the pips" );
 
         Optional<ObligationManagerInterface> optOM = buildComponent( properties.getObligationManager() );
-        Reject.ifAbsent( optOM, "Error in building the request manager" );
+        Reject.ifAbsent( optOM, "Error in building the obligation manager" );
         obligationManager = optOM.get(); // NOSONAR
         obligationManager.setPIPs( new ArrayList<PIPOMInterface>( pipList ) );
 

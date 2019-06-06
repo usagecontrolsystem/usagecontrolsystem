@@ -21,4 +21,6 @@ public interface RequestManagerProperties extends PluginProperties {
 
     public String getApiRemoteResponse();
 
+    public boolean isActive();
+
 }
