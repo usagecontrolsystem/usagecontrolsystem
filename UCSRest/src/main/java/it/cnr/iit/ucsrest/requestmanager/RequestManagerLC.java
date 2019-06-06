@@ -46,12 +46,14 @@ import it.cnr.iit.utility.errorhandling.Reject;
 public class RequestManagerLC extends AbstractRequestManager {
 
     private static final Logger log = Logger.getLogger( RequestManagerLC.class.getName() );
+    private boolean active = false;
 
     private ExecutorService inquirers;
 
     public RequestManagerLC( RequestManagerProperties properties ) {
         super( properties );
         initializeInquirers();
+        this.active = properties.isActive();
     }
 
     /**
@@ -87,11 +89,13 @@ public class RequestManagerLC extends AbstractRequestManager {
     public synchronized Message sendMessageToCH( Message message ) {
         Reject.ifNull( message, "Null message" );
         try {
-            getQueueToCH().put( message );
-        } catch( NullPointerException e ) {
-            log.severe( e.getMessage() );
-        } catch( InterruptedException e ) {
-            log.severe( e.getMessage() );
+            if( !active ) {
+                handleMessage( message );
+            } else {
+                getQueueToCH().put( message );
+            }
+        } catch( Exception e ) {
+            log.severe( e.getLocalizedMessage() );
             Thread.currentThread().interrupt();
         }
         return null;
@@ -113,17 +117,7 @@ public class RequestManagerLC extends AbstractRequestManager {
             Message message;
             try {
                 while( ( message = getQueueToCH().take() ) != null ) {
-                    Message responseMessage = null;
-                    if( message.getPurpose() == PURPOSE.TRY ) {
-                        responseMessage = getContextHandler().tryAccess( (TryAccessMessage) message );
-                    } else if( message.getPurpose() == PURPOSE.START ) {
-                        responseMessage = getContextHandler().startAccess( (StartAccessMessage) message );
-                    } else if( message.getPurpose() == PURPOSE.END ) {
-                        responseMessage = getContextHandler().endAccess( (EndAccessMessage) message );
-                    } else {
-                        throw new IllegalArgumentException( "Invalid message arrived" );
-                    }
-                    getPEPMap().get( responseMessage.getDestination() ).receiveResponse( responseMessage );
+                    handleMessage( message );
                 }
             } catch( Exception e ) {
                 log.severe( e.getMessage() );
@@ -131,6 +125,20 @@ public class RequestManagerLC extends AbstractRequestManager {
             }
             return null;
         }
+    }
+
+    private void handleMessage( Message message ) throws Exception {
+        Message responseMessage = null;
+        if( message.getPurpose() == PURPOSE.TRY ) {
+            responseMessage = getContextHandler().tryAccess( (TryAccessMessage) message );
+        } else if( message.getPurpose() == PURPOSE.START ) {
+            responseMessage = getContextHandler().startAccess( (StartAccessMessage) message );
+        } else if( message.getPurpose() == PURPOSE.END ) {
+            responseMessage = getContextHandler().endAccess( (EndAccessMessage) message );
+        } else {
+            throw new IllegalArgumentException( "Invalid message arrived" );
+        }
+        getPEPMap().get( responseMessage.getDestination() ).receiveResponse( responseMessage );
     }
 
     @Override

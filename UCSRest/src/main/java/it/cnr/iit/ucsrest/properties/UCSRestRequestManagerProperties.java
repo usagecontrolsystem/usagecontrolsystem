@@ -15,6 +15,9 @@ public class UCSRestRequestManagerProperties implements RequestManagerProperties
     @Value( "${api-remote-response}" )
     private String apiRemoteResponse;
 
+    @Value( "${active}" )
+    private String active;
+
     @Override
     public String getClassName() {
         return className;
@@ -40,6 +43,18 @@ public class UCSRestRequestManagerProperties implements RequestManagerProperties
 
     public void setCommunicationType( String communicationType ) {
         this.communicationType = communicationType;
+    }
+
+    public void setActive( String active ) {
+        this.active = active;
+    }
+
+    @Override
+    public boolean isActive() {
+        if( active == null ) {
+            return true;
+        }
+        return Boolean.parseBoolean( active );
     }
 
 }
