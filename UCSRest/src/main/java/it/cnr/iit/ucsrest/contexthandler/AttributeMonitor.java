@@ -12,18 +12,8 @@ import it.cnr.iit.xacml.Attribute;
 
 /**
  * This class represents the object in charge of performing reevaluation.
- * The thread waits for notifications coming from PIPs, when it
- * receives a notification, it starts reevaluating all the sessions that are
- * interested in that attribute.
- * For this reason this thread will have to:
- * <ol type="i">
- * <li>Retrieve all the sessions that are interested into that attribute. If
- * the attribute contains any additional information (e.g. the name of the
- * subject) obviously check if the additional information stored in the
- * policy is the same.</li>
- * </ol><br>
- * @author Antonio La Marra, Alessandro Rosetti
  *
+ * @author Antonio La Marra, Alessandro Rosetti
  */
 class AttributeMonitor {
 

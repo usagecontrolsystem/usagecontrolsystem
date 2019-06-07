@@ -46,7 +46,7 @@ public class PolicyAdministrationPoint implements PAPInterface {
 
     private PapProperties properties;
 
-    private static final String POLICY_FILE_EXTENSION = ".pol";
+    private static final String POLICY_FILE_EXTENSION = ".xml";
 
     private static final String MSG_ERR_POLICY_READ = "Error reading policy file : {0} -> {1}";
     private static final String MSG_ERR_POLICY_WRITE = "Error writing policy file : {0} -> {1}";

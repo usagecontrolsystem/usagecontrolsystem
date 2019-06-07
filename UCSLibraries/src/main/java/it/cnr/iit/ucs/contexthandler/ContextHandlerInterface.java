@@ -26,68 +26,32 @@ import it.cnr.iit.ucs.message.tryaccess.TryAccessResponse;
 /**
  * This is the interface provided by the ContextHandler.
  *
- * The contexthandler allows other parties to communicate with it using these
- * functions::
- * <ol>
- * <li>tryAccess: function called when we want to ask the contexthandler if it
- * is possible for a certain subject to perform a certain action upon a certain
- * resource, it will be called before the effective access to the resource</li>
- * <li>startAccess: function called when the subject effectively tries to access
- * the resource, at first we check if it is still possible for the subject to
- * perform the operation, then we demand the various PIPs the continuous
- * monitoring of the environment in order to notify the CH of any bad event that
- * may happen</li>
- * <li>endAccess: this function can be called autonomously by the PEP or can be
- * triggered by the CH when something bad happens. Whenever this function will
- * be called, the session will be terminated. The request will be evaluated
- * again looking for eventual obligations to be performed.</li>
- * <li>attributeChanged: this function is called by the PIPBarrierMonitor
- * whenever a PIP notifies it that an attribute has changed. It triggers the
- * reevaluation of all the sessions that take into account that particular
- * attribute.</li>
- * <li>messageForPIP: this function is triggered from the RequestManager
- * whenever there is a message that asks something from a PIP. The
- * ContextHandler is in fact the only entity in charge of allowing the various
- * PIPs to communicate with the external world</li>
- * </ol>
- *
  * @author Antonio La Marra
- *
  */
 public interface ContextHandlerInterface extends ContextHandlerPIPInterface {
 
     /**
-     * This is the tryAccess function. In this case the RequestManager passes to
-     * the ContextHandler a message in which it has been specified the request
-     * received, the policy to be used and the uri of the PEP. It will also send
-     * eventual Obligations provided by the ObligationManager
+     * Initial evaluation of the policy, request.
      *
      * @param message
-     *          message received by the RequestManager
+     *          message received
      * @return a message stating the response of the PDP to the request.
      */
     public TryAccessResponse tryAccess( TryAccessMessage message );
 
     /**
-     * This is the startAccess function. In this case a tryAccess has already been
-     * performed with a PERMIT status. Hence with this function the ContextHandler
-     * performs a re-evaluation of the context in order to be sure that the access
-     * can go on, moreover this triggers the contiunous monitoring of the
-     * attributes of the policy.
+     * Starts the session spefified in the message if the previous tryAccess
+     * has been already performed with a PERMIT status.
      *
      * @param message
-     *          message received by the RequestManager
+     *          message received
      * @return a message stating the response of the PDP to the request
      * @throws Exception
      */
     public StartAccessResponse startAccess( StartAccessMessage message ) throws Exception;
 
     /**
-     * This is the endAcces function. In this case the PEP doesn't require the
-     * resource anymore or the access to the resource has been denied, hence the
-     * PEP notifies the CH to stop monitoring that session. The CH answers by
-     * sending to the PEP the response to the ENDAccess. It will be the
-     * ObligationManager in charge of
+     * Ends the session spefified in the message.
      *
      * @param message
      *          the message received by the RequestManager

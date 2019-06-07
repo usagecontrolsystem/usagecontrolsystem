@@ -25,13 +25,10 @@ import it.cnr.iit.ucs.message.attributechange.AttributeChangeMessage;
  */
 public interface ContextHandlerPIPInterface {
     /**
-     * This is the attributeChanged function. In this case the CH is notified by
-     * the PIPBarrierMonitor that the attribute monitored by a PIP has changed its
-     * value, hence it is necessary to reevaluate all the sessions related to that
-     * attribute.
+     * The CH is notified by the PIP that the attribute monitored has changed.
      *
      * @param message
-     *          the message sent by the CH
+     *          the message sent by the PIP
      */
     public void attributeChanged( AttributeChangeMessage message );
 
