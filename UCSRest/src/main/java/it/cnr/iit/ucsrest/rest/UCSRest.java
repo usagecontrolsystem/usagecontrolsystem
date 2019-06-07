@@ -166,23 +166,20 @@ public class UCSRest implements UCSInterface {
 
     @Override
     @Async
-    public void tryAccess( TryAccessMessage tryAccessMessage ) {
-        // TODO check if sent
-        requestManager.sendMessageToCH( tryAccessMessage );
+    public Boolean tryAccess( TryAccessMessage tryAccessMessage ) {
+        return requestManager.sendMessageToCH( tryAccessMessage );
     }
 
     @Override
     @Async
-    public void startAccess( StartAccessMessage startAccessMessage ) {
-        // TODO check if sent
-        requestManager.sendMessageToCH( startAccessMessage );
+    public Boolean startAccess( StartAccessMessage startAccessMessage ) {
+        return requestManager.sendMessageToCH( startAccessMessage );
     }
 
     @Override
     @Async
-    public void endAccess( EndAccessMessage endAccessMessage ) {
-        // TODO check if sent
-        requestManager.sendMessageToCH( endAccessMessage );
+    public Boolean endAccess( EndAccessMessage endAccessMessage ) {
+        return requestManager.sendMessageToCH( endAccessMessage );
     }
 
     public boolean isInitialised() {
