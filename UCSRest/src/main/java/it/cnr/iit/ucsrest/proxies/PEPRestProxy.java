@@ -61,7 +61,7 @@ public class PEPRestProxy implements PEPInterface {
     @Override
     // TODO return actual response.
     public String receiveResponse( Message message ) {
-        Optional<String> api = getApi( message );
+        Optional<String> api = getApiForMessage( message );
         try {
             RESTUtils.asyncPost( uri.toString(), api.get(), message ); // NOSONAR
         } catch( Exception e ) {
@@ -71,7 +71,7 @@ public class PEPRestProxy implements PEPInterface {
         return "OK";
     }
 
-    private Optional<String> getApi( Message message ) {
+    private Optional<String> getApiForMessage( Message message ) {
         if( message instanceof TryAccessResponse ) {
             return Optional.of( properties.getApiTryAccessResponse() );
         } else if( message instanceof StartAccessResponse ) {

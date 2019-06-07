@@ -53,26 +53,19 @@ import oasis.names.tc.xacml.core.schema.wd_17.DecisionType;
 /**
  * The context handler coordinates the ucs operations and spawns a thread in charge of  monitoring
  * eventual changes in the value of the attributes.
- * This implementation of the context handler can handle a single request per time.
- * This single thread is represented by the AttributeMonitor actor which implements
- * the Callable<String> interface.
- * This context handler has a blocking queue that will be used for notifications by the
- * various PIPs, since once a notification has been received, all the PIPs will
- * be queried, then this queue MUST contain, unless something changes in the
- * architecture a single element only.
  *
  * @author Antonio La Marra, Alessandro Rosetti
  */
-public final class ContextHandlerLC extends AbstractContextHandler {
+public final class ContextHandler extends AbstractContextHandler {
 
-    private static final Logger log = Logger.getLogger( ContextHandlerLC.class.getName() );
+    private static final Logger log = Logger.getLogger( ContextHandler.class.getName() );
 
     @Deprecated
     public static final String PEP_ID_SEPARATOR = "#";
 
     private AttributeMonitor attributeMonitor;
 
-    public ContextHandlerLC( ContextHandlerProperties properties ) {
+    public ContextHandler( ContextHandlerProperties properties ) {
         super( properties );
         attributeMonitor = new AttributeMonitor( this );
     }
@@ -95,7 +88,6 @@ public final class ContextHandlerLC extends AbstractContextHandler {
         RequestWrapper fatRequest = fattenRequest( request, STATUS.TRY );
         log.info( "TryAccess fattened request contents : \n" + fatRequest.getRequest() );
 
-        // Perform the PDP evaluation
         PDPEvaluation evaluation = getPdp().evaluate( fatRequest, policy, STATUS.TRY );
         Reject.ifNull( evaluation );
         log.log( Level.INFO, "TryAccess evaluated at {0} pdp response : {1}",
@@ -164,9 +156,8 @@ public final class ContextHandlerLC extends AbstractContextHandler {
      * @param message
      *            the message
      * @param request
-     *            the original request, not the fat one because, whenever we
-     *            need to re-evaluate the request we will retrieval from the
-     *            various PIPs a fresh value
+     *            the original request, not the fat one because, whenever we need to re-evaluate
+     *            the request we will retrieval from the various PIPs a fresh value
      * @param policy
      *            the policy
      * @param sessionId
@@ -440,7 +431,6 @@ public final class ContextHandlerLC extends AbstractContextHandler {
     @Override
     public void attributeChanged( AttributeChangeMessage message ) {
         log.log( Level.INFO, "Attribute changed received {0}", System.currentTimeMillis() );
-        // non blocking insertion in the queue of attributes changed
         attributeMonitor.add( message );
     }
 
@@ -449,7 +439,7 @@ public final class ContextHandlerLC extends AbstractContextHandler {
      */
     public boolean reevaluateSessions( Attribute attribute ) {
         try {
-            log.info( "reevaluateSessions for  attributeId : " + attribute.getAttributeId() );
+            log.info( "ReevaluateSessions for  attributeId : " + attribute.getAttributeId() );
             List<SessionInterface> sessionList = getSessionListForCategory( attribute.getCategory(), attribute.getAttributeId(),
                 attribute.getAdditionalInformations() );
             if( sessionList != null ) {

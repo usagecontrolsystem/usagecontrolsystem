@@ -77,10 +77,10 @@ public class UCSRest implements UCSInterface {
     @PostConstruct
     private void init() {
         try {
-            log.info( "[INIT] usage control initialisation" );
+            log.info( "[INIT] usage control initialisation ..." );
             buildComponents();
             setupConnections();
-            log.info( "[DONE] building components completed." );
+            log.info( "[DONE] building components completed" );
             initialised = true;
         } catch( PreconditionException e ) {
             log.severe( "[ERROR] " + e.getMessage() );
@@ -99,11 +99,21 @@ public class UCSRest implements UCSInterface {
         buildObligationManager();
     }
 
-    private <T> Optional<T> buildComponent( PluginProperties property, Class<T> clazz ) {
-        log.info( "[BUILD] " + property.getName() );
-        Optional<T> component = ReflectionsUtility.buildComponent( property, clazz );
-        Reject.ifAbsent( component, "Error building " + property.getName() );
-        return component;
+    private void setupConnections() {
+        contextHandler.setSessionManager( sessionManager );
+        contextHandler.setRequestManager( requestManager );
+        contextHandler.setPap( pap );
+        contextHandler.setPdp( pdp );
+        contextHandler.setObligationManager( obligationManager );
+        contextHandler.setPIPs( new ArrayList<PIPCHInterface>( pipList ) );
+        contextHandler.startMonitoringThread();
+        requestManager.setContextHandler( contextHandler );
+        requestManager.setPEPMap( pepMap );
+        for( PIPBase pip : pipList ) {
+            pip.setContextHandler( contextHandler );
+        }
+        pdp.setPap( pap );
+        pdp.setObligationManager( obligationManager );
     }
 
     private void buildContextHandler() {
@@ -147,21 +157,11 @@ public class UCSRest implements UCSInterface {
         }
     }
 
-    private void setupConnections() {
-        contextHandler.setSessionManager( sessionManager );
-        contextHandler.setRequestManager( requestManager );
-        contextHandler.setPap( pap );
-        contextHandler.setPdp( pdp );
-        contextHandler.setObligationManager( obligationManager );
-        contextHandler.setPIPs( new ArrayList<PIPCHInterface>( pipList ) );
-        contextHandler.startMonitoringThread();
-        requestManager.setContextHandler( contextHandler );
-        requestManager.setPEPMap( pepMap );
-        for( PIPBase pip : pipList ) {
-            pip.setContextHandler( contextHandler );
-        }
-        pdp.setPap( pap );
-        pdp.setObligationManager( obligationManager );
+    private <T> Optional<T> buildComponent( PluginProperties property, Class<T> clazz ) {
+        log.info( "[BUILD] " + property.getName() );
+        Optional<T> component = ReflectionsUtility.buildComponent( property, clazz );
+        Reject.ifAbsent( component, "Error building " + property.getName() );
+        return component;
     }
 
     @Override

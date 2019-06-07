@@ -32,10 +32,9 @@ import springfox.documentation.swagger.web.UiConfiguration;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 /**
- * This is the deployer for the rest api provided by the usage control framework
+ * This is the deployer for the rest api provided by the usage control system
  *
- * @author antonio
- *
+ * @author Antonio La Marra
  */
 @SpringBootApplication
 @EnableSwagger2
@@ -63,7 +62,7 @@ public class UCSRestStarter extends SpringBootServletInitializer {
     private ApiInfo metadata() {
         return new ApiInfoBuilder()
             .title( "Usage Control System REST API" )
-            .description( "API for Usage Control System" )
+            .description( "Usage Control System" )
             .version( "1.0" ).contact( "antonio.lamarra@iit.cnr.it" ).build();
     }
 

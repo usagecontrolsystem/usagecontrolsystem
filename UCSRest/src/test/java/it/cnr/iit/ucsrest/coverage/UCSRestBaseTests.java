@@ -46,9 +46,9 @@ import it.cnr.iit.ucs.properties.components.PipProperties;
 import it.cnr.iit.ucs.requestmanager.RequestManagerToCHInterface;
 import it.cnr.iit.ucs.sessionmanager.SessionInterface;
 import it.cnr.iit.ucs.sessionmanager.SessionManagerInterface;
-import it.cnr.iit.ucsrest.contexthandler.ContextHandlerLC;
+import it.cnr.iit.ucsrest.contexthandler.ContextHandler;
 import it.cnr.iit.ucsrest.coverage.properties.TestProperties;
-import it.cnr.iit.ucsrest.requestmanager.RequestManagerLC;
+import it.cnr.iit.ucsrest.requestmanager.RequestManager;
 import it.cnr.iit.utility.FileUtility;
 import it.cnr.iit.utility.JAXBUtility;
 import it.cnr.iit.utility.ReflectionsUtility;
@@ -70,19 +70,19 @@ public class UCSRestBaseTests {
 
     /* Request Manager functions */
 
-    protected RequestManagerLC getRequestManager( UCSProperties prop ) {
-        RequestManagerLC requestManager = new RequestManagerLC( prop.getRequestManager() );
+    protected RequestManager getRequestManager( UCSProperties prop ) {
+        RequestManager requestManager = new RequestManager( prop.getRequestManager() );
         return requestManager;
     }
 
     /* Context Handler functions */
 
-    protected ContextHandlerLC getContextHandler( UCSProperties prop ) {
-        ContextHandlerLC contextHandler = new ContextHandlerLC( prop.getContextHandler() );
+    protected ContextHandler getContextHandler( UCSProperties prop ) {
+        ContextHandler contextHandler = new ContextHandler( prop.getContextHandler() );
         return contextHandler;
     }
 
-    protected void initContextHandler( ContextHandlerLC contextHandler ) {
+    protected void initContextHandler( ContextHandler contextHandler ) {
         contextHandler.setPdp( getMockedPDP( getMockedPDPEvaluation( DecisionType.PERMIT ) ) );
         contextHandler.setPap( getMockedPAP( null ) );
         contextHandler.setRequestManager( getMockedRequestManagerToChInterface() );
@@ -90,10 +90,10 @@ public class UCSRestBaseTests {
         contextHandler.setObligationManager( getMockedObligationManager() );
     }
 
-    protected ContextHandlerLC getContextHandlerCorrectlyInitialized( UCSProperties prop,
+    protected ContextHandler getContextHandlerCorrectlyInitialized( UCSProperties prop,
             String policy,
             String request ) throws Exception {
-        ContextHandlerLC contextHandler = getContextHandler( prop );
+        ContextHandler contextHandler = getContextHandler( prop );
         initContextHandler( contextHandler );
         contextHandler.setSessionManager(
             getSessionManagerForStatus( "a", policy, request, STATUS.TRY.name() ) );
@@ -136,7 +136,7 @@ public class UCSRestBaseTests {
         Mockito.when( sessionInterface.getPolicySet() ).thenReturn( policy );
         Mockito.when( sessionInterface.getOriginalRequest() ).thenReturn( request );
         Mockito.when( sessionInterface.getStatus() ).thenReturn( status );
-        Mockito.when( sessionInterface.getPEPUri() ).thenReturn( "localhost" + ContextHandlerLC.PEP_ID_SEPARATOR + "1" );
+        Mockito.when( sessionInterface.getPEPUri() ).thenReturn( "localhost" + ContextHandler.PEP_ID_SEPARATOR + "1" );
 
         Mockito.when( sessionInterface.isStatus( ArgumentMatchers.anyString() ) ).thenAnswer(
             new Answer<Boolean>() {
@@ -237,7 +237,7 @@ public class UCSRestBaseTests {
         return pip;
     }
 
-    protected void addMockedPips( UCSProperties prop, ContextHandlerLC contextHandler ) {
+    protected void addMockedPips( UCSProperties prop, ContextHandler contextHandler ) {
         // TODO FIX THIS HACK
         String[] pips = { "virus", "telephone", "position", "role", "telephone", "time" };
         String[] pipVal = { "0", "0", "Pisa", "IIT", "0", "12:00" };

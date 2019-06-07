@@ -34,9 +34,9 @@ class AttributeMonitor {
 
     // queue in charge of storing the changing in the attributes
     private LinkedTransferQueue<AttributeChangeMessage> changedAttributesQueue;
-    private ContextHandlerLC contextHandler;
+    private ContextHandler contextHandler;
 
-    public AttributeMonitor( ContextHandlerLC contextHandler ) {
+    public AttributeMonitor( ContextHandler contextHandler ) {
         Reject.ifNull( contextHandler, "ContextHandler is null" );
         this.contextHandler = contextHandler;
         changedAttributesQueue = new LinkedTransferQueue<>();

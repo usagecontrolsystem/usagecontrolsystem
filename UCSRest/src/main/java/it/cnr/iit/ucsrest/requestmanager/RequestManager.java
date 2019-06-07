@@ -31,26 +31,19 @@ import it.cnr.iit.ucs.requestmanager.AbstractRequestManager;
 import it.cnr.iit.utility.errorhandling.Reject;
 
 /**
- * The request manager is an asynchronous component.
  * All the requests coming to the context handler have to reach the request
- * manager first. It will parse and prioritise them. <br>
- * It is an ASYNCHRONOUS component (otherwise it would be impossible to
- * prioritise requests). Once it is queried, it simply provides a dummy response
- * to the caller. Then it will call the interface of the PEP. As you know behind
- * this interface there is a Proxy that abstracts the real communication link
- * between the UCS and the PEP.
+ * manager first that will choose how to handle them.
  *
  * @author Antonio La Marra, Alessandro Rosetti
- *
  */
-public class RequestManagerLC extends AbstractRequestManager {
+public class RequestManager extends AbstractRequestManager {
 
-    private static final Logger log = Logger.getLogger( RequestManagerLC.class.getName() );
+    private static final Logger log = Logger.getLogger( RequestManager.class.getName() );
     private boolean active = false;
 
     private ExecutorService inquirers;
 
-    public RequestManagerLC( RequestManagerProperties properties ) {
+    public RequestManager( RequestManagerProperties properties ) {
         super( properties );
         initializeInquirers();
         this.active = properties.isActive();
@@ -106,9 +99,6 @@ public class RequestManagerLC extends AbstractRequestManager {
      * to retrieve the messages coming to the request manager and sends those
      * requests to the context handler which will be in charge of answer to the
      * requests
-     *
-     * @author antonio
-     *
     */
     private class ContextHandlerInquirer implements Callable<Message> {
 
