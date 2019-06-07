@@ -15,7 +15,6 @@
 		<!-- <sonar.exclusions> ** </sonar.exclusions> -->
 	</properties>
 
-
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
@@ -100,6 +99,7 @@
 			<artifactId>reflections</artifactId>
 			<version>0.9.11</version>
 		</dependency>
+
 	</dependencies>
 
 	<build>
