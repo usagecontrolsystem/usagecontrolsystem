@@ -228,7 +228,7 @@ public final class Session implements SessionInterface {
     }
 
     @Override
-    public String getPEPUri() {
+    public String getPepId() {
         return pepURI;
     }
 

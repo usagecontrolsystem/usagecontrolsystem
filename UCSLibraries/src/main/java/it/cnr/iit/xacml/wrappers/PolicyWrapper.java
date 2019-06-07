@@ -49,7 +49,6 @@ public class PolicyWrapper implements PolicyWrapperInterface {
 
     private static final String MSG_ERR_UNMASHAL = "Error unmarshalling policy : {0}";
     private static final String MSG_ERR_MARSHAL = "Error marshalling policy : {0}";
-    private static final String MSG_WARN_COND_NOT_FOUND = "Condition not found : {0}";
 
     private PolicyType policyType;
     private String policy;
@@ -75,34 +74,35 @@ public class PolicyWrapper implements PolicyWrapperInterface {
     @Override
     public List<Attribute> getAttributesForCondition( String conditionName ) {
         Reject.ifBlank( conditionName );
-
+        Reject.ifTrue( conditionName.length() > 20 );
         List<Object> list = policyType.getCombinerParametersOrRuleCombinerParametersOrVariableDefinition();
 
         for( Object obj : list ) {
-            if( !( obj instanceof RuleType ) ) {
-                continue;
-            }
-
-            RuleType ruleType = (RuleType) obj;
-            List<ConditionType> conditions = ruleType.getCondition();
-            if( conditions == null ) {
-                continue;
-            }
-
-            for( ConditionType conditionType : conditions ) {
-                String decisionTime = conditionType.getDecisionTime();
-                if( decisionTime == null ) {
-                    if( conditionName.equals( PolicyTags.CONDITION_PRE ) ) {
-                        return extractAttributes( conditionType );
-                    }
-                    return new ArrayList<>();
-                } else if( decisionTime.equals( conditionName ) ) {
-                    return extractAttributes( conditionType );
+            if( obj instanceof RuleType ) {
+                RuleType ruleType = (RuleType) obj;
+                List<ConditionType> conditions = ruleType.getCondition();
+                if( conditions != null ) {
+                    return extractAttributesFromConditions( conditions, conditionName );
                 }
             }
         }
 
-        log.warning( String.format( MSG_WARN_COND_NOT_FOUND, conditionName ) );
+        log.warning( "Condition not found : " + conditionName );
+        return new ArrayList<>();
+    }
+
+    private List<Attribute> extractAttributesFromConditions( List<ConditionType> conditions, String conditionName ) {
+        for( ConditionType conditionType : conditions ) {
+            String decisionTime = conditionType.getDecisionTime();
+            if( decisionTime == null ) {
+                if( conditionName.equals( PolicyTags.CONDITION_PRE ) ) {
+                    return extractAttributes( conditionType );
+                }
+                return new ArrayList<>();
+            } else if( decisionTime.equals( conditionName ) ) {
+                return extractAttributes( conditionType );
+            }
+        }
         return new ArrayList<>();
     }
 

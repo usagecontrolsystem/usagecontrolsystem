@@ -61,7 +61,9 @@ public final class RESTUtils {
         try {
             URI uri = new URI( str );
             return Optional.of( uri );
-        } catch( Exception e ) {}
+        } catch( Exception e ) {
+            log.severe( e.getLocalizedMessage() );
+        }
         return Optional.empty();
     }
 

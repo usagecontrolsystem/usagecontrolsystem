@@ -15,6 +15,8 @@
  ******************************************************************************/
 package it.cnr.iit.ucs.contexthandler;
 
+import it.cnr.iit.ucs.exceptions.EndAccessException;
+import it.cnr.iit.ucs.exceptions.StartAccessException;
 import it.cnr.iit.ucs.exceptions.StatusException;
 import it.cnr.iit.ucs.message.endaccess.EndAccessMessage;
 import it.cnr.iit.ucs.message.endaccess.EndAccessResponse;
@@ -80,7 +82,7 @@ public interface ContextHandlerInterface extends ContextHandlerPIPInterface {
      * @return a message stating the response of the PDP to the request
      * @throws Exception
      */
-    public StartAccessResponse startAccess( StartAccessMessage message ) throws Exception;
+    public StartAccessResponse startAccess( StartAccessMessage message ) throws StartAccessException;
 
     /**
      * This is the endAcces function. In this case the PEP doesn't require the
@@ -94,6 +96,6 @@ public interface ContextHandlerInterface extends ContextHandlerPIPInterface {
      * @return a message stating the response of the PDP to the request
      * @throws StatusException
      */
-    public EndAccessResponse endAccess( EndAccessMessage message ) throws StatusException;
+    public EndAccessResponse endAccess( EndAccessMessage message ) throws EndAccessException;
 
 }

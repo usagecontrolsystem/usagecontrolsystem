@@ -136,7 +136,7 @@ public class UCSRestBaseTests {
         Mockito.when( sessionInterface.getPolicySet() ).thenReturn( policy );
         Mockito.when( sessionInterface.getOriginalRequest() ).thenReturn( request );
         Mockito.when( sessionInterface.getStatus() ).thenReturn( status );
-        Mockito.when( sessionInterface.getPEPUri() ).thenReturn( "localhost" + ContextHandler.PEP_ID_SEPARATOR + "1" );
+        Mockito.when( sessionInterface.getPepId() ).thenReturn( "1" );
 
         Mockito.when( sessionInterface.isStatus( ArgumentMatchers.anyString() ) ).thenAnswer(
             new Answer<Boolean>() {

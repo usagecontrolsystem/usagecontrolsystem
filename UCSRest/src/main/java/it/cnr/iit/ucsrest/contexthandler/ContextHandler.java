@@ -26,8 +26,8 @@ import java.util.logging.Logger;
 
 import it.cnr.iit.ucs.constants.STATUS;
 import it.cnr.iit.ucs.contexthandler.AbstractContextHandler;
-import it.cnr.iit.ucs.exceptions.SessionManagerException;
-import it.cnr.iit.ucs.exceptions.StatusException;
+import it.cnr.iit.ucs.exceptions.EndAccessException;
+import it.cnr.iit.ucs.exceptions.StartAccessException;
 import it.cnr.iit.ucs.message.attributechange.AttributeChangeMessage;
 import it.cnr.iit.ucs.message.endaccess.EndAccessMessage;
 import it.cnr.iit.ucs.message.endaccess.EndAccessResponse;
@@ -59,9 +59,6 @@ import oasis.names.tc.xacml.core.schema.wd_17.DecisionType;
 public final class ContextHandler extends AbstractContextHandler {
 
     private static final Logger log = Logger.getLogger( ContextHandler.class.getName() );
-
-    @Deprecated
-    public static final String PEP_ID_SEPARATOR = "#";
 
     private AttributeMonitor attributeMonitor;
 
@@ -166,7 +163,7 @@ public final class ContextHandler extends AbstractContextHandler {
     private void createNewSession( TryAccessMessage message, RequestWrapper request, PolicyWrapper policy, String sessionId ) {
         log.log( Level.INFO, "TryAccess creating new session : {0} ", sessionId );
 
-        String pepUri = uri.getHost() + PEP_ID_SEPARATOR + message.getSource();
+        String pepUri = message.getSource();
 
         // retrieve the id of ongoing attributes
         SessionAttributesBuilder sessionAttributeBuilder = new SessionAttributesBuilder();
@@ -218,7 +215,7 @@ public final class ContextHandler extends AbstractContextHandler {
      */
     @Override
     public StartAccessResponse startAccess( StartAccessMessage message )
-            throws StatusException, SessionManagerException {
+            throws StartAccessException {
         Optional<SessionInterface> optSession = getSessionManager().getSessionForId( message.getSessionId() );
         Reject.ifAbsent( optSession, "StartAccess: no session for id " + message.getSessionId() );
         SessionInterface session = optSession.get(); // NOSONAR
@@ -228,7 +225,7 @@ public final class ContextHandler extends AbstractContextHandler {
         // Check if the session has the correct status
         if( !session.isStatus( STATUS.TRY.name() ) ) {
             log.log( Level.SEVERE, "StartAccess: wrong status for session {0}", message.getSessionId() );
-            throw new StatusException( "StartAccess: tryaccess must be performed yet for session " + message.getSessionId() );
+            throw new StartAccessException( "StartAccess: tryaccess must be performed yet for session " + message.getSessionId() );
         }
 
         PolicyWrapper policy = PolicyWrapper.build( session.getPolicySet() );
@@ -384,7 +381,7 @@ public final class ContextHandler extends AbstractContextHandler {
      * endAccess method invoked by PEP
      */
     @Override
-    public EndAccessResponse endAccess( EndAccessMessage message ) throws StatusException {
+    public EndAccessResponse endAccess( EndAccessMessage message ) throws EndAccessException {
         log.log( Level.INFO, "EndAccess begins at {0}", System.currentTimeMillis() );
         Optional<SessionInterface> optSession = getSessionManager().getSessionForId( message.getSessionId() );
         Reject.ifAbsent( optSession, "EndAccess: no session for id " + message.getSessionId() );
@@ -394,7 +391,7 @@ public final class ContextHandler extends AbstractContextHandler {
         if( !( session.isStatus( STATUS.START.name() )
                 || session.isStatus( STATUS.REVOKE.name() ) ) ) {
             log.log( Level.INFO, "EndAccess: wrong status for session {0}", message.getSessionId() );
-            throw new StatusException( "EndAccess: wrong status for session " + message.getSessionId() );
+            throw new EndAccessException( "EndAccess: wrong status for session " + message.getSessionId() );
         }
 
         log.log( Level.INFO, "EndAccess evaluation starts at {0}", System.currentTimeMillis() );
@@ -483,15 +480,14 @@ public final class ContextHandler extends AbstractContextHandler {
         }
 
         evaluation.setSessionId( session.getId() );
-        ReevaluationResponse response = buildReevaluationResponse( evaluation, session.getPEPUri() );
+        ReevaluationResponse response = buildReevaluationResponse( evaluation, session.getPepId() );
         getRequestManager().sendReevaluation( response );
         log.log( Level.INFO, "Reevaluation ends changing status at {0}", System.currentTimeMillis() );
     }
 
     private ReevaluationResponse buildReevaluationResponse( PDPEvaluation evaluation, String dest ) {
-        String[] destSplitted = dest.split( PEP_ID_SEPARATOR );
-        ReevaluationResponse response = new ReevaluationResponse( uri.getHost(), destSplitted[0] );
-        response.setPepId( destSplitted[destSplitted.length - 1] );
+        ReevaluationResponse response = new ReevaluationResponse( uri.getHost(), dest );
+        response.setPepId( dest );
         response.setEvaluation( evaluation );
         return response;
     }

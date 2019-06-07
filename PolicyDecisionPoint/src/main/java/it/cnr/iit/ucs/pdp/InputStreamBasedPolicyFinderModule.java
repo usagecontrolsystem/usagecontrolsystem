@@ -23,10 +23,7 @@ import org.w3c.dom.Element;
 import org.wso2.balana.AbstractPolicy;
 import org.wso2.balana.MatchResult;
 import org.wso2.balana.Policy;
-import org.wso2.balana.PolicyMetaData;
-import org.wso2.balana.PolicyReference;
 import org.wso2.balana.PolicySet;
-import org.wso2.balana.VersionConstraints;
 import org.wso2.balana.combine.PolicyCombiningAlgorithm;
 import org.wso2.balana.combine.xacml2.DenyOverridesPolicyAlg;
 import org.wso2.balana.ctx.EvaluationCtx;
@@ -88,8 +85,8 @@ class InputStreamBasedPolicyFinderModule extends PolicyFinderModule {
 
         // iterate through all the policies we currently have loaded
         for( Map.Entry<URI, AbstractPolicy> entry : entrySet ) {
-            AbstractPolicy policy = entry.getValue();
-            MatchResult match = policy.match( context );
+            AbstractPolicy abstractPolicy = entry.getValue();
+            MatchResult match = abstractPolicy.match( context );
             int result = match.getResult();
 
             // if target matching was indeterminate, then return the error
@@ -106,7 +103,7 @@ class InputStreamBasedPolicyFinderModule extends PolicyFinderModule {
                     return new PolicyFinderResult( status );
                 }
                 // this is the first match we've found, so remember it
-                selectedPolicies.add( policy );
+                selectedPolicies.add( abstractPolicy );
             }
         }
 
@@ -120,30 +117,6 @@ class InputStreamBasedPolicyFinderModule extends PolicyFinderModule {
             default:
                 return new PolicyFinderResult( new PolicySet( null, combiningAlg, null, selectedPolicies ) );
         }
-    }
-
-    @Override
-    public PolicyFinderResult findPolicy( URI idReference, int type, VersionConstraints constraints,
-            PolicyMetaData parentMetaData ) {
-
-        AbstractPolicy policy = policies.get( idReference );
-        if( policy != null ) {
-            if( type == PolicyReference.POLICY_REFERENCE ) {
-                if( policy instanceof Policy ) {
-                    return new PolicyFinderResult( policy );
-                }
-            } else {
-                if( policy instanceof PolicySet ) {
-                    return new PolicyFinderResult( policy );
-                }
-            }
-        }
-
-        // if there was an error loading the policy, return the error
-        ArrayList<String> code = new ArrayList<>();
-        code.add( Status.STATUS_PROCESSING_ERROR );
-        Status status = new Status( code, "couldn't load referenced policy" );
-        return new PolicyFinderResult( status );
     }
 
     @Override

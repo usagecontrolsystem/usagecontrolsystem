@@ -63,9 +63,6 @@ public final class PIPReader extends PIPBase {
     // list that stores the attributes on which a subscribe has been performed
     protected final BlockingQueue<Attribute> subscriptions = new LinkedBlockingQueue<>();
 
-    // the subscriber timer in charge of performing the polling of the values
-    private PIPReaderSubscriberTimer subscriberTimer;
-
     /**
      * Whenever a PIP has to retrieve some informations related to an attribute
      * that is stored inside the request, it has to know in advance all the
@@ -88,7 +85,6 @@ public final class PIPReader extends PIPBase {
         log.info( "PIPReader " + properties.getId() + " initialised" );
     }
 
-    // TODO use reject here
     private boolean init( PipProperties properties ) {
         try {
             Map<String, String> attributeMap = properties.getAttributes().get( 0 );
@@ -108,7 +104,7 @@ public final class PIPReader extends PIPBase {
 
             journal = new PIPJournalHelper( properties.getJournalDir() );
 
-            subscriberTimer = new PIPReaderSubscriberTimer( this );
+            PIPReaderSubscriberTimer subscriberTimer = new PIPReaderSubscriberTimer( this );
             subscriberTimer.start();
             return true;
         } catch( Exception e ) {
@@ -318,7 +314,6 @@ public final class PIPReader extends PIPBase {
         }
     }
 
-    // TODO interface for timer?
     public void checkSubscriptions() {
         for( Attribute attribute : subscriptions ) {
             String value = "";
