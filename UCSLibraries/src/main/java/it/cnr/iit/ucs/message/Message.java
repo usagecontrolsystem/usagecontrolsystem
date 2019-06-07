@@ -38,7 +38,7 @@ public class Message {
     protected PURPOSE purpose;
     protected Object callback;
 
-    public final String MESSAGE_ID_PREFIX = "ID:";
+    public static final String MESSAGE_ID_PREFIX = "ID:";
 
     public Message( String source, String destination ) {
         Reject.ifBlank( source );
