@@ -28,7 +28,7 @@ import it.cnr.iit.xacml.wrappers.PolicyWrapper;
 import it.cnr.iit.xacml.wrappers.RequestWrapper;
 
 @EnableConfigurationProperties
-@TestPropertySource( properties = "application-test.properties" )
+@TestPropertySource( properties = "application.properties" )
 @ActiveProfiles( "test" )
 @RunWith( SpringRunner.class )
 @SpringBootTest
