@@ -146,14 +146,14 @@ public class UCSRest implements UCSInterface {
     private void buildPEPList() {
         for( PepProperties pepProp : properties.getPepList() ) {
             Optional<PEPInterface> pep = buildComponent( pepProp, PEPInterface.class ); // NOSONAR
-            pepMap.put( pepProp.getId(), pep.get() );
+            pepMap.put( pepProp.getId(), pep.get() ); // NOSONAR
         }
     }
 
     private void buildPIPList() {
         for( PipProperties pipProp : properties.getPipList() ) {
             Optional<PIPBase> pip = buildComponent( pipProp, PIPBase.class );
-            pipList.add( pip.get() );
+            pipList.add( pip.get() ); // NOSONAR
         }
     }
 
