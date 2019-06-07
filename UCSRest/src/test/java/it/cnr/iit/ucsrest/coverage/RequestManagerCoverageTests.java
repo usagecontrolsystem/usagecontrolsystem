@@ -21,7 +21,7 @@ import it.cnr.iit.ucs.message.Message;
 import it.cnr.iit.ucs.properties.UCSProperties;
 import it.cnr.iit.ucsrest.coverage.properties.TestProperties;
 import it.cnr.iit.ucsrest.properties.UCSRestProperties;
-import it.cnr.iit.ucsrest.requestmanager.RequestManagerLC;
+import it.cnr.iit.ucsrest.requestmanager.RequestManager;
 
 @SpringBootTest
 @DirtiesContext( classMode = ClassMode.BEFORE_CLASS )
@@ -38,7 +38,7 @@ public class RequestManagerCoverageTests extends UCSRestBaseTests {
     public void requestManagerCoverageTestShouldFail()
             throws JAXBException, URISyntaxException, IOException, NoSuchMethodException, SecurityException,
             InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
-        RequestManagerLC requestManager = getRequestManager( null );
+        RequestManager requestManager = getRequestManager( null );
         requestManager.sendMessageToCH( null );
         requestManager.sendReevaluation( null );
     }
@@ -47,15 +47,13 @@ public class RequestManagerCoverageTests extends UCSRestBaseTests {
     public void requestManagerCoverageTestFull()
             throws JAXBException, URISyntaxException, IOException, NoSuchMethodException, SecurityException,
             InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
-        RequestManagerLC requestManager = getRequestManager( properties );
-        Message message = new Message( "a", "a", "a" );
-        requestManager.setInterfaces( getMockedContextHandlerInterface(),
-            getMockedPEPMap( "a", "" ) );
-
+        RequestManager requestManager = getRequestManager( properties );
+        requestManager.setContextHandler( getMockedContextHandlerInterface() );
+        requestManager.setPEPMap( getMockedPEPMap( "a", "" ) );
         testRequestManager( requestManager );
     }
 
-    public void testRequestManager( RequestManagerLC requestManager ) throws URISyntaxException, IOException {
+    public void testRequestManager( RequestManager requestManager ) throws URISyntaxException, IOException {
         Message[] messages = {
             buildTryAccessResponse( "a", "a", "a" ),
             buildStartAccessResponse( "a", "a", "a" ),

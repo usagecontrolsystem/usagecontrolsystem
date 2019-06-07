@@ -56,7 +56,7 @@ public abstract class AbstractContextHandler implements ContextHandlerInterface 
         Reject.ifNull( properties, ContextHandlerProperties.class.getName() );
         this.properties = properties;
 
-        Optional<URI> baseUri = RESTUtils.parseUri( properties.getBaseUri() );
+        Optional<URI> baseUri = RESTUtils.parseUri( properties.getUri() );
         Reject.ifAbsent( baseUri );
         this.uri = baseUri.get(); // NOSONAR
 

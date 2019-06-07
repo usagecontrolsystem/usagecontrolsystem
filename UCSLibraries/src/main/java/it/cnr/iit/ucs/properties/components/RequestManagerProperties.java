@@ -18,9 +18,7 @@ package it.cnr.iit.ucs.properties.components;
 import it.cnr.iit.ucs.properties.base.PluginProperties;
 
 public interface RequestManagerProperties extends PluginProperties {
-
     public String getApiRemoteResponse();
 
     public boolean isActive();
-
 }

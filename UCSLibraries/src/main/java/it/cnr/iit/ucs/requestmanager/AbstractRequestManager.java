@@ -58,25 +58,18 @@ public abstract class AbstractRequestManager
         pepMap = new HashMap<>();
     }
 
-    /**
-     * Set the interfaces the RequestManager has to communicate with
-     *
-     * @param contextHandler
-     *          the interface provided by the context handler
-     * @param proxyPEPMap
-     *          the interface to the PEP (behind this interface there is proxy)
-     * @param nodeInterface
-     *          the interface provided by the nodes for a distributes system
-     */
-    public final void setInterfaces( ContextHandlerInterface contextHandler,
-            Map<String, PEPInterface> proxyPEPMap ) {
-        Reject.ifNull( contextHandler, proxyPEPMap );
+    public final void setContextHandler( ContextHandlerInterface contextHandler ) {
+        Reject.ifNull( contextHandler );
         this.contextHandler = contextHandler;
-        pepMap.putAll( proxyPEPMap );
     }
 
     protected ContextHandlerInterface getContextHandler() {
         return contextHandler;
+    }
+
+    public final void setPEPMap( Map<String, PEPInterface> pepMap ) {
+        Reject.ifNull( pepMap );
+        this.pepMap.putAll( pepMap );
     }
 
     protected HashMap<String, PEPInterface> getPEPMap() {

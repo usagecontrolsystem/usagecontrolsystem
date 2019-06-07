@@ -16,6 +16,5 @@
 package it.cnr.iit.ucs.properties.base;
 
 public interface UriProperties {
-
-    public String getBaseUri();
+    public String getUri();
 }

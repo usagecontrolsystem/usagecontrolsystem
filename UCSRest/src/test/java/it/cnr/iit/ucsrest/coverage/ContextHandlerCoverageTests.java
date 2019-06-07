@@ -23,7 +23,7 @@ import it.cnr.iit.ucs.message.endaccess.EndAccessMessage;
 import it.cnr.iit.ucs.message.startaccess.StartAccessMessage;
 import it.cnr.iit.ucs.message.tryaccess.TryAccessMessage;
 import it.cnr.iit.ucs.properties.UCSProperties;
-import it.cnr.iit.ucsrest.contexthandler.ContextHandlerLC;
+import it.cnr.iit.ucsrest.contexthandler.ContextHandler;
 import it.cnr.iit.ucsrest.coverage.properties.TestProperties;
 import it.cnr.iit.ucsrest.properties.UCSRestProperties;
 import it.cnr.iit.utility.FileUtility;
@@ -57,7 +57,7 @@ public class ContextHandlerCoverageTests extends UCSRestBaseTests {
 
     @Test( expected = PreconditionException.class )
     public void contextHandlerTryAccessShouldFail() throws PreconditionException {
-        ContextHandlerLC contextHandler = getContextHandler( properties );
+        ContextHandler contextHandler = getContextHandler( properties );
         initContextHandler( contextHandler );
         // set the pdp response to return deny
         contextHandler.setPdp( getMockedPDP( getMockedPDPEvaluation( DecisionType.DENY ) ) );
@@ -71,7 +71,7 @@ public class ContextHandlerCoverageTests extends UCSRestBaseTests {
 
     @Test
     public void contextHandlerStartAccess() throws JAXBException, URISyntaxException, IOException, Exception {
-        ContextHandlerLC contextHandler = getContextHandlerCorrectlyInitialized( properties, policy, request );
+        ContextHandler contextHandler = getContextHandlerCorrectlyInitialized( properties, policy, request );
 
         /* startAccess */
         contextHandler.setSessionManager(
@@ -86,7 +86,7 @@ public class ContextHandlerCoverageTests extends UCSRestBaseTests {
 
     @Test
     public void contextHandlerEndAccess() throws JAXBException, URISyntaxException, IOException, Exception {
-        ContextHandlerLC contextHandler = getContextHandlerCorrectlyInitialized( properties, policy, request );
+        ContextHandler contextHandler = getContextHandlerCorrectlyInitialized( properties, policy, request );
 
         /* endAccess */
         contextHandler.setSessionManager(
@@ -100,10 +100,10 @@ public class ContextHandlerCoverageTests extends UCSRestBaseTests {
 
     @Test
     public void contextHandlerFullFlow() throws JAXBException, URISyntaxException, IOException, Exception {
-        ContextHandlerLC contextHandler = getContextHandlerCorrectlyInitialized( properties, policy, request );
+        ContextHandler contextHandler = getContextHandlerCorrectlyInitialized( properties, policy, request );
 
         /* tryAccess */
-        TryAccessMessage tryAccessMessage = buildTryAccessMessage( testProperties.getPepId(), properties.getGeneral().getBaseUri(), policy,
+        TryAccessMessage tryAccessMessage = buildTryAccessMessage( testProperties.getPepId(), properties.getCore().getUri(), policy,
             request );
         contextHandler.tryAccess( tryAccessMessage );
 

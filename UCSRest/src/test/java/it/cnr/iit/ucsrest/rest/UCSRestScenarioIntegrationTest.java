@@ -49,7 +49,6 @@ public class UCSRestScenarioIntegrationTest
 
     @Test
     public void a_startAccess_request_preceeding_tryAccess_with_Permit_sends_PEP_startAccessResponse_containing_Permit_decision() {
-
         a_tryAccess_request_sends_PEP_tryAccessResponse_containg_Permit_decision();
 
         given().a_$_request( START_ACCESS );
@@ -66,7 +65,6 @@ public class UCSRestScenarioIntegrationTest
 
     @Test
     public void an_endAccess_request_preceeding_startAccess_sends_PEP_endAccessResponse_and_the_session_is_deleted() {
-
         a_startAccess_request_preceeding_tryAccess_with_Permit_sends_PEP_startAccessResponse_containing_Permit_decision();
 
         given().a_$_request( END_ACCESS );

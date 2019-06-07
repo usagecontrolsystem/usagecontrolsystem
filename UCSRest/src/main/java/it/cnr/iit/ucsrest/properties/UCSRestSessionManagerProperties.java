@@ -6,31 +6,19 @@ import it.cnr.iit.ucs.properties.components.SessionManagerProperties;
 
 public class UCSRestSessionManagerProperties implements SessionManagerProperties {
 
-    @Value( "${class-name}" )
-    private String className;
-
-    @Value( "${communication-type}" )
-    private String communicationType;
+    @Value( "${name}" )
+    private String name;
 
     @Value( "${db-uri}" )
     private String dbUri;
 
     @Override
-    public String getClassName() {
-        return className;
+    public String getName() {
+        return name;
     }
 
-    @Override
-    public String getCommunicationType() {
-        return communicationType;
-    }
-
-    public void setClassName( String className ) {
-        this.className = className;
-    }
-
-    public void setCommunicationType( String communicationType ) {
-        this.communicationType = communicationType;
+    public void setName( String className ) {
+        this.name = className;
     }
 
     @Override

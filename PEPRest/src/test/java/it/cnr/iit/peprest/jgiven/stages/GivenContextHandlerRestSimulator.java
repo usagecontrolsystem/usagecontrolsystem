@@ -47,7 +47,7 @@ public class GivenContextHandlerRestSimulator extends Stage<GivenContextHandlerR
 
     @BeforeScenario
     public void init() {
-        Optional<URI> uri = RESTUtils.parseUri( properties.getUcsBaseUri() );
+        Optional<URI> uri = RESTUtils.parseUri( properties.getUcsUri() );
         Reject.ifAbsent( uri );
         restSimulatorTestRule.start( uri.get().getPort() );
     }
@@ -57,7 +57,7 @@ public class GivenContextHandlerRestSimulator extends Stage<GivenContextHandlerR
     }
 
     public GivenContextHandlerRestSimulator a_mocked_context_handler_for_$( @Quoted String operationUri ) {
-        Optional<URI> uri = RESTUtils.parseUri( properties.getUcsBaseUri() );
+        Optional<URI> uri = RESTUtils.parseUri( properties.getUcsUri() );
         Reject.ifAbsent( uri );
 
         wireMockContextHandler = new WireMock( uri.get().getHost(), uri.get().getPort() );

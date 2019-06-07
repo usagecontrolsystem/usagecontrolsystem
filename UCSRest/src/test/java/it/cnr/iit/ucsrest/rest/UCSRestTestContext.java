@@ -15,10 +15,7 @@ import com.tngtech.jgiven.integration.spring.EnableJGiven;
 @ComponentScan( basePackages = { "it.cnr.iit" } )
 @EnableConfigurationProperties
 @TestPropertySource( properties = "application.properties" )
-@ConfigurationProperties(
-    prefix = "ucftest",
-    ignoreUnknownFields = true,
-    ignoreInvalidFields = true )
+@ConfigurationProperties( prefix = "ucstest", ignoreUnknownFields = true, ignoreInvalidFields = true )
 @SpringBootConfiguration
 public class UCSRestTestContext {
 

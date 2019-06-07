@@ -9,11 +9,8 @@ import it.cnr.iit.ucs.properties.components.PipProperties;
 
 public class UCSRestPipProperties implements PipProperties {
 
-    @Value( "${class-name}" )
-    private String className;
-
-    @Value( "${communication-type}" )
-    private String communicationType;
+    @Value( "${name}" )
+    private String name;
 
     @Value( "${id}" )
     private String id;
@@ -25,21 +22,12 @@ public class UCSRestPipProperties implements PipProperties {
     private List<Map<String, String>> attributes;
 
     @Override
-    public String getClassName() {
-        return className;
+    public String getName() {
+        return name;
     }
 
-    public void setClassName( String className ) {
-        this.className = className;
-    }
-
-    @Override
-    public String getCommunicationType() {
-        return communicationType;
-    }
-
-    public void setCommunicationType( String communicationType ) {
-        this.communicationType = communicationType;
+    public void setName( String name ) {
+        this.name = name;
     }
 
     @Override

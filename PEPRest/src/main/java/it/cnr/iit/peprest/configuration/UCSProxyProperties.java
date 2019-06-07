@@ -21,8 +21,8 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties( prefix = "ucs" )
 public class UCSProxyProperties {
 
-    @Value( "${base-uri}" )
-    private String baseUri;
+    @Value( "${uri}" )
+    private String uri;
 
     @Value( "${api-try-access}" )
     private String apiTryAccess;
@@ -33,12 +33,12 @@ public class UCSProxyProperties {
     @Value( "${api-end-access}" )
     private String apiEndAccess;
 
-    public String getBaseUri() {
-        return baseUri;
+    public String getUri() {
+        return uri;
     }
 
-    public void setBaseUri( String baseUri ) {
-        this.baseUri = baseUri;
+    public void setUri( String uri ) {
+        this.uri = uri;
     }
 
     public String getApiTryAccess() {

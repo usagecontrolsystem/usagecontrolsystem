@@ -2,23 +2,23 @@ package it.cnr.iit.ucsrest.properties;
 
 import org.springframework.beans.factory.annotation.Value;
 
-import it.cnr.iit.ucs.properties.components.PdpProperties;
+import it.cnr.iit.ucs.properties.components.CoreProperties;
 
-public class UCSRestPdpProperties implements PdpProperties {
+public class UCSRestCoreProperties implements CoreProperties {
 
-    @Value( "${name}" )
-    private String name;
+    @Value( "${uri}" )
+    private String uri;
 
     @Value( "${journal-dir}" )
     private String journalDir;
 
     @Override
-    public String getName() {
-        return name;
+    public String getUri() {
+        return uri;
     }
 
-    public void setName( String name ) {
-        this.name = name;
+    public void setUri( String uri ) {
+        this.uri = uri;
     }
 
     @Override

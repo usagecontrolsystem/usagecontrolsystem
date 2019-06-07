@@ -39,15 +39,10 @@ import io.swagger.annotations.ApiResponses;
 
 /**
  * This class includes all the interfaces we will offer via rest.
- * Maybe it is better to offer an interface for each possible request that can
- * be sent to the UCS. In this way we will have many entry points. However all
- * these will be mapped on the same RequestManager function so that it becomes a
- * lot easier to perform task as prioritising between the queues and so on.
  *
  * @author Antonio La Marra, Alessandro Rosetti
- *
  */
-@ApiModel( value = "UCSFramework", description = "Usage Control Framework enforcement engine REST API" )
+@ApiModel( value = "UCS", description = "Usage Control System enforcement engine REST API" )
 @RestController
 @RequestMapping( "/" )
 public class UCSRestController {

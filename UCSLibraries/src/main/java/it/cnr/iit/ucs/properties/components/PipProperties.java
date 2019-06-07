@@ -23,9 +23,7 @@ import it.cnr.iit.ucs.properties.base.JournalProperties;
 import it.cnr.iit.ucs.properties.base.PluginProperties;
 
 public interface PipProperties extends PluginProperties, IdProperties, JournalProperties {
-
     public List<Map<String, String>> getAttributes();
 
     public boolean isMultiAttribute();
-
 }

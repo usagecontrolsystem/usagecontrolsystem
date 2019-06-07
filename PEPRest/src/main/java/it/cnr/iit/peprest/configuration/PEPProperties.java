@@ -24,8 +24,8 @@ public class PEPProperties {
     @Value( "${id:1}" )
     private String id;
 
-    @Value( "${base-uri}" )
-    private String baseUri;
+    @Value( "${uri}" )
+    private String uri;
 
     @Value( "${revoke-type:HARD}" )
     private String revokeType;
@@ -47,12 +47,12 @@ public class PEPProperties {
         this.id = id;
     }
 
-    public String getBaseUri() {
-        return baseUri;
+    public String getUri() {
+        return uri;
     }
 
-    public void setBaseUri( String baseUri ) {
-        this.baseUri = baseUri;
+    public void setUri( String uri ) {
+        this.uri = uri;
     }
 
     public String getRevokeType() {

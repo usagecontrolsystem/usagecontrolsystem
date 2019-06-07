@@ -6,11 +6,8 @@ import it.cnr.iit.ucs.properties.components.RequestManagerProperties;
 
 public class UCSRestRequestManagerProperties implements RequestManagerProperties {
 
-    @Value( "${class-name}" )
-    private String className;
-
-    @Value( "${communication-type}" )
-    private String communicationType;
+    @Value( "${name}" )
+    private String name;
 
     @Value( "${api-remote-response}" )
     private String apiRemoteResponse;
@@ -19,13 +16,12 @@ public class UCSRestRequestManagerProperties implements RequestManagerProperties
     private boolean active;
 
     @Override
-    public String getClassName() {
-        return className;
+    public String getName() {
+        return name;
     }
 
-    @Override
-    public String getCommunicationType() {
-        return communicationType;
+    public void setName( String name ) {
+        this.name = name;
     }
 
     @Override
@@ -35,14 +31,6 @@ public class UCSRestRequestManagerProperties implements RequestManagerProperties
 
     public void setApiRemoteResponse( String apiRemoteResponse ) {
         this.apiRemoteResponse = apiRemoteResponse;
-    }
-
-    public void setClassName( String className ) {
-        this.className = className;
-    }
-
-    public void setCommunicationType( String communicationType ) {
-        this.communicationType = communicationType;
     }
 
     public void setActive( boolean active ) {

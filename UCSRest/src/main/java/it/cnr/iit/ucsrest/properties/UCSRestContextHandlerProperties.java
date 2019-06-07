@@ -6,40 +6,28 @@ import it.cnr.iit.ucs.properties.components.ContextHandlerProperties;
 
 public class UCSRestContextHandlerProperties implements ContextHandlerProperties {
 
-    @Value( "${class-name}" )
-    private String className;
+    @Value( "${name}" )
+    private String name;
 
-    @Value( "${communication-type}" )
-    private String communicationType;
-
-    @Value( "${base-uri}" )
-    private String baseUri;
+    @Value( "${uri}" )
+    private String uri;
 
     @Override
-    public String getClassName() {
-        return className;
+    public String getName() {
+        return name;
     }
 
-    @Override
-    public String getCommunicationType() {
-        return communicationType;
+    public void setName( String name ) {
+        this.name = name;
     }
 
     @Override
-    public String getBaseUri() {
-        return baseUri;
+    public String getUri() {
+        return uri;
     }
 
-    public void setClassName( String className ) {
-        this.className = className;
-    }
-
-    public void setCommunicationType( String communicationType ) {
-        this.communicationType = communicationType;
-    }
-
-    public void setBaseUri( String baseUri ) {
-        this.baseUri = baseUri;
+    public void setUri( String uri ) {
+        this.uri = uri;
     }
 
 }

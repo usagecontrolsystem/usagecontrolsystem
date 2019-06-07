@@ -38,7 +38,7 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 
-@ApiModel( value = "UCSFramework", description = "Usage Control Framework enforcement engine REST API" )
+@ApiModel( value = "UCS", description = "Usage Control System enforcement engine REST API" )
 @RestController
 @RequestMapping( "/" )
 @EnableAutoConfiguration

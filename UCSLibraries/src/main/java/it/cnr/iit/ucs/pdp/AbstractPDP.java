@@ -29,18 +29,18 @@ import it.cnr.iit.utility.errorhandling.Reject;
  * class using a volatile variable in charge of saying if the object has been
  * correctly created or not.
  *
- * @author Antonio La Marra
+ * @author Antonio La Marra, Alessandro Rosetti
  *
  */
 public abstract class AbstractPDP implements PDPInterface {
+
     private ObligationManagerInterface obligationManager;
     private PAPInterface pap;
-    private volatile boolean initialized = false;
+
     private PdpProperties properties;
 
-    /**
-     * The constructor for the abstract class is empty
-     */
+    private volatile boolean initialized = false;
+
     public AbstractPDP( PdpProperties properties ) {
         Reject.ifNull( properties );
         this.properties = properties;
@@ -51,6 +51,7 @@ public abstract class AbstractPDP implements PDPInterface {
         return obligationManager;
     }
 
+    @Override
     public final void setObligationManager( ObligationManagerInterface obligationManager ) {
         Reject.ifNull( obligationManager );
         this.obligationManager = obligationManager;
@@ -60,9 +61,9 @@ public abstract class AbstractPDP implements PDPInterface {
         return pap;
     }
 
-    public final void setPAP( PAPInterface pap ) {
+    @Override
+    public final void setPap( PAPInterface pap ) {
         Reject.ifNull( pap );
-
         this.pap = pap;
     }
 

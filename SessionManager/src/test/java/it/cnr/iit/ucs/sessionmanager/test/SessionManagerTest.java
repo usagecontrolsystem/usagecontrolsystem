@@ -36,13 +36,13 @@ public class SessionManagerTest {
 
     private static final Logger log = Logger.getLogger( SessionManagerTest.class.getName() );
 
-    @Value( "${ucf.session-manager.class-name}" )
+    @Value( "${ucs.session-manager.name}" )
     private String className;
 
-    @Value( "${ucf.session-manager.communication-type}" )
+    @Value( "${ucs.session-manager.communication}" )
     private String communicationType;
 
-    @Value( "${ucf.session-manager.db-uri}" )
+    @Value( "${ucs.session-manager.db-uri}" )
     private String dbUri;
 
     @Value( "${session.sessionid}" )
@@ -80,12 +80,7 @@ public class SessionManagerTest {
         SessionManagerProperties sessionManagerProperties = new SessionManagerProperties() {
 
             @Override
-            public String getCommunicationType() {
-                return communicationType;
-            }
-
-            @Override
-            public String getClassName() {
+            public String getName() {
                 return className;
             }
 

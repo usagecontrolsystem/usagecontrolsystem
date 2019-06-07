@@ -10,31 +10,17 @@ import it.cnr.iit.ucs.properties.components.PipProperties;
 public class UCFPipProperties implements PipProperties {
 
     private String className;
-
-    private String communicationType;
-
     private String id;
-
     private String journalDir;
-
     private List<Map<String, String>> attributes;
 
     @Override
-    public String getClassName() {
+    public String getName() {
         return className;
     }
 
     public void setClassName( String className ) {
         this.className = className;
-    }
-
-    @Override
-    public String getCommunicationType() {
-        return communicationType;
-    }
-
-    public void setCommunicationType( String communicationType ) {
-        this.communicationType = communicationType;
     }
 
     @Override
