@@ -15,9 +15,6 @@ import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.field.ForeignCollectionField;
 import com.j256.ormlite.table.DatabaseTable;
 
-import it.cnr.iit.ucs.sessionmanager.OnGoingAttributesInterface;
-import it.cnr.iit.ucs.sessionmanager.SessionInterface;
-
 /**
  * Creates Session objects. It configures OrmLite annotations to persist these
  * objects in the sessions table of the database.
