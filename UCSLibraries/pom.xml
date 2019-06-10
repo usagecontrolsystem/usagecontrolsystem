@@ -15,7 +15,6 @@
 		<!-- <sonar.exclusions> ** </sonar.exclusions> -->
 	</properties>
 
-
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
@@ -100,6 +99,7 @@
 			<artifactId>reflections</artifactId>
 			<version>0.9.11</version>
 		</dependency>
+
 	</dependencies>
 
 	<build>
@@ -111,6 +111,19 @@
 					<source>1.8</source>
 					<target>1.8</target>
 				</configuration>
+			</plugin>
+
+			<!-- Generate also the test-jar for tests -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<executions>
+					<execution>
+						<goals>
+							<goal>test-jar</goal>
+						</goals>
+					</execution>
+				</executions>
 			</plugin>
 
 			<!-- FindBugs and FindSecurityBugs plugins -->
