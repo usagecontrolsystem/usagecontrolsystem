@@ -27,13 +27,13 @@ import it.cnr.iit.ucs.contexthandler.ContextHandlerInterface;
 import it.cnr.iit.ucs.message.Message;
 import it.cnr.iit.ucs.message.attributechange.AttributeChangeMessage;
 import it.cnr.iit.ucs.message.endaccess.EndAccessMessage;
-import it.cnr.iit.ucs.message.endaccess.EndAccessResponse;
+import it.cnr.iit.ucs.message.endaccess.EndAccessResponseMessage;
 import it.cnr.iit.ucs.message.reevaluation.ReevaluationMessage;
-import it.cnr.iit.ucs.message.reevaluation.ReevaluationResponse;
+import it.cnr.iit.ucs.message.reevaluation.ReevaluationResponseMessage;
 import it.cnr.iit.ucs.message.startaccess.StartAccessMessage;
-import it.cnr.iit.ucs.message.startaccess.StartAccessResponse;
+import it.cnr.iit.ucs.message.startaccess.StartAccessResponseMessage;
 import it.cnr.iit.ucs.message.tryaccess.TryAccessMessage;
-import it.cnr.iit.ucs.message.tryaccess.TryAccessResponse;
+import it.cnr.iit.ucs.message.tryaccess.TryAccessResponseMessage;
 import it.cnr.iit.ucs.obligationmanager.ObligationManagerInterface;
 import it.cnr.iit.ucs.pap.PAPInterface;
 import it.cnr.iit.ucs.pdp.PDPEvaluation;
@@ -313,26 +313,26 @@ public class UCSRestBaseTests {
         return message;
     }
 
-    protected TryAccessResponse buildTryAccessResponse( String src, String dest, String id ) {
-        TryAccessResponse message = new TryAccessResponse( src, dest, id );
+    protected TryAccessResponseMessage buildTryAccessResponse( String src, String dest, String id ) {
+        TryAccessResponseMessage message = new TryAccessResponseMessage( src, dest, id );
 
         return message;
     }
 
-    protected StartAccessResponse buildStartAccessResponse( String src, String dest, String id ) {
-        StartAccessResponse message = new StartAccessResponse( src, dest, id );
+    protected StartAccessResponseMessage buildStartAccessResponse( String src, String dest, String id ) {
+        StartAccessResponseMessage message = new StartAccessResponseMessage( src, dest, id );
 
         return message;
     }
 
-    protected EndAccessResponse buildEndAccessResponse( String src, String dest, String id ) {
-        EndAccessResponse message = new EndAccessResponse( src, dest, id );
+    protected EndAccessResponseMessage buildEndAccessResponse( String src, String dest, String id ) {
+        EndAccessResponseMessage message = new EndAccessResponseMessage( src, dest, id );
 
         return message;
     }
 
-    protected ReevaluationResponse buildReevaluationResponse( String src, String dest, String id ) {
-        ReevaluationResponse message = new ReevaluationResponse( src, dest, id );
+    protected ReevaluationResponseMessage buildReevaluationResponse( String src, String dest, String id ) {
+        ReevaluationResponseMessage message = new ReevaluationResponseMessage( src, dest, id );
 
         return message;
     }

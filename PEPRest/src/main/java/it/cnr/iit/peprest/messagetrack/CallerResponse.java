@@ -15,15 +15,15 @@ package it.cnr.iit.peprest.messagetrack;
  */
 public class CallerResponse {
 
-    private STATUS status;
+    private PEP_STATUS status;
     private String sessionId;
     private String derivedMessageId;
 
-    public STATUS getStatus() {
+    public PEP_STATUS getStatus() {
         return status;
     }
 
-    public void setStatus( STATUS status ) {
+    public void setStatus( PEP_STATUS status ) {
         this.status = status;
     }
 

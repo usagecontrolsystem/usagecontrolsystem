@@ -16,7 +16,6 @@
 package it.cnr.iit.peprest;
 
 import java.util.Optional;
-import java.util.concurrent.ExecutionException;
 import java.util.logging.Logger;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,13 +57,6 @@ public class PEPRestCommunication {
         return pepRest.tryAccess();
     }
 
-    /**
-     * Retrieves the status of a message. Possible status of a message are highlighted in
-     *
-     * @return
-     * @throws InterruptedException
-     * @throws ExecutionException
-     */
     @ApiOperation( httpMethod = "GET", value = "Retrieves the status of a message" )
     @ApiResponses( value = {
         @ApiResponse( code = 500, message = "Invalid message received" ),

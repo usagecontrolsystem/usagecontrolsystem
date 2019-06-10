@@ -127,9 +127,8 @@ public final class PolicyDecisionPoint extends AbstractPDP {
      * Attempts to evaluate the request against the policies known to this PDP.
      * This is really the core method of the entire XACML specification, and for
      * most people will provide what you want. If you need any special handling,
-     * you should look at the version of this method that takes an
-     * <code>EvaluationCtx</code>.
-         * Note that if the request is somehow invalid (it was missing a required
+     * you should look at the version of this method that takes an <code>EvaluationCtx</code>.
+     * Note that if the request is somehow invalid (it was missing a required
      * attribute, it was using an unsupported scope, etc), then the result will be
      * a decision of INDETERMINATE.
      *

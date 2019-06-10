@@ -15,10 +15,10 @@ import com.tngtech.jgiven.annotation.ProvidedScenarioState;
 
 import it.cnr.iit.ucs.constants.RestOperation;
 import it.cnr.iit.ucs.message.Message;
-import it.cnr.iit.ucs.message.endaccess.EndAccessResponse;
-import it.cnr.iit.ucs.message.reevaluation.ReevaluationResponse;
-import it.cnr.iit.ucs.message.startaccess.StartAccessResponse;
-import it.cnr.iit.ucs.message.tryaccess.TryAccessResponse;
+import it.cnr.iit.ucs.message.endaccess.EndAccessResponseMessage;
+import it.cnr.iit.ucs.message.reevaluation.ReevaluationResponseMessage;
+import it.cnr.iit.ucs.message.startaccess.StartAccessResponseMessage;
+import it.cnr.iit.ucs.message.tryaccess.TryAccessResponseMessage;
 import it.cnr.iit.ucs.pdp.PDPResponse;
 
 import oasis.names.tc.xacml.core.schema.wd_17.DecisionType;
@@ -65,14 +65,14 @@ public class GivenMessage extends Stage<GivenMessage> {
         return self();
     }
 
-    protected StartAccessResponse buildStartAccessResponsePermit() {
+    protected StartAccessResponseMessage buildStartAccessResponsePermit() {
         return buildStartAccessResponse( DecisionType.PERMIT );
     }
 
-    protected ReevaluationResponse buildReevaluationResponse( DecisionType decisionType ) {
+    protected ReevaluationResponseMessage buildReevaluationResponse( DecisionType decisionType ) {
         PDPResponse pdpEvaluation = buildPDPResponse( decisionType );
         pdpEvaluation.setSessionId( sessionId );
-        ReevaluationResponse reevaluationResponse = new ReevaluationResponse( sessionId );
+        ReevaluationResponseMessage reevaluationResponse = new ReevaluationResponseMessage( sessionId );
         reevaluationResponse.setEvaluation( pdpEvaluation );
         reevaluationResponse.setMessageId( UUID.randomUUID().toString() );
         return reevaluationResponse;
@@ -105,35 +105,35 @@ public class GivenMessage extends Stage<GivenMessage> {
         return self();
     }
 
-    private TryAccessResponse buildTryAccessResponse( DecisionType decisionType ) {
+    private TryAccessResponseMessage buildTryAccessResponse( DecisionType decisionType ) {
         if( messageId == null ) {
             messageId = UUID.randomUUID().toString();
         }
         PDPResponse pdpEvaluation = buildPDPResponse( decisionType );
-        TryAccessResponse tryAccessResponse = new TryAccessResponse( sessionId );
+        TryAccessResponseMessage tryAccessResponse = new TryAccessResponseMessage( sessionId );
         tryAccessResponse.setMessageId( messageId );
         tryAccessResponse.setSessionId( sessionId );
         tryAccessResponse.setEvaluation( pdpEvaluation );
         return tryAccessResponse;
     }
 
-    protected StartAccessResponse buildStartAccessResponse( DecisionType decisionType ) {
+    protected StartAccessResponseMessage buildStartAccessResponse( DecisionType decisionType ) {
         if( messageId == null ) {
             messageId = UUID.randomUUID().toString();
         }
         PDPResponse pdpEvaluation = buildPDPResponse( decisionType );
-        StartAccessResponse startAccessResponse = new StartAccessResponse( sessionId );
+        StartAccessResponseMessage startAccessResponse = new StartAccessResponseMessage( sessionId );
         startAccessResponse.setEvaluation( pdpEvaluation );
         startAccessResponse.setMessageId( messageId );
         return startAccessResponse;
     }
 
-    protected EndAccessResponse buildEndAccessResponse( DecisionType decisionType ) {
+    protected EndAccessResponseMessage buildEndAccessResponse( DecisionType decisionType ) {
         if( messageId == null ) {
             messageId = UUID.randomUUID().toString();
         }
         PDPResponse pdpEvaluation = buildPDPResponse( decisionType );
-        EndAccessResponse endAccessResponse = new EndAccessResponse( sessionId );
+        EndAccessResponseMessage endAccessResponse = new EndAccessResponseMessage( sessionId );
         endAccessResponse.setEvaluation( pdpEvaluation );
         endAccessResponse.setMessageId( messageId );
         return endAccessResponse;

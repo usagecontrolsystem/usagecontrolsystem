@@ -13,44 +13,43 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  ******************************************************************************/
-package it.cnr.iit.ucs.message.tryaccess;
+package it.cnr.iit.ucs.message.startaccess;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import it.cnr.iit.ucs.constants.ENTITIES;
 import it.cnr.iit.ucs.constants.PURPOSE;
-import it.cnr.iit.ucs.message.EvaluatedResponse;
+import it.cnr.iit.ucs.message.EvaluatedMessage;
 import it.cnr.iit.ucs.message.Message;
 import it.cnr.iit.ucs.pdp.PDPEvaluation;
 
 /**
- * This is the tryAccess response message
+ * This is the structure of a message used to response to a start access
  *
  * @author Antonio La Marra, Alessandro Rosetti
  */
-public final class TryAccessResponse extends Message implements EvaluatedResponse {
+@JsonIgnoreProperties( ignoreUnknown = true )
+public final class StartAccessResponseMessage extends Message implements EvaluatedMessage {
 
     private static final long serialVersionUID = 1L;
 
+    @JsonProperty
     private PDPEvaluation evaluation;
 
-    private String sessionId;
-
-    public TryAccessResponse() {
-        super( ENTITIES.CH.toString(), ENTITIES.PEP.toString() );
-        purpose = PURPOSE.TRY_RESPONSE;
+    public StartAccessResponseMessage() {
+        super();
+        purpose = PURPOSE.START_RESPONSE;
     }
 
-    public TryAccessResponse( String messageId ) {
+    public StartAccessResponseMessage( String source, String destination, String messageId ) {
+        super( source, destination, messageId );
+        purpose = PURPOSE.START_RESPONSE;
+    }
+
+    public StartAccessResponseMessage( String messageId ) {
         super( ENTITIES.CH.toString(), ENTITIES.PEP.toString(), messageId );
-        purpose = PURPOSE.TRY_RESPONSE;
-    }
-
-    public TryAccessResponse( String source, String dest, String messageId ) {
-        super( source, dest, messageId );
-    }
-
-    @Override
-    public void setEvaluation( PDPEvaluation pdpEvaluation ) {
-        this.evaluation = pdpEvaluation;
+        purpose = PURPOSE.START_RESPONSE;
     }
 
     @Override
@@ -58,12 +57,9 @@ public final class TryAccessResponse extends Message implements EvaluatedRespons
         return evaluation;
     }
 
-    public void setSessionId( String sessionId ) {
-        this.sessionId = sessionId;
-    }
-
-    public String getSessionId() {
-        return sessionId;
+    @Override
+    public void setEvaluation( PDPEvaluation pdpEvaluation ) {
+        this.evaluation = pdpEvaluation;
     }
 
 }
