@@ -85,7 +85,7 @@ public final class PolicyDecisionPoint extends AbstractPDP {
     @Override
     public PDPEvaluation evaluate( RequestWrapper request, PolicyWrapper policy, STATUS status ) {
         String conditionName = PolicyTags.getCondition( status );
-        PolicyWrapper policyToEvaluate = policy.getPolicy( conditionName );
+        PolicyWrapper policyToEvaluate = policy.getPolicyForCondition( conditionName );
         return evaluate( request, policyToEvaluate );
     }
 

@@ -18,6 +18,7 @@ package oasis.names.tc.xacml.core.schema.wd_17;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -158,19 +159,19 @@ public class PolicyType {
         this.maxDelegationDepth = value;
     }
 
-    public void removeOtherRules( String ruleId ) {
-        for( int i = 0; i < combinerParametersOrRuleCombinerParametersOrVariableDefinition
-            .size(); i++ ) {
-            Object obj = combinerParametersOrRuleCombinerParametersOrVariableDefinition
-                .get( i );
-            if( obj instanceof RuleType ) {
-                RuleType rule = (RuleType) obj;
-                if( !rule.getRuleId().equals( ruleId ) ) {
-                    combinerParametersOrRuleCombinerParametersOrVariableDefinition
-                        .remove( i );
-                }
-            }
-        }
+    public List<RuleType> getRuleTypeList() {
+        return getObjectsOfTypeToList( RuleType.class );
+    }
+
+    public List<ObligationsType> getObligationsTypeList() {
+        return getObjectsOfTypeToList( ObligationsType.class );
+    }
+
+    private <T> List<T> getObjectsOfTypeToList( Class<T> clazz ) {
+        List<Object> list = this.getCombinerParametersOrRuleCombinerParametersOrVariableDefinition();
+        return (List<T>) list.stream()
+            .filter( o -> clazz.isInstance( o ) )
+            .collect( Collectors.toList() );
     }
 
 }
