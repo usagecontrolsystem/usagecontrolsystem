@@ -79,7 +79,7 @@ public final class ContextHandler extends AbstractContextHandler {
         log.log( Level.INFO, "TryAccess received at {0}", new Object[] { System.currentTimeMillis() } );
         Reject.ifNull( message, "TryAccessMessage is null" );
 
-        PolicyWrapper policy = retrievePolicyWrapper( message );
+        PolicyWrapper policy = PolicyWrapper.build( getPap(), message );
         RequestWrapper fatRequest = RequestWrapper.build( message.getRequest(), getPipRegistry() );
         fatRequest.fatten( STATUS.TRY );
         log.info( "TryAccess fattened request contents : \n" + fatRequest.getRequest() );
@@ -110,21 +110,6 @@ public final class ContextHandler extends AbstractContextHandler {
     }
 
     /**
-     * Retrieves the policy to be used to evaluate the request
-     *
-     * @param message
-     *            the message received by the context handler
-     * @return an optional hopefully containing the policy
-     */
-    private PolicyWrapper retrievePolicyWrapper( TryAccessMessage message ) throws PolicyException {
-        String policy = message.getPolicy();
-        if( policy == null && message.getPolicyId() != null ) {
-            policy = getPap().retrievePolicy( message.getPolicyId() );
-        }
-        return PolicyWrapper.build( policy );
-    }
-
-    /**
      * It creates a new session id
      * @return session id to associate to the incoming session during the tryAccess
      */
@@ -151,18 +136,15 @@ public final class ContextHandler extends AbstractContextHandler {
         String pepUri = uri.getHost() + PEP_ID_SEPARATOR + message.getSource();
 
         // retrieve the id of ongoing attributes
-        SessionAttributesBuilder sessionAttributeBuilder = new SessionAttributesBuilder();
-
         List<Attribute> onGoingAttributes = policy.getAttributesForCondition( PolicyTags.getCondition( STATUS.START ) );
-        sessionAttributeBuilder.setOnGoingAttributesForSubject( getAttributesForCategory( onGoingAttributes, Category.SUBJECT ) )
-            .setOnGoingAttributesForAction( getAttributesForCategory( onGoingAttributes, Category.ACTION ) )
-            .setOnGoingAttributesForResource( getAttributesForCategory( onGoingAttributes, Category.RESOURCE ) )
-            .setOnGoingAttributesForEnvironment( getAttributesForCategory( onGoingAttributes, Category.ENVIRONMENT ) );
-
+        SessionAttributesBuilder sessionAttributeBuilder = new SessionAttributesBuilder();
+        sessionAttributeBuilder.setOnGoingAttributesForSubject( getAttributeIdsForCategory( onGoingAttributes, Category.SUBJECT ) )
+            .setOnGoingAttributesForAction( getAttributeIdsForCategory( onGoingAttributes, Category.ACTION ) )
+            .setOnGoingAttributesForResource( getAttributeIdsForCategory( onGoingAttributes, Category.RESOURCE ) )
+            .setOnGoingAttributesForEnvironment( getAttributeIdsForCategory( onGoingAttributes, Category.ENVIRONMENT ) );
         sessionAttributeBuilder.setSubjectName( request.getRequestType().extractValue( Category.SUBJECT ) )
             .setResourceName( request.getRequestType().extractValue( Category.RESOURCE ) )
             .setActionName( request.getRequestType().extractValue( Category.ACTION ) );
-
         sessionAttributeBuilder.setSessionId( sessionId ).setPolicySet( policy.getPolicy() ).setOriginalRequest( request.getRequest() )
             .setStatus( STATUS.TRY.name() ).setPepURI( pepUri ).setMyIP( uri.getHost() );
 
@@ -182,15 +164,12 @@ public final class ContextHandler extends AbstractContextHandler {
      *            the category of the attributes
      * @return the list of the string representing the IDs of the attributes
      */
-    private List<String> getAttributesForCategory( List<Attribute> onGoingAttributes, Category category ) {
+    private List<String> getAttributeIdsForCategory( List<Attribute> onGoingAttributes, Category category ) {
         ArrayList<String> attributeIds = new ArrayList<>();
         for( Attribute attribute : onGoingAttributes ) {
             if( attribute.getCategory() == category ) {
                 attributeIds.add( attribute.getAttributeId() );
             }
-        }
-        if( attributeIds.isEmpty() ) {
-            return new ArrayList<>();
         }
         return attributeIds;
     }

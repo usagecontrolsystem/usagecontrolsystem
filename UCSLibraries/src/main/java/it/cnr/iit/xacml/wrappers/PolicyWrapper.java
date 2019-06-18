@@ -23,6 +23,8 @@ import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 
 import it.cnr.iit.ucs.exceptions.PolicyException;
+import it.cnr.iit.ucs.message.tryaccess.TryAccessMessage;
+import it.cnr.iit.ucs.pap.PAPInterface;
 import it.cnr.iit.utility.JAXBUtility;
 import it.cnr.iit.utility.errorhandling.Reject;
 import it.cnr.iit.xacml.Attribute;
@@ -85,6 +87,14 @@ public class PolicyWrapper implements PolicyWrapperInterface {
         }
         policyWrapper.setPolicyType( policyType );
         return policyWrapper;
+    }
+
+    public static PolicyWrapper build( PAPInterface pap, TryAccessMessage message ) throws PolicyException {
+        String policy = message.getPolicy();
+        if( policy == null && message.getPolicyId() != null ) {
+            policy = pap.retrievePolicy( message.getPolicyId() );
+        }
+        return PolicyWrapper.build( policy );
     }
 
     @Override
