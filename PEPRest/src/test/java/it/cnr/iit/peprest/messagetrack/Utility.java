@@ -1,6 +1,7 @@
 package it.cnr.iit.peprest.messagetrack;
 
 import java.util.Arrays;
+import java.util.UUID;
 
 import it.cnr.iit.ucs.message.endaccess.EndAccessMessage;
 import it.cnr.iit.ucs.message.endaccess.EndAccessResponseMessage;
@@ -77,9 +78,10 @@ public class Utility {
 
     public static ReevaluationResponseMessage buildReevaluationResponse( String sessionId, DecisionType decisionType ) {
         PDPResponse pdpResponse = buildPDPResponse( decisionType );
-        pdpResponse.setSessionId( sessionId );
         ReevaluationResponseMessage reevaluationResponse = new ReevaluationResponseMessage();
+        reevaluationResponse.setSessionId( sessionId );
         reevaluationResponse.setEvaluation( pdpResponse );
+        reevaluationResponse.setMessageId( UUID.randomUUID().toString() );
         return reevaluationResponse;
     }
 

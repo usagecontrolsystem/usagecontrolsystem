@@ -80,23 +80,22 @@ public final class ContextHandler extends AbstractContextHandler {
         Reject.ifNull( message, "TryAccessMessage is null" );
 
         PolicyWrapper policy = PolicyWrapper.build( getPap(), message );
-        RequestWrapper fatRequest = RequestWrapper.build( message.getRequest(), getPipRegistry() );
-        fatRequest.fatten( STATUS.TRY );
-        log.info( "TryAccess fattened request contents : \n" + fatRequest.getRequest() );
+        RequestWrapper request = RequestWrapper.build( message.getRequest(), getPipRegistry() );
+        request.fatten( STATUS.TRY );
+        log.info( "TryAccess fattened request contents : \n" + request.getRequest() );
 
-        PDPEvaluation evaluation = getPdp().evaluate( fatRequest, policy, STATUS.TRY );
+        PDPEvaluation evaluation = getPdp().evaluate( request, policy, STATUS.TRY );
         Reject.ifNull( evaluation );
         log.log( Level.INFO, "TryAccess evaluated at {0} pdp response : {1}",
             new Object[] { System.currentTimeMillis(), evaluation.getResult() } );
 
         String sessionId = generateSessionId();
-        evaluation.setSessionId( sessionId );
-        getObligationManager().translateObligations( evaluation, STATUS.TRY.name() );
+        getObligationManager().translateObligations( evaluation, sessionId, STATUS.TRY );
 
         if( evaluation.isDecision( DecisionType.PERMIT ) ) {
             // If access decision is PERMIT create entry in SessionManager
-            RequestWrapper request = RequestWrapper.build( message.getRequest(), getPipRegistry() );
-            createSession( message, request, policy, sessionId );
+            RequestWrapper origRequest = RequestWrapper.build( message.getRequest(), getPipRegistry() );
+            createSession( message, origRequest, policy, sessionId );
         }
 
         return buildTryAccessResponse( message, evaluation, sessionId );
@@ -201,8 +200,7 @@ public final class ContextHandler extends AbstractContextHandler {
         log.log( Level.INFO, "StartAccess evaluated at {0} pdp response : {1}",
             new Object[] { System.currentTimeMillis(), evaluation.getResult() } );
 
-        evaluation.setSessionId( message.getSessionId() );
-        getObligationManager().translateObligations( evaluation, STATUS.START.name() );
+        getObligationManager().translateObligations( evaluation, message.getSessionId(), STATUS.TRY );
 
         if( evaluation.isDecision( DecisionType.PERMIT ) ) {
             if( !getSessionManager().updateEntry( message.getSessionId(), STATUS.START.name() ) ) {
@@ -372,8 +370,7 @@ public final class ContextHandler extends AbstractContextHandler {
         log.log( Level.INFO, "EndAccess evaluated at {0} pdp response : {1}",
             new Object[] { System.currentTimeMillis(), evaluation.getResult() } );
 
-        evaluation.setSessionId( message.getSessionId() );
-        getObligationManager().translateObligations( evaluation, STATUS.END.name() );
+        getObligationManager().translateObligations( evaluation, message.getSessionId(), STATUS.END );
 
         // access must be revoked
         if( revoke( session, policy.getAttributesForCondition( PolicyTags.getCondition( STATUS.END ) ) ) ) {
@@ -428,8 +425,7 @@ public final class ContextHandler extends AbstractContextHandler {
 
         PDPEvaluation evaluation = getPdp().evaluate( request, policy, STATUS.START );
         Reject.ifNull( evaluation );
-        evaluation.setSessionId( session.getId() );
-        getObligationManager().translateObligations( evaluation, STATUS.START.name() );
+        getObligationManager().translateObligations( evaluation, session.getId(), STATUS.END );
 
         log.log( Level.INFO, "Reevaluate evaluated at {0} pdp response : {1}",
             new Object[] { System.currentTimeMillis(), evaluation.getResult() } );
@@ -448,16 +444,16 @@ public final class ContextHandler extends AbstractContextHandler {
             return;
         }
 
-        evaluation.setSessionId( session.getId() );
-        ReevaluationResponseMessage response = buildReevaluationResponse( evaluation, session.getPEPUri() );
+        ReevaluationResponseMessage response = buildReevaluationResponse( session, evaluation );
         getRequestManager().sendReevaluation( response );
         log.log( Level.INFO, "Reevaluation ends changing status at {0}", System.currentTimeMillis() );
     }
 
-    private ReevaluationResponseMessage buildReevaluationResponse( PDPEvaluation evaluation, String dest ) {
-        String[] destSplitted = dest.split( PEP_ID_SEPARATOR );
+    private ReevaluationResponseMessage buildReevaluationResponse( SessionInterface session, PDPEvaluation evaluation ) {
+        String[] destSplitted = session.getPEPUri().split( PEP_ID_SEPARATOR );
         ReevaluationResponseMessage response = new ReevaluationResponseMessage( uri.getHost(), destSplitted[0] );
         response.setPepId( destSplitted[destSplitted.length - 1] );
+        response.setSessionId( session.getId() );
         response.setEvaluation( evaluation );
         return response;
     }

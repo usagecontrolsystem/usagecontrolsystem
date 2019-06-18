@@ -74,7 +74,7 @@ public class MessageStorage implements MessageStorageInterface, MessagesPerSessi
             addMessageId( ( (EndAccessMessage) message ).getSessionId(), message.getMessageId() );
             return addNewMessage( message );
         } else if( message instanceof ReevaluationResponseMessage ) {
-            addMessageId( ( (ReevaluationResponseMessage) message ).getEvaluation().getSessionId(), message.getMessageId() );
+            addMessageId( ( (ReevaluationResponseMessage) message ).getSessionId(), message.getMessageId() );
             return addNewMessage( message );
         } else {
             throw new IllegalArgumentException( "Invalid message" );

@@ -51,9 +51,6 @@ public final class PDPResponse implements PDPEvaluation {
     // the response provided by the PDP object
     private ResponseType responseType = null;
 
-    // the id of the session the which the evaluation was referred
-    private String sessionId = "";
-
     // list of firing rules
     private ArrayList<Integer> firingRules = new ArrayList<>();
 
@@ -157,16 +154,6 @@ public final class PDPResponse implements PDPEvaluation {
     @Override
     public ArrayList<Integer> getFiringRules() {
         return firingRules;
-    }
-
-    @Override
-    public void setSessionId( String sessionId ) {
-        this.sessionId = sessionId;
-    }
-
-    @Override
-    public String getSessionId() {
-        return sessionId;
     }
 
     @JsonIgnore

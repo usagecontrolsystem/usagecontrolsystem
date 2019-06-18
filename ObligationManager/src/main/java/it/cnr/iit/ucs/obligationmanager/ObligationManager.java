@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import it.cnr.iit.ucs.constants.STATUS;
 import it.cnr.iit.ucs.pdp.PDPEvaluation;
 import it.cnr.iit.ucs.pip.PIPOMInterface;
 import it.cnr.iit.ucs.properties.components.ObligationManagerProperties;
@@ -52,9 +53,6 @@ import it.cnr.iit.utility.errorhandling.Reject;
 public final class ObligationManager implements ObligationManagerInterface {
 
     private final Logger log = Logger.getLogger( ObligationManager.class.getName() );
-
-    private static final String MSG_ERR_UNMARSHAL = "Error unmarshalling json : {0}";
-    private static final String MSG_ERR_DECODE_OBLIGATION = "Error decoding obligation : {0}";
 
     private List<PIPOMInterface> pipList;
     private ObligationManagerProperties properties; // NOSONAR
@@ -92,9 +90,9 @@ public final class ObligationManager implements ObligationManagerInterface {
      *          obligation to the PIP
      */
     @Override
-    public PDPEvaluation translateObligations( PDPEvaluation evaluation, String status ) {
+    public PDPEvaluation translateObligations( PDPEvaluation evaluation, String sessionId, STATUS status ) {
         Reject.ifNull( evaluation );
-        Reject.ifNull( evaluation.getSessionId() );
+        Reject.ifNull( sessionId );
         Reject.ifNull( status );
         Reject.ifTrue( pipList == null || pipList.isEmpty() );
 
@@ -108,8 +106,8 @@ public final class ObligationManager implements ObligationManagerInterface {
         for( String obligationString : obligationsList ) {
             ObligationInterface obligation = (ObligationInterface) createObjectFromString( obligationString, pipName );
             if( obligation != null ) {
-                obligation.setSessionId( evaluation.getSessionId() );
-                obligation.setStep( status );
+                obligation.setSessionId( sessionId );
+                obligation.setStep( status.name() );
                 if( obligation.getAttributeId() != null ) {
                     obligationMap.put( obligation.getAttributeId(),
                         obligation );
@@ -134,8 +132,8 @@ public final class ObligationManager implements ObligationManagerInterface {
      *          the obligation in string format
      * @return an object representing the obligation the PIP has to perform
      */
-    private Object createObjectFromString( String obligation,
-            StringBuilder classNameBuilder ) {
+    @Deprecated
+    private Object createObjectFromString( String obligation, StringBuilder classNameBuilder ) {
         String className = extractClassName( obligation );
         Class<?> clazz;
         try {
@@ -146,13 +144,14 @@ public final class ObligationManager implements ObligationManagerInterface {
                 throw new IllegalArgumentException( "Invalid class provided: " + className );
             }
         } catch( ClassNotFoundException e ) {
-            log.severe( String.format( MSG_ERR_UNMARSHAL, e.getMessage() ) );
+            log.log( Level.SEVERE, "Error unmarshalling json : {0}", e.getMessage() );
             return null;
         }
         String json = getJson( obligation );
         return JsonUtility.loadObjectFromJsonString( json, clazz );
     }
 
+    @Deprecated
     private String extractClassName( String obligation ) {
         String className = obligation.split( "=" )[0];
         return "it.cnr.iit.ucs.obligationmanager.obligationobjects."
@@ -171,7 +170,7 @@ public final class ObligationManager implements ObligationManagerInterface {
         try {
             return URLDecoder.decode( obligation.split( "=" )[1], "UTF-8" );
         } catch( UnsupportedEncodingException e ) {
-            log.severe( String.format( MSG_ERR_DECODE_OBLIGATION, e.getMessage() ) );
+            log.log( Level.SEVERE, "Error decoding obligation : {0}", e.getMessage() );
             return null;
         }
     }

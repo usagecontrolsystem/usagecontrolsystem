@@ -130,7 +130,7 @@ public class PEPRest implements PEPInterface {
         messageStorage.addMessage( message );
         if( pep.getRevokeType().equals( "HARD" ) ) {
             log.log( Level.INFO, "EndAcces sent at {0} ", System.currentTimeMillis() );
-            EndAccessMessage endAccess = buildEndAccessMessage( evaluation.getSessionId(), null );
+            EndAccessMessage endAccess = buildEndAccessMessage( message.getSessionId(), null );
             handleRequest( endAccess );
         } else {
             // generic case to cater for multiple scenarios, e.g. pause/resume/pause/end etc...

@@ -20,6 +20,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import it.cnr.iit.ucs.constants.ENTITIES;
 import it.cnr.iit.ucs.constants.PURPOSE;
 import it.cnr.iit.ucs.message.EvaluatedMessage;
+import it.cnr.iit.ucs.message.IdentifiedMessage;
 import it.cnr.iit.ucs.message.Message;
 import it.cnr.iit.ucs.pdp.PDPEvaluation;
 import it.cnr.iit.utility.errorhandling.Reject;
@@ -29,12 +30,13 @@ import it.cnr.iit.utility.errorhandling.Reject;
  *
  * @author Antonio La Marra, Alessandro Rosetti
  */
-public class ReevaluationResponseMessage extends Message implements EvaluatedMessage {
+public class ReevaluationResponseMessage extends Message implements EvaluatedMessage, IdentifiedMessage {
 
     @JsonProperty
     private PDPEvaluation evaluation;
 
     private String pepId;
+    String sessionId;
 
     public ReevaluationResponseMessage( String source, String destination ) {
         super( source, destination );
@@ -73,6 +75,17 @@ public class ReevaluationResponseMessage extends Message implements EvaluatedMes
 
     public String getPepId() {
         return pepId;
+    }
+
+    @Override
+    public void setSessionId( String sessionId ) {
+        this.sessionId = sessionId;
+
+    }
+
+    @Override
+    public String getSessionId() {
+        return sessionId;
     }
 
 }
