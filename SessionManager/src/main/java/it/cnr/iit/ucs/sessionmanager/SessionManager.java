@@ -50,12 +50,6 @@ public final class SessionManager implements SessionManagerInterface {
 
     private volatile boolean initialized = false;
 
-    /**
-     * Constructor
-     *
-     * @param databaseURL
-     *          URL of the database where data will be stored/retrieved
-     */
     protected SessionManager( String databaseURL ) {
         this.databaseURL = databaseURL;
         sessionDao = null;

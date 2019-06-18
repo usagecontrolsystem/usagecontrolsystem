@@ -13,42 +13,42 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  ******************************************************************************/
-package it.cnr.iit.ucs.message.endaccess;
-
-import com.fasterxml.jackson.annotation.JsonProperty;
+package it.cnr.iit.ucs.message.tryaccess;
 
 import it.cnr.iit.ucs.constants.ENTITIES;
 import it.cnr.iit.ucs.constants.PURPOSE;
-import it.cnr.iit.ucs.message.EvaluatedResponse;
+import it.cnr.iit.ucs.message.EvaluatedMessage;
+import it.cnr.iit.ucs.message.IdentifiedMessage;
 import it.cnr.iit.ucs.message.Message;
 import it.cnr.iit.ucs.pdp.PDPEvaluation;
 
 /**
- * This is the response provided by the UCS once it receives an endAccess
+ * This is the tryAccess response message
  *
  * @author Antonio La Marra, Alessandro Rosetti
- *
  */
-public class EndAccessResponse extends Message implements EvaluatedResponse {
+public final class TryAccessResponseMessage extends Message implements EvaluatedMessage, IdentifiedMessage {
 
-    private static final long serialVersionUID = 1L;
-
-    @JsonProperty
     private PDPEvaluation evaluation;
+    private String sessionId;
 
-    public EndAccessResponse() {
+    public TryAccessResponseMessage() {
         super( ENTITIES.CH.toString(), ENTITIES.PEP.toString() );
-        purpose = PURPOSE.END_RESPONSE;
+        purpose = PURPOSE.TRY_RESPONSE;
     }
 
-    public EndAccessResponse( String source, String destination, String messageId ) {
-        super( source, destination, messageId );
-        purpose = PURPOSE.END_RESPONSE;
-    }
-
-    public EndAccessResponse( String messageId ) {
+    public TryAccessResponseMessage( String messageId ) {
         super( ENTITIES.CH.toString(), ENTITIES.PEP.toString(), messageId );
-        purpose = PURPOSE.END_RESPONSE;
+        purpose = PURPOSE.TRY_RESPONSE;
+    }
+
+    public TryAccessResponseMessage( String source, String dest, String messageId ) {
+        super( source, dest, messageId );
+    }
+
+    @Override
+    public void setEvaluation( PDPEvaluation evaluation ) {
+        this.evaluation = evaluation;
     }
 
     @Override
@@ -57,8 +57,13 @@ public class EndAccessResponse extends Message implements EvaluatedResponse {
     }
 
     @Override
-    public void setEvaluation( PDPEvaluation pdpEvaluation ) {
-        this.evaluation = pdpEvaluation;
+    public void setSessionId( String sessionId ) {
+        this.sessionId = sessionId;
+    }
+
+    @Override
+    public String getSessionId() {
+        return sessionId;
     }
 
 }

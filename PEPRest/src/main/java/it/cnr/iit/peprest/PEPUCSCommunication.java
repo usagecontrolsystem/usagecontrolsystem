@@ -11,10 +11,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import it.cnr.iit.ucs.constants.OperationName;
-import it.cnr.iit.ucs.message.endaccess.EndAccessResponse;
-import it.cnr.iit.ucs.message.reevaluation.ReevaluationResponse;
-import it.cnr.iit.ucs.message.startaccess.StartAccessResponse;
-import it.cnr.iit.ucs.message.tryaccess.TryAccessResponse;
+import it.cnr.iit.ucs.message.endaccess.EndAccessResponseMessage;
+import it.cnr.iit.ucs.message.reevaluation.ReevaluationResponseMessage;
+import it.cnr.iit.ucs.message.startaccess.StartAccessResponseMessage;
+import it.cnr.iit.ucs.message.tryaccess.TryAccessResponseMessage;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiOperation;
@@ -36,7 +36,7 @@ public class PEPUCSCommunication {
         @ApiResponse( code = 200, message = "OK" ) } )
     @PostMapping( value = OperationName.ONGOINGRESPONSE_REST, consumes = MediaType.APPLICATION_JSON_VALUE )
     // TODO UCS-34 NOSONAR
-    public void onGoingEvaluation( @RequestBody( ) ReevaluationResponse message ) {
+    public void onGoingEvaluation( @RequestBody( ) ReevaluationResponseMessage message ) {
         pepRest.onGoingEvaluation( message );
     }
 
@@ -46,7 +46,7 @@ public class PEPUCSCommunication {
         @ApiResponse( code = 200, message = "OK" ) } )
     @PostMapping( value = "/tryAccessResponse", consumes = MediaType.APPLICATION_JSON_VALUE )
     // TODO UCS-34 NOSONAR
-    public void tryAccessResponse( @RequestBody( ) TryAccessResponse message ) {
+    public void tryAccessResponse( @RequestBody( ) TryAccessResponseMessage message ) {
         pepRest.receiveResponse( message );
     }
 
@@ -56,7 +56,7 @@ public class PEPUCSCommunication {
         @ApiResponse( code = 200, message = "OK" ) } )
     @PostMapping( value = "/startAccessResponse", consumes = MediaType.APPLICATION_JSON_VALUE )
     // TODO UCS-34 NOSONAR
-    public void startAccessResponse( @RequestBody( ) StartAccessResponse message ) {
+    public void startAccessResponse( @RequestBody( ) StartAccessResponseMessage message ) {
         pepRest.receiveResponse( message );
     }
 
@@ -66,7 +66,7 @@ public class PEPUCSCommunication {
         @ApiResponse( code = 200, message = "OK" ) } )
     @PostMapping( value = "/endAccessResponse", consumes = MediaType.APPLICATION_JSON_VALUE )
     // TODO UCS-34 NOSONAR
-    public void endAccessResponse( @RequestBody( ) EndAccessResponse message ) {
+    public void endAccessResponse( @RequestBody( ) EndAccessResponseMessage message ) {
         pepRest.receiveResponse( message );
     }
 

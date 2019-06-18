@@ -13,43 +13,40 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  ******************************************************************************/
-package it.cnr.iit.ucs.message.startaccess;
+package it.cnr.iit.ucs.message.endaccess;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import it.cnr.iit.ucs.constants.ENTITIES;
 import it.cnr.iit.ucs.constants.PURPOSE;
-import it.cnr.iit.ucs.message.EvaluatedResponse;
+import it.cnr.iit.ucs.message.EvaluatedMessage;
 import it.cnr.iit.ucs.message.Message;
 import it.cnr.iit.ucs.pdp.PDPEvaluation;
 
 /**
- * This is the structure of a message used to response to a start access
+ * This is the response provided by the UCS once it receives an endAccess
  *
  * @author Antonio La Marra, Alessandro Rosetti
+ *
  */
-@JsonIgnoreProperties( ignoreUnknown = true )
-public final class StartAccessResponse extends Message implements EvaluatedResponse {
-
-    private static final long serialVersionUID = 1L;
+public class EndAccessResponseMessage extends Message implements EvaluatedMessage {
 
     @JsonProperty
     private PDPEvaluation evaluation;
 
-    public StartAccessResponse() {
-        super();
-        purpose = PURPOSE.START_RESPONSE;
+    public EndAccessResponseMessage() {
+        super( ENTITIES.CH.toString(), ENTITIES.PEP.toString() );
+        purpose = PURPOSE.END_RESPONSE;
     }
 
-    public StartAccessResponse( String source, String destination, String messageId ) {
+    public EndAccessResponseMessage( String source, String destination, String messageId ) {
         super( source, destination, messageId );
-        purpose = PURPOSE.START_RESPONSE;
+        purpose = PURPOSE.END_RESPONSE;
     }
 
-    public StartAccessResponse( String messageId ) {
+    public EndAccessResponseMessage( String messageId ) {
         super( ENTITIES.CH.toString(), ENTITIES.PEP.toString(), messageId );
-        purpose = PURPOSE.START_RESPONSE;
+        purpose = PURPOSE.END_RESPONSE;
     }
 
     @Override
@@ -58,8 +55,8 @@ public final class StartAccessResponse extends Message implements EvaluatedRespo
     }
 
     @Override
-    public void setEvaluation( PDPEvaluation pdpEvaluation ) {
-        this.evaluation = pdpEvaluation;
+    public void setEvaluation( PDPEvaluation evaluation ) {
+        this.evaluation = evaluation;
     }
 
 }

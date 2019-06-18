@@ -1,14 +1,14 @@
 package it.cnr.iit.peprest.messagetrack;
 
-import it.cnr.iit.ucs.message.EvaluatedResponse;
+import it.cnr.iit.ucs.message.EvaluatedMessage;
 import it.cnr.iit.ucs.message.Message;
 import it.cnr.iit.ucs.message.endaccess.EndAccessMessage;
-import it.cnr.iit.ucs.message.endaccess.EndAccessResponse;
-import it.cnr.iit.ucs.message.reevaluation.ReevaluationResponse;
+import it.cnr.iit.ucs.message.endaccess.EndAccessResponseMessage;
+import it.cnr.iit.ucs.message.reevaluation.ReevaluationResponseMessage;
 import it.cnr.iit.ucs.message.startaccess.StartAccessMessage;
-import it.cnr.iit.ucs.message.startaccess.StartAccessResponse;
+import it.cnr.iit.ucs.message.startaccess.StartAccessResponseMessage;
 import it.cnr.iit.ucs.message.tryaccess.TryAccessMessage;
-import it.cnr.iit.ucs.message.tryaccess.TryAccessResponse;
+import it.cnr.iit.ucs.message.tryaccess.TryAccessResponseMessage;
 import it.cnr.iit.ucs.pdp.PDPEvaluation;
 
 import oasis.names.tc.xacml.core.schema.wd_17.DecisionType;
@@ -50,7 +50,7 @@ public class MessageInformations {
         this.callerResponse = callerResponse;
     }
 
-    private static MessageInformations build( Message message, STATUS status ) {
+    private static MessageInformations build( Message message, PEP_STATUS status ) {
         MessageInformations messageInformations = new MessageInformations();
         messageInformations.messageId = message.getMessageId();
         messageInformations.callerResponse = new CallerResponse();
@@ -59,28 +59,28 @@ public class MessageInformations {
     }
 
     public static MessageInformations build( TryAccessMessage message ) {
-        return build( message, STATUS.TRYACCESS_SENT );
+        return build( message, PEP_STATUS.TRYACCESS_SENT );
     }
 
     public static MessageInformations build( StartAccessMessage message ) {
-        MessageInformations messageInformations = build( message, STATUS.STARTACCESS_SENT );
+        MessageInformations messageInformations = build( message, PEP_STATUS.STARTACCESS_SENT );
         messageInformations.callerResponse.setSessionId( message.getSessionId() );
         return messageInformations;
     }
 
     public static MessageInformations build( EndAccessMessage message ) {
-        return build( message, STATUS.ENDACCESS_SENT );
+        return build( message, PEP_STATUS.ENDACCESS_SENT );
     }
 
-    public static MessageInformations build( ReevaluationResponse message ) {
+    public static MessageInformations build( ReevaluationResponseMessage message ) {
         if( message.getEvaluation().isDecision( DecisionType.PERMIT ) ) {
-            return build( message, STATUS.SESSION_RESUMED );
+            return build( message, PEP_STATUS.SESSION_RESUMED );
         } else {
-            return build( message, STATUS.REVOKED );
+            return build( message, PEP_STATUS.REVOKED );
         }
     }
 
-    public void merge( EvaluatedResponse message, STATUS status, STATUS positiveStatus, STATUS negativeStatus ) {
+    public void merge( EvaluatedMessage message, PEP_STATUS status, PEP_STATUS positiveStatus, PEP_STATUS negativeStatus ) {
         if( callerResponse.getStatus() != status ) {
             throw new IllegalArgumentException( "Wrong flow of messages!! \n status is: " + callerResponse.getStatus() );
         }
@@ -92,17 +92,17 @@ public class MessageInformations {
         }
     }
 
-    public void merge( TryAccessResponse message ) {
-        merge( message, STATUS.TRYACCESS_SENT, STATUS.TRYACCESS_PERMIT, STATUS.TRYACCESS_DENY );
+    public void merge( TryAccessResponseMessage message ) {
+        merge( message, PEP_STATUS.TRYACCESS_SENT, PEP_STATUS.TRYACCESS_PERMIT, PEP_STATUS.TRYACCESS_DENY );
         callerResponse.setSessionId( message.getSessionId() );
     }
 
-    public void merge( StartAccessResponse message ) {
-        merge( message, STATUS.STARTACCESS_SENT, STATUS.STARTACCESS_PERMIT, STATUS.STARTACCESS_DENY );
+    public void merge( StartAccessResponseMessage message ) {
+        merge( message, PEP_STATUS.STARTACCESS_SENT, PEP_STATUS.STARTACCESS_PERMIT, PEP_STATUS.STARTACCESS_DENY );
     }
 
-    public void merge( EndAccessResponse message ) {
-        merge( message, STATUS.ENDACCESS_SENT, STATUS.ENDACCESS_PERMIT, STATUS.ENDACCESS_DENY );
+    public void merge( EndAccessResponseMessage message ) {
+        merge( message, PEP_STATUS.ENDACCESS_SENT, PEP_STATUS.ENDACCESS_PERMIT, PEP_STATUS.ENDACCESS_DENY );
     }
 
 }

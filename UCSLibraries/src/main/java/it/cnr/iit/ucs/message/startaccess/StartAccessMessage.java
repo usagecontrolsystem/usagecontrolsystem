@@ -17,6 +17,7 @@ package it.cnr.iit.ucs.message.startaccess;
 
 import it.cnr.iit.ucs.constants.ENTITIES;
 import it.cnr.iit.ucs.constants.PURPOSE;
+import it.cnr.iit.ucs.message.IdentifiedMessage;
 import it.cnr.iit.ucs.message.Message;
 
 /**
@@ -25,9 +26,7 @@ import it.cnr.iit.ucs.message.Message;
  *
  * @author Antonio La Marra, Alessandro Rosetti
  */
-public final class StartAccessMessage extends Message {
-
-    private static final long serialVersionUID = 1L;
+public final class StartAccessMessage extends Message implements IdentifiedMessage {
 
     private String sessionId;
 
@@ -41,10 +40,12 @@ public final class StartAccessMessage extends Message {
         purpose = PURPOSE.START;
     }
 
+    @Override
     public void setSessionId( String sessionId ) {
         this.sessionId = sessionId;
     }
 
+    @Override
     public String getSessionId() {
         return sessionId;
     }

@@ -20,8 +20,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import it.cnr.iit.peprest.proxy.UCSProxy;
 import it.cnr.iit.ucs.message.Message;
-import it.cnr.iit.ucs.message.startaccess.StartAccessResponse;
-import it.cnr.iit.ucs.message.tryaccess.TryAccessResponse;
+import it.cnr.iit.ucs.message.startaccess.StartAccessResponseMessage;
+import it.cnr.iit.ucs.message.tryaccess.TryAccessResponseMessage;
 import it.cnr.iit.ucs.pdp.PDPResponse;
 
 import oasis.names.tc.xacml.core.schema.wd_17.DecisionType;
@@ -82,17 +82,17 @@ public abstract class PEPRestAbstractTest {
         return objectMapper.readValue( json, clazz );
     }
 
-    protected TryAccessResponse buildTryAccessResponseDeny() {
+    protected TryAccessResponseMessage buildTryAccessResponseDeny() {
         PDPResponse pdpEvaluation = buildPDPResponse( DecisionType.DENY );
-        TryAccessResponse tryAccessResponse = new TryAccessResponse( SESSION_ID_01 );
+        TryAccessResponseMessage tryAccessResponse = new TryAccessResponseMessage( SESSION_ID_01 );
         tryAccessResponse.setSessionId( SESSION_ID_01 );
         tryAccessResponse.setEvaluation( pdpEvaluation );
         return tryAccessResponse;
     }
 
-    protected StartAccessResponse buildStartAccessResponsePermit() {
+    protected StartAccessResponseMessage buildStartAccessResponsePermit() {
         PDPResponse pdpEvaluation = buildPDPResponse( DecisionType.PERMIT );
-        StartAccessResponse startAccessResponse = new StartAccessResponse( SESSION_ID_01 );
+        StartAccessResponseMessage startAccessResponse = new StartAccessResponseMessage( SESSION_ID_01 );
         startAccessResponse.setEvaluation( pdpEvaluation );
         return startAccessResponse;
     }

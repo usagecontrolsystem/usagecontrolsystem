@@ -16,7 +16,7 @@
 package it.cnr.iit.ucs.pep;
 
 import it.cnr.iit.ucs.message.Message;
-import it.cnr.iit.ucs.message.reevaluation.ReevaluationResponse;
+import it.cnr.iit.ucs.message.reevaluation.ReevaluationResponseMessage;
 
 /**
  * Interface offered to the UCS by the PEP.
@@ -36,7 +36,7 @@ public interface PEPInterface {
      *          the message containing the informations required by the PEP
      * @return a message
      */
-    public Message onGoingEvaluation( ReevaluationResponse message );
+    public Message onGoingEvaluation( ReevaluationResponseMessage message );
 
     /**
      * In the asynchronous case the PEP has also to offer a way for the ucs to
