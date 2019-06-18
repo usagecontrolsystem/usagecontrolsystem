@@ -14,7 +14,7 @@ import org.reflections.util.ClasspathHelper;
 import org.reflections.util.ConfigurationBuilder;
 import org.reflections.util.FilterBuilder;
 
-import it.cnr.iit.ucs.properties.base.PluginProperties;
+import it.cnr.iit.ucs.properties.base.CommonProperties;
 import it.cnr.iit.utility.errorhandling.Reject;
 
 public class ReflectionsUtility {
@@ -61,7 +61,7 @@ public class ReflectionsUtility {
         return getClassFromSimpleName( name, clazz );
     }
 
-    public static <T> Optional<T> buildComponent( PluginProperties properties, Class<T> clazz ) {
+    public static <T> Optional<T> buildComponent( CommonProperties properties, Class<T> clazz ) {
         Reject.ifBlank( properties.getName() );
         try {
             Class<?> propClazz = properties.getClass().getInterfaces()[0]; // TODO UCS-32 NOSONAR

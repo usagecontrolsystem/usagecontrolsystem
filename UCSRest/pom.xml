@@ -160,6 +160,11 @@
 			<version>22.0</version>
 		</dependency>
 
+		<dependency>
+			<groupId>it.cnr.iit.pip</groupId>
+			<artifactId>PIPRest</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
 	</dependencies>
 
 	<build>

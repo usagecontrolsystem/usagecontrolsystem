@@ -39,7 +39,7 @@ import it.cnr.iit.ucs.pip.PIPBase;
 import it.cnr.iit.ucs.pip.PIPCHInterface;
 import it.cnr.iit.ucs.pip.PIPOMInterface;
 import it.cnr.iit.ucs.properties.UCSProperties;
-import it.cnr.iit.ucs.properties.base.PluginProperties;
+import it.cnr.iit.ucs.properties.base.CommonProperties;
 import it.cnr.iit.ucs.properties.components.PepProperties;
 import it.cnr.iit.ucs.properties.components.PipProperties;
 import it.cnr.iit.ucs.requestmanager.AbstractRequestManager;
@@ -157,7 +157,7 @@ public class UCSRest implements UCSInterface {
         }
     }
 
-    private <T> Optional<T> buildComponent( PluginProperties property, Class<T> clazz ) {
+    private <T> Optional<T> buildComponent( CommonProperties property, Class<T> clazz ) {
         log.info( "[BUILD] " + property.getName() );
         Optional<T> component = ReflectionsUtility.buildComponent( property, clazz );
         Reject.ifAbsent( component, "Error building " + property.getName() );

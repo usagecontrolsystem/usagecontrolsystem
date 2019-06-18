@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
+import java.util.Map;
 import java.util.logging.Logger;
 
 import org.junit.Before;
@@ -82,6 +83,18 @@ public class PDPTest {
             @Override
             public String getName() {
                 return className;
+            }
+
+            @Override
+            public Map<String, String> getAdditionalProperties() {
+                // TODO Auto-generated method stub
+                return null;
+            }
+
+            @Override
+            public String getId() {
+                // TODO Auto-generated method stub
+                return null;
             }
         };
 

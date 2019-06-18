@@ -4,12 +4,14 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
 
+import org.junit.Before;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
@@ -23,6 +25,7 @@ import com.tngtech.jgiven.integration.spring.JGivenStage;
 
 import it.cnr.iit.ucs.message.Message;
 import it.cnr.iit.ucsrest.properties.UCSRestProperties;
+import it.cnr.iit.ucsrest.rest.UCSRestController;
 
 @JGivenStage
 public class WhenUCSRestController extends Stage<WhenUCSRestController> {
@@ -45,11 +48,15 @@ public class WhenUCSRestController extends Stage<WhenUCSRestController> {
     @Autowired
     WebApplicationContext webApplicationContext;
 
+    @Autowired
+    UCSRestController ucsRestController;
+
     MockMvc mvc;
 
+    @Before
     @BeforeStage
     public void setUp() {
-        mvc = MockMvcBuilders.webAppContextSetup( webApplicationContext ).build();
+        mvc = MockMvcBuilders.standaloneSetup( ucsRestController ).build();
     }
 
     public WhenUCSRestController the_UCF_is_executed_for_$( @Quoted String operationUri ) {
@@ -68,6 +75,7 @@ public class WhenUCSRestController extends Stage<WhenUCSRestController> {
         MvcResult mvcResult = mvc.perform( MockMvcRequestBuilders.post( uri )
             .contentType( MediaType.APPLICATION_JSON_VALUE ).content(
                 new ObjectMapper().writeValueAsString( jsonMessage ) ) )
+            .andExpect( MockMvcResultMatchers.status().isOk() )
             .andReturn();
         assertNull( "POST to " + uri + " failed ", mvcResult.getResolvedException() );
         return mvcResult.getResponse();

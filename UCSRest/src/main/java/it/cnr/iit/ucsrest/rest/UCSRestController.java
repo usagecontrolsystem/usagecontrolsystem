@@ -48,6 +48,10 @@ import io.swagger.annotations.ApiResponses;
 public class UCSRestController {
     private static final Logger log = Logger.getLogger( UCSRestController.class.getName() );
 
+    enum REQUEST_STATUS {
+        IN_QUEUE, REJECTED;
+    }
+
     @Autowired
     private UCSInterface ucs;
 
@@ -62,7 +66,6 @@ public class UCSRestController {
         Reject.ifNull( message );
         log.log( Level.INFO, "Tryaccess received {0}", System.currentTimeMillis() );
         return ucs.tryAccess( message );
-
     }
 
     @ApiOperation( httpMethod = "POST", value = "Receives request from PEP for startaccess operation" )

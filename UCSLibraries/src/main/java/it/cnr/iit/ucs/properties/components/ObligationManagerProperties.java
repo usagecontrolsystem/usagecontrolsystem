@@ -15,6 +15,6 @@
  ******************************************************************************/
 package it.cnr.iit.ucs.properties.components;
 
-import it.cnr.iit.ucs.properties.base.PluginProperties;
+import it.cnr.iit.ucs.properties.base.CommonProperties;
 
-public interface ObligationManagerProperties extends PluginProperties {}
+public interface ObligationManagerProperties extends CommonProperties {}

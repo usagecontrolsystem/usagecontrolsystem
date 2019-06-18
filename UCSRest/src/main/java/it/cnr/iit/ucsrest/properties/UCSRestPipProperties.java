@@ -7,37 +7,13 @@ import org.springframework.beans.factory.annotation.Value;
 
 import it.cnr.iit.ucs.properties.components.PipProperties;
 
-public class UCSRestPipProperties implements PipProperties {
-
-    @Value( "${name}" )
-    private String name;
-
-    @Value( "${id}" )
-    private String id;
+public class UCSRestPipProperties extends BaseProperties implements PipProperties {
 
     @Value( "${journalDir}" )
     private String journalDir;
 
     @Value( "${attributes}" )
     private List<Map<String, String>> attributes;
-
-    @Override
-    public String getName() {
-        return name;
-    }
-
-    public void setName( String name ) {
-        this.name = name;
-    }
-
-    @Override
-    public String getId() {
-        return id;
-    }
-
-    public void setId( String id ) {
-        this.id = id;
-    }
 
     @Override
     public String getJournalDir() {

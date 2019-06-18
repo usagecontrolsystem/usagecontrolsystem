@@ -60,6 +60,7 @@ public class ContextHandlerCoverageTests extends UCSRestBaseTests {
     @Test( expected = PreconditionException.class )
     public void contextHandlerTryAccessShouldFail() throws PreconditionException {
         ContextHandler contextHandler = getContextHandler( properties );
+        getPIPS( properties );
         initContextHandler( contextHandler );
         // set the pdp response to return deny
         contextHandler.setPdp( getMockedPDP( getMockedPDPEvaluation( DecisionType.DENY ) ) );

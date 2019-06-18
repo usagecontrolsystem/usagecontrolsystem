@@ -1,5 +1,6 @@
 package it.cnr.iit.ucsrest.coverage;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 import java.io.IOException;
@@ -267,6 +268,7 @@ public class UCSRestBaseTests {
             assertNotNull( pip );
             pips.add( pip );
         }
+        assertEquals( "VALUE", prop.getPipList().get( 1 ).getAdditionalProperties().get( "KEY" ) );
 
         return pips;
     }
