@@ -23,6 +23,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.logging.Logger;
 
+import javax.xml.bind.JAXBException;
+
 import org.wso2.balana.AbstractPolicy;
 import org.wso2.balana.Balana;
 import org.wso2.balana.PDPConfig;
@@ -53,6 +55,7 @@ import it.cnr.iit.ucs.constants.STATUS;
 import it.cnr.iit.ucs.exceptions.PolicyException;
 import it.cnr.iit.ucs.properties.components.PdpProperties;
 import it.cnr.iit.utility.FileUtility;
+import it.cnr.iit.utility.JAXBUtility;
 import it.cnr.iit.xacml.PolicyTags;
 import it.cnr.iit.xacml.wrappers.PolicyWrapper;
 import it.cnr.iit.xacml.wrappers.RequestWrapper;
@@ -60,6 +63,7 @@ import it.cnr.iit.xacml.wrappers.RequestWrapper;
 import journal.io.api.Journal;
 import journal.io.api.Journal.WriteType;
 import journal.io.api.JournalBuilder;
+import oasis.names.tc.xacml.core.schema.wd_17.ResponseType;
 
 /**
  * This PDP is a wrapper around the one offered by BALANA.
@@ -87,13 +91,13 @@ public final class PolicyDecisionPoint extends AbstractPDP {
     @Override
     public PDPEvaluation evaluate( RequestWrapper request, PolicyWrapper policy, STATUS status ) {
         String conditionName = PolicyTags.getCondition( status );
-        PolicyWrapper policyToEvaluate;
+        PolicyWrapper policyForCondition;
         try {
-            policyToEvaluate = policy.getPolicyForCondition( conditionName );
+            policyForCondition = policy.getPolicyForCondition( conditionName );
         } catch( PolicyException e ) {
             return null;
         }
-        return evaluate( request, policyToEvaluate );
+        return evaluate( request, policyForCondition );
     }
 
     @Override
@@ -105,11 +109,16 @@ public final class PolicyDecisionPoint extends AbstractPDP {
             journal.write( request.getRequest().getBytes(), WriteType.ASYNC );
             journal.write( responseCtx.encode().getBytes(), WriteType.ASYNC );
             journal.sync();
-            return new PDPResponse( responseCtx.encode() );
+            ResponseType responseType = getResponseType( responseCtx.encode() );
+            return new PDPResponse( responseType );
         } catch( Exception e ) {
             log.severe( "Error in evaluation : " + e.getMessage() );
         }
         return null;
+    }
+
+    private ResponseType getResponseType( String response ) throws JAXBException {
+        return JAXBUtility.unmarshalToObject( ResponseType.class, response );
     }
 
     @Override
@@ -157,8 +166,7 @@ public final class PolicyDecisionPoint extends AbstractPDP {
      * Attempts to evaluate the request against the policies known to this PDP.
      * This is really the core method of the entire XACML specification, and for
      * most people will provide what you want. If you need any special handling,
-     * you should look at the version of this method that takes an
-     * <code>EvaluationCtx</code>.
+     * you should look at the version of this method that takes an EvaluationCtx.
      * Note that if the request is somehow invalid (it was missing a required
      * attribute, it was using an unsupported scope, etc), then the result will be
      * a decision of INDETERMINATE.

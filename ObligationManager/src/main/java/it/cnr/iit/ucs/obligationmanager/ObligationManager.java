@@ -30,25 +30,16 @@ import it.cnr.iit.utility.JsonUtility;
 import it.cnr.iit.utility.errorhandling.Reject;
 
 /**
- * This class represents a possible implementation of the ObligationManager
  * The obligation manager is the component in charge of handling the various
- * obligations we can have in the policy. Since an obligation manager can handle
+ * obligations we can have in the policy. An obligation manager can handle
  * two different types of obligations, one directed to the PEP and the other
- * directed to the PIPs {attribute update operations}, this component will
- * behave as follows:
- * <ol>
- * <li>Upon receiving the result of the PDP:</li>
- * <li>Asks to the PIPs to perform the obligations directed to them (in this
- * case basically we follow the same approach of the attribute retrieval)</li>
- * <li>finally removes the sent obligations from the list of pending
- * obligations</li>
- * <li>Remained obligations will be sent to the PEP along with the result of the
- * evaluation</li>
- * </ol>
+ * directed to the PIPs.
+ * Upon receiving the result of the PDP:
+ * Asks to the PIPs to perform the obligations directed to them.
+ * Removes the sent obligations from the list of pending obligations.
+ * Other obligations will be sent to the PEP along with the result of the evaluation.
  *
- *
- * @author antonio
- *
+ * @author Antonio La Marra, Alessandro Rosetti
  */
 public final class ObligationManager implements ObligationManagerInterface {
 
@@ -63,20 +54,9 @@ public final class ObligationManager implements ObligationManagerInterface {
     }
 
     @Override
-    public final boolean setPIPs( List<PIPOMInterface> pips ) {
-        if( ( pips == null || pips.isEmpty() ) ) {
-            log.log( Level.SEVERE,
-                "Invalid provided PIPS : pips_null {0}\t"
-                        + "pips_empty {1}\t",
-                new Object[] {
-                    pips == null,
-                    pips != null ? pips.isEmpty() : Boolean.FALSE
-                } );
-            return false;
-        }
-
+    public void setPIPs( List<PIPOMInterface> pips ) {
+        Reject.ifEmpty( pips );
         pipList = pips;
-        return true;
     }
 
     /**
@@ -90,15 +70,14 @@ public final class ObligationManager implements ObligationManagerInterface {
      *          obligation to the PIP
      */
     @Override
-    public PDPEvaluation translateObligations( PDPEvaluation evaluation, String sessionId, STATUS status ) {
+    public void translateObligations( PDPEvaluation evaluation, String sessionId, STATUS status ) {
         Reject.ifNull( evaluation );
         Reject.ifNull( sessionId );
         Reject.ifNull( status );
-        Reject.ifTrue( pipList == null || pipList.isEmpty() );
 
         List<String> obligationsList = evaluation.getObligations();
         if( obligationsList == null ) {
-            return null;
+            return;
         }
 
         StringBuilder pipName = new StringBuilder();
@@ -108,11 +87,10 @@ public final class ObligationManager implements ObligationManagerInterface {
             if( obligation != null ) {
                 obligation.setSessionId( sessionId );
                 obligation.setStep( status.name() );
-                if( obligation.getAttributeId() != null ) {
-                    obligationMap.put( obligation.getAttributeId(),
-                        obligation );
-                } else {
+                if( obligation.getAttributeId() == null ) {
                     obligationMap.put( pipName.toString(), obligation );
+                } else {
+                    obligationMap.put( obligation.getAttributeId(), obligation );
                 }
             }
         }
@@ -120,8 +98,6 @@ public final class ObligationManager implements ObligationManagerInterface {
         for( PIPOMInterface pip : pipList ) {
             pip.performObligation( obligationMap.get( pipName.toString() ) );
         }
-
-        return null;
     }
 
     /**
