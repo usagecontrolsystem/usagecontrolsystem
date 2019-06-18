@@ -17,6 +17,7 @@ package it.cnr.iit.xacml.wrappers;
 
 import java.util.List;
 
+import it.cnr.iit.ucs.exceptions.PolicyException;
 import it.cnr.iit.xacml.Attribute;
 
 /**
@@ -57,7 +58,8 @@ public interface PolicyWrapperInterface {
      * @param condition
      *          states which is the condition we will use for the evaluation
      * @return a String representing the policy to be used for the evaluation
+     * @throws PolicyException
      */
-    public PolicyWrapper getPolicyForCondition( String condition );
+    public PolicyWrapper getPolicyForCondition( String condition ) throws PolicyException;
 
 }

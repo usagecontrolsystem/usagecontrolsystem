@@ -18,6 +18,8 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import it.cnr.iit.ucs.constants.STATUS;
+import it.cnr.iit.ucs.exceptions.PolicyException;
+import it.cnr.iit.ucs.exceptions.RequestException;
 import it.cnr.iit.ucs.message.attributechange.AttributeChangeMessage;
 import it.cnr.iit.ucs.message.endaccess.EndAccessMessage;
 import it.cnr.iit.ucs.message.startaccess.StartAccessMessage;
@@ -56,16 +58,13 @@ public class ContextHandlerCoverageTests extends UCSRestBaseTests {
     }
 
     @Test( expected = PreconditionException.class )
-    public void contextHandlerTryAccessShouldFail() throws PreconditionException {
+    public void contextHandlerTryAccessShouldFail() throws PreconditionException, PolicyException, RequestException {
         ContextHandler contextHandler = getContextHandler( properties );
         initContextHandler( contextHandler );
         // set the pdp response to return deny
         contextHandler.setPdp( getMockedPDP( getMockedPDPEvaluation( DecisionType.DENY ) ) );
         contextHandler.startMonitoringThread();
-
-        /* tryAccess */
         contextHandler.tryAccess( null );
-
         contextHandler.stopMonitoringThread();
     }
 
@@ -73,14 +72,12 @@ public class ContextHandlerCoverageTests extends UCSRestBaseTests {
     public void contextHandlerStartAccess() throws JAXBException, URISyntaxException, IOException, Exception {
         ContextHandler contextHandler = getContextHandlerCorrectlyInitialized( properties, policy, request );
 
-        /* startAccess */
         contextHandler.setSessionManager(
             getSessionManagerForStatus( testProperties.getSessionId(), policy, request, STATUS.TRY.name() ) );
         // this line makes the start access to take the deny path
         contextHandler.setPdp( getMockedPDP( getMockedPDPEvaluation( DecisionType.DENY ) ) );
         StartAccessMessage startAccessMessage = buildStartAccessMessage( testProperties.getSessionId(), "a", "a" );
         contextHandler.startAccess( startAccessMessage );
-
         contextHandler.stopMonitoringThread();
     }
 
@@ -88,13 +85,11 @@ public class ContextHandlerCoverageTests extends UCSRestBaseTests {
     public void contextHandlerEndAccess() throws JAXBException, URISyntaxException, IOException, Exception {
         ContextHandler contextHandler = getContextHandlerCorrectlyInitialized( properties, policy, request );
 
-        /* endAccess */
         contextHandler.setSessionManager(
             getSessionManagerForStatus( testProperties.getSessionId(), policy, request, STATUS.START.name() ) );
         contextHandler.setPdp( getMockedPDP( getMockedPDPEvaluation( DecisionType.DENY ) ) );
         EndAccessMessage endAccessMessage = buildEndAccessMessage( testProperties.getSessionId(), "a", "a" );
         contextHandler.endAccess( endAccessMessage );
-
         contextHandler.stopMonitoringThread();
     }
 

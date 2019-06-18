@@ -21,6 +21,8 @@ import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 
 import it.cnr.iit.ucs.constants.STATUS;
+import it.cnr.iit.ucs.exceptions.PolicyException;
+import it.cnr.iit.ucs.exceptions.RequestException;
 import it.cnr.iit.ucs.pdp.PDPEvaluation;
 import it.cnr.iit.ucs.pdp.PolicyDecisionPoint;
 import it.cnr.iit.ucs.properties.components.PdpProperties;
@@ -89,7 +91,7 @@ public class PDPTest {
     }
 
     @Test
-    public void testPDP() {
+    public void testPDP() throws PolicyException, RequestException {
         PolicyWrapper policy = PolicyWrapper.build( this.policy );
         assertThat( testEvaluation( requestDeny, policy ) ).contains( "deny" );
         assertThat( testEvaluation( requestIndeterminate, policy ) ).contains( "indeterminate" );
@@ -110,8 +112,8 @@ public class PDPTest {
         assertThat( testEvaluation( requestPermit, policyHelperDup, STATUS.TRY ) ).contains( "permit" );
     }
 
-    private String testEvaluation( String request, PolicyWrapper policy ) {
-        RequestWrapper requestWrapper = RequestWrapper.build( request );
+    private String testEvaluation( String request, PolicyWrapper policy ) throws RequestException {
+        RequestWrapper requestWrapper = RequestWrapper.build( request, null );
         PDPEvaluation response = policyDecisionpoint.evaluate( requestWrapper, policy );
         if( response != null ) {
             String result = response.getResult().toLowerCase();

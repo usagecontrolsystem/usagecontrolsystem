@@ -22,6 +22,7 @@ import java.util.logging.Logger;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 
+import it.cnr.iit.ucs.exceptions.PolicyException;
 import it.cnr.iit.utility.JAXBUtility;
 import it.cnr.iit.utility.errorhandling.Reject;
 import it.cnr.iit.xacml.Attribute;
@@ -47,8 +48,6 @@ public class PolicyWrapper implements PolicyWrapperInterface {
 
     private static final Logger log = Logger.getLogger( PolicyWrapper.class.getName() );
 
-    private static final String MSG_ERR_UNMASHAL = "Error unmarshalling policy : {0}";
-    private static final String MSG_ERR_MARSHAL = "Error marshalling policy : {0}";
     private static final String MSG_WARN_COND_NOT_FOUND = "Condition not found : {0}";
 
     private PolicyType policyType;
@@ -62,28 +61,29 @@ public class PolicyWrapper implements PolicyWrapperInterface {
      * @param policy
      *          the string that describes the policy
      * @return a PolicyWrapper object if everything goes fine, null otherwise
+     * @throws PolicyException
      */
-    public static PolicyWrapper build( String policy ) {
-        Reject.ifBlank( policy );
-
+    public static PolicyWrapper build( String policy ) throws PolicyException {
         PolicyWrapper policyWrapper = new PolicyWrapper();
+        try {
+            PolicyType policyType = unmarshalPolicyType( policy );
+            policyWrapper.setPolicyType( policyType );
+        } catch( JAXBException e ) {
+            throw new PolicyException( "Error unmarshalling policy : {0}" + e.getMessage() );
+        }
         policyWrapper.setPolicy( policy );
-        policyWrapper.setPolicyType( unmarshalPolicyType( policy ) );
-
-        Reject.ifNull( policyWrapper.getPolicyType() );
-
         return policyWrapper;
     }
 
-    public static PolicyWrapper build( PolicyType policyType ) {
-        Reject.ifNull( policyType );
-
+    public static PolicyWrapper build( PolicyType policyType ) throws PolicyException {
         PolicyWrapper policyWrapper = new PolicyWrapper();
+        try {
+            String policy = marshalPolicyType( policyType );
+            policyWrapper.setPolicy( policy );
+        } catch( JAXBException e ) {
+            throw new PolicyException( "Error marshalling policy : {0}" + e.getMessage() );
+        }
         policyWrapper.setPolicyType( policyType );
-        policyWrapper.setPolicy( marshalPolicyType( policyType ) );
-
-        Reject.ifBlank( policyWrapper.getPolicy() );
-
         return policyWrapper;
     }
 
@@ -174,9 +174,10 @@ public class PolicyWrapper implements PolicyWrapperInterface {
      * @param conditionName
      *          the required condition
      * @return a copy of the policyType containing only the required condition
+     * @throws PolicyException
      */
     @Override
-    public PolicyWrapper getPolicyForCondition( String conditionName ) {
+    public PolicyWrapper getPolicyForCondition( String conditionName ) throws PolicyException {
         PolicyType clonedPolicyType = almostClonePolicyType();
         List<Object> objectList = policyType.getCombinerParametersOrRuleCombinerParametersOrVariableDefinition();
         List<Object> clonedObjectList = clonedPolicyType.getCombinerParametersOrRuleCombinerParametersOrVariableDefinition();
@@ -281,22 +282,12 @@ public class PolicyWrapper implements PolicyWrapperInterface {
         return newPolicyType;
     }
 
-    private static PolicyType unmarshalPolicyType( String policy ) {
-        try {
-            return JAXBUtility.unmarshalToObject( PolicyType.class, policy );
-        } catch( Exception e ) {
-            log.severe( String.format( MSG_ERR_UNMASHAL, e.getMessage() ) );
-        }
-        return null;
+    private static PolicyType unmarshalPolicyType( String policy ) throws JAXBException {
+        return JAXBUtility.unmarshalToObject( PolicyType.class, policy );
     }
 
-    private static String marshalPolicyType( PolicyType policy ) {
-        try {
-            return JAXBUtility.marshalToString( PolicyType.class, policy, PolicyTags.POLICY, JAXBUtility.SCHEMA );
-        } catch( JAXBException e ) {
-            log.severe( String.format( MSG_ERR_MARSHAL, e.getMessage() ) );
-        }
-        return null;
+    private static String marshalPolicyType( PolicyType policy ) throws JAXBException {
+        return JAXBUtility.marshalToString( PolicyType.class, policy, PolicyTags.POLICY, JAXBUtility.SCHEMA );
     }
 
 }

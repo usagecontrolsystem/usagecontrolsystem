@@ -17,6 +17,7 @@ package it.cnr.iit.ucs.pdp;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -49,6 +50,7 @@ import org.wso2.balana.finder.PolicyFinderResult;
 import org.wso2.balana.xacml3.MultipleCtxResult;
 
 import it.cnr.iit.ucs.constants.STATUS;
+import it.cnr.iit.ucs.exceptions.PolicyException;
 import it.cnr.iit.ucs.properties.components.PdpProperties;
 import it.cnr.iit.utility.FileUtility;
 import it.cnr.iit.xacml.PolicyTags;
@@ -85,7 +87,12 @@ public final class PolicyDecisionPoint extends AbstractPDP {
     @Override
     public PDPEvaluation evaluate( RequestWrapper request, PolicyWrapper policy, STATUS status ) {
         String conditionName = PolicyTags.getCondition( status );
-        PolicyWrapper policyToEvaluate = policy.getPolicyForCondition( conditionName );
+        PolicyWrapper policyToEvaluate;
+        try {
+            policyToEvaluate = policy.getPolicyForCondition( conditionName );
+        } catch( PolicyException e ) {
+            return null;
+        }
         return evaluate( request, policyToEvaluate );
     }
 
@@ -102,21 +109,19 @@ public final class PolicyDecisionPoint extends AbstractPDP {
         } catch( Exception e ) {
             log.severe( "Error in evaluation : " + e.getMessage() );
         }
-
         return null;
     }
 
     @Override
     public PDPEvaluation evaluate( RequestWrapper request ) {
-        log.info( "evaluate( request ) not implemented" );
+        log.severe( "Error evaluate( request ) not implemented" );
         return null;
     }
 
     private PolicyFinder getPolicyFinder( PolicyWrapper policy ) {
         PolicyFinder policyFinder = new PolicyFinder();
         Set<PolicyFinderModule> policyFinderModulesSet = new HashSet<>();
-        InputStreamBasedPolicyFinderModule finderModule = new InputStreamBasedPolicyFinderModule(
-            policy.getPolicy() );
+        InputStreamBasedPolicyFinderModule finderModule = new InputStreamBasedPolicyFinderModule( policy.getPolicy() );
         policyFinderModulesSet.add( finderModule );
         policyFinder.setModules( policyFinderModulesSet );
         policyFinder.init();
@@ -127,9 +132,8 @@ public final class PolicyDecisionPoint extends AbstractPDP {
      * Attempts to evaluate the request against the policies known to this PDP.
      * This is really the core method of the entire XACML specification, and for
      * most people will provide what you want. If you need any special handling,
-     * you should look at the version of this method that takes an
-     * <code>EvaluationCtx</code>.
-         * Note that if the request is somehow invalid (it was missing a required
+     * you should look at the version of this method that takes an EvaluationCtx.
+     * Note that if the request is somehow invalid (it was missing a required
      * attribute, it was using an unsupported scope, etc), then the result will be
      * a decision of INDETERMINATE.
      *
@@ -139,27 +143,14 @@ public final class PolicyDecisionPoint extends AbstractPDP {
      * @return a response paired to the request
      */
     private ResponseCtx evaluate( String request, PolicyFinder policyFinder ) {
-        AbstractRequestCtx requestCtx;
-        ResponseCtx responseCtx;
-
         try {
             // TODO UCS-36 NOSONAR
-            requestCtx = RequestCtxFactory.getFactory().getRequestCtx( request.replaceAll( ">\\s+<", "><" ) );
-            responseCtx = evaluate( requestCtx, policyFinder );
+            AbstractRequestCtx requestCtx = RequestCtxFactory.getFactory().getRequestCtx( request.replaceAll( ">\\s+<", "><" ) );
+            return evaluate( requestCtx, policyFinder );
         } catch( ParsingException e ) {
-            String error = "Invalid request  : " + e.getMessage();
-            // there was something wrong with the request, so we return
-            // Indeterminate with a status of syntax error...though this
-            // may change if a more appropriate status type exists
-            ArrayList<String> code = new ArrayList<>();
-            code.add( Status.STATUS_SYNTAX_ERROR );
-            Status status = new Status( code, error );
-            // As invalid request, by default XACML 3.0 response is created.
-            responseCtx = new ResponseCtx(
-                new Result( AbstractResult.DECISION_INDETERMINATE, status ) );
+            return getResponseCtx( AbstractResult.DECISION_INDETERMINATE, Status.STATUS_SYNTAX_ERROR,
+                "Invalid request  : " + e.getMessage() );
         }
-
-        return responseCtx;
     }
 
     /**
@@ -168,7 +159,7 @@ public final class PolicyDecisionPoint extends AbstractPDP {
      * most people will provide what you want. If you need any special handling,
      * you should look at the version of this method that takes an
      * <code>EvaluationCtx</code>.
-         * Note that if the request is somehow invalid (it was missing a required
+     * Note that if the request is somehow invalid (it was missing a required
      * attribute, it was using an unsupported scope, etc), then the result will be
      * a decision of INDETERMINATE.
      *
@@ -182,20 +173,11 @@ public final class PolicyDecisionPoint extends AbstractPDP {
         try {
             Balana balana = Balana.getInstance();
             pdpConfig = balana.getPdpConfig();
-            evalContext = EvaluationCtxFactory.getFactory().getEvaluationCtx( request,
-                pdpConfig );
+            evalContext = EvaluationCtxFactory.getFactory().getEvaluationCtx( request, pdpConfig );
             return evaluate( evalContext, policyFinder );
         } catch( ParsingException e ) {
-            // there was something wrong with the request, so we return
-            // Indeterminate with a status of syntax error...though this
-            // may change if a more appropriate status type exists
-            ArrayList<String> code = new ArrayList<>();
-            code.add( Status.STATUS_SYNTAX_ERROR );
-            Status status = new Status( code, e.getMessage() );
-            return new ResponseCtx( ResultFactory.getFactory().getResult(
-                AbstractResult.DECISION_INDETERMINATE, status,
-                request.getXacmlVersion() ) );
-
+            return getResponseCtx( AbstractResult.DECISION_INDETERMINATE, Status.STATUS_SYNTAX_ERROR,
+                "Invalid request : " + e.getMessage() );
         }
     }
 
@@ -219,9 +201,8 @@ public final class PolicyDecisionPoint extends AbstractPDP {
             Set<EvaluationCtx> evaluationCtxSet;
             MultipleCtxResult multipleCtxResult = context.getMultipleEvaluationCtx();
             if( multipleCtxResult.isIndeterminate() ) {
-                return new ResponseCtx( ResultFactory.getFactory().getResult(
-                    AbstractResult.DECISION_INDETERMINATE,
-                    multipleCtxResult.getStatus(), context ) );
+                return new ResponseCtx(
+                    ResultFactory.getFactory().getResult( AbstractResult.DECISION_INDETERMINATE, multipleCtxResult.getStatus(), context ) );
             } else {
                 evaluationCtxSet = multipleCtxResult.getEvaluationCtxSet();
                 HashSet<AbstractResult> results = new HashSet<>();
@@ -232,25 +213,13 @@ public final class PolicyDecisionPoint extends AbstractPDP {
                 return new ResponseCtx( results, XACMLConstants.XACML_VERSION_3_0 );
             }
         } else {
-            // this is special case that specific to XACML3 request
-            if( context instanceof XACML3EvaluationCtx
-                    && ( (XACML3EvaluationCtx) context ).isMultipleAttributes() ) {
-                ArrayList<String> code = new ArrayList<>();
-                code.add( Status.STATUS_SYNTAX_ERROR );
-                Status status = new Status( code,
-                    "PDP does not supports multiple decision profile. "
-                            + "Multiple AttributesType elements with the same Category can be existed" );
-                return new ResponseCtx( ResultFactory.getFactory()
-                    .getResult( AbstractResult.DECISION_INDETERMINATE, status, context ) );
-            } else if( context instanceof XACML3EvaluationCtx
-                    && ( (RequestCtx) context.getRequestCtx() ).isCombinedDecision() ) {
-                List<String> code = new ArrayList<>();
-                code.add( Status.STATUS_PROCESSING_ERROR );
-                Status status = new Status( code,
-                    "PDP does not supports multiple decision profile. "
-                            + "Multiple decision is not existed to combine them" );
-                return new ResponseCtx( ResultFactory.getFactory()
-                    .getResult( AbstractResult.DECISION_INDETERMINATE, status, context ) );
+            // this is a special case that specific to XACML3 request
+            if( context instanceof XACML3EvaluationCtx && ( (XACML3EvaluationCtx) context ).isMultipleAttributes() ) {
+                return getResponseCtxFor( AbstractResult.DECISION_INDETERMINATE, Status.STATUS_SYNTAX_ERROR,
+                    "Usupported multiple decision profile. Multiple AttributesType same Category can exist", context );
+            } else if( context instanceof XACML3EvaluationCtx && ( (RequestCtx) context.getRequestCtx() ).isCombinedDecision() ) {
+                return getResponseCtxFor( AbstractResult.DECISION_INDETERMINATE, Status.STATUS_PROCESSING_ERROR,
+                    "Unsupported multiple decision profile. Is's not possible to combine them multiple decisions", context );
             } else {
                 return new ResponseCtx( evaluateContext( context, policyFinder ) );
             }
@@ -269,31 +238,21 @@ public final class PolicyDecisionPoint extends AbstractPDP {
         PolicyFinderResult finderResult = policyFinder.findPolicy( context );
 
         if( finderResult.notApplicable() ) {
-            return ResultFactory.getFactory()
-                .getResult( AbstractResult.DECISION_NOT_APPLICABLE, context );
-        }
-        if( finderResult.indeterminate() ) {
-            return ResultFactory.getFactory().getResult(
-                AbstractResult.DECISION_INDETERMINATE, finderResult.getStatus(),
-                context );
-        }
-        // we found a valid policy, list all found policies if XACML 3.0
-        if( context instanceof XACML3EvaluationCtx
-                && ( (RequestCtx) context.getRequestCtx() ).isReturnPolicyIdList() ) {
+            return ResultFactory.getFactory().getResult( AbstractResult.DECISION_NOT_APPLICABLE, context );
+        } else if( finderResult.indeterminate() ) {
+            return ResultFactory.getFactory().getResult( AbstractResult.DECISION_INDETERMINATE, finderResult.getStatus(), context );
+        } else if( context instanceof XACML3EvaluationCtx && ( (RequestCtx) context.getRequestCtx() ).isReturnPolicyIdList() ) {
+            // we found a valid policy, list all found policies if XACML 3.0
             Set<PolicyReference> references = new HashSet<>();
             processPolicyReferences( finderResult.getPolicy(), references );
             ( (XACML3EvaluationCtx) context ).setPolicyReferences( references );
         }
-
-        // we can perform the evaluation
         return finderResult.getPolicy().evaluate( context );
     }
 
-    private void processPolicyReferences( AbstractPolicy policy,
-            Set<PolicyReference> references ) {
+    private void processPolicyReferences( AbstractPolicy policy, Set<PolicyReference> references ) {
         if( policy instanceof Policy ) {
-            references.add( new PolicyReference( policy.getId(),
-                PolicyReference.POLICY_REFERENCE, null, null ) );
+            references.add( new PolicyReference( policy.getId(), PolicyReference.POLICY_REFERENCE, null, null ) );
         } else if( policy instanceof PolicySet ) {
             List<CombinerElement> elements = policy.getChildElements();
             if( elements != null && elements.isEmpty() ) {
@@ -302,12 +261,23 @@ public final class PolicyDecisionPoint extends AbstractPDP {
                     if( treeElement instanceof AbstractPolicy ) {
                         processPolicyReferences( (AbstractPolicy) treeElement, references );
                     } else {
-                        references.add( new PolicyReference( policy.getId(),
-                            PolicyReference.POLICYSET_REFERENCE, null, null ) );
+                        references.add( new PolicyReference( policy.getId(), PolicyReference.POLICYSET_REFERENCE, null, null ) );
                     }
                 }
             }
         }
+    }
+
+    private ResponseCtx getResponseCtxFor( int result, String code, String message, EvaluationCtx context ) {
+        List<String> codeList = new ArrayList<>( Arrays.asList( code ) );
+        Status status = new Status( codeList, message );
+        return new ResponseCtx( ResultFactory.getFactory().getResult( result, status, context ) );
+    }
+
+    private ResponseCtx getResponseCtx( int result, String code, String message ) {
+        List<String> codeList = new ArrayList<>( Arrays.asList( code ) );
+        Status status = new Status( codeList, message );
+        return new ResponseCtx( new Result( result, status ) );
     }
 
     private void buildJournal( String journalDir ) {

@@ -26,7 +26,8 @@ import java.util.logging.Logger;
 
 import it.cnr.iit.ucs.constants.STATUS;
 import it.cnr.iit.ucs.contexthandler.AbstractContextHandler;
-import it.cnr.iit.ucs.exceptions.SessionManagerException;
+import it.cnr.iit.ucs.exceptions.PolicyException;
+import it.cnr.iit.ucs.exceptions.RequestException;
 import it.cnr.iit.ucs.exceptions.StatusException;
 import it.cnr.iit.ucs.message.attributechange.AttributeChangeMessage;
 import it.cnr.iit.ucs.message.endaccess.EndAccessMessage;
@@ -74,18 +75,13 @@ public final class ContextHandler extends AbstractContextHandler {
      * TryAccess method invoked by the PEP
      */
     @Override
-    public TryAccessResponse tryAccess( TryAccessMessage message ) {
-        Reject.ifNull( message, "TryAccessMessage is null" );
-        Reject.ifNull( message.getPolicy(), "TryAccessMessage is policy null" );
-        Reject.ifNull( message.getRequest(), "TryAccessMessage is request null" );
-
+    public TryAccessResponse tryAccess( TryAccessMessage message ) throws PolicyException, RequestException {
         log.log( Level.INFO, "TryAccess received at {0}", new Object[] { System.currentTimeMillis() } );
+        Reject.ifNull( message, "TryAccessMessage is null" );
 
-        Optional<PolicyWrapper> optPolicy = retrievePolicyWrapper( message );
-        Reject.ifAbsent( optPolicy );
-        PolicyWrapper policy = optPolicy.get(); // NOSONAR
-        RequestWrapper request = RequestWrapper.build( message.getRequest() );
-        RequestWrapper fatRequest = fattenRequest( request, STATUS.TRY );
+        PolicyWrapper policy = retrievePolicyWrapper( message );
+        RequestWrapper fatRequest = RequestWrapper.build( message.getRequest(), getPipRegistry() );
+        fatRequest.fatten( STATUS.TRY );
         log.info( "TryAccess fattened request contents : \n" + fatRequest.getRequest() );
 
         PDPEvaluation evaluation = getPdp().evaluate( fatRequest, policy, STATUS.TRY );
@@ -93,13 +89,14 @@ public final class ContextHandler extends AbstractContextHandler {
         log.log( Level.INFO, "TryAccess evaluated at {0} pdp response : {1}",
             new Object[] { System.currentTimeMillis(), evaluation.getResult() } );
 
-        String sessionId = generateNewSessionId();
+        String sessionId = generateSessionId();
         evaluation.setSessionId( sessionId );
         getObligationManager().translateObligations( evaluation, STATUS.TRY.name() );
 
         if( evaluation.isDecision( DecisionType.PERMIT ) ) {
             // If access decision is PERMIT create entry in SessionManager
-            createNewSession( message, request, policy, sessionId );
+            RequestWrapper request = RequestWrapper.build( message.getRequest(), getPipRegistry() );
+            createSession( message, request, policy, sessionId );
         }
 
         return buildTryAccessResponse( message, evaluation, sessionId );
@@ -112,41 +109,27 @@ public final class ContextHandler extends AbstractContextHandler {
         return response;
     }
 
-    private synchronized RequestWrapper fattenRequest( RequestWrapper request, STATUS status ) {
-        RequestWrapper fatRequest = RequestWrapper.build( request );
-
-        if( status == STATUS.START ) {
-            getPipRegistry().subscribeAll( fatRequest.getRequestType() );
-        } else {
-            getPipRegistry().retrieveAll( fatRequest.getRequestType() );
-        }
-        fatRequest.update();
-
-        return fatRequest;
-    }
-
     /**
      * Retrieves the policy to be used to evaluate the request
      *
      * @param message
      *            the message received by the context handler
      * @return an optional hopefully containing the policy
+     * @throws PolicyException
      */
-    private Optional<PolicyWrapper> retrievePolicyWrapper( TryAccessMessage message ) {
+    private PolicyWrapper retrievePolicyWrapper( TryAccessMessage message ) throws PolicyException {
         String policy = message.getPolicy();
-
         if( policy == null && message.getPolicyId() != null ) {
             policy = getPap().retrievePolicy( message.getPolicyId() );
         }
-
-        return policy != null ? Optional.of( PolicyWrapper.build( policy ) ) : Optional.empty();
+        return PolicyWrapper.build( policy );
     }
 
     /**
      * It creates a new session id
      * @return session id to associate to the incoming session during the tryAccess
      */
-    private synchronized String generateNewSessionId() {
+    private String generateSessionId() {
         return UUID.randomUUID().toString();
     }
 
@@ -163,8 +146,8 @@ public final class ContextHandler extends AbstractContextHandler {
      * @param sessionId
      *            the sessionId
      */
-    private void createNewSession( TryAccessMessage message, RequestWrapper request, PolicyWrapper policy, String sessionId ) {
-        log.log( Level.INFO, "TryAccess creating new session : {0} ", sessionId );
+    private void createSession( TryAccessMessage message, RequestWrapper request, PolicyWrapper policy, String sessionId ) {
+        log.log( Level.INFO, "Creating a new session : {0} ", sessionId );
 
         String pepUri = uri.getHost() + PEP_ID_SEPARATOR + message.getSource();
 
@@ -186,7 +169,7 @@ public final class ContextHandler extends AbstractContextHandler {
 
         // insert all the values inside the session manager
         if( !getSessionManager().createEntry( sessionAttributeBuilder.build() ) ) {
-            log.log( Level.SEVERE, "TryAccess: session \"{0}\" has not been stored correctly", sessionId );
+            log.log( Level.SEVERE, "Session \"{0}\" has not been stored correctly", sessionId );
         }
     }
 
@@ -215,15 +198,17 @@ public final class ContextHandler extends AbstractContextHandler {
 
     /**
      * startAccess method invoked by PEP
+     * @throws PolicyException
+     * @throws RequestException
      */
     @Override
     public StartAccessResponse startAccess( StartAccessMessage message )
-            throws StatusException, SessionManagerException {
+            throws StatusException, PolicyException, RequestException {
+        log.log( Level.INFO, "StartAccess begin scheduling at {0}", System.currentTimeMillis() );
+
         Optional<SessionInterface> optSession = getSessionManager().getSessionForId( message.getSessionId() );
         Reject.ifAbsent( optSession, "StartAccess: no session for id " + message.getSessionId() );
         SessionInterface session = optSession.get(); // NOSONAR
-
-        log.log( Level.INFO, "StartAccess begin scheduling at {0}", new Object[] { System.currentTimeMillis() } );
 
         // Check if the session has the correct status
         if( !session.isStatus( STATUS.TRY.name() ) ) {
@@ -232,10 +217,10 @@ public final class ContextHandler extends AbstractContextHandler {
         }
 
         PolicyWrapper policy = PolicyWrapper.build( session.getPolicySet() );
-        RequestWrapper request = RequestWrapper.build( session.getOriginalRequest() );
-        RequestWrapper fatRequest = fattenRequest( request, STATUS.START );
+        RequestWrapper request = RequestWrapper.build( session.getOriginalRequest(), getPipRegistry() );
+        request.fatten( STATUS.START );
 
-        PDPEvaluation evaluation = getPdp().evaluate( fatRequest, policy, STATUS.START );
+        PDPEvaluation evaluation = getPdp().evaluate( request, policy, STATUS.START );
         Reject.ifNull( evaluation );
         log.log( Level.INFO, "StartAccess evaluated at {0} pdp response : {1}",
             new Object[] { System.currentTimeMillis(), evaluation.getResult() } );
@@ -384,8 +369,10 @@ public final class ContextHandler extends AbstractContextHandler {
      * endAccess method invoked by PEP
      */
     @Override
-    public EndAccessResponse endAccess( EndAccessMessage message ) throws StatusException {
+    public EndAccessResponse endAccess( EndAccessMessage message ) throws StatusException, RequestException, PolicyException {
         log.log( Level.INFO, "EndAccess begins at {0}", System.currentTimeMillis() );
+        Reject.ifNull( message, "EndAccessMessage is null" );
+
         Optional<SessionInterface> optSession = getSessionManager().getSessionForId( message.getSessionId() );
         Reject.ifAbsent( optSession, "EndAccess: no session for id " + message.getSessionId() );
         SessionInterface session = optSession.get(); // NOSONAR
@@ -400,10 +387,10 @@ public final class ContextHandler extends AbstractContextHandler {
         log.log( Level.INFO, "EndAccess evaluation starts at {0}", System.currentTimeMillis() );
 
         PolicyWrapper policy = PolicyWrapper.build( session.getPolicySet() );
-        RequestWrapper request = RequestWrapper.build( session.getOriginalRequest() );
-        RequestWrapper fatRequest = fattenRequest( request, STATUS.END );
+        RequestWrapper request = RequestWrapper.build( session.getOriginalRequest(), getPipRegistry() );
+        request.fatten( STATUS.END );
 
-        PDPEvaluation evaluation = getPdp().evaluate( fatRequest, policy, STATUS.END );
+        PDPEvaluation evaluation = getPdp().evaluate( request, policy, STATUS.END );
         Reject.ifNull( evaluation );
         log.log( Level.INFO, "EndAccess evaluated at {0} pdp response : {1}",
             new Object[] { System.currentTimeMillis(), evaluation.getResult() } );
@@ -454,13 +441,14 @@ public final class ContextHandler extends AbstractContextHandler {
         return false;
     }
 
-    public synchronized void reevaluate( SessionInterface session ) {
+    public synchronized void reevaluate( SessionInterface session ) throws PolicyException, RequestException {
         log.log( Level.INFO, "Reevaluation begins at {0}", System.currentTimeMillis() );
-        PolicyWrapper policy = PolicyWrapper.build( session.getPolicySet() );
-        RequestWrapper request = RequestWrapper.build( session.getOriginalRequest() );
-        RequestWrapper fatRequest = fattenRequest( request, STATUS.START );
 
-        PDPEvaluation evaluation = getPdp().evaluate( fatRequest, policy, STATUS.START );
+        PolicyWrapper policy = PolicyWrapper.build( session.getPolicySet() );
+        RequestWrapper request = RequestWrapper.build( session.getOriginalRequest(), getPipRegistry() );
+        request.fatten( STATUS.START );
+
+        PDPEvaluation evaluation = getPdp().evaluate( request, policy, STATUS.START );
         Reject.ifNull( evaluation );
         evaluation.setSessionId( session.getId() );
         getObligationManager().translateObligations( evaluation, STATUS.START.name() );

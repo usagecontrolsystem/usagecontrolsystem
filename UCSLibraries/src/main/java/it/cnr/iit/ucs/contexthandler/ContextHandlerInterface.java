@@ -15,6 +15,9 @@
  ******************************************************************************/
 package it.cnr.iit.ucs.contexthandler;
 
+import it.cnr.iit.ucs.exceptions.PolicyException;
+import it.cnr.iit.ucs.exceptions.RequestException;
+import it.cnr.iit.ucs.exceptions.SessionManagerException;
 import it.cnr.iit.ucs.exceptions.StatusException;
 import it.cnr.iit.ucs.message.endaccess.EndAccessMessage;
 import it.cnr.iit.ucs.message.endaccess.EndAccessResponse;
@@ -65,8 +68,10 @@ public interface ContextHandlerInterface extends ContextHandlerPIPInterface {
      * @param message
      *          message received by the RequestManager
      * @return a message stating the response of the PDP to the request.
+     * @throws PolicyException
+     * @throws RequestException
      */
-    public TryAccessResponse tryAccess( TryAccessMessage message );
+    public TryAccessResponse tryAccess( TryAccessMessage message ) throws PolicyException, RequestException;
 
     /**
      * This is the startAccess function. In this case a tryAccess has already been
@@ -78,9 +83,14 @@ public interface ContextHandlerInterface extends ContextHandlerPIPInterface {
      * @param message
      *          message received by the RequestManager
      * @return a message stating the response of the PDP to the request
+     * @throws SessionManagerException
+     * @throws StatusException
+     * @throws PolicyException
+     * @throws RequestException
      * @throws Exception
      */
-    public StartAccessResponse startAccess( StartAccessMessage message ) throws Exception;
+    public StartAccessResponse startAccess( StartAccessMessage message )
+            throws StatusException, PolicyException, RequestException;
 
     /**
      * This is the endAcces function. In this case the PEP doesn't require the
@@ -93,7 +103,9 @@ public interface ContextHandlerInterface extends ContextHandlerPIPInterface {
      *          the message received by the RequestManager
      * @return a message stating the response of the PDP to the request
      * @throws StatusException
+     * @throws RequestException
+     * @throws PolicyException
      */
-    public EndAccessResponse endAccess( EndAccessMessage message ) throws StatusException;
+    public EndAccessResponse endAccess( EndAccessMessage message ) throws StatusException, RequestException, PolicyException;
 
 }
