@@ -17,10 +17,10 @@ import com.tngtech.jgiven.integration.spring.JGivenStage;
 import it.cnr.iit.peprest.PEPRest;
 import it.cnr.iit.peprest.messagetrack.CallerResponse;
 import it.cnr.iit.peprest.messagetrack.MessageStorage;
-import it.cnr.iit.peprest.messagetrack.STATUS;
+import it.cnr.iit.peprest.messagetrack.PEP_STATUS;
 import it.cnr.iit.ucs.constants.RestOperation;
 import it.cnr.iit.ucs.message.Message;
-import it.cnr.iit.ucs.message.reevaluation.ReevaluationResponse;
+import it.cnr.iit.ucs.message.reevaluation.ReevaluationResponseMessage;
 
 @JGivenStage
 public class WhenPEPRestService extends Stage<WhenPEPRestService> {
@@ -79,7 +79,7 @@ public class WhenPEPRestService extends Stage<WhenPEPRestService> {
                 break;
             case ON_GOING_RESPONSE:
                 assertNotNull( message );
-                message = pepRest.onGoingEvaluation( (ReevaluationResponse) message );
+                message = pepRest.onGoingEvaluation( (ReevaluationResponseMessage) message );
                 messageId = message.getMessageId();
                 break;
             default:
@@ -95,17 +95,17 @@ public class WhenPEPRestService extends Stage<WhenPEPRestService> {
         switch( operation ) {
             case TRY_ACCESS_RESPONSE:
                 Mockito.when( pepRest.getMessageStorage().addMessage( message ) ).thenReturn( true );
-                callerResponse.setStatus( STATUS.TRYACCESS_PERMIT );
+                callerResponse.setStatus( PEP_STATUS.TRYACCESS_PERMIT );
                 Mockito.when( pepRest.getMessageStorage().getMessageStatus( messageId ) ).thenReturn( Optional.of( callerResponse ) );
                 break;
             case START_ACCESS_RESPONSE:
                 Mockito.when( pepRest.getMessageStorage().addMessage( message ) ).thenReturn( true );
-                callerResponse.setStatus( STATUS.STARTACCESS_PERMIT );
+                callerResponse.setStatus( PEP_STATUS.STARTACCESS_PERMIT );
                 Mockito.when( pepRest.getMessageStorage().getMessageStatus( messageId ) ).thenReturn( Optional.of( callerResponse ) );
                 break;
             case END_ACCESS_RESPONSE:
                 Mockito.when( pepRest.getMessageStorage().addMessage( message ) ).thenReturn( true );
-                callerResponse.setStatus( STATUS.ENDACCESS_PERMIT );
+                callerResponse.setStatus( PEP_STATUS.ENDACCESS_PERMIT );
                 Mockito.when( pepRest.getMessageStorage().getMessageStatus( messageId ) ).thenReturn( Optional.of( callerResponse ) );
 
             default:

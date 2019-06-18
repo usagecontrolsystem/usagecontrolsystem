@@ -21,10 +21,10 @@ import java.util.logging.Logger;
 
 import it.cnr.iit.ucs.constants.OperationName;
 import it.cnr.iit.ucs.message.Message;
-import it.cnr.iit.ucs.message.endaccess.EndAccessResponse;
-import it.cnr.iit.ucs.message.reevaluation.ReevaluationResponse;
-import it.cnr.iit.ucs.message.startaccess.StartAccessResponse;
-import it.cnr.iit.ucs.message.tryaccess.TryAccessResponse;
+import it.cnr.iit.ucs.message.endaccess.EndAccessResponseMessage;
+import it.cnr.iit.ucs.message.reevaluation.ReevaluationResponseMessage;
+import it.cnr.iit.ucs.message.startaccess.StartAccessResponseMessage;
+import it.cnr.iit.ucs.message.tryaccess.TryAccessResponseMessage;
 import it.cnr.iit.ucs.pep.PEPInterface;
 import it.cnr.iit.ucs.properties.components.PepProperties;
 import it.cnr.iit.utility.RESTUtils;
@@ -53,7 +53,7 @@ public class PEPRestProxy implements PEPInterface {
 
     @Override
     // TODO return actual response.
-    public Message onGoingEvaluation( ReevaluationResponse message ) {
+    public Message onGoingEvaluation( ReevaluationResponseMessage message ) {
         RESTUtils.asyncPost( uri.toString(), OperationName.ONGOINGRESPONSE_REST, message );
         return null;
     }
@@ -72,11 +72,11 @@ public class PEPRestProxy implements PEPInterface {
     }
 
     private Optional<String> getApiForMessage( Message message ) {
-        if( message instanceof TryAccessResponse ) {
+        if( message instanceof TryAccessResponseMessage ) {
             return Optional.of( properties.getApiTryAccessResponse() );
-        } else if( message instanceof StartAccessResponse ) {
+        } else if( message instanceof StartAccessResponseMessage ) {
             return Optional.of( properties.getApiStartAccessResponse() );
-        } else if( message instanceof EndAccessResponse ) {
+        } else if( message instanceof EndAccessResponseMessage ) {
             return Optional.of( properties.getApiEndAccessResponse() );
         }
         return Optional.empty();

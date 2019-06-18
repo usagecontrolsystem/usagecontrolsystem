@@ -31,12 +31,12 @@ import it.cnr.iit.ucs.exceptions.RequestException;
 import it.cnr.iit.ucs.exceptions.StatusException;
 import it.cnr.iit.ucs.message.attributechange.AttributeChangeMessage;
 import it.cnr.iit.ucs.message.endaccess.EndAccessMessage;
-import it.cnr.iit.ucs.message.endaccess.EndAccessResponse;
-import it.cnr.iit.ucs.message.reevaluation.ReevaluationResponse;
+import it.cnr.iit.ucs.message.endaccess.EndAccessResponseMessage;
+import it.cnr.iit.ucs.message.reevaluation.ReevaluationResponseMessage;
 import it.cnr.iit.ucs.message.startaccess.StartAccessMessage;
-import it.cnr.iit.ucs.message.startaccess.StartAccessResponse;
+import it.cnr.iit.ucs.message.startaccess.StartAccessResponseMessage;
 import it.cnr.iit.ucs.message.tryaccess.TryAccessMessage;
-import it.cnr.iit.ucs.message.tryaccess.TryAccessResponse;
+import it.cnr.iit.ucs.message.tryaccess.TryAccessResponseMessage;
 import it.cnr.iit.ucs.pdp.PDPEvaluation;
 import it.cnr.iit.ucs.properties.components.ContextHandlerProperties;
 import it.cnr.iit.ucs.sessionmanager.OnGoingAttributesInterface;
@@ -75,7 +75,7 @@ public final class ContextHandler extends AbstractContextHandler {
      * TryAccess method invoked by the PEP
      */
     @Override
-    public TryAccessResponse tryAccess( TryAccessMessage message ) throws PolicyException, RequestException {
+    public TryAccessResponseMessage tryAccess( TryAccessMessage message ) throws PolicyException, RequestException {
         log.log( Level.INFO, "TryAccess received at {0}", new Object[] { System.currentTimeMillis() } );
         Reject.ifNull( message, "TryAccessMessage is null" );
 
@@ -102,8 +102,8 @@ public final class ContextHandler extends AbstractContextHandler {
         return buildTryAccessResponse( message, evaluation, sessionId );
     }
 
-    private TryAccessResponse buildTryAccessResponse( TryAccessMessage message, PDPEvaluation evaluation, String sessionId ) {
-        TryAccessResponse response = new TryAccessResponse( uri.getHost(), message.getSource(), message.getMessageId() );
+    private TryAccessResponseMessage buildTryAccessResponse( TryAccessMessage message, PDPEvaluation evaluation, String sessionId ) {
+        TryAccessResponseMessage response = new TryAccessResponseMessage( uri.getHost(), message.getSource(), message.getMessageId() );
         response.setSessionId( sessionId );
         response.setEvaluation( evaluation );
         return response;
@@ -115,7 +115,6 @@ public final class ContextHandler extends AbstractContextHandler {
      * @param message
      *            the message received by the context handler
      * @return an optional hopefully containing the policy
-     * @throws PolicyException
      */
     private PolicyWrapper retrievePolicyWrapper( TryAccessMessage message ) throws PolicyException {
         String policy = message.getPolicy();
@@ -198,11 +197,9 @@ public final class ContextHandler extends AbstractContextHandler {
 
     /**
      * startAccess method invoked by PEP
-     * @throws PolicyException
-     * @throws RequestException
      */
     @Override
-    public StartAccessResponse startAccess( StartAccessMessage message )
+    public StartAccessResponseMessage startAccess( StartAccessMessage message )
             throws StatusException, PolicyException, RequestException {
         log.log( Level.INFO, "StartAccess begin scheduling at {0}", System.currentTimeMillis() );
 
@@ -243,8 +240,9 @@ public final class ContextHandler extends AbstractContextHandler {
         return buildStartAccessResponse( message, evaluation );
     }
 
-    private StartAccessResponse buildStartAccessResponse( StartAccessMessage message, PDPEvaluation evaluation ) {
-        StartAccessResponse response = new StartAccessResponse( message.getDestination(), message.getSource(), message.getMessageId() );
+    private StartAccessResponseMessage buildStartAccessResponse( StartAccessMessage message, PDPEvaluation evaluation ) {
+        StartAccessResponseMessage response = new StartAccessResponseMessage( message.getDestination(), message.getSource(),
+            message.getMessageId() );
         response.setEvaluation( evaluation );
         return response;
     }
@@ -369,7 +367,7 @@ public final class ContextHandler extends AbstractContextHandler {
      * endAccess method invoked by PEP
      */
     @Override
-    public EndAccessResponse endAccess( EndAccessMessage message ) throws StatusException, RequestException, PolicyException {
+    public EndAccessResponseMessage endAccess( EndAccessMessage message ) throws StatusException, RequestException, PolicyException {
         log.log( Level.INFO, "EndAccess begins at {0}", System.currentTimeMillis() );
         Reject.ifNull( message, "EndAccessMessage is null" );
 
@@ -406,8 +404,9 @@ public final class ContextHandler extends AbstractContextHandler {
         return buildEndAccessResponse( message, evaluation );
     }
 
-    private EndAccessResponse buildEndAccessResponse( EndAccessMessage message, PDPEvaluation evaluation ) {
-        EndAccessResponse response = new EndAccessResponse( message.getDestination(), message.getSource(), message.getMessageId() );
+    private EndAccessResponseMessage buildEndAccessResponse( EndAccessMessage message, PDPEvaluation evaluation ) {
+        EndAccessResponseMessage response = new EndAccessResponseMessage( message.getDestination(), message.getSource(),
+            message.getMessageId() );
         response.setEvaluation( evaluation );
         return response;
     }
@@ -471,14 +470,14 @@ public final class ContextHandler extends AbstractContextHandler {
         }
 
         evaluation.setSessionId( session.getId() );
-        ReevaluationResponse response = buildReevaluationResponse( evaluation, session.getPEPUri() );
+        ReevaluationResponseMessage response = buildReevaluationResponse( evaluation, session.getPEPUri() );
         getRequestManager().sendReevaluation( response );
         log.log( Level.INFO, "Reevaluation ends changing status at {0}", System.currentTimeMillis() );
     }
 
-    private ReevaluationResponse buildReevaluationResponse( PDPEvaluation evaluation, String dest ) {
+    private ReevaluationResponseMessage buildReevaluationResponse( PDPEvaluation evaluation, String dest ) {
         String[] destSplitted = dest.split( PEP_ID_SEPARATOR );
-        ReevaluationResponse response = new ReevaluationResponse( uri.getHost(), destSplitted[0] );
+        ReevaluationResponseMessage response = new ReevaluationResponseMessage( uri.getHost(), destSplitted[0] );
         response.setPepId( destSplitted[destSplitted.length - 1] );
         response.setEvaluation( evaluation );
         return response;

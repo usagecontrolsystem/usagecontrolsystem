@@ -20,11 +20,11 @@ import it.cnr.iit.ucs.exceptions.RequestException;
 import it.cnr.iit.ucs.exceptions.SessionManagerException;
 import it.cnr.iit.ucs.exceptions.StatusException;
 import it.cnr.iit.ucs.message.endaccess.EndAccessMessage;
-import it.cnr.iit.ucs.message.endaccess.EndAccessResponse;
+import it.cnr.iit.ucs.message.endaccess.EndAccessResponseMessage;
 import it.cnr.iit.ucs.message.startaccess.StartAccessMessage;
-import it.cnr.iit.ucs.message.startaccess.StartAccessResponse;
+import it.cnr.iit.ucs.message.startaccess.StartAccessResponseMessage;
 import it.cnr.iit.ucs.message.tryaccess.TryAccessMessage;
-import it.cnr.iit.ucs.message.tryaccess.TryAccessResponse;
+import it.cnr.iit.ucs.message.tryaccess.TryAccessResponseMessage;
 
 /**
  * This is the interface provided by the ContextHandler.
@@ -71,7 +71,7 @@ public interface ContextHandlerInterface extends ContextHandlerPIPInterface {
      * @throws PolicyException
      * @throws RequestException
      */
-    public TryAccessResponse tryAccess( TryAccessMessage message ) throws PolicyException, RequestException;
+    public TryAccessResponseMessage tryAccess( TryAccessMessage message ) throws PolicyException, RequestException;
 
     /**
      * This is the startAccess function. In this case a tryAccess has already been
@@ -89,7 +89,7 @@ public interface ContextHandlerInterface extends ContextHandlerPIPInterface {
      * @throws RequestException
      * @throws Exception
      */
-    public StartAccessResponse startAccess( StartAccessMessage message )
+    public StartAccessResponseMessage startAccess( StartAccessMessage message )
             throws StatusException, PolicyException, RequestException;
 
     /**
@@ -106,6 +106,6 @@ public interface ContextHandlerInterface extends ContextHandlerPIPInterface {
      * @throws RequestException
      * @throws PolicyException
      */
-    public EndAccessResponse endAccess( EndAccessMessage message ) throws StatusException, RequestException, PolicyException;
+    public EndAccessResponseMessage endAccess( EndAccessMessage message ) throws StatusException, RequestException, PolicyException;
 
 }

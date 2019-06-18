@@ -39,13 +39,13 @@ import it.cnr.iit.ucs.constants.CONNECTION;
 import it.cnr.iit.ucs.constants.OperationName;
 import it.cnr.iit.ucs.exceptions.PolicyException;
 import it.cnr.iit.ucs.exceptions.RequestException;
-import it.cnr.iit.ucs.message.EvaluatedResponse;
+import it.cnr.iit.ucs.message.EvaluatedMessage;
 import it.cnr.iit.ucs.message.Message;
 import it.cnr.iit.ucs.message.endaccess.EndAccessMessage;
-import it.cnr.iit.ucs.message.reevaluation.ReevaluationResponse;
+import it.cnr.iit.ucs.message.reevaluation.ReevaluationResponseMessage;
 import it.cnr.iit.ucs.message.startaccess.StartAccessMessage;
 import it.cnr.iit.ucs.message.tryaccess.TryAccessMessage;
-import it.cnr.iit.ucs.message.tryaccess.TryAccessResponse;
+import it.cnr.iit.ucs.message.tryaccess.TryAccessResponseMessage;
 import it.cnr.iit.ucs.pdp.PDPEvaluation;
 import it.cnr.iit.ucs.pep.PEPInterface;
 import it.cnr.iit.utility.FileUtility;
@@ -121,7 +121,7 @@ public class PEPRest implements PEPInterface {
 
     @Override
     @Async
-    public Message onGoingEvaluation( ReevaluationResponse message ) {
+    public Message onGoingEvaluation( ReevaluationResponseMessage message ) {
         log.log( Level.INFO, "OnGoingEvaluation at {0} ", System.currentTimeMillis() );
         Reject.ifNull( message );
         PDPEvaluation evaluation = message.getEvaluation();
@@ -198,10 +198,10 @@ public class PEPRest implements PEPInterface {
 
     private String handleResponse( Message message ) {
         String response;
-        if( message instanceof TryAccessResponse ) {
-            response = handleTryAccessResponse( (TryAccessResponse) message );
-        } else if( message instanceof EvaluatedResponse ) {
-            response = ( (EvaluatedResponse) message ).getEvaluation().getResult();
+        if( message instanceof TryAccessResponseMessage ) {
+            response = handleTryAccessResponse( (TryAccessResponseMessage) message );
+        } else if( message instanceof EvaluatedMessage ) {
+            response = ( (EvaluatedMessage) message ).getEvaluation().getResult();
         } else {
             throw new IllegalArgumentException( "INVALID MESSAGE: " + message.toString() );
         }
@@ -215,7 +215,7 @@ public class PEPRest implements PEPInterface {
      * @param response the response received by the UCS
      * @return a String stating the result of the evaluation or the ID of the startaccess message
      */
-    private String handleTryAccessResponse( TryAccessResponse response ) {
+    private String handleTryAccessResponse( TryAccessResponseMessage response ) {
         PDPEvaluation evaluation = response.getEvaluation();
         if( evaluation.isDecision( DecisionType.PERMIT ) ) {
             return startAccess( response.getSessionId() );

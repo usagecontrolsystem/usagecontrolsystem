@@ -31,8 +31,6 @@ import it.cnr.iit.xacml.Attribute;
  */
 public final class AttributeChangeMessage extends Message {
 
-    private static final long serialVersionUID = 1L;
-
     List<Attribute> attributes = new ArrayList<>();
 
     private ACTION action;
