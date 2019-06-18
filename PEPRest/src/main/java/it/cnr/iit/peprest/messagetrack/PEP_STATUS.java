@@ -1,6 +1,6 @@
 package it.cnr.iit.peprest.messagetrack;
 
-public enum STATUS {
+public enum PEP_STATUS {
     TRYACCESS_SENT,
     TRYACCESS_PERMIT,
     TRYACCESS_DENY,

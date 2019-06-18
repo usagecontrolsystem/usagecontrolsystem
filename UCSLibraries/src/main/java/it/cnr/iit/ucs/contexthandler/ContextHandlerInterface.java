@@ -15,15 +15,13 @@
  ******************************************************************************/
 package it.cnr.iit.ucs.contexthandler;
 
-import it.cnr.iit.ucs.exceptions.EndAccessException;
-import it.cnr.iit.ucs.exceptions.StartAccessException;
 import it.cnr.iit.ucs.exceptions.StatusException;
 import it.cnr.iit.ucs.message.endaccess.EndAccessMessage;
-import it.cnr.iit.ucs.message.endaccess.EndAccessResponse;
+import it.cnr.iit.ucs.message.endaccess.EndAccessResponseMessage;
 import it.cnr.iit.ucs.message.startaccess.StartAccessMessage;
-import it.cnr.iit.ucs.message.startaccess.StartAccessResponse;
+import it.cnr.iit.ucs.message.startaccess.StartAccessResponseMessage;
 import it.cnr.iit.ucs.message.tryaccess.TryAccessMessage;
-import it.cnr.iit.ucs.message.tryaccess.TryAccessResponse;
+import it.cnr.iit.ucs.message.tryaccess.TryAccessResponseMessage;
 
 /**
  * This is the interface provided by the ContextHandler.
@@ -68,7 +66,7 @@ public interface ContextHandlerInterface extends ContextHandlerPIPInterface {
      *          message received by the RequestManager
      * @return a message stating the response of the PDP to the request.
      */
-    public TryAccessResponse tryAccess( TryAccessMessage message );
+    public TryAccessResponseMessage tryAccess( TryAccessMessage message );
 
     /**
      * This is the startAccess function. In this case a tryAccess has already been
@@ -82,7 +80,7 @@ public interface ContextHandlerInterface extends ContextHandlerPIPInterface {
      * @return a message stating the response of the PDP to the request
      * @throws Exception
      */
-    public StartAccessResponse startAccess( StartAccessMessage message ) throws StartAccessException;
+    public StartAccessResponseMessage startAccess( StartAccessMessage message ) throws Exception;
 
     /**
      * This is the endAcces function. In this case the PEP doesn't require the
@@ -96,6 +94,6 @@ public interface ContextHandlerInterface extends ContextHandlerPIPInterface {
      * @return a message stating the response of the PDP to the request
      * @throws StatusException
      */
-    public EndAccessResponse endAccess( EndAccessMessage message ) throws EndAccessException;
+    public EndAccessResponseMessage endAccess( EndAccessMessage message ) throws StatusException;
 
 }

@@ -11,12 +11,12 @@ import org.mockito.Mockito;
 
 import it.cnr.iit.ucs.message.Message;
 import it.cnr.iit.ucs.message.endaccess.EndAccessMessage;
-import it.cnr.iit.ucs.message.endaccess.EndAccessResponse;
-import it.cnr.iit.ucs.message.reevaluation.ReevaluationResponse;
+import it.cnr.iit.ucs.message.endaccess.EndAccessResponseMessage;
+import it.cnr.iit.ucs.message.reevaluation.ReevaluationResponseMessage;
 import it.cnr.iit.ucs.message.startaccess.StartAccessMessage;
-import it.cnr.iit.ucs.message.startaccess.StartAccessResponse;
+import it.cnr.iit.ucs.message.startaccess.StartAccessResponseMessage;
 import it.cnr.iit.ucs.message.tryaccess.TryAccessMessage;
-import it.cnr.iit.ucs.message.tryaccess.TryAccessResponse;
+import it.cnr.iit.ucs.message.tryaccess.TryAccessResponseMessage;
 
 import oasis.names.tc.xacml.core.schema.wd_17.DecisionType;
 
@@ -29,18 +29,18 @@ public class MessageStorageTest {
     private String sessionId = "sid:01234567890987654321";
 
     private TryAccessMessage tryAccessMessage;
-    private TryAccessResponse tryAccessResponsePermit;
-    private TryAccessResponse tryAccessResponseDeny;
+    private TryAccessResponseMessage tryAccessResponsePermit;
+    private TryAccessResponseMessage tryAccessResponseDeny;
     private StartAccessMessage startAccessMessage;
     private StartAccessMessage startAccessMessageDeny;
-    private StartAccessResponse startAccessResponsePermit;
-    private StartAccessResponse startAccessResponseDeny;
+    private StartAccessResponseMessage startAccessResponsePermit;
+    private StartAccessResponseMessage startAccessResponseDeny;
     private EndAccessMessage endAccessMessage;
     private EndAccessMessage endAccessMessageDeny;
-    private EndAccessResponse endAccessResponsePermit;
-    private EndAccessResponse endAccessResponseDeny;
-    private ReevaluationResponse reevaluationResponseDenyMessage;
-    private ReevaluationResponse reevaluationResponsePermitMessage;
+    private EndAccessResponseMessage endAccessResponsePermit;
+    private EndAccessResponseMessage endAccessResponseDeny;
+    private ReevaluationResponseMessage reevaluationResponseDenyMessage;
+    private ReevaluationResponseMessage reevaluationResponsePermitMessage;
 
     @Before
     public void init() {
@@ -78,35 +78,35 @@ public class MessageStorageTest {
     public void testMessageStorage() {
         assertTrue( storage.addMessage( tryAccessMessage ) );
         assertTrue( storage.getMessageStatus( tryAccessMessage.getMessageId() ).isPresent() );
-        assertTrue( storage.getMessageStatus( tryAccessMessage.getMessageId() ).get().getStatus() == STATUS.TRYACCESS_SENT );
+        assertTrue( storage.getMessageStatus( tryAccessMessage.getMessageId() ).get().getStatus() == PEP_STATUS.TRYACCESS_SENT );
         assertTrue( storage.addMessage( tryAccessResponsePermit ) );
         assertTrue( storage.getMessageStatus( tryAccessMessage.getMessageId() ).isPresent() );
-        assertTrue( storage.getMessageStatus( tryAccessMessage.getMessageId() ).get().getStatus() == STATUS.TRYACCESS_PERMIT );
+        assertTrue( storage.getMessageStatus( tryAccessMessage.getMessageId() ).get().getStatus() == PEP_STATUS.TRYACCESS_PERMIT );
         assertTrue( storage.addMessage( startAccessMessage ) );
         assertTrue( storage.getMessageStatus( startAccessMessage.getMessageId() ).isPresent() );
-        assertTrue( storage.getMessageStatus( startAccessMessage.getMessageId() ).get().getStatus() == STATUS.STARTACCESS_SENT );
-        assertTrue( storage.getMessageStatus( tryAccessMessage.getMessageId() ).get().getStatus() == STATUS.STARTACCESS_SENT );
+        assertTrue( storage.getMessageStatus( startAccessMessage.getMessageId() ).get().getStatus() == PEP_STATUS.STARTACCESS_SENT );
+        assertTrue( storage.getMessageStatus( tryAccessMessage.getMessageId() ).get().getStatus() == PEP_STATUS.STARTACCESS_SENT );
         assertTrue( storage.addMessage( startAccessResponsePermit ) );
         assertTrue( storage.getMessageStatus( startAccessMessage.getMessageId() ).isPresent() );
-        assertTrue( storage.getMessageStatus( startAccessMessage.getMessageId() ).get().getStatus() == STATUS.STARTACCESS_PERMIT );
-        assertTrue( storage.getMessageStatus( tryAccessMessage.getMessageId() ).get().getStatus() == STATUS.STARTACCESS_PERMIT );
+        assertTrue( storage.getMessageStatus( startAccessMessage.getMessageId() ).get().getStatus() == PEP_STATUS.STARTACCESS_PERMIT );
+        assertTrue( storage.getMessageStatus( tryAccessMessage.getMessageId() ).get().getStatus() == PEP_STATUS.STARTACCESS_PERMIT );
         assertTrue( storage.addMessage( reevaluationResponseDenyMessage ) );
         assertTrue( storage.getMessageStatus( reevaluationResponseDenyMessage.getMessageId() ).isPresent() );
-        assertTrue( storage.getMessageStatus( reevaluationResponseDenyMessage.getMessageId() ).get().getStatus() == STATUS.REVOKED );
-        assertTrue( storage.getMessageStatus( tryAccessMessage.getMessageId() ).get().getStatus() == STATUS.REVOKED );
-        assertTrue( storage.getMessageStatus( tryAccessMessage.getMessageId() ).get().getStatus() == STATUS.REVOKED );
+        assertTrue( storage.getMessageStatus( reevaluationResponseDenyMessage.getMessageId() ).get().getStatus() == PEP_STATUS.REVOKED );
+        assertTrue( storage.getMessageStatus( tryAccessMessage.getMessageId() ).get().getStatus() == PEP_STATUS.REVOKED );
+        assertTrue( storage.getMessageStatus( tryAccessMessage.getMessageId() ).get().getStatus() == PEP_STATUS.REVOKED );
         assertTrue( storage.addMessage( reevaluationResponsePermitMessage ) );
         assertTrue( storage.getMessageStatus( reevaluationResponsePermitMessage.getMessageId() ).isPresent() );
-        assertTrue( storage.getMessageStatus( reevaluationResponsePermitMessage.getMessageId() ).get().getStatus() == STATUS.SESSION_RESUMED );
-        assertTrue( storage.getMessageStatus( tryAccessMessage.getMessageId() ).get().getStatus() == STATUS.SESSION_RESUMED );
+        assertTrue( storage.getMessageStatus( reevaluationResponsePermitMessage.getMessageId() ).get().getStatus() == PEP_STATUS.SESSION_RESUMED );
+        assertTrue( storage.getMessageStatus( tryAccessMessage.getMessageId() ).get().getStatus() == PEP_STATUS.SESSION_RESUMED );
         assertTrue( storage.addMessage( endAccessMessage ) );
         assertTrue( storage.getMessageStatus( endAccessMessage.getMessageId() ).isPresent() );
-        assertTrue( storage.getMessageStatus( endAccessMessage.getMessageId() ).get().getStatus() == STATUS.ENDACCESS_SENT );
-        assertTrue( storage.getMessageStatus( tryAccessMessage.getMessageId() ).get().getStatus() == STATUS.ENDACCESS_SENT );
+        assertTrue( storage.getMessageStatus( endAccessMessage.getMessageId() ).get().getStatus() == PEP_STATUS.ENDACCESS_SENT );
+        assertTrue( storage.getMessageStatus( tryAccessMessage.getMessageId() ).get().getStatus() == PEP_STATUS.ENDACCESS_SENT );
         assertTrue( storage.addMessage( endAccessResponsePermit ) );
         assertTrue( storage.getMessageStatus( endAccessMessage.getMessageId() ).isPresent() );
-        assertTrue( storage.getMessageStatus( endAccessMessage.getMessageId() ).get().getStatus() == STATUS.ENDACCESS_PERMIT );
-        assertTrue( storage.getMessageStatus( tryAccessMessage.getMessageId() ).get().getStatus() == STATUS.ENDACCESS_PERMIT );
+        assertTrue( storage.getMessageStatus( endAccessMessage.getMessageId() ).get().getStatus() == PEP_STATUS.ENDACCESS_PERMIT );
+        assertTrue( storage.getMessageStatus( tryAccessMessage.getMessageId() ).get().getStatus() == PEP_STATUS.ENDACCESS_PERMIT );
         assertTrue( storage.getMessagesPerSession( sessionId ).get( 0 ).equals( tryAccessMessage.getMessageId() ) );
         assertTrue( storage.getMessagesPerSession( sessionId ).get( 1 ).equals( startAccessMessage.getMessageId() ) );
     }

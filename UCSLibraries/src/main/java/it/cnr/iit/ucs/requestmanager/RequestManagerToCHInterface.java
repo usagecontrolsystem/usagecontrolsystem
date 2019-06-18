@@ -15,7 +15,7 @@
  ******************************************************************************/
 package it.cnr.iit.ucs.requestmanager;
 
-import it.cnr.iit.ucs.message.reevaluation.ReevaluationResponse;
+import it.cnr.iit.ucs.message.reevaluation.ReevaluationResponseMessage;
 
 /**
  * This is the interface provided by the request manager to the context handler.
@@ -33,5 +33,5 @@ public interface RequestManagerToCHInterface {
      *          the message the CH wants to send
      * @return the response message
      */
-    public void sendReevaluation( ReevaluationResponse message );
+    public void sendReevaluation( ReevaluationResponseMessage message );
 }

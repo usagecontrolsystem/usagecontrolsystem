@@ -27,14 +27,14 @@ import com.tngtech.jgiven.integration.spring.JGivenStage;
 
 import it.cnr.iit.peprest.PEPRest;
 import it.cnr.iit.peprest.messagetrack.CallerResponse;
-import it.cnr.iit.peprest.messagetrack.STATUS;
+import it.cnr.iit.peprest.messagetrack.PEP_STATUS;
 import it.cnr.iit.ucs.constants.RestOperation;
-import it.cnr.iit.ucs.message.EvaluatedResponse;
+import it.cnr.iit.ucs.message.EvaluatedMessage;
 import it.cnr.iit.ucs.message.Message;
 import it.cnr.iit.ucs.message.endaccess.EndAccessMessage;
 import it.cnr.iit.ucs.message.startaccess.StartAccessMessage;
 import it.cnr.iit.ucs.message.tryaccess.TryAccessMessage;
-import it.cnr.iit.ucs.message.tryaccess.TryAccessResponse;
+import it.cnr.iit.ucs.message.tryaccess.TryAccessResponseMessage;
 import it.cnr.iit.utility.errorhandling.Reject;
 
 import oasis.names.tc.xacml.core.schema.wd_17.DecisionType;
@@ -147,7 +147,7 @@ public class ThenMessage extends Stage<ThenMessage> {
         Reject.ifBlank( messageId );
         Optional<Message> message = getMessageFromId( messageId );
         if( message.isPresent() ) {
-            TryAccessResponse response = (TryAccessResponse) message.get();
+            TryAccessResponseMessage response = (TryAccessResponseMessage) message.get();
             return Optional.ofNullable( response.getSessionId() );
         }
         return Optional.empty();
@@ -163,8 +163,8 @@ public class ThenMessage extends Stage<ThenMessage> {
         Optional<Message> optional = getMessageFromId( messageId );
         if( optional.isPresent() ) {
             Message message = optional.get();
-            if( message instanceof EvaluatedResponse ) {
-                String result = ( (EvaluatedResponse) message ).getEvaluation().getResult();
+            if( message instanceof EvaluatedMessage ) {
+                String result = ( (EvaluatedMessage) message ).getEvaluation().getResult();
                 return Optional.of( result );
             }
         }
@@ -199,7 +199,7 @@ public class ThenMessage extends Stage<ThenMessage> {
         return self();
     }
 
-    public ThenMessage the_message_is_in_$_status( STATUS messageSendStatus ) {
+    public ThenMessage the_message_is_in_$_status( PEP_STATUS messageSendStatus ) {
         try {
             assertNotNull( messageId );
             CallerResponse callerResponse = pepRest.getMessageStorage().getMessageStatus( messageId ).get();

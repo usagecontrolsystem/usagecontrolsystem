@@ -20,18 +20,10 @@ import java.util.TimerTask;
 
 /**
  * Subscriber timer for the PIPReader.
- * <p>
- * Basically the subscriber timer is in charge of performing the task of
- * refreshing periodically the value of a certain attribute, if that value
- * changes, then it has to update the value in the subscriptions queue.
- *
- * <p>
- * By removing the public attribute to this class we have allowed only classes
- * in the same package to create or instantiate such a class
- * </p>
+ * It's in charge of performing the task of refreshing periodically the value
+ * of a certain attribute.
  *
  * @author Antonio La Marra, Alessandro Rosetti
- *
  */
 final class PIPReaderSubscriberTimer extends TimerTask {
     private Timer timer;

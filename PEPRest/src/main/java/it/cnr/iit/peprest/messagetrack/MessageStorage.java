@@ -8,12 +8,12 @@ import java.util.logging.Logger;
 
 import it.cnr.iit.ucs.message.Message;
 import it.cnr.iit.ucs.message.endaccess.EndAccessMessage;
-import it.cnr.iit.ucs.message.endaccess.EndAccessResponse;
-import it.cnr.iit.ucs.message.reevaluation.ReevaluationResponse;
+import it.cnr.iit.ucs.message.endaccess.EndAccessResponseMessage;
+import it.cnr.iit.ucs.message.reevaluation.ReevaluationResponseMessage;
 import it.cnr.iit.ucs.message.startaccess.StartAccessMessage;
-import it.cnr.iit.ucs.message.startaccess.StartAccessResponse;
+import it.cnr.iit.ucs.message.startaccess.StartAccessResponseMessage;
 import it.cnr.iit.ucs.message.tryaccess.TryAccessMessage;
-import it.cnr.iit.ucs.message.tryaccess.TryAccessResponse;
+import it.cnr.iit.ucs.message.tryaccess.TryAccessResponseMessage;
 import it.cnr.iit.utility.errorhandling.Reject;
 
 import oasis.names.tc.xacml.core.schema.wd_17.DecisionType;
@@ -42,7 +42,7 @@ public class MessageStorage implements MessageStorageInterface, MessagesPerSessi
     }
 
     private CallerResponse retrieveMessageStatus( String messageId ) {
-        if( messageFlow.get( messageId ).getCallerResponse().getStatus() != STATUS.TRYACCESS_PERMIT ) {
+        if( messageFlow.get( messageId ).getCallerResponse().getStatus() != PEP_STATUS.TRYACCESS_PERMIT ) {
             return messageFlow.get( messageId ).getCallerResponse();
         } else {
             return retrieveLastMessageStatus( messageFlow.get( messageId ).getCallerResponse().getSessionId() );
@@ -73,8 +73,8 @@ public class MessageStorage implements MessageStorageInterface, MessagesPerSessi
         } else if( message instanceof EndAccessMessage ) {
             addMessageId( ( (EndAccessMessage) message ).getSessionId(), message.getMessageId() );
             return addNewMessage( message );
-        } else if( message instanceof ReevaluationResponse ) {
-            addMessageId( ( (ReevaluationResponse) message ).getEvaluation().getSessionId(), message.getMessageId() );
+        } else if( message instanceof ReevaluationResponseMessage ) {
+            addMessageId( ( (ReevaluationResponseMessage) message ).getEvaluation().getSessionId(), message.getMessageId() );
             return addNewMessage( message );
         } else {
             throw new IllegalArgumentException( "Invalid message" );
@@ -83,13 +83,13 @@ public class MessageStorage implements MessageStorageInterface, MessagesPerSessi
 
     private boolean mergeMessages( Message message ) {
         MessageInformations messageInformations = messageFlow.get( message.getMessageId() );
-        if( message instanceof TryAccessResponse ) {
-            addMessagePerSession( (TryAccessResponse) message );
-            messageInformations.merge( (TryAccessResponse) message );
-        } else if( message instanceof StartAccessResponse ) {
-            messageInformations.merge( (StartAccessResponse) message );
-        } else if( message instanceof EndAccessResponse ) {
-            messageInformations.merge( (EndAccessResponse) message );
+        if( message instanceof TryAccessResponseMessage ) {
+            addMessagePerSession( (TryAccessResponseMessage) message );
+            messageInformations.merge( (TryAccessResponseMessage) message );
+        } else if( message instanceof StartAccessResponseMessage ) {
+            messageInformations.merge( (StartAccessResponseMessage) message );
+        } else if( message instanceof EndAccessResponseMessage ) {
+            messageInformations.merge( (EndAccessResponseMessage) message );
         }
         return insert( messageInformations );
     }
@@ -102,8 +102,8 @@ public class MessageStorage implements MessageStorageInterface, MessagesPerSessi
             messageInformations = MessageInformations.build( (StartAccessMessage) message );
         } else if( message instanceof EndAccessMessage ) {
             messageInformations = MessageInformations.build( (EndAccessMessage) message );
-        } else if( message instanceof ReevaluationResponse ) {
-            messageInformations = MessageInformations.build( (ReevaluationResponse) message );
+        } else if( message instanceof ReevaluationResponseMessage ) {
+            messageInformations = MessageInformations.build( (ReevaluationResponseMessage) message );
         }
         return insert( messageInformations );
     }
@@ -132,7 +132,7 @@ public class MessageStorage implements MessageStorageInterface, MessagesPerSessi
         return messagesPerSession.get( sessionId );
     }
 
-    private void addMessagePerSession( TryAccessResponse message ) {
+    private void addMessagePerSession( TryAccessResponseMessage message ) {
         if( message.getEvaluation().getResult().equals( DecisionType.PERMIT.value() ) ) {
             messagesPerSession.put( message.getSessionId(), new LinkedList<>() );
             addMessageId( message.getSessionId(), message.getMessageId() );

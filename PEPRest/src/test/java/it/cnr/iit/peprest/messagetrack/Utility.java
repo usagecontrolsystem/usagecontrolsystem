@@ -3,12 +3,12 @@ package it.cnr.iit.peprest.messagetrack;
 import java.util.Arrays;
 
 import it.cnr.iit.ucs.message.endaccess.EndAccessMessage;
-import it.cnr.iit.ucs.message.endaccess.EndAccessResponse;
-import it.cnr.iit.ucs.message.reevaluation.ReevaluationResponse;
+import it.cnr.iit.ucs.message.endaccess.EndAccessResponseMessage;
+import it.cnr.iit.ucs.message.reevaluation.ReevaluationResponseMessage;
 import it.cnr.iit.ucs.message.startaccess.StartAccessMessage;
-import it.cnr.iit.ucs.message.startaccess.StartAccessResponse;
+import it.cnr.iit.ucs.message.startaccess.StartAccessResponseMessage;
 import it.cnr.iit.ucs.message.tryaccess.TryAccessMessage;
-import it.cnr.iit.ucs.message.tryaccess.TryAccessResponse;
+import it.cnr.iit.ucs.message.tryaccess.TryAccessResponseMessage;
 import it.cnr.iit.ucs.pdp.PDPResponse;
 
 import oasis.names.tc.xacml.core.schema.wd_17.DecisionType;
@@ -17,9 +17,9 @@ import oasis.names.tc.xacml.core.schema.wd_17.ResultType;
 
 public class Utility {
 
-    protected ReevaluationResponse buildReevaluationResponse( DecisionType decisionType ) {
+    protected ReevaluationResponseMessage buildReevaluationResponse( DecisionType decisionType ) {
         PDPResponse pdpEvaluation = buildPDPResponse( decisionType );
-        ReevaluationResponse reevaluationResponse = new ReevaluationResponse();
+        ReevaluationResponseMessage reevaluationResponse = new ReevaluationResponseMessage();
         reevaluationResponse.setEvaluation( pdpEvaluation );
         return reevaluationResponse;
     }
@@ -33,27 +33,27 @@ public class Utility {
         return pdpResponse;
     }
 
-    public static TryAccessResponse buildTryAccessResponse( TryAccessMessage message, DecisionType decisionType,
+    public static TryAccessResponseMessage buildTryAccessResponse( TryAccessMessage message, DecisionType decisionType,
             String sessionId ) {
         PDPResponse pdpEvaluation = buildPDPResponse( decisionType );
-        TryAccessResponse tryAccessResponse = new TryAccessResponse( message.getMessageId() );
+        TryAccessResponseMessage tryAccessResponse = new TryAccessResponseMessage( message.getMessageId() );
         tryAccessResponse.setSessionId( sessionId );
         tryAccessResponse.setEvaluation( pdpEvaluation );
         return tryAccessResponse;
     }
 
-    public static StartAccessResponse buildStartAccessResponse( StartAccessMessage startAccessMessage,
+    public static StartAccessResponseMessage buildStartAccessResponse( StartAccessMessage startAccessMessage,
             DecisionType decisionType, String sessionId ) {
         PDPResponse pdpEvaluation = buildPDPResponse( decisionType );
-        StartAccessResponse startAccessResponse = new StartAccessResponse( startAccessMessage.getMessageId() );
+        StartAccessResponseMessage startAccessResponse = new StartAccessResponseMessage( startAccessMessage.getMessageId() );
         startAccessResponse.setEvaluation( pdpEvaluation );
         return startAccessResponse;
     }
 
-    public static EndAccessResponse buildEndAccessResponse( EndAccessMessage endAccessMessage,
+    public static EndAccessResponseMessage buildEndAccessResponse( EndAccessMessage endAccessMessage,
             DecisionType decisionType, String sessionId ) {
         PDPResponse pdpEvaluation = buildPDPResponse( decisionType );
-        EndAccessResponse endAccessResponse = new EndAccessResponse( endAccessMessage.getMessageId() );
+        EndAccessResponseMessage endAccessResponse = new EndAccessResponseMessage( endAccessMessage.getMessageId() );
         endAccessResponse.setEvaluation( pdpEvaluation );
         return endAccessResponse;
     }
@@ -75,10 +75,10 @@ public class Utility {
         return endAccessMessage;
     }
 
-    public static ReevaluationResponse buildReevaluationResponse( String sessionId, DecisionType decisionType ) {
+    public static ReevaluationResponseMessage buildReevaluationResponse( String sessionId, DecisionType decisionType ) {
         PDPResponse pdpResponse = buildPDPResponse( decisionType );
         pdpResponse.setSessionId( sessionId );
-        ReevaluationResponse reevaluationResponse = new ReevaluationResponse();
+        ReevaluationResponseMessage reevaluationResponse = new ReevaluationResponseMessage();
         reevaluationResponse.setEvaluation( pdpResponse );
         return reevaluationResponse;
     }

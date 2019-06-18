@@ -46,11 +46,8 @@ import it.cnr.iit.xacml.DataType;
 import oasis.names.tc.xacml.core.schema.wd_17.RequestType;
 
 /**
- * This is the PIPReader.
- * <p>
- * The only task this PIP will perform is to read data from a file.
+ * The task this PIP is to read data from a file when requested.
  * The Path to reach the file is passed as parameter to the pip.
- * </p>
  *
  * @author Antonio La Marra, Alessandro Rosetti
  *

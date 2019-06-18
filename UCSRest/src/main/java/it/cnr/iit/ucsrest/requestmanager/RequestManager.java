@@ -23,7 +23,7 @@ import java.util.logging.Logger;
 import it.cnr.iit.ucs.constants.PURPOSE;
 import it.cnr.iit.ucs.message.Message;
 import it.cnr.iit.ucs.message.endaccess.EndAccessMessage;
-import it.cnr.iit.ucs.message.reevaluation.ReevaluationResponse;
+import it.cnr.iit.ucs.message.reevaluation.ReevaluationResponseMessage;
 import it.cnr.iit.ucs.message.startaccess.StartAccessMessage;
 import it.cnr.iit.ucs.message.tryaccess.TryAccessMessage;
 import it.cnr.iit.ucs.properties.components.RequestManagerProperties;
@@ -45,8 +45,8 @@ public class RequestManager extends AbstractRequestManager {
 
     public RequestManager( RequestManagerProperties properties ) {
         super( properties );
-        initializeInquirers();
         this.active = properties.isActive();
+        initializeInquirers();
     }
 
     /**
@@ -54,20 +54,17 @@ public class RequestManager extends AbstractRequestManager {
      *
      * @return true if everything goes fine, false in case of exceptions
     */
-    private boolean initializeInquirers() {
+    private void initializeInquirers() {
         try {
             inquirers = Executors.newFixedThreadPool( 1 );
         } catch( Exception e ) {
             log.severe( "Error initialising the RequestManager inquirers : " + e.getMessage() );
-            return false;
         }
-        return true;
     }
 
     @Override
-    public synchronized void sendReevaluation( ReevaluationResponse reevaluation ) {
+    public synchronized void sendReevaluation( ReevaluationResponseMessage reevaluation ) {
         Reject.ifNull( reevaluation, "Invalid message" );
-
         log.info( "Sending on going reevaluation." );
         getPEPMap().get( ( reevaluation ).getPepId() )
             .onGoingEvaluation( reevaluation );
@@ -96,10 +93,8 @@ public class RequestManager extends AbstractRequestManager {
     }
 
     /**
-     * The context handler inquirers perform an infinite loop in order
-     * to retrieve the messages coming to the request manager and sends those
-     * requests to the context handler which will be in charge of answer to the
-     * requests
+     * The context handler inquirers perform an infinite loop in order to retrieve
+     * the messages coming to the request manager and sends them to the context handler.
     */
     private class ContextHandlerInquirer implements Callable<Message> {
 

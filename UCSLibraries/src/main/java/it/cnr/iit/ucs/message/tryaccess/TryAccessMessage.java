@@ -18,20 +18,16 @@ package it.cnr.iit.ucs.message.tryaccess;
 import it.cnr.iit.ucs.constants.ENTITIES;
 import it.cnr.iit.ucs.constants.PURPOSE;
 import it.cnr.iit.ucs.message.Message;
-import it.cnr.iit.utility.JAXBUtility;
 import it.cnr.iit.utility.errorhandling.Reject;
-
-import oasis.names.tc.xacml.core.schema.wd_17.PolicyType;
-import oasis.names.tc.xacml.core.schema.wd_17.RequestType;
+import it.cnr.iit.xacml.wrappers.PolicyWrapper;
+import it.cnr.iit.xacml.wrappers.RequestWrapper;
 
 /**
- * This is the whole object that arrives as a message to the tryaccess.
+ * This is a tryAccess message.
  *
  * @author Antonio La Marra, Alessandro Rosetti
  */
 public final class TryAccessMessage extends Message {
-
-    private static final long serialVersionUID = 1L;
 
     private String pepUri;
     private String policyId;
@@ -59,10 +55,9 @@ public final class TryAccessMessage extends Message {
 
     public void setRequest( String request ) {
         Reject.ifBlank( request );
-        try {
-            JAXBUtility.unmarshalToObject( RequestType.class, request );
-        } catch( Exception exception ) {
-            throw new IllegalStateException( exception.getLocalizedMessage() );
+        RequestWrapper requestWrapper = RequestWrapper.build( request );
+        if( requestWrapper == null ) {
+            throw new IllegalStateException( "invalid policy" );
         }
         this.request = request;
     }
@@ -72,10 +67,10 @@ public final class TryAccessMessage extends Message {
     }
 
     public void setPolicy( String policy ) {
-        try {
-            JAXBUtility.unmarshalToObject( PolicyType.class, policy );
-        } catch( Exception exception ) {
-            throw new IllegalStateException( exception.getLocalizedMessage() );
+        Reject.ifBlank( policy );
+        PolicyWrapper policyWrapper = PolicyWrapper.build( policy );
+        if( policyWrapper == null ) {
+            throw new IllegalStateException( "invalid policy" );
         }
         this.policy = policy;
     }

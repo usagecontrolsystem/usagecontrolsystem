@@ -31,8 +31,6 @@ import it.cnr.iit.ucs.sessionmanager.SessionInterface;
  */
 public class ReevaluationMessage extends Message {
 
-    private static final long serialVersionUID = 1L;
-
     private List<String> sessionIds;
     private SessionInterface session;
 
