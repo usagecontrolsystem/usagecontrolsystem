@@ -29,8 +29,7 @@ import it.cnr.iit.utility.errorhandling.Reject;
 /**
  * This class contains all the utility function we need throughout this project.
  *
- * @author antonio
- *
+ * @author Antonio La Marra, Alessandro Rosetti
  */
 public final class FileUtility {
 
@@ -111,13 +110,6 @@ public final class FileUtility {
         } catch( NullPointerException e ) {
             return null;
         }
-    }
-
-    /**
-     * Secure reading of the file from the absolute path
-     */
-    public static String secureReadFileAbsPath( String string ) { // NOSONAR
-        return null;
     }
 
     public static boolean createPathIfNotExists( String path ) {

@@ -18,7 +18,7 @@ public class RequestWrapper {
 
     private static final Logger log = Logger.getLogger( RequestWrapper.class.getName() );
 
-    private PIPRegistryInterface pipRegistry = null;
+    private PIPRegistryInterface pipRegistry;
     private RequestType requestType;
     private String request;
 
@@ -76,6 +76,7 @@ public class RequestWrapper {
 
     public synchronized boolean fatten( boolean subscribe ) {
         if( pipRegistry == null ) {
+            log.log( Level.INFO, "pipRegistry is not set in this requestWrapper" );
             return false;
         }
         if( subscribe ) {

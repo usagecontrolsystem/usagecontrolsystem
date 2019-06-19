@@ -38,8 +38,7 @@ import it.cnr.iit.utility.errorhandling.Reject;
  * @author Antonio La Marra, Alessandro Rosetti
  *
  */
-public abstract class AbstractRequestManager
-        implements RequestManagerToCHInterface, UCSCHInterface {
+public abstract class AbstractRequestManager implements RequestManagerToCHInterface, UCSCHInterface {
 
     protected static final Logger log = Logger.getLogger( AbstractRequestManager.class.getName() );
 

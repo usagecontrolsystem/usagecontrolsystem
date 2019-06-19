@@ -18,6 +18,7 @@ package it.cnr.iit.ucs.message.attributechange;
 import java.util.ArrayList;
 import java.util.List;
 
+import it.cnr.iit.ucs.constants.ATTRIBUTE_ACTION;
 import it.cnr.iit.ucs.message.Message;
 import it.cnr.iit.xacml.Attribute;
 
@@ -33,7 +34,7 @@ public final class AttributeChangeMessage extends Message {
 
     List<Attribute> attributes = new ArrayList<>();
 
-    private ACTION action;
+    private ATTRIBUTE_ACTION attributeAction;
 
     public AttributeChangeMessage( String source, String destination ) {
         super( source, destination );
@@ -56,12 +57,12 @@ public final class AttributeChangeMessage extends Message {
         return new ArrayList<>( attributes );
     }
 
-    public void setAction( ACTION retrieve ) {
-        this.action = retrieve;
+    public void setAttributeAction( ATTRIBUTE_ACTION action ) {
+        this.attributeAction = action;
     }
 
-    public ACTION getAction() {
-        return action;
+    public ATTRIBUTE_ACTION getAttributeAction() {
+        return attributeAction;
     }
 
 }
