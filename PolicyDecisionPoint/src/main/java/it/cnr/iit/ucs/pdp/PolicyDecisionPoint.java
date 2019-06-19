@@ -211,15 +211,14 @@ public final class PolicyDecisionPoint extends AbstractPDP {
             if( multipleCtxResult.isIndeterminate() ) {
                 return new ResponseCtx(
                     ResultFactory.getFactory().getResult( AbstractResult.DECISION_INDETERMINATE, multipleCtxResult.getStatus(), context ) );
-            } else {
-                evaluationCtxSet = multipleCtxResult.getEvaluationCtxSet();
-                HashSet<AbstractResult> results = new HashSet<>();
-                for( EvaluationCtx ctx : evaluationCtxSet ) {
-                    AbstractResult result = evaluateContext( ctx, policyFinder );
-                    results.add( result );
-                }
-                return new ResponseCtx( results, XACMLConstants.XACML_VERSION_3_0 );
             }
+            evaluationCtxSet = multipleCtxResult.getEvaluationCtxSet();
+            HashSet<AbstractResult> results = new HashSet<>();
+            for( EvaluationCtx ctx : evaluationCtxSet ) {
+                AbstractResult result = evaluateContext( ctx, policyFinder );
+                results.add( result );
+            }
+            return new ResponseCtx( results, XACMLConstants.XACML_VERSION_3_0 );
         } else {
             // this is a special case that specific to XACML3 request
             if( context instanceof XACML3EvaluationCtx && ( (XACML3EvaluationCtx) context ).isMultipleAttributes() ) {
@@ -228,9 +227,8 @@ public final class PolicyDecisionPoint extends AbstractPDP {
             } else if( context instanceof XACML3EvaluationCtx && ( (RequestCtx) context.getRequestCtx() ).isCombinedDecision() ) {
                 return getResponseCtxFor( AbstractResult.DECISION_INDETERMINATE, Status.STATUS_PROCESSING_ERROR,
                     "Unsupported multiple decision profile. Is's not possible to combine them multiple decisions", context );
-            } else {
-                return new ResponseCtx( evaluateContext( context, policyFinder ) );
             }
+            return new ResponseCtx( evaluateContext( context, policyFinder ) );
         }
     }
 
@@ -258,18 +256,18 @@ public final class PolicyDecisionPoint extends AbstractPDP {
         return finderResult.getPolicy().evaluate( context );
     }
 
-    private void processPolicyReferences( AbstractPolicy policy, Set<PolicyReference> references ) {
-        if( policy instanceof Policy ) {
-            references.add( new PolicyReference( policy.getId(), PolicyReference.POLICY_REFERENCE, null, null ) );
-        } else if( policy instanceof PolicySet ) {
-            List<CombinerElement> elements = policy.getChildElements();
+    private void processPolicyReferences( AbstractPolicy abstractPolicy, Set<PolicyReference> references ) {
+        if( abstractPolicy instanceof Policy ) {
+            references.add( new PolicyReference( abstractPolicy.getId(), PolicyReference.POLICY_REFERENCE, null, null ) );
+        } else if( abstractPolicy instanceof PolicySet ) {
+            List<CombinerElement> elements = abstractPolicy.getChildElements();
             if( elements != null && elements.isEmpty() ) {
                 for( CombinerElement element : elements ) {
                     PolicyTreeElement treeElement = element.getElement();
                     if( treeElement instanceof AbstractPolicy ) {
                         processPolicyReferences( (AbstractPolicy) treeElement, references );
                     } else {
-                        references.add( new PolicyReference( policy.getId(), PolicyReference.POLICYSET_REFERENCE, null, null ) );
+                        references.add( new PolicyReference( abstractPolicy.getId(), PolicyReference.POLICYSET_REFERENCE, null, null ) );
                     }
                 }
             }

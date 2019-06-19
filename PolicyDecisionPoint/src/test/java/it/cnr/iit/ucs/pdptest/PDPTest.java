@@ -1,7 +1,9 @@
 package it.cnr.iit.ucs.pdptest;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.IOException;
 import java.util.logging.Logger;
@@ -91,29 +93,40 @@ public class PDPTest {
     }
 
     @Test
-    public void testPDP() throws PolicyException, RequestException {
-        PolicyWrapper policy = PolicyWrapper.build( this.policy );
-        assertThat( testEvaluation( requestDeny, policy ) ).contains( "deny" );
-        assertThat( testEvaluation( requestIndeterminate, policy ) ).contains( "indeterminate" );
-        assertThat( testEvaluation( requestPermit, policy ) ).contains( "permit" );
-        assertThat( testEvaluation( requestNotApplicable, PolicyWrapper.build( policyNotApplicable ) ) ).contains( "notapplicable" );
-        assertThat( testEvaluation( requestDeny, policy, STATUS.TRY ) ).contains( "deny" );
-        assertThat( testEvaluation( requestPermit, policy, STATUS.TRY ) ).contains( "permit" );
-        assertThat( testEvaluation( requestIndeterminate, policy, STATUS.TRY ) ).contains( "indeterminate" );
-        assertThat( testEvaluation( requestDeny, policy, STATUS.START ) ).contains( "deny" );
-        assertThat( testEvaluation( requestPermit, policy, STATUS.START ) ).contains( "permit" );
-        assertThat( testEvaluation( requestIndeterminate, policy, STATUS.START ) ).contains( "indeterminate" );
-        assertThat( testEvaluation( requestDeny, policy, STATUS.END ) ).contains( "deny" );
-        assertThat( testEvaluation( requestPermit, policy, STATUS.END ) ).contains( "permit" );
-        assertThat( testEvaluation( requestIndeterminate, policy, STATUS.END ) ).contains( "indeterminate" );
+    public void testPDP() {
+        PolicyWrapper policyWrapper = getPolicyWrapper( this.policy );
+        assertNotNull( policyWrapper );
+        assertThat( testEvaluation( requestDeny, policyWrapper ) ).contains( "deny" );
+        assertThat( testEvaluation( requestIndeterminate, policyWrapper ) ).contains( "indeterminate" );
+        assertThat( testEvaluation( requestPermit, policyWrapper ) ).contains( "permit" );
+        PolicyWrapper policyWrapperNotApplicable = getPolicyWrapper( policyNotApplicable );
+        assertNotNull( policyWrapperNotApplicable );
+        assertThat( testEvaluation( requestNotApplicable, policyWrapperNotApplicable ) ).contains( "notapplicable" );
+        assertThat( testEvaluation( requestDeny, policyWrapper, STATUS.TRY ) ).contains( "deny" );
+        assertThat( testEvaluation( requestPermit, policyWrapper, STATUS.TRY ) ).contains( "permit" );
+        assertThat( testEvaluation( requestIndeterminate, policyWrapper, STATUS.TRY ) ).contains( "indeterminate" );
+        assertThat( testEvaluation( requestDeny, policyWrapper, STATUS.START ) ).contains( "deny" );
+        assertThat( testEvaluation( requestPermit, policyWrapper, STATUS.START ) ).contains( "permit" );
+        assertThat( testEvaluation( requestIndeterminate, policyWrapper, STATUS.START ) ).contains( "indeterminate" );
+        assertThat( testEvaluation( requestDeny, policyWrapper, STATUS.END ) ).contains( "deny" );
+        assertThat( testEvaluation( requestPermit, policyWrapper, STATUS.END ) ).contains( "permit" );
+        assertThat( testEvaluation( requestIndeterminate, policyWrapper, STATUS.END ) ).contains( "indeterminate" );
         assertTrue( testEvaluation( requestIndeterminate, null, STATUS.END ) == null );
-        assertTrue( testEvaluation( null, policy, STATUS.END ) == null );
-        PolicyWrapper policyHelperDup = PolicyWrapper.build( policyDup );
-        assertThat( testEvaluation( requestPermit, policyHelperDup, STATUS.TRY ) ).contains( "permit" );
+        assertTrue( testEvaluation( null, policyWrapper, STATUS.END ) == null );
+        PolicyWrapper policyWrapperDup = getPolicyWrapper( policyDup );
+        assertNotNull( policyWrapperDup );
+        assertThat( testEvaluation( requestPermit, policyWrapperDup, STATUS.TRY ) ).contains( "permit" );
     }
 
-    private String testEvaluation( String request, PolicyWrapper policy ) throws RequestException {
-        RequestWrapper requestWrapper = RequestWrapper.build( request, null );
+    private String testEvaluation( String request, PolicyWrapper policy ) {
+        RequestWrapper requestWrapper = null;
+        try {
+            requestWrapper = RequestWrapper.build( request, null );
+        } catch( RequestException e ) {
+            fail( "error parsing request" );
+
+        }
+
         PDPEvaluation response = policyDecisionpoint.evaluate( requestWrapper, policy );
         if( response != null ) {
             String result = response.getResult().toLowerCase();
@@ -125,7 +138,8 @@ public class PDPTest {
 
     private String testEvaluation( String request, PolicyWrapper policy, STATUS status ) {
         try {
-            RequestWrapper requestWrapper = RequestWrapper.build( request );
+            RequestWrapper requestWrapper = getRequestWrapper( request );
+            assertNotNull( requestWrapper );
             PDPEvaluation response = policyDecisionpoint.evaluate( requestWrapper, policy, status );
             if( response != null ) {
                 String result = response.getResult().toLowerCase();
@@ -138,6 +152,22 @@ public class PDPTest {
             e.printStackTrace();
             return null;
         }
+    }
+
+    private RequestWrapper getRequestWrapper( String request ) {
+        RequestWrapper requestWrapper = null;
+        try {
+            requestWrapper = RequestWrapper.build( request, null );
+        } catch( RequestException e ) {}
+        return requestWrapper;
+    }
+
+    private PolicyWrapper getPolicyWrapper( String policy ) {
+        PolicyWrapper policyWrapper = null;
+        try {
+            policyWrapper = PolicyWrapper.build( policy );
+        } catch( PolicyException e ) {}
+        return policyWrapper;
     }
 
 }

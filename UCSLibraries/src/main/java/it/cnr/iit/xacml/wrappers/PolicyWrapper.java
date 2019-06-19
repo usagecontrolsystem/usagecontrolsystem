@@ -116,12 +116,11 @@ public class PolicyWrapper implements PolicyWrapperInterface {
     }
 
     private List<Attribute> getAttributesFromCondition( ConditionType conditionType, String conditionName ) {
-        String decisionTime = conditionType.getDecisionTime();
-        if( decisionTime == null ) {
+        if( conditionType.getDecisionTime() == null ) {
             if( conditionName.equals( PolicyTags.CONDITION_PRE ) ) {
                 return extractAttributes( conditionType );
             }
-        } else if( decisionTime.equals( conditionName ) ) {
+        } else if( conditionType.getDecisionTime().equals( conditionName ) ) {
             return extractAttributes( conditionType );
         }
         return new ArrayList<>();
@@ -188,13 +187,12 @@ public class PolicyWrapper implements PolicyWrapperInterface {
      */
     @Override
     public PolicyWrapper getPolicyForCondition( String conditionName ) throws PolicyException {
-        PolicyType clonedPolicyType = almostClonePolicyType();
+        PolicyType clonedPolicyType = partialClonePolicyType();
         List<Object> objectList = policyType.getCombinerParametersOrRuleCombinerParametersOrVariableDefinition();
         List<Object> clonedObjectList = clonedPolicyType.getCombinerParametersOrRuleCombinerParametersOrVariableDefinition();
 
         for( Object obj : objectList ) {
             RuleType ruleType = (RuleType) obj;
-            List<ConditionType> conditionList = ruleType.getCondition();
             /* If this list of objects contains a ruleType with a condition list it must be analysed.
               In any other case the object will be copied inside cloned list. */
             if( !( obj instanceof RuleType ) ||
@@ -203,10 +201,9 @@ public class PolicyWrapper implements PolicyWrapperInterface {
                 continue;
             }
 
-            for( ConditionType conditionType : conditionList ) {
-                String decisionTime = conditionType.getDecisionTime();
+            for( ConditionType conditionType : ruleType.getCondition() ) {
                 RuleType clonedRuleType;
-                if( decisionTime == null ) {
+                if( conditionType.getDecisionTime() == null ) {
                     if( conditionName.equals( PolicyTags.CONDITION_PRE ) ) {
                         clonedRuleType = cloneRuleType( ruleType, conditionType );
                     } else {
@@ -214,7 +211,7 @@ public class PolicyWrapper implements PolicyWrapperInterface {
                         clonedRuleType.setObligationExpressions( ruleType.getObligationExpressions() );
                     }
                     clonedObjectList.add( clonedRuleType );
-                } else if( decisionTime.equals( conditionName ) ) {
+                } else if( conditionType.getDecisionTime().equals( conditionName ) ) {
                     clonedRuleType = cloneRuleType( ruleType, conditionType );
                     clonedObjectList.add( clonedRuleType );
                     break;
@@ -257,8 +254,7 @@ public class PolicyWrapper implements PolicyWrapperInterface {
      *          the condition to be put inside the new ruleType object
      * @return the ruleType object built in this way
      */
-    private RuleType cloneRuleType( RuleType ruleType,
-            ConditionType conditionType ) {
+    private RuleType cloneRuleType( RuleType ruleType, ConditionType conditionType ) {
         RuleType newRuleType = new RuleType();
         newRuleType.getCondition().add( conditionType );
         newRuleType.setAdviceExpressions( ruleType.getAdviceExpressions() );
@@ -277,7 +273,7 @@ public class PolicyWrapper implements PolicyWrapperInterface {
      * @return the PolicyType object that is the copy of the one stored in this
      *         object
      */
-    private PolicyType almostClonePolicyType() {
+    private PolicyType partialClonePolicyType() {
         PolicyType newPolicyType = new PolicyType();
         newPolicyType.setDescription( policyType.getDescription() );
         newPolicyType.setPolicyId( policyType.getPolicyId() );
