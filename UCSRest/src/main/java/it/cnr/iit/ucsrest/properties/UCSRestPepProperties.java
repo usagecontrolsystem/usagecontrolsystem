@@ -4,16 +4,10 @@ import org.springframework.beans.factory.annotation.Value;
 
 import it.cnr.iit.ucs.properties.components.PepProperties;
 
-public class UCSRestPepProperties implements PepProperties {
-
-    @Value( "${name}" )
-    private String name;
+public class UCSRestPepProperties extends BaseProperties implements PepProperties {
 
     @Value( "${uri}" )
     private String uri;
-
-    @Value( "${id:1}" )
-    private String id;
 
     @Value( "${revoke-type:SOFT}" )
     private String revokeType;
@@ -31,30 +25,12 @@ public class UCSRestPepProperties implements PepProperties {
     private String apiEndAccessResponse;
 
     @Override
-    public String getName() {
-        return name;
-    }
-
-    public void setName( String name ) {
-        this.name = name;
-    }
-
-    @Override
     public String getUri() {
         return uri;
     }
 
     public void setUri( String uri ) {
         this.uri = uri;
-    }
-
-    @Override
-    public String getId() {
-        return id;
-    }
-
-    public void setId( String id ) {
-        this.id = id;
     }
 
     @Override

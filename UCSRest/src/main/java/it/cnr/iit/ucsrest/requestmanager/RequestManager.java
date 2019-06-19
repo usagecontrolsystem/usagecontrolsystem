@@ -76,7 +76,7 @@ public class RequestManager extends AbstractRequestManager {
      * puts it in the priority queue of messages
      */
     @Override
-    public synchronized Message sendMessageToCH( Message message ) {
+    public synchronized boolean sendMessageToCH( Message message ) {
         Reject.ifNull( message, "Null message" );
         try {
             if( !active ) {
@@ -84,11 +84,12 @@ public class RequestManager extends AbstractRequestManager {
             } else {
                 getQueueToCH().put( message );
             }
+            return true;
         } catch( Exception e ) {
             log.severe( e.getLocalizedMessage() );
             Thread.currentThread().interrupt();
+            return false;
         }
-        return null;
     }
 
     /**

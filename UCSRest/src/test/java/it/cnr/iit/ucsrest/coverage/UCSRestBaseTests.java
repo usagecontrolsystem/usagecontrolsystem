@@ -1,5 +1,6 @@
 package it.cnr.iit.ucsrest.coverage;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 import java.io.IOException;
@@ -136,7 +137,7 @@ public class UCSRestBaseTests {
         Mockito.when( sessionInterface.getPolicySet() ).thenReturn( policy );
         Mockito.when( sessionInterface.getOriginalRequest() ).thenReturn( request );
         Mockito.when( sessionInterface.getStatus() ).thenReturn( status );
-        Mockito.when( sessionInterface.getPEPUri() ).thenReturn( "localhost" + ContextHandler.PEP_ID_SEPARATOR + "1" );
+        Mockito.when( sessionInterface.getPepId() ).thenReturn( "1" );
 
         Mockito.when( sessionInterface.isStatus( ArgumentMatchers.anyString() ) ).thenAnswer(
             new Answer<Boolean>() {
@@ -265,6 +266,7 @@ public class UCSRestBaseTests {
             assertNotNull( pip );
             pips.add( pip );
         }
+        assertEquals( "VALUE", prop.getPipList().get( 1 ).getAdditionalProperties().get( "KEY" ) );
 
         return pips;
     }

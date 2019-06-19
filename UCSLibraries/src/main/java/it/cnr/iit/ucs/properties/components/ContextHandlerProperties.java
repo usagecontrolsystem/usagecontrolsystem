@@ -15,7 +15,7 @@
  ******************************************************************************/
 package it.cnr.iit.ucs.properties.components;
 
-import it.cnr.iit.ucs.properties.base.PluginProperties;
+import it.cnr.iit.ucs.properties.base.CommonProperties;
 import it.cnr.iit.ucs.properties.base.UriProperties;
 
-public interface ContextHandlerProperties extends PluginProperties, UriProperties {}
+public interface ContextHandlerProperties extends CommonProperties, UriProperties {}

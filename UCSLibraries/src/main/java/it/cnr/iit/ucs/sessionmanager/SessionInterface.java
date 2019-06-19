@@ -62,11 +62,11 @@ public interface SessionInterface {
     public String getOriginalRequest();
 
     /**
-     * Retrieves the URI of the PEP
+     * Retrieves the Id of the PEP
      *
-     * @return the uri of the PEP
+     * @return the id of the PEP
      */
-    public String getPEPUri();
+    public String getPepId();
 
     /**
      * Retrieves the IP of the ContextHandler that has evaluated the session

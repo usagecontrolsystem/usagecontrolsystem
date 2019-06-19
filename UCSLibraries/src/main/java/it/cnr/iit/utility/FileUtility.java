@@ -142,7 +142,7 @@ public final class FileUtility {
 
     public static String stripExtension( String name ) {
         if( name.contains( "." ) ) {
-            return name.substring( 0, name.lastIndexOf( "." ) );
+            return name.substring( 0, name.lastIndexOf( '.' ) );
         }
         return name;
     }

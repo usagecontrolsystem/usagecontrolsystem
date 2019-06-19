@@ -15,8 +15,8 @@
  ******************************************************************************/
 package it.cnr.iit.ucs.properties.components;
 
-import it.cnr.iit.ucs.properties.base.PluginProperties;
+import it.cnr.iit.ucs.properties.base.CommonProperties;
 
-public interface PapProperties extends PluginProperties {
+public interface PapProperties extends CommonProperties {
     public String getPath();
 }

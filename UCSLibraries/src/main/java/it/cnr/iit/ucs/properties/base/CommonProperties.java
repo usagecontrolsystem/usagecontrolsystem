@@ -15,6 +15,12 @@
  ******************************************************************************/
 package it.cnr.iit.ucs.properties.base;
 
-public interface PluginProperties {
+import java.util.Map;
+
+public interface CommonProperties {
     public String getName();
+
+    public Map<String, String> getAdditionalProperties();
+
+    public String getId();
 }

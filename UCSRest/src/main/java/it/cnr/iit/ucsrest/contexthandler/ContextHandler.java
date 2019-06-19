@@ -450,7 +450,7 @@ public final class ContextHandler extends AbstractContextHandler {
     }
 
     private ReevaluationResponseMessage buildReevaluationResponse( SessionInterface session, PDPEvaluation evaluation ) {
-        String[] destSplitted = session.getPEPUri().split( PEP_ID_SEPARATOR );
+        String[] destSplitted = session.getPepId().split( PEP_ID_SEPARATOR );
         ReevaluationResponseMessage response = new ReevaluationResponseMessage( uri.getHost(), destSplitted[0] );
         response.setPepId( destSplitted[destSplitted.length - 1] );
         response.setSessionId( session.getId() );

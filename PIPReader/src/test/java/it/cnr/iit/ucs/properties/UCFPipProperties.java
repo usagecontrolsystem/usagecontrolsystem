@@ -56,4 +56,10 @@ public class UCFPipProperties implements PipProperties {
         this.attributes = attributes;
     }
 
+    @Override
+    public Map<String, String> getAdditionalProperties() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
 }

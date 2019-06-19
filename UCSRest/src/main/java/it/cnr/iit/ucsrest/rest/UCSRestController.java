@@ -55,35 +55,39 @@ public class UCSRestController {
     @ApiResponses( value = {
         @ApiResponse( code = 500, message = "Invalid message received" ),
         @ApiResponse( code = 200, message = "OK" ) } )
-    @PostMapping( value = OperationName.TRYACCESS_REST, consumes = MediaType.APPLICATION_JSON_VALUE )
+    @PostMapping( value = OperationName.TRYACCESS_REST, consumes = MediaType.APPLICATION_JSON_VALUE,
+        produces = MediaType.APPLICATION_JSON_VALUE )
     // TODO UCS-34 NOSONAR
-    public void sendMessage( @RequestBody( ) TryAccessMessage message ) {
+    public Boolean sendMessage( @RequestBody( ) TryAccessMessage message ) {
         Reject.ifNull( message );
-        ucs.tryAccess( message );
+        log.log( Level.INFO, "Tryaccess received {0}", System.currentTimeMillis() );
+        return ucs.tryAccess( message );
     }
 
     @ApiOperation( httpMethod = "POST", value = "Receives request from PEP for startaccess operation" )
     @ApiResponses( value = {
         @ApiResponse( code = 500, message = "Invalid message received" ),
         @ApiResponse( code = 200, message = "OK" ) } )
-    @PostMapping( value = OperationName.STARTACCESS_REST, consumes = MediaType.APPLICATION_JSON_VALUE )
+    @PostMapping( value = OperationName.STARTACCESS_REST, consumes = MediaType.APPLICATION_JSON_VALUE,
+        produces = MediaType.APPLICATION_JSON_VALUE )
     // TODO UCS-34 NOSONAR
-    public void sendMessage( @RequestBody( ) StartAccessMessage message ) {
+    public Boolean sendMessage( @RequestBody( ) StartAccessMessage message ) {
         Reject.ifNull( message );
         log.log( Level.INFO, "Startaccess received {0}", System.currentTimeMillis() );
-        ucs.startAccess( message );
+        return ucs.startAccess( message );
     }
 
     @ApiOperation( httpMethod = "POST", value = "Receives request from PEP for endaccess operation" )
     @ApiResponses( value = {
         @ApiResponse( code = 500, message = "Invalid message received" ),
         @ApiResponse( code = 200, message = "OK" ) } )
-    @PostMapping( value = OperationName.ENDACCESS_REST, consumes = MediaType.APPLICATION_JSON_VALUE )
+    @PostMapping( value = OperationName.ENDACCESS_REST, consumes = MediaType.APPLICATION_JSON_VALUE,
+        produces = MediaType.APPLICATION_JSON_VALUE )
     // TODO UCS-34 NOSONAR
-    public void sendMessage( @RequestBody( ) EndAccessMessage message ) {
+    public Boolean sendMessage( @RequestBody( ) EndAccessMessage message ) {
         Reject.ifNull( message );
         log.log( Level.INFO, "Endaccess received {0}", System.currentTimeMillis() );
-        ucs.endAccess( message );
+        return ucs.endAccess( message );
     }
 
 }

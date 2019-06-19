@@ -50,7 +50,7 @@ public class PolicyWrapper implements PolicyWrapperInterface {
 
     private static final Logger log = Logger.getLogger( PolicyWrapper.class.getName() );
 
-    private static final String MSG_WARN_COND_NOT_FOUND = "Condition not found : {0}";
+    private static final int MAX_LENGTH_STRING = 20;
 
     private PolicyType policyType;
     private String policy;
@@ -100,6 +100,7 @@ public class PolicyWrapper implements PolicyWrapperInterface {
     @Override
     public List<Attribute> getAttributesForCondition( String conditionName ) {
         Reject.ifBlank( conditionName );
+        Reject.ifTrue( conditionName.length() > MAX_LENGTH_STRING );
         for( RuleType ruleType : policyType.getRuleTypeList() ) {
             List<ConditionType> conditions = ruleType.getCondition();
             if( conditions != null ) {
@@ -111,7 +112,7 @@ public class PolicyWrapper implements PolicyWrapperInterface {
                 }
             }
         }
-        log.warning( String.format( MSG_WARN_COND_NOT_FOUND, conditionName ) );
+        log.warning( "Condition not found : " + conditionName );
         return new ArrayList<>();
     }
 

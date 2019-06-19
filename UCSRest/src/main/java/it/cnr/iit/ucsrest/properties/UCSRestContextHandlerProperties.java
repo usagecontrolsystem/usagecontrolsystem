@@ -1,25 +1,15 @@
 package it.cnr.iit.ucsrest.properties;
 
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Value;
 
 import it.cnr.iit.ucs.properties.components.ContextHandlerProperties;
 
-public class UCSRestContextHandlerProperties implements ContextHandlerProperties {
-
-    @Value( "${name}" )
-    private String name;
+public class UCSRestContextHandlerProperties extends BaseProperties implements ContextHandlerProperties {
 
     @Value( "${uri}" )
     private String uri;
-
-    @Override
-    public String getName() {
-        return name;
-    }
-
-    public void setName( String name ) {
-        this.name = name;
-    }
 
     @Override
     public String getUri() {
@@ -28,6 +18,11 @@ public class UCSRestContextHandlerProperties implements ContextHandlerProperties
 
     public void setUri( String uri ) {
         this.uri = uri;
+    }
+
+    @Override
+    public Map<String, String> getAdditionalProperties() {
+        return null;
     }
 
 }

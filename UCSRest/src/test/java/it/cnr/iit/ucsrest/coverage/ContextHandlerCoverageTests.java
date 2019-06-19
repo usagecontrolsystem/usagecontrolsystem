@@ -20,6 +20,8 @@ import org.springframework.test.context.junit4.SpringRunner;
 import it.cnr.iit.ucs.constants.STATUS;
 import it.cnr.iit.ucs.exceptions.PolicyException;
 import it.cnr.iit.ucs.exceptions.RequestException;
+import it.cnr.iit.ucs.exceptions.EndAccessException;
+import it.cnr.iit.ucs.exceptions.StartAccessException;
 import it.cnr.iit.ucs.message.attributechange.AttributeChangeMessage;
 import it.cnr.iit.ucs.message.endaccess.EndAccessMessage;
 import it.cnr.iit.ucs.message.startaccess.StartAccessMessage;
@@ -60,6 +62,7 @@ public class ContextHandlerCoverageTests extends UCSRestBaseTests {
     @Test( expected = PreconditionException.class )
     public void contextHandlerTryAccessShouldFail() throws PreconditionException, PolicyException, RequestException {
         ContextHandler contextHandler = getContextHandler( properties );
+        getPIPS( properties );
         initContextHandler( contextHandler );
         // set the pdp response to return deny
         contextHandler.setPdp( getMockedPDP( getMockedPDPEvaluation( DecisionType.DENY ) ) );
@@ -69,7 +72,7 @@ public class ContextHandlerCoverageTests extends UCSRestBaseTests {
     }
 
     @Test
-    public void contextHandlerStartAccess() throws JAXBException, URISyntaxException, IOException, Exception {
+    public void contextHandlerStartAccess() throws StartAccessException, Exception {
         ContextHandler contextHandler = getContextHandlerCorrectlyInitialized( properties, policy, request );
 
         contextHandler.setSessionManager(
@@ -82,7 +85,7 @@ public class ContextHandlerCoverageTests extends UCSRestBaseTests {
     }
 
     @Test
-    public void contextHandlerEndAccess() throws JAXBException, URISyntaxException, IOException, Exception {
+    public void contextHandlerEndAccess() throws EndAccessException, Exception {
         ContextHandler contextHandler = getContextHandlerCorrectlyInitialized( properties, policy, request );
 
         contextHandler.setSessionManager(
@@ -94,7 +97,7 @@ public class ContextHandlerCoverageTests extends UCSRestBaseTests {
     }
 
     @Test
-    public void contextHandlerFullFlow() throws JAXBException, URISyntaxException, IOException, Exception {
+    public void contextHandlerFullFlow() throws StartAccessException, EndAccessException, Exception {
         ContextHandler contextHandler = getContextHandlerCorrectlyInitialized( properties, policy, request );
 
         /* tryAccess */
