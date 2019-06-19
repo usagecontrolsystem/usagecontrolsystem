@@ -5,7 +5,6 @@ import java.util.logging.Logger;
 
 import javax.xml.bind.JAXBException;
 
-import it.cnr.iit.ucs.constants.STATUS;
 import it.cnr.iit.ucs.contexthandler.pipregistry.PIPRegistryInterface;
 import it.cnr.iit.ucs.exceptions.RequestException;
 import it.cnr.iit.utility.JAXBUtility;
@@ -75,11 +74,11 @@ public class RequestWrapper {
         }
     }
 
-    public synchronized boolean fatten( STATUS status ) {
+    public synchronized boolean fatten( boolean subscribe ) {
         if( pipRegistry == null ) {
             return false;
         }
-        if( status == STATUS.START ) {
+        if( subscribe ) {
             pipRegistry.subscribeAll( requestType );
         } else {
             pipRegistry.retrieveAll( requestType );

@@ -81,7 +81,7 @@ public final class ContextHandler extends AbstractContextHandler {
 
         PolicyWrapper policy = PolicyWrapper.build( getPap(), message );
         RequestWrapper request = RequestWrapper.build( message.getRequest(), getPipRegistry() );
-        request.fatten( STATUS.TRY );
+        request.fatten( false );
         log.info( "TryAccess fattened request contents : \n" + request.getRequest() );
 
         PDPEvaluation evaluation = getPdp().evaluate( request, policy, STATUS.TRY );
@@ -193,7 +193,7 @@ public final class ContextHandler extends AbstractContextHandler {
 
         PolicyWrapper policy = PolicyWrapper.build( session.getPolicySet() );
         RequestWrapper request = RequestWrapper.build( session.getOriginalRequest(), getPipRegistry() );
-        request.fatten( STATUS.START );
+        request.fatten( true );
 
         PDPEvaluation evaluation = getPdp().evaluate( request, policy, STATUS.START );
         Reject.ifNull( evaluation );
@@ -363,7 +363,7 @@ public final class ContextHandler extends AbstractContextHandler {
 
         PolicyWrapper policy = PolicyWrapper.build( session.getPolicySet() );
         RequestWrapper request = RequestWrapper.build( session.getOriginalRequest(), getPipRegistry() );
-        request.fatten( STATUS.END );
+        request.fatten( false );
 
         PDPEvaluation evaluation = getPdp().evaluate( request, policy, STATUS.END );
         Reject.ifNull( evaluation );
@@ -421,7 +421,7 @@ public final class ContextHandler extends AbstractContextHandler {
 
         PolicyWrapper policy = PolicyWrapper.build( session.getPolicySet() );
         RequestWrapper request = RequestWrapper.build( session.getOriginalRequest(), getPipRegistry() );
-        request.fatten( STATUS.START );
+        request.fatten( false );
 
         PDPEvaluation evaluation = getPdp().evaluate( request, policy, STATUS.START );
         Reject.ifNull( evaluation );
