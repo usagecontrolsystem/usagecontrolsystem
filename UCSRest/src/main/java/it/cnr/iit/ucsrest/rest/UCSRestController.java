@@ -48,10 +48,6 @@ import io.swagger.annotations.ApiResponses;
 public class UCSRestController {
     private static final Logger log = Logger.getLogger( UCSRestController.class.getName() );
 
-    enum REQUEST_STATUS {
-        IN_QUEUE, REJECTED;
-    }
-
     @Autowired
     private UCSInterface ucs;
 

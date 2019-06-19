@@ -50,6 +50,8 @@ public class PolicyWrapper implements PolicyWrapperInterface {
     private static final String MSG_ERR_UNMASHAL = "Error unmarshalling policy : {0}";
     private static final String MSG_ERR_MARSHAL = "Error marshalling policy : {0}";
 
+    private static final int MAX_LENGTH_STRING = 20;
+
     private PolicyType policyType;
     private String policy;
 
@@ -74,7 +76,7 @@ public class PolicyWrapper implements PolicyWrapperInterface {
     @Override
     public List<Attribute> getAttributesForCondition( String conditionName ) {
         Reject.ifBlank( conditionName );
-        Reject.ifTrue( conditionName.length() > 20 );
+        Reject.ifTrue( conditionName.length() > MAX_LENGTH_STRING );
         List<Object> list = policyType.getCombinerParametersOrRuleCombinerParametersOrVariableDefinition();
 
         for( Object obj : list ) {
