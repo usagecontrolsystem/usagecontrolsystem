@@ -4,6 +4,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.logging.Logger;
 
@@ -87,6 +88,18 @@ public class SessionManagerTest {
             @Override
             public String getDbUri() {
                 return dbUri;
+            }
+
+            @Override
+            public Map<String, String> getAdditionalProperties() {
+                // TODO Auto-generated method stub
+                return null;
+            }
+
+            @Override
+            public String getId() {
+                // TODO Auto-generated method stub
+                return null;
             }
         };
 

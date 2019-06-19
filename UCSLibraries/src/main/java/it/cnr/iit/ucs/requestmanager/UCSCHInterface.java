@@ -36,6 +36,6 @@ public interface UCSCHInterface {
      *          the message to be sent
      * @return the response of the ContextHandler
      */
-    public Message sendMessageToCH( Message message );
+    public boolean sendMessageToCH( Message message );
 
 }

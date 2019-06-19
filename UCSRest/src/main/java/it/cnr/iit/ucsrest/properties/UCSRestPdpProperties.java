@@ -4,22 +4,10 @@ import org.springframework.beans.factory.annotation.Value;
 
 import it.cnr.iit.ucs.properties.components.PdpProperties;
 
-public class UCSRestPdpProperties implements PdpProperties {
-
-    @Value( "${name}" )
-    private String name;
+public class UCSRestPdpProperties extends BaseProperties implements PdpProperties {
 
     @Value( "${journal-dir}" )
     private String journalDir;
-
-    @Override
-    public String getName() {
-        return name;
-    }
-
-    public void setName( String name ) {
-        this.name = name;
-    }
 
     @Override
     public String getJournalDir() {

@@ -4,25 +4,13 @@ import org.springframework.beans.factory.annotation.Value;
 
 import it.cnr.iit.ucs.properties.components.RequestManagerProperties;
 
-public class UCSRestRequestManagerProperties implements RequestManagerProperties {
-
-    @Value( "${name}" )
-    private String name;
+public class UCSRestRequestManagerProperties extends BaseProperties implements RequestManagerProperties {
 
     @Value( "${api-remote-response}" )
     private String apiRemoteResponse;
 
     @Value( "${active}" )
     private boolean active;
-
-    @Override
-    public String getName() {
-        return name;
-    }
-
-    public void setName( String name ) {
-        this.name = name;
-    }
 
     @Override
     public String getApiRemoteResponse() {

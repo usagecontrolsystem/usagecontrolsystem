@@ -259,7 +259,8 @@ public final class ContextHandler extends AbstractContextHandler {
     }
 
     private StartAccessResponseMessage buildStartAccessResponse( StartAccessMessage message, PDPEvaluation evaluation ) {
-        StartAccessResponseMessage response = new StartAccessResponseMessage( message.getDestination(), message.getSource(), message.getMessageId() );
+        StartAccessResponseMessage response = new StartAccessResponseMessage( message.getDestination(), message.getSource(),
+            message.getMessageId() );
         response.setEvaluation( evaluation );
         return response;
     }
@@ -420,7 +421,8 @@ public final class ContextHandler extends AbstractContextHandler {
     }
 
     private EndAccessResponseMessage buildEndAccessResponse( EndAccessMessage message, PDPEvaluation evaluation ) {
-        EndAccessResponseMessage response = new EndAccessResponseMessage( message.getDestination(), message.getSource(), message.getMessageId() );
+        EndAccessResponseMessage response = new EndAccessResponseMessage( message.getDestination(), message.getSource(),
+            message.getMessageId() );
         response.setEvaluation( evaluation );
         return response;
     }
@@ -483,7 +485,7 @@ public final class ContextHandler extends AbstractContextHandler {
         }
 
         evaluation.setSessionId( session.getId() );
-        ReevaluationResponseMessage response = buildReevaluationResponse( evaluation, session.getPEPUri() );
+        ReevaluationResponseMessage response = buildReevaluationResponse( evaluation, session.getPepId() );
         getRequestManager().sendReevaluation( response );
         log.log( Level.INFO, "Reevaluation ends changing status at {0}", System.currentTimeMillis() );
     }

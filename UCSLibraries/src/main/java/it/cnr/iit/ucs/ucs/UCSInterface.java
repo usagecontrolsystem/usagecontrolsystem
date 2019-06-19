@@ -43,7 +43,7 @@ public interface UCSInterface {
      *          required for the recipient to call back the caller and all the
      *          informations to correctly evaluate the request.
      */
-    public void tryAccess( TryAccessMessage tryAccessMessage );
+    public Boolean tryAccess( TryAccessMessage tryAccessMessage );
 
     /**
      * Request of a startAccess evaluation.
@@ -61,7 +61,7 @@ public interface UCSInterface {
      *          this message the caller puts only the sessionID that has to be
      *          evaluated
      */
-    public void startAccess( StartAccessMessage startAccessMessage );
+    public Boolean startAccess( StartAccessMessage startAccessMessage );
 
     /**
      * Request of an endAccess evaluation.
@@ -84,6 +84,6 @@ public interface UCSInterface {
      *          the message containing the informations required to perform the
      *          endAccess
      */
-    public void endAccess( EndAccessMessage endAccessMessage );
+    public Boolean endAccess( EndAccessMessage endAccessMessage );
 
 }
