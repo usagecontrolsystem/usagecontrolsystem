@@ -314,7 +314,7 @@ public final class PIPReader extends PIPBase {
     public void checkSubscriptions() {
         for( Attribute attribute : subscriptions ) {
             String value = "";
-            log.log( Level.INFO, "Polling on value of the attribute " + attribute.getAttributeId() + "for change." );
+            log.log( Level.INFO, "Polling on value of the attribute " + attribute.getAttributeId() + " for change." );
 
             try {
                 value = retrieve( attribute );
