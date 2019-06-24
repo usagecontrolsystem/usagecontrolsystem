@@ -1,19 +1,13 @@
-package it.cnr.iit.ucsrest.rest;
+package it.cnr.iit.ucscore.coverage.properties;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 
-import com.tngtech.jgiven.integration.spring.EnableJGiven;
-
 @Configuration
-@EnableJGiven
-public class UCSRestTestContext {
+public class TestProperties {
 
     @Value( "${ucstest.policy-file}" )
     private String policyFile;
-
-    @Value( "${ucstest.policy-file-deny}" )
-    private String policyFileDeny;
 
     @Value( "${ucstest.request-file}" )
     private String requestFile;
@@ -54,14 +48,6 @@ public class UCSRestTestContext {
 
     public void setSessionId( String sessionId ) {
         this.sessionId = sessionId;
-    }
-
-    public String getPolicyFileDeny() {
-        return policyFileDeny;
-    }
-
-    public void setPolicyFileDeny( String policyFileWithDeny ) {
-        this.policyFileDeny = policyFileWithDeny;
     }
 
 }
