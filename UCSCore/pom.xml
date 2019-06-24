@@ -13,12 +13,6 @@
 	<artifactId>UCSCore</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 
-	<properties>
-		<jclouds.version>1.9.1</jclouds.version>
-		<springfox.version>2.2.2</springfox.version>
-		<swagger.version>1.5.3</swagger.version>
-	</properties>
-
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
