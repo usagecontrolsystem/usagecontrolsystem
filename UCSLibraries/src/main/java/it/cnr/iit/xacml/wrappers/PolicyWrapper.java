@@ -181,7 +181,7 @@ public class PolicyWrapper implements PolicyWrapperInterface {
      */
     @Override
     public PolicyWrapper getPolicyForCondition( String conditionName ) throws PolicyException {
-        PolicyType clonedPolicyType = partialClonePolicyType();
+        PolicyType clonedPolicyType = clonePolicyTypeWithoutRules();
         List<Object> objectList = policyType.getCombinerParametersOrRuleCombinerParametersOrVariableDefinition();
         List<Object> clonedObjectList = clonedPolicyType.getCombinerParametersOrRuleCombinerParametersOrVariableDefinition();
 
@@ -270,7 +270,7 @@ public class PolicyWrapper implements PolicyWrapperInterface {
      * @return the PolicyType object that is the copy of the one stored in this
      *         object
      */
-    private PolicyType partialClonePolicyType() {
+    private PolicyType clonePolicyTypeWithoutRules() {
         PolicyType newPolicyType = new PolicyType();
         newPolicyType.setDescription( policyType.getDescription() );
         newPolicyType.setPolicyId( policyType.getPolicyId() );
