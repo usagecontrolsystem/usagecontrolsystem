@@ -9,13 +9,14 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>it.cnr.iit.ucsrest</groupId>
-	<artifactId>UCSRest</artifactId>
-	<version>1.0.0-SNAPSHOT</version>
+	<groupId>it.cnr.iit.ucscore</groupId>
+	<artifactId>UCSCore</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
 
 	<properties>
-		<springfox.version>2.9.2</springfox.version>
-		<swagger.version>1.5.22</swagger.version>
+		<jclouds.version>1.9.1</jclouds.version>
+		<springfox.version>2.2.2</springfox.version>
+		<swagger.version>1.5.3</swagger.version>
 	</properties>
 
 	<parent>
@@ -25,50 +26,40 @@
 		<relativePath /> <!-- lookup parent from repository -->
 	</parent>
 
+
 	<dependencies>
-		<dependency>
-			<groupId>it.cnr.iit.ucscore</groupId>
-			<artifactId>UCSCore</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
-		</dependency>
 		<dependency>
 			<groupId>it.cnr.iit.ucs</groupId>
 			<artifactId>UCSLibraries</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
-			<type>test-jar</type>
-			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>it.cnr.iit.ucs</groupId>
+			<artifactId>PolicyDecisionPoint</artifactId>
+			<version>1.0-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>it.cnr.iit.ucs</groupId>
+			<artifactId>PIPReader</artifactId>
+			<version>2.0-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>it.cnr.iit.ucs</groupId>
+			<artifactId>PolicyAdministrationPoint</artifactId>
+			<version>1.0-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>it.cnr.iit.ucs</groupId>
+			<artifactId>ObligationManager</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>it.cnr.iit.ucs</groupId>
+			<artifactId>SessionManager</artifactId>
+			<version>1.0-SNAPSHOT</version>
 		</dependency>
 
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-configuration-processor</artifactId>
-			<optional>true</optional>
-		</dependency>
-
-		<!-- springfox dependencies -->
-		<dependency>
-			<groupId>io.springfox</groupId>
-			<artifactId>springfox-swagger2</artifactId>
-			<version>${springfox.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>io.springfox</groupId>
-			<artifactId>springfox-swagger-ui</artifactId>
-			<version>${springfox.version}</version>
-		</dependency>
-
-		<!-- swagger core dependencies -->
-		<dependency>
-			<groupId>io.swagger</groupId>
-			<artifactId>swagger-annotations</artifactId>
-			<version>${swagger.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>io.swagger</groupId>
-			<artifactId>swagger-core</artifactId>
-			<version>${swagger.version}</version>
-		</dependency>
-
+		<!-- test -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
@@ -80,7 +71,6 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
-
 		<dependency>
 			<groupId>com.github.tomakehurst</groupId>
 			<artifactId>wiremock</artifactId>
@@ -137,7 +127,7 @@
 		<dependency>
 			<groupId>com.google.guava</groupId>
 			<artifactId>guava</artifactId>
-			<version>23.0</version>
+			<version>22.0</version>
 		</dependency>
 
 	</dependencies>
@@ -153,39 +143,9 @@
 			</plugin>
 
 			<plugin>
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-maven-plugin</artifactId>
-			</plugin>
-
-			<plugin>
 				<artifactId>maven-war-plugin</artifactId>
 				<configuration>
 					<failOnMissingWebXml>false</failOnMissingWebXml>
-				</configuration>
-			</plugin>
-
-			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>exec-maven-plugin</artifactId>
-				<configuration>
-					<mainClass>it.cnr.iit.ucs</mainClass>
-				</configuration>
-			</plugin>
-
-			<plugin>
-				<groupId>com.tngtech.jgiven</groupId>
-				<artifactId>jgiven-maven-plugin</artifactId>
-				<version>0.17.0</version>
-				<executions>
-					<execution>
-						<goals>
-							<goal>report</goal>
-						</goals>
-					</execution>
-				</executions>
-				<configuration>
-					<outputDirectory>jgiven-reports</outputDirectory>
-					<format>html</format>
 				</configuration>
 			</plugin>
 

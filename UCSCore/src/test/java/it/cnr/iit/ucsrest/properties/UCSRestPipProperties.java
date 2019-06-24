@@ -1,36 +1,19 @@
-package it.cnr.iit.ucs.properties;
+package it.cnr.iit.ucsrest.properties;
 
 import java.util.List;
 import java.util.Map;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.springframework.beans.factory.annotation.Value;
 
 import it.cnr.iit.ucs.properties.components.PipProperties;
 
-public class UCFPipProperties implements PipProperties {
+public class UCSRestPipProperties extends BaseProperties implements PipProperties {
 
-    private String name;
-    private String id;
+    @Value( "${journalDir}" )
     private String journalDir;
+
+    @Value( "${attributes}" )
     private List<Map<String, String>> attributes;
-
-    @Override
-    public String getName() {
-        return name;
-    }
-
-    public void setName( String name ) {
-        this.name = name;
-    }
-
-    @Override
-    public String getId() {
-        return id;
-    }
-
-    public void setId( String id ) {
-        this.id = id;
-    }
 
     @Override
     public String getJournalDir() {
@@ -42,7 +25,6 @@ public class UCFPipProperties implements PipProperties {
     }
 
     @Override
-    @JsonIgnore
     public boolean isMultiAttribute() {
         return attributes != null && attributes.size() > 1;
     }
@@ -54,11 +36,6 @@ public class UCFPipProperties implements PipProperties {
 
     public void setAttributes( List<Map<String, String>> attributes ) {
         this.attributes = attributes;
-    }
-
-    @Override
-    public Map<String, String> getAdditionalProperties() {
-        return null;
     }
 
 }

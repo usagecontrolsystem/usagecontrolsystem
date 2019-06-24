@@ -24,6 +24,8 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import com.tngtech.jgiven.annotation.AfterScenario;
+
 import it.cnr.iit.ucs.contexthandler.ContextHandlerInterface;
 import it.cnr.iit.ucs.exceptions.PIPException;
 import it.cnr.iit.ucs.pipreader.PIPReader;
@@ -115,6 +117,13 @@ public class CoverageTest {
         } catch( Exception e ) {
             e.printStackTrace();
         }
+    }
+
+    @AfterScenario
+    private void cleanUp() {
+        try {
+            Files.delete( Paths.get( environmentFilePath ) );
+        } catch( IOException e ) {}
     }
 
     private void resetRequest() {

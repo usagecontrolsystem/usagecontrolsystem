@@ -9,8 +9,13 @@ import static it.cnr.iit.ucs.constants.RestOperation.TRY_ACCESS_RESPONSE;
 
 import org.apache.http.HttpStatus;
 import org.junit.Test;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.mock.web.MockServletContext;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestPropertySource;
 
 import com.tngtech.jgiven.annotation.ScenarioStage;
 import com.tngtech.jgiven.integration.spring.SpringRuleScenarioTest;
@@ -24,7 +29,12 @@ import it.cnr.iit.ucsrest.rest.jgiven.stages.WhenUCSRestController;
 
 import oasis.names.tc.xacml.core.schema.wd_17.DecisionType;
 
-@SpringBootTest( classes = { MockServletContext.class, UCSRestTestContext.class } )
+@EnableAutoConfiguration
+@TestPropertySource( properties = "application.properties" )
+@EnableConfigurationProperties
+@ContextConfiguration( classes = { UCSRestTestContext.class } )
+@ComponentScan( basePackages = { "it.cnr.iit" } )
+@SpringBootTest( classes = { MockServletContext.class } )
 public class UCSRestScenarioIntegrationTest
         extends SpringRuleScenarioTest<GivenMessage, WhenUCSRestController, ThenMessage> {
 

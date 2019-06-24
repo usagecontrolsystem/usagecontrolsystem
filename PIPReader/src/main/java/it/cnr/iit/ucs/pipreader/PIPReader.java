@@ -79,7 +79,6 @@ public final class PIPReader extends PIPBase {
     public PIPReader( PipProperties properties ) {
         super( properties );
         Reject.ifFalse( init( properties ), "Error initialising pip : " + properties.getId() );
-        log.info( "PIPReader " + properties.getId() + " initialised" );
     }
 
     private boolean init( PipProperties properties ) {
@@ -111,11 +110,9 @@ public final class PIPReader extends PIPBase {
 
     /**
      * Performs the retrieve operation.
-     * <p>
      * The retrieve operation is a very basic operation in which the PIP simply
      * asks to the AttributeManager the value in which it is interested into. Once
      * that value has been retrieved, the PIP will fatten the request.
-     * </p>
      *
      * @param request
      *          this is an in/out parameter
@@ -242,8 +239,6 @@ public final class PIPReader extends PIPBase {
 
     /**
      * Effective retrieval of the monitored value looking for the line containing a filter.
-     *
-     * <br>
      * NOTE we suppose that in the file each line has the following structure:
      * filter\tattribute.
      *
