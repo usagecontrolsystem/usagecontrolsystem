@@ -45,14 +45,8 @@ public final class PDPResponse implements PDPEvaluation {
 
     private static Logger log = Logger.getLogger( PDPResponse.class.getName() );
 
-    private static final String MSG_ERR_UNMARSHAL = "Error unmarshalling xml : {0}";
-    private static final String MSG_ERR_MARSHAL = "Error marshalling to xml : {0}";
-
     // the response provided by the PDP object
     private ResponseType responseType = null;
-
-    // the id of the session the which the evaluation was referred
-    private String sessionId = "";
 
     // list of firing rules
     private ArrayList<Integer> firingRules = new ArrayList<>();
@@ -63,31 +57,10 @@ public final class PDPResponse implements PDPEvaluation {
 
     public PDPResponse() {}
 
-    public PDPResponse( String string ) {
-        convertXACMLStringToResponse( string );
-        Reject.ifNull( responseType );
-        initialized = true;
-    }
-
     public PDPResponse( ResponseType response ) {
         setResponseType( response );
         Reject.ifNull( responseType );
         initialized = true;
-    }
-
-    /**
-     * Sets the response provided by the PDP. This function also checks if the response provided by the PDP is of a
-     * valid Response type.
-     *
-     * @param string the response in string format
-     * @return true if everything goes ok, false otherwise
-     */
-    private void convertXACMLStringToResponse( String string ) {
-        try {
-            responseType = JAXBUtility.unmarshalToObject( ResponseType.class, string );
-        } catch( Exception e ) {
-            log.log( Level.SEVERE, MSG_ERR_UNMARSHAL, e.getMessage() );
-        }
     }
 
     private void setResponseType( ResponseType responseType ) {
@@ -106,7 +79,7 @@ public final class PDPResponse implements PDPEvaluation {
         try {
             return JAXBUtility.marshalToString( ResponseType.class, responseType, "Response", JAXBUtility.SCHEMA );
         } catch( JAXBException e ) {
-            log.log( Level.SEVERE, MSG_ERR_MARSHAL, e.getMessage() );
+            log.log( Level.SEVERE, "Error marshalling to xml : {0}", e.getMessage() );
         }
         return "";
     }
@@ -143,8 +116,7 @@ public final class PDPResponse implements PDPEvaluation {
         if( responseType.getResult().get( 0 ).getObligations() == null ) {
             return new ArrayList<>();
         }
-        for( ObligationType obligation : responseType.getResult().get( 0 )
-            .getObligations().getObligation() ) {
+        for( ObligationType obligation : responseType.getResult().get( 0 ).getObligations().getObligation() ) {
             obligations.add( obligation.getObligationId() );
         }
         return obligations;
@@ -157,16 +129,6 @@ public final class PDPResponse implements PDPEvaluation {
     @Override
     public ArrayList<Integer> getFiringRules() {
         return firingRules;
-    }
-
-    @Override
-    public void setSessionId( String sessionId ) {
-        this.sessionId = sessionId;
-    }
-
-    @Override
-    public String getSessionId() {
-        return sessionId;
     }
 
     @JsonIgnore

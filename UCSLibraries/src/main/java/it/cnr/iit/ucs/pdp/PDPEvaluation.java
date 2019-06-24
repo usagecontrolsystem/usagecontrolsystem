@@ -65,10 +65,6 @@ public interface PDPEvaluation {
      */
     public List<String> getObligations();
 
-    public void setSessionId( String id );
-
-    public String getSessionId();
-
     public List<Integer> getFiringRules();
 
     public boolean isDecision( DecisionType decisionType );

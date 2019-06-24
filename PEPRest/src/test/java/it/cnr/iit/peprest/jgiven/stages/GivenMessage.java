@@ -71,8 +71,8 @@ public class GivenMessage extends Stage<GivenMessage> {
 
     protected ReevaluationResponseMessage buildReevaluationResponse( DecisionType decisionType ) {
         PDPResponse pdpEvaluation = buildPDPResponse( decisionType );
-        pdpEvaluation.setSessionId( sessionId );
         ReevaluationResponseMessage reevaluationResponse = new ReevaluationResponseMessage( sessionId );
+        reevaluationResponse.setSessionId( sessionId );
         reevaluationResponse.setEvaluation( pdpEvaluation );
         reevaluationResponse.setMessageId( UUID.randomUUID().toString() );
         return reevaluationResponse;

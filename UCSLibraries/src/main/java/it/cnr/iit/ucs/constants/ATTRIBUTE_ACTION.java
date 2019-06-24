@@ -13,9 +13,9 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  ******************************************************************************/
-package it.cnr.iit.ucs.message.attributechange;
+package it.cnr.iit.ucs.constants;
 
-public enum ACTION {
+public enum ATTRIBUTE_ACTION {
     RETRIEVE,
     SUBSCRIBE,
     UNSUBSCRIBE,

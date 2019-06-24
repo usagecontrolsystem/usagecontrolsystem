@@ -189,22 +189,20 @@ public class UCSRestBaseTests {
     /* Mocked ObligationManager */
 
     protected ObligationManagerInterface getMockedObligationManager() {
-        ObligationManagerInterface obligationManager = Mockito
-            .mock( ObligationManagerInterface.class );
-        Mockito.when( obligationManager.translateObligations( ArgumentMatchers.<PDPEvaluation>any(), ArgumentMatchers.anyString() ) )
-            .thenReturn( null );
+        ObligationManagerInterface obligationManager = Mockito.mock( ObligationManagerInterface.class );
         return obligationManager;
     }
 
     /* Mocked PDP */
 
-    protected PDPInterface getMockedPDP( PDPEvaluation pdpEval ) {
+    protected PDPInterface getMockedPDP( PDPEvaluation evaluation ) {
         PDPInterface pdp = Mockito.mock( PDPInterface.class );
         Mockito
             .when( pdp.evaluate( ArgumentMatchers.<RequestWrapper>any(), ArgumentMatchers.<PolicyWrapper>any(),
                 ArgumentMatchers.<STATUS>any() ) )
-            .thenReturn( pdpEval );
-        Mockito.when( pdp.evaluate( ArgumentMatchers.<RequestWrapper>any(), ArgumentMatchers.<PolicyWrapper>any() ) ).thenReturn( pdpEval );
+            .thenReturn( evaluation );
+        Mockito.when( pdp.evaluate( ArgumentMatchers.<RequestWrapper>any(), ArgumentMatchers.<PolicyWrapper>any() ) )
+            .thenReturn( evaluation );
         assertNotNull( pdp );
         return pdp;
     }

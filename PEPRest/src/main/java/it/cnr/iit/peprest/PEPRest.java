@@ -37,6 +37,8 @@ import it.cnr.iit.peprest.messagetrack.MessagesPerSession;
 import it.cnr.iit.peprest.proxy.UCSProxy;
 import it.cnr.iit.ucs.constants.CONNECTION;
 import it.cnr.iit.ucs.constants.OperationName;
+import it.cnr.iit.ucs.exceptions.PolicyException;
+import it.cnr.iit.ucs.exceptions.RequestException;
 import it.cnr.iit.ucs.message.EvaluatedMessage;
 import it.cnr.iit.ucs.message.Message;
 import it.cnr.iit.ucs.message.endaccess.EndAccessMessage;
@@ -63,9 +65,9 @@ public class PEPRest implements PEPInterface {
 
     private static final Logger log = Logger.getLogger( PEPRest.class.getName() );
 
-    private static final String ERR_SEND_UCS_FAILED = "Unable to deliver messsage to UCS";
+    private static final String INVALID_MESSAGE_ID = "0";
 
-    // map of unanswered messages, the key is the id of the message
+    // map of messages : the key is the id of the message
     private ConcurrentMap<String, Message> unansweredMap = new ConcurrentHashMap<>();
     private ConcurrentMap<String, Message> responsesMap = new ConcurrentHashMap<>();
     private MessageStorage messageStorage = new MessageStorage();
@@ -92,9 +94,15 @@ public class PEPRest implements PEPInterface {
     }
 
     public String tryAccess() {
-        RequestWrapper request = RequestWrapper.build( FileUtility.readFileAbsPath( pep.getRequestPath() ) );
-        PolicyWrapper policy = PolicyWrapper.build( FileUtility.readFileAbsPath( pep.getPolicyPath() ) );
         log.log( Level.INFO, "TryAccess at {0} ", System.currentTimeMillis() );
+        PolicyWrapper policy;
+        RequestWrapper request;
+        try {
+            policy = PolicyWrapper.build( FileUtility.readFileAbsPath( pep.getPolicyPath() ) );
+            request = RequestWrapper.build( FileUtility.readFileAbsPath( pep.getRequestPath() ) );
+        } catch( PolicyException | RequestException e ) {
+            return INVALID_MESSAGE_ID;
+        }
         TryAccessMessage message = buildTryAccessMessage( request, policy );
         return handleRequest( message );
     }
@@ -114,15 +122,15 @@ public class PEPRest implements PEPInterface {
     @Override
     @Async
     public Message onGoingEvaluation( ReevaluationResponseMessage message ) {
+        log.log( Level.INFO, "OnGoingEvaluation at {0} ", System.currentTimeMillis() );
         Reject.ifNull( message );
         PDPEvaluation evaluation = message.getEvaluation();
         Reject.ifNull( evaluation );
-        log.log( Level.INFO, "OnGoingEvaluation at {0} ", System.currentTimeMillis() );
         responsesMap.put( message.getMessageId(), message );
         messageStorage.addMessage( message );
         if( pep.getRevokeType().equals( "HARD" ) ) {
             log.log( Level.INFO, "EndAcces sent at {0} ", System.currentTimeMillis() );
-            EndAccessMessage endAccess = buildEndAccessMessage( evaluation.getSessionId(), null );
+            EndAccessMessage endAccess = buildEndAccessMessage( message.getSessionId(), null );
             handleRequest( endAccess );
         } else {
             // generic case to cater for multiple scenarios, e.g. pause/resume/pause/end etc...
@@ -169,7 +177,7 @@ public class PEPRest implements PEPInterface {
             messageStorage.addMessage( message );
             return message.getMessageId();
         } else {
-            throw Throwables.propagate( new IllegalAccessException( ERR_SEND_UCS_FAILED ) );
+            throw Throwables.propagate( new IllegalAccessException( "Unable to deliver messsage to UCS" ) );
         }
     }
 
@@ -179,8 +187,8 @@ public class PEPRest implements PEPInterface {
         Reject.ifNull( message );
         try {
             responsesMap.put( message.getMessageId(), message );
-            messageStorage.addMessage( message );
             unansweredMap.remove( message.getMessageId() );
+            messageStorage.addMessage( message );
             return handleResponse( message );
         } catch( Exception e ) { // NOSONAR
             log.log( Level.SEVERE, "Error occured while evaluating the response: {0}", e.getMessage() );

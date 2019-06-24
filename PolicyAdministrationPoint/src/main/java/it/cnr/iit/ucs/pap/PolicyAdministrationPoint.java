@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
+import it.cnr.iit.ucs.exceptions.PolicyException;
 import it.cnr.iit.ucs.properties.components.PapProperties;
 import it.cnr.iit.utility.FileUtility;
 import it.cnr.iit.utility.errorhandling.Reject;
@@ -85,8 +86,10 @@ public class PolicyAdministrationPoint implements PAPInterface {
     @Override
     public boolean addPolicy( String policy ) {
         Reject.ifBlank( policy );
-        PolicyWrapper policyWrapper = PolicyWrapper.build( policy );
-        if( policyWrapper == null ) {
+        PolicyWrapper policyWrapper;
+        try {
+            policyWrapper = PolicyWrapper.build( policy );
+        } catch( PolicyException e ) {
             return false;
         }
 

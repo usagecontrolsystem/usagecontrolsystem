@@ -34,7 +34,7 @@ public class ReflectionsUtility {
         return reflections.getSubTypesOf( clazz );
     }
 
-    public static <T> Optional<Class<T>> getClassFromPackageName( String name, Class<T> clazz ) {
+    public static <T> Optional<Class<T>> getClassFromPackageName( String name ) {
         try {
             return Optional.of( (Class<T>) Class.forName( name ) );
         } catch( ClassNotFoundException e ) {
@@ -56,7 +56,7 @@ public class ReflectionsUtility {
 
     public static <T> Optional<Class<T>> getClass( String name, Class<T> clazz ) {
         if( name.contains( "." ) ) {
-            return getClassFromPackageName( name, clazz );
+            return getClassFromPackageName( name );
         }
         return getClassFromSimpleName( name, clazz );
     }

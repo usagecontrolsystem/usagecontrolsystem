@@ -1,11 +1,13 @@
 package it.cnr.iit.xacml.wrappers;
 
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.xml.bind.JAXBException;
 
+import it.cnr.iit.ucs.contexthandler.pipregistry.PIPRegistryInterface;
+import it.cnr.iit.ucs.exceptions.RequestException;
 import it.cnr.iit.utility.JAXBUtility;
-import it.cnr.iit.utility.errorhandling.Reject;
 import it.cnr.iit.xacml.Attribute;
 
 import oasis.names.tc.xacml.core.schema.wd_17.AttributeType;
@@ -13,63 +15,42 @@ import oasis.names.tc.xacml.core.schema.wd_17.AttributesType;
 import oasis.names.tc.xacml.core.schema.wd_17.RequestType;
 
 public class RequestWrapper {
+
     private static final Logger log = Logger.getLogger( RequestWrapper.class.getName() );
 
-    private static final String MSG_ERR_UNMASHAL = "Error unmarshalling request : {0}";
-    private static final String MSG_ERR_MARSHAL = "Error marshalling request : {0}";
-
+    private PIPRegistryInterface pipRegistry;
     private RequestType requestType;
     private String request;
 
     private RequestWrapper() {}
 
-    public static RequestWrapper build( String request ) {
-        Reject.ifBlank( request );
-
-        RequestWrapper requestHelper = new RequestWrapper();
-        requestHelper.setRequest( request );
-
-        return requestHelper.requestType != null ? requestHelper : null;
+    public static RequestWrapper build( String request ) throws RequestException {
+        return build( request, null );
     }
 
-    public static RequestWrapper build( RequestWrapper request ) {
-        return RequestWrapper.build( request.getRequest() );
-    }
-
-    public static RequestType unmarshalRequestType( String request ) {
+    public static RequestWrapper build( String request, PIPRegistryInterface pipRegistry ) throws RequestException {
+        RequestWrapper requestWrapper = new RequestWrapper();
         try {
-            return JAXBUtility.unmarshalToObject( RequestType.class, request );
-        } catch( Exception e ) {
-            log.severe( String.format( MSG_ERR_UNMASHAL, e.getMessage() ) );
-        }
-        return null;
-    }
-
-    public static String marshalRequestType( RequestType request ) {
-        try {
-            return JAXBUtility.marshalToString( RequestType.class, request, "Request",
-                JAXBUtility.SCHEMA );
+            requestWrapper.requestType = unmarshalRequestType( request );
         } catch( JAXBException e ) {
-            log.severe( String.format( MSG_ERR_MARSHAL, e.getMessage() ) );
+            throw new RequestException( "Error marshalling request : {0}" + e.getMessage() );
         }
-        return null;
+
+        requestWrapper.request = request;
+        requestWrapper.pipRegistry = pipRegistry;
+        return requestWrapper;
+    }
+
+    public static RequestWrapper build( RequestWrapper request ) throws RequestException {
+        return RequestWrapper.build( request.getRequest(), request.pipRegistry );
     }
 
     public String getRequest() {
         return request;
     }
 
-    public void setRequest( String request ) {
-        this.request = request;
-        this.requestType = unmarshalRequestType( request );
-    }
-
     public RequestType getRequestType() {
         return requestType;
-    }
-
-    public void update() {
-        request = marshalRequestType( requestType );
     }
 
     public boolean requestHasAttribute( Attribute attribute ) {
@@ -81,6 +62,37 @@ public class RequestWrapper {
             }
         }
         return false;
+    }
+
+    public boolean update() {
+        try {
+            request = marshalRequestType( requestType );
+            return true;
+        } catch( JAXBException e ) {
+            log.log( Level.SEVERE, "Error marshalling request (update) : {0}", e.getMessage() );
+            return false;
+        }
+    }
+
+    public synchronized boolean fatten( boolean subscribe ) {
+        if( pipRegistry == null ) {
+            log.log( Level.INFO, "pipRegistry is not set in this requestWrapper" );
+            return false;
+        }
+        if( subscribe ) {
+            pipRegistry.subscribeAll( requestType );
+        } else {
+            pipRegistry.retrieveAll( requestType );
+        }
+        return update();
+    }
+
+    public static RequestType unmarshalRequestType( String request ) throws JAXBException {
+        return JAXBUtility.unmarshalToObject( RequestType.class, request );
+    }
+
+    public static String marshalRequestType( RequestType request ) throws JAXBException {
+        return JAXBUtility.marshalToString( RequestType.class, request, "Request", JAXBUtility.SCHEMA );
     }
 
 }

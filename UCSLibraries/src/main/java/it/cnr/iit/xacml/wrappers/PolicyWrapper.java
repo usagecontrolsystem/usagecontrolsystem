@@ -17,11 +17,15 @@ package it.cnr.iit.xacml.wrappers;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 
+import it.cnr.iit.ucs.exceptions.PolicyException;
+import it.cnr.iit.ucs.message.tryaccess.TryAccessMessage;
+import it.cnr.iit.ucs.pap.PAPInterface;
 import it.cnr.iit.utility.JAXBUtility;
 import it.cnr.iit.utility.errorhandling.Reject;
 import it.cnr.iit.xacml.Attribute;
@@ -47,63 +51,71 @@ public class PolicyWrapper implements PolicyWrapperInterface {
 
     private static final Logger log = Logger.getLogger( PolicyWrapper.class.getName() );
 
-    private static final String MSG_ERR_UNMASHAL = "Error unmarshalling policy : {0}";
-    private static final String MSG_ERR_MARSHAL = "Error marshalling policy : {0}";
-
-    private static final int MAX_LENGTH_STRING = 20;
+    private static final int MAX_CONDITION_LENGTH = 20;
 
     private PolicyType policyType;
     private String policy;
 
     private PolicyWrapper() {}
 
-    /**
-     * Builds a PolicyHelper object starting from the raw policy string
-     *
-     * @param policy
-     *          the string that describes the policy
-     * @return a PolicyWrapper object if everything goes fine, null otherwise
-     */
-    public static PolicyWrapper build( String policy ) {
-        Reject.ifBlank( policy );
-
+    public static PolicyWrapper build( String policy ) throws PolicyException {
         PolicyWrapper policyWrapper = new PolicyWrapper();
+        try {
+            PolicyType policyType = unmarshalPolicyType( policy );
+            policyWrapper.setPolicyType( policyType );
+        } catch( JAXBException e ) {
+            throw new PolicyException( "Error unmarshalling policy : {0}" + e.getMessage() );
+        }
         policyWrapper.setPolicy( policy );
+        return policyWrapper;
+    }
 
-        return policyWrapper.policyType != null ? policyWrapper : null;
+    public static PolicyWrapper build( PolicyType policyType ) throws PolicyException {
+        PolicyWrapper policyWrapper = new PolicyWrapper();
+        try {
+            String policy = marshalPolicyType( policyType );
+            policyWrapper.setPolicy( policy );
+        } catch( JAXBException e ) {
+            throw new PolicyException( "Error marshalling policy : {0}" + e.getMessage() );
+        }
+        policyWrapper.setPolicyType( policyType );
+        return policyWrapper;
+    }
+
+    public static PolicyWrapper build( PAPInterface pap, TryAccessMessage message ) throws PolicyException {
+        String policy = message.getPolicy();
+        if( policy == null && message.getPolicyId() != null ) {
+            policy = pap.retrievePolicy( message.getPolicyId() );
+        }
+        return PolicyWrapper.build( policy );
     }
 
     @Override
     public List<Attribute> getAttributesForCondition( String conditionName ) {
         Reject.ifBlank( conditionName );
-        Reject.ifTrue( conditionName.length() > MAX_LENGTH_STRING );
-        List<Object> list = policyType.getCombinerParametersOrRuleCombinerParametersOrVariableDefinition();
-
-        for( Object obj : list ) {
-            if( obj instanceof RuleType ) {
-                RuleType ruleType = (RuleType) obj;
-                List<ConditionType> conditions = ruleType.getCondition();
-                if( conditions != null ) {
-                    return extractAttributesFromConditions( conditions, conditionName );
+        Reject.ifTrue( conditionName.length() > MAX_CONDITION_LENGTH );
+        for( RuleType ruleType : policyType.getRuleTypeList() ) {
+            List<ConditionType> conditionTypeList = ruleType.getCondition();
+            if( conditionTypeList != null ) {
+                for( ConditionType conditionType : conditionTypeList ) {
+                    List<Attribute> attributeList = getAttributesFromCondition( conditionType, conditionName );
+                    if( !attributeList.isEmpty() ) {
+                        return attributeList;
+                    }
                 }
             }
         }
-
-        log.warning( "Condition not found : " + conditionName );
+        log.log( Level.WARNING, "Condition not found : {0}", conditionName );
         return new ArrayList<>();
     }
 
-    private List<Attribute> extractAttributesFromConditions( List<ConditionType> conditions, String conditionName ) {
-        for( ConditionType conditionType : conditions ) {
-            String decisionTime = conditionType.getDecisionTime();
-            if( decisionTime == null ) {
-                if( conditionName.equals( PolicyTags.CONDITION_PRE ) ) {
-                    return extractAttributes( conditionType );
-                }
-                return new ArrayList<>();
-            } else if( decisionTime.equals( conditionName ) ) {
-                return extractAttributes( conditionType );
+    private List<Attribute> getAttributesFromCondition( ConditionType conditionType, String conditionName ) {
+        if( conditionType.getDecisionTime() == null ) {
+            if( conditionName.equals( PolicyTags.CONDITION_PRE ) ) {
+                return getAttributesFromCondition( conditionType );
             }
+        } else if( conditionType.getDecisionTime().equals( conditionName ) ) {
+            return getAttributesFromCondition( conditionType );
         }
         return new ArrayList<>();
     }
@@ -118,31 +130,30 @@ public class PolicyWrapper implements PolicyWrapperInterface {
      *          the condition we are analysing
      * @return the list of attributes types interested by this condition.
      */
-    private List<Attribute> extractAttributes( ConditionType conditionType ) {
+    private List<Attribute> getAttributesFromCondition( ConditionType conditionType ) {
         ArrayList<JAXBElement<?>> elementList = new ArrayList<>();
         elementList.add( conditionType.getExpression() );
         ArrayList<Attribute> attributeList = new ArrayList<>();
-        Attribute newAttribute = new Attribute();
         int lastIndex = 0;
         for( int i = 0; i < elementList.size(); i++ ) {
-            JAXBElement<?> element = elementList.get( i );
-            Object objValue = element.getValue();
+            Object objValue = elementList.get( i ).getValue();
             if( objValue instanceof ApplyType ) {
-                elementList.addAll( ( (ApplyType) objValue ).getExpression() );
+                ApplyType applyType = (ApplyType) objValue;
+                elementList.addAll( applyType.getExpression() );
             } else if( objValue instanceof AttributeDesignatorType ) {
                 AttributeDesignatorType attrDesignatorType = (AttributeDesignatorType) objValue;
                 Attribute attribute = attributeList.get( lastIndex );
                 attribute.setAttributeId( attrDesignatorType.getAttributeId() );
                 attribute.setCategory( Category.toCATEGORY( attrDesignatorType.getCategory() ) );
                 attribute.setDataType( DataType.toDATATYPE( attrDesignatorType.getDataType() ) );
-                lastIndex += 1;
+                lastIndex++;
             } else if( objValue instanceof AttributeValueType ) {
-                AttributeValueType attributeValueType = (AttributeValueType) element.getValue();
+                AttributeValueType attributeValueType = (AttributeValueType) objValue;
+                Attribute attribute = new Attribute();
                 for( Object obj : attributeValueType.getContent() ) {
-                    newAttribute.setAttributeValues( attributeValueType.getDataType(), obj.toString() );
+                    attribute.setAttributeValues( attributeValueType.getDataType(), obj.toString() );
                 }
-                attributeList.add( newAttribute );
-                newAttribute = new Attribute();
+                attributeList.add( attribute );
             }
         }
         return attributeList;
@@ -150,6 +161,7 @@ public class PolicyWrapper implements PolicyWrapperInterface {
 
     @Override
     public String retrieveObligations() {
+        log.log( Level.WARNING, "retrieveObligations is unimplemented" );
         return null;
     }
 
@@ -159,56 +171,52 @@ public class PolicyWrapper implements PolicyWrapperInterface {
     }
 
     /**
-     * Retrieves the particular condition for the evaluation.
-     *
-     * In an UXACML policy we may have 3 types of conditions:
-     * pre, ongoing and post.
-     * In this function we basically want to extract only the condition
-     * in which we're interested in.
+     * In UXACML we may have 3 types of conditions: pre, ongoing and post.
+     * This function retrieves the policy with the required condition.
      *
      * @param conditionName
      *          the required condition
      * @return a copy of the policyType containing only the required condition
+     * @throws PolicyException
      */
     @Override
-    public PolicyWrapper getPolicy( String conditionName ) {
-        PolicyType clonedPolicyType = clonePolicyType();
-        /**
-         * This is the most delicate part of this function.
-         * If this list of objects contains a ruleType it must be analyzed
-         * in order to retrieve only the required condition.
-         * In any other case the object will be copied inside cloned list.
-         */
+    public PolicyWrapper getPolicyForCondition( String conditionName ) throws PolicyException {
+        PolicyType clonedPolicyType = clonePolicyTypeWithoutRules();
         List<Object> objectList = policyType.getCombinerParametersOrRuleCombinerParametersOrVariableDefinition();
         List<Object> clonedObjectList = clonedPolicyType.getCombinerParametersOrRuleCombinerParametersOrVariableDefinition();
+
         for( Object obj : objectList ) {
             RuleType ruleType = (RuleType) obj;
+            /* If this list of objects contains a ruleType with a condition list it must be analysed.
+              In any other case the object will be copied inside cloned list. */
             if( !( obj instanceof RuleType ) ||
                     ( ruleType.getCondition() == null || ruleType.getCondition().isEmpty() ) ) {
                 clonedObjectList.add( obj );
                 continue;
             }
-
-            for( ConditionType conditionType : ruleType.getCondition() ) {
-                String decisionTime = conditionType.getDecisionTime();
-                RuleType clonedRuleType;
-                if( decisionTime == null ) {
-                    if( conditionName.equals( PolicyTags.CONDITION_PRE ) ) {
-                        clonedRuleType = copyRuleType( ruleType, conditionType );
-                    } else {
-                        clonedRuleType = getDefaultRuleType( "def-permit", EffectType.PERMIT );
-                        clonedRuleType.setObligationExpressions( ruleType.getObligationExpressions() );
-                    }
-                    clonedObjectList.add( clonedRuleType );
-                } else if( decisionTime.equals( conditionName ) ) {
-                    clonedRuleType = copyRuleType( ruleType, conditionType );
-                    clonedObjectList.add( clonedRuleType );
-                    break;
-                }
-            }
+            analyseRuleType( clonedObjectList, ruleType, conditionName );
         }
 
-        return PolicyWrapper.build( marshalPolicyType( clonedPolicyType ) );
+        return PolicyWrapper.build( clonedPolicyType );
+    }
+
+    private void analyseRuleType( List<Object> objectList, RuleType ruleType, String conditionName ) {
+        for( ConditionType conditionType : ruleType.getCondition() ) {
+            RuleType clonedRuleType;
+            if( conditionType.getDecisionTime() == null ) {
+                if( conditionName.equals( PolicyTags.CONDITION_PRE ) ) {
+                    clonedRuleType = cloneRuleType( ruleType, conditionType );
+                } else {
+                    clonedRuleType = getDefaultRuleType( "def-permit", EffectType.PERMIT );
+                    clonedRuleType.setObligationExpressions( ruleType.getObligationExpressions() );
+                }
+                objectList.add( clonedRuleType );
+            } else if( conditionType.getDecisionTime().equals( conditionName ) ) {
+                clonedRuleType = cloneRuleType( ruleType, conditionType );
+                objectList.add( clonedRuleType );
+                break;
+            }
+        }
     }
 
     public String getPolicy() {
@@ -217,11 +225,14 @@ public class PolicyWrapper implements PolicyWrapperInterface {
 
     public void setPolicy( String policy ) {
         this.policy = policy;
-        this.policyType = unmarshalPolicyType( policy );
     }
 
     public PolicyType getPolicyType() {
         return policyType;
+    }
+
+    public void setPolicyType( PolicyType policyType ) {
+        this.policyType = policyType;
     }
 
     private RuleType getDefaultRuleType( String id, EffectType effectType ) {
@@ -240,8 +251,7 @@ public class PolicyWrapper implements PolicyWrapperInterface {
      *          the condition to be put inside the new ruleType object
      * @return the ruleType object built in this way
      */
-    private RuleType copyRuleType( RuleType ruleType,
-            ConditionType conditionType ) {
+    private RuleType cloneRuleType( RuleType ruleType, ConditionType conditionType ) {
         RuleType newRuleType = new RuleType();
         newRuleType.getCondition().add( conditionType );
         newRuleType.setAdviceExpressions( ruleType.getAdviceExpressions() );
@@ -255,12 +265,12 @@ public class PolicyWrapper implements PolicyWrapperInterface {
     }
 
     /**
-     * Performs a copy of the policyType object.
+     * Performs a partial copy of the policyType object.
      *
      * @return the PolicyType object that is the copy of the one stored in this
      *         object
      */
-    private PolicyType clonePolicyType() {
+    private PolicyType clonePolicyTypeWithoutRules() {
         PolicyType newPolicyType = new PolicyType();
         newPolicyType.setDescription( policyType.getDescription() );
         newPolicyType.setPolicyId( policyType.getPolicyId() );
@@ -275,23 +285,12 @@ public class PolicyWrapper implements PolicyWrapperInterface {
         return newPolicyType;
     }
 
-    private static PolicyType unmarshalPolicyType( String policy ) {
-        try {
-            return JAXBUtility.unmarshalToObject( PolicyType.class, policy );
-        } catch( Exception e ) {
-            log.severe( String.format( MSG_ERR_UNMASHAL, e.getMessage() ) );
-        }
-        return null;
+    private static PolicyType unmarshalPolicyType( String policy ) throws JAXBException {
+        return JAXBUtility.unmarshalToObject( PolicyType.class, policy );
     }
 
-    private static String marshalPolicyType( PolicyType policy ) {
-        try {
-            return JAXBUtility.marshalToString( PolicyType.class, policy, PolicyTags.POLICY,
-                JAXBUtility.SCHEMA );
-        } catch( JAXBException e ) {
-            log.severe( String.format( MSG_ERR_MARSHAL, e.getMessage() ) );
-        }
-        return null;
+    private static String marshalPolicyType( PolicyType policy ) throws JAXBException {
+        return JAXBUtility.marshalToString( PolicyType.class, policy, PolicyTags.POLICY, JAXBUtility.SCHEMA );
     }
 
 }

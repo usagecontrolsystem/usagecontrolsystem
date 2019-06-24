@@ -17,6 +17,7 @@ package it.cnr.iit.ucs.obligationmanager;
 
 import java.util.List;
 
+import it.cnr.iit.ucs.constants.STATUS;
 import it.cnr.iit.ucs.pdp.PDPEvaluation;
 import it.cnr.iit.ucs.pip.PIPOMInterface;
 
@@ -40,10 +41,8 @@ public interface ObligationManagerInterface {
      *          the evaluation provided by the PDP
      * @param status
      *          the status in which the obligation has to be performed
-     *
-     * @return a message that represents the
      */
-    public PDPEvaluation translateObligations( PDPEvaluation pdpEvaluation, String status );
+    public void translateObligations( PDPEvaluation pdpEvaluation, String sessionId, STATUS status );
 
     /**
      * Set the pips to be used by this obligation manager, the obligation manager
@@ -55,6 +54,6 @@ public interface ObligationManagerInterface {
      *          the eventual pip retrieval to be used
      * @return true if everything behaves correctly, false otherwise
      */
-    public boolean setPIPs( List<PIPOMInterface> pips );
+    public void setPIPs( List<PIPOMInterface> pips );
 
 }

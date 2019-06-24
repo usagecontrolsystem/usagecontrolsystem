@@ -17,6 +17,8 @@ package it.cnr.iit.ucs.message.tryaccess;
 
 import it.cnr.iit.ucs.constants.ENTITIES;
 import it.cnr.iit.ucs.constants.PURPOSE;
+import it.cnr.iit.ucs.exceptions.PolicyException;
+import it.cnr.iit.ucs.exceptions.RequestException;
 import it.cnr.iit.ucs.message.Message;
 import it.cnr.iit.utility.errorhandling.Reject;
 import it.cnr.iit.xacml.wrappers.PolicyWrapper;
@@ -55,9 +57,10 @@ public final class TryAccessMessage extends Message {
 
     public void setRequest( String request ) {
         Reject.ifBlank( request );
-        RequestWrapper requestWrapper = RequestWrapper.build( request );
-        if( requestWrapper == null ) {
-            throw new IllegalStateException( "invalid policy" );
+        try {
+            RequestWrapper requestWrapper = RequestWrapper.build( request ); // NOSONAR
+        } catch( RequestException e ) {
+            throw new IllegalStateException( "invalid request" );
         }
         this.request = request;
     }
@@ -68,9 +71,10 @@ public final class TryAccessMessage extends Message {
 
     public void setPolicy( String policy ) {
         Reject.ifBlank( policy );
-        PolicyWrapper policyWrapper = PolicyWrapper.build( policy );
-        if( policyWrapper == null ) {
-            throw new IllegalStateException( "invalid policy" );
+        try {
+            PolicyWrapper policyWrapper = PolicyWrapper.build( policy );
+        } catch( PolicyException e ) {
+            throw new IllegalStateException( "invalid policy" ); // NOSONAR
         }
         this.policy = policy;
     }
