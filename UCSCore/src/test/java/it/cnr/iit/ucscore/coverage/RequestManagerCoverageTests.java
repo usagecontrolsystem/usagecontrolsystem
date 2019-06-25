@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URISyntaxException;
 
+import javax.annotation.PostConstruct;
 import javax.xml.bind.JAXBException;
 
 import org.junit.Test;
@@ -22,6 +23,7 @@ import it.cnr.iit.ucs.properties.UCSProperties;
 import it.cnr.iit.ucs.requestmanager.RequestManager;
 import it.cnr.iit.ucscore.coverage.properties.TestProperties;
 import it.cnr.iit.ucsrest.properties.UCSRestProperties;
+import it.cnr.iit.utility.FileUtility;
 
 @SpringBootTest
 @DirtiesContext( classMode = ClassMode.BEFORE_CLASS )
@@ -33,6 +35,17 @@ public class RequestManagerCoverageTests extends UCSRestBaseTests {
 
     @Autowired
     private UCSProperties properties;
+
+    private String policy;
+    private String request;
+
+    @PostConstruct
+    private void init() throws URISyntaxException, IOException, JAXBException {
+        log.info( "Init tests " );
+        Thread.interrupted(); // Avoid a nasty exception
+        policy = FileUtility.readFileAbsPath( testProperties.getPolicyFile() );
+        request = FileUtility.readFileAbsPath( testProperties.getRequestFile() );
+    }
 
     @Test( expected = NullPointerException.class )
     public void requestManagerCoverageTestShouldFail()
@@ -59,7 +72,7 @@ public class RequestManagerCoverageTests extends UCSRestBaseTests {
             buildStartAccessResponse( "a", "a", "a" ),
             buildEndAccessResponse( "a", "a", "a" ),
             buildPipChMessage( "a", "a", "a" ),
-            buildTryAccessMessage( "a", "a", "a", "a" ),
+            buildTryAccessMessage( "a", "a", policy, request ),
             buildStartAccessMessage( "a", "a", "a" ),
             buildEndAccessMessage( "a", "a", "a" ),
             buildReevaluationMessage( "a", "a", "a" )

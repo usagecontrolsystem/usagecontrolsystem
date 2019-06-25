@@ -283,8 +283,6 @@ public class UCSRestBaseTests {
     protected TryAccessMessage buildTryAccessMessage( String pepId, String ucsUri, String policy, String request )
             throws URISyntaxException, IOException {
         TryAccessMessage message = new TryAccessMessage( pepId, ucsUri );
-        policy = FileUtility.readFileAsString( "../res/xmls/policy_1.xml" );
-        request = FileUtility.readFileAsString( "../res/xmls/request_1.xml" );
         message.setPolicy( policy );
         message.setRequest( request );
 
@@ -351,7 +349,7 @@ public class UCSRestBaseTests {
 
     private Object loadXMLFromFile( String fileName, Class<?> className )
             throws JAXBException, URISyntaxException, IOException {
-        String data = FileUtility.readFileAsString( fileName );
+        String data = FileUtility.readFileAbsPath( fileName );
         return JAXBUtility.unmarshalToObject( className, data );
     }
 }
