@@ -1,10 +1,10 @@
-<Policy xmlns="urn:oasis:names:tc:xacml:3.0:core:schema:wd-17"
+<Policy
+	xmlns="urn:oasis:names:tc:xacml:3.0:core:schema:wd-17"
 	PolicyId="policy2Attributes"
 	RuleCombiningAlgId="urn:oasis:names:tc:xacml:3.0:rule-combining-algorithm:deny-unless-permit"
 	Version="3.0">
-	<Description>Test policy 1	</Description>
-	<Target>
-	</Target>
+	<Description>Test policy 2</Description>
+	<Target></Target>
 	<Rule Effect="Permit" RuleId="rule-permit">
 		<Target>
 			<AnyOf>
@@ -12,18 +12,16 @@
 					<Match
 						MatchId="urn:oasis:names:tc:xacml:1.0:function:string-equal">
 						<AttributeValue
-							DataType="http://www.w3.org/2001/XMLSchema#string">Alessandro</AttributeValue>
+							DataType="http://www.w3.org/2001/XMLSchema#string">User</AttributeValue>
 						<AttributeDesignator
 							AttributeId="urn:oasis:names:tc:xacml:1.0:subject:subject-id"
 							Category="urn:oasis:names:tc:xacml:1.0:subject-category:access-subject"
 							DataType="http://www.w3.org/2001/XMLSchema#string"
-							MustBePresent="true">
-						</AttributeDesignator>
+							MustBePresent="true"></AttributeDesignator>
 					</Match>
 				</AllOf>
 			</AnyOf>
 		</Target>
-
 		<!-- Pre condition -->
 		<Condition DecisionTime="pre">
 			<Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:and">
@@ -35,8 +33,7 @@
 							AttributeId="urn:oasis:names:tc:xacml:1.0:subject:role"
 							Category="urn:oasis:names:tc:xacml:1.0:subject-category:access-subject"
 							DataType="http://www.w3.org/2001/XMLSchema#string"
-							MustBePresent="true">
-						</AttributeDesignator>
+							MustBePresent="true"></AttributeDesignator>
 					</Apply>
 					<AttributeValue
 						DataType="http://www.w3.org/2001/XMLSchema#string">IIT</AttributeValue>
@@ -49,15 +46,13 @@
 							AttributeId="urn:oasis:names:tc:xacml:3.0:environment:virus"
 							Category="urn:oasis:names:tc:xacml:3.0:attribute-category:environment"
 							DataType="http://www.w3.org/2001/XMLSchema#integer"
-							MustBePresent="true">
-						</AttributeDesignator>
+							MustBePresent="true"></AttributeDesignator>
 					</Apply>
 					<AttributeValue
 						DataType="http://www.w3.org/2001/XMLSchema#integer">0</AttributeValue>
 				</Apply>
 			</Apply>
 		</Condition>
-
 		<!-- On going condition -->
 		<Condition DecisionTime="ongoing">
 			<Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:and">
@@ -69,8 +64,7 @@
 							AttributeId="urn:oasis:names:tc:xacml:1.0:subject:role"
 							Category="urn:oasis:names:tc:xacml:1.0:subject-category:access-subject"
 							DataType="http://www.w3.org/2001/XMLSchema#string"
-							MustBePresent="true">
-						</AttributeDesignator>
+							MustBePresent="true"></AttributeDesignator>
 					</Apply>
 					<AttributeValue
 						DataType="http://www.w3.org/2001/XMLSchema#string">IIT</AttributeValue>
@@ -83,15 +77,13 @@
 							AttributeId="urn:oasis:names:tc:xacml:3.0:environment:virus"
 							Category="urn:oasis:names:tc:xacml:3.0:attribute-category:environment"
 							DataType="http://www.w3.org/2001/XMLSchema#integer"
-							MustBePresent="true">
-						</AttributeDesignator>
+							MustBePresent="true"></AttributeDesignator>
 					</Apply>
 					<AttributeValue
 						DataType="http://www.w3.org/2001/XMLSchema#integer">0</AttributeValue>
 				</Apply>
 			</Apply>
 		</Condition>
-
 		<!-- Post condition -->
 		<Condition DecisionTime="post">
 			<Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:and">
@@ -103,8 +95,7 @@
 							AttributeId="urn:oasis:names:tc:xacml:1.0:subject:role"
 							Category="urn:oasis:names:tc:xacml:1.0:subject-category:access-subject"
 							DataType="http://www.w3.org/2001/XMLSchema#string"
-							MustBePresent="true">
-						</AttributeDesignator>
+							MustBePresent="true"></AttributeDesignator>
 					</Apply>
 					<AttributeValue
 						DataType="http://www.w3.org/2001/XMLSchema#string">IIT</AttributeValue>
@@ -117,21 +108,17 @@
 							AttributeId="urn:oasis:names:tc:xacml:3.0:environment:virus"
 							Category="urn:oasis:names:tc:xacml:3.0:attribute-category:environment"
 							DataType="http://www.w3.org/2001/XMLSchema#integer"
-							MustBePresent="true">
-						</AttributeDesignator>
+							MustBePresent="true"></AttributeDesignator>
 					</Apply>
 					<AttributeValue
 						DataType="http://www.w3.org/2001/XMLSchema#integer">0</AttributeValue>
 				</Apply>
 			</Apply>
 		</Condition>
-
 	</Rule>
-
 	<!-- Default rule -->
 	<Rule Effect="Deny" RuleId="urn:oasis:names:tc:xacml:3.0:defdeny">
 		<Description>DefaultDeny</Description>
-		<Target>
-		</Target>
+		<Target></Target>
 	</Rule>
 </Policy>

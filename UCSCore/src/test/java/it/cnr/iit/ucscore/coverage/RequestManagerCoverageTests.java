@@ -9,7 +9,6 @@ import javax.xml.bind.JAXBException;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.ComponentScan;
@@ -19,22 +18,18 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import it.cnr.iit.ucs.message.Message;
-import it.cnr.iit.ucs.properties.UCSProperties;
 import it.cnr.iit.ucs.requestmanager.RequestManager;
 import it.cnr.iit.ucscore.coverage.properties.TestProperties;
-import it.cnr.iit.ucsrest.properties.UCSRestProperties;
 import it.cnr.iit.utility.FileUtility;
+import it.cnr.iit.utility.errorhandling.exception.PreconditionException;
 
 @SpringBootTest
 @DirtiesContext( classMode = ClassMode.BEFORE_CLASS )
 @EnableAutoConfiguration
 @ComponentScan( basePackages = { "it.cnr.iit" } )
-@ContextConfiguration( classes = { UCSRestProperties.class, TestProperties.class } )
+@ContextConfiguration( classes = { TestProperties.class } )
 @RunWith( SpringRunner.class )
 public class RequestManagerCoverageTests extends UCSRestBaseTests {
-
-    @Autowired
-    private UCSProperties properties;
 
     private String policy;
     private String request;
@@ -47,11 +42,11 @@ public class RequestManagerCoverageTests extends UCSRestBaseTests {
         request = FileUtility.readFileAbsPath( testProperties.getRequestFile() );
     }
 
-    @Test( expected = NullPointerException.class )
+    @Test( expected = PreconditionException.class )
     public void requestManagerCoverageTestShouldFail()
             throws JAXBException, URISyntaxException, IOException, NoSuchMethodException, SecurityException,
             InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
-        RequestManager requestManager = getRequestManager( null );
+        RequestManager requestManager = getRequestManager();
         requestManager.sendMessageToCH( null );
         requestManager.sendReevaluation( null );
     }
@@ -60,7 +55,7 @@ public class RequestManagerCoverageTests extends UCSRestBaseTests {
     public void requestManagerCoverageTestFull()
             throws JAXBException, URISyntaxException, IOException, NoSuchMethodException, SecurityException,
             InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
-        RequestManager requestManager = getRequestManager( properties );
+        RequestManager requestManager = getRequestManager();
         requestManager.setContextHandler( getMockedContextHandlerInterface() );
         requestManager.setPEPMap( getMockedPEPMap( "a", "" ) );
         testRequestManager( requestManager );

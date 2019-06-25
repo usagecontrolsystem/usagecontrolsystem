@@ -24,6 +24,7 @@ import org.springframework.context.annotation.Bean;
 import springfox.documentation.builders.ApiInfoBuilder;
 import springfox.documentation.builders.PathSelectors;
 import springfox.documentation.service.ApiInfo;
+import springfox.documentation.service.Contact;
 import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spring.web.plugins.Docket;
 import springfox.documentation.swagger.web.UiConfiguration;
@@ -52,7 +53,7 @@ public class PEPRestStarter extends SpringBootServletInitializer {
 
     private ApiInfo metadata() {
         return new ApiInfoBuilder().title( "PEP REST API" ).description( "API for PEP" )
-            .version( "1.0" ).contact( "antonio.lamarra@iit.cnr.it" ).build();
+            .version( "1.0" ).contact( new Contact( "Antonio La Marra", "", "antonio.lamarra@iit.cnr.it" ) ).build();
     }
 
     public static void main( String[] args ) {
