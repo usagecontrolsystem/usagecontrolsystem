@@ -42,7 +42,7 @@ public final class FileUtility {
      *          a string that represents the absolute path to the file
      * @return the String that represents the content of the file
      */
-    public static String readFileAbsPath( String filePath ) {
+    public static String readFileAsString( String filePath ) {
         if( !isValidPath( filePath ) ) {
             return null;
         }

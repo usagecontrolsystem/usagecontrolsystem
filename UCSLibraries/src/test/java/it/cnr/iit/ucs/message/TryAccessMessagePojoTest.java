@@ -23,7 +23,7 @@ public class TryAccessMessagePojoTest extends AbstractPojoTest {
     public void shouldPassSetGetPolicy() {
         try {
             // given a policy and a message object
-            String policy = FileUtility.readFileAbsPath( "../res/xmls/policy_1.xml" );
+            String policy = FileUtility.readFileAsString( "../res/xmls/policy_1.xml" );
             TryAccessMessage tryAccessMessage = new TryAccessMessage();
 
             // when the policy is set on message
@@ -40,7 +40,7 @@ public class TryAccessMessagePojoTest extends AbstractPojoTest {
     public void shouldPassSetGetRequest() {
         try {
             // given a request and a message object
-            String request = FileUtility.readFileAbsPath( "../res/xmls/request.xml" );
+            String request = FileUtility.readFileAsString( "../res/xmls/request.xml" );
             TryAccessMessage tryAccessMessage = new TryAccessMessage();
 
             // when the request is set on message

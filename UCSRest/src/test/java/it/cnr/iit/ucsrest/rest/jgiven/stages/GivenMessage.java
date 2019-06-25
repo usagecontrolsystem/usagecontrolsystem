@@ -56,8 +56,8 @@ public class GivenMessage extends Stage<GivenMessage> {
 
     @BeforeScenario
     public void init() throws URISyntaxException, IOException {
-        policy = FileUtility.readFileAbsPath( testContext.getPolicyFile() );
-        request = FileUtility.readFileAbsPath( testContext.getRequestFile() );
+        policy = FileUtility.readFileAsString( testContext.getPolicyFile() );
+        request = FileUtility.readFileAsString( testContext.getRequestFile() );
 
         pepProps = properties.getPepList().get( Integer.parseInt( testContext.getPepId() ) );
 
@@ -98,7 +98,7 @@ public class GivenMessage extends Stage<GivenMessage> {
     }
 
     public GivenMessage a_policy_that_will_trigger_a_Deny_response() {
-        policy = FileUtility.readFileAbsPath( testContext.getPolicyFileDeny() );
+        policy = FileUtility.readFileAsString( testContext.getPolicyFileDeny() );
         return self();
     }
 

@@ -402,7 +402,7 @@ public class UCSRestBaseTests {
 
     private Object loadXMLFromFile( String fileName, Class<?> className )
             throws JAXBException, URISyntaxException, IOException {
-        String data = FileUtility.readFileAbsPath( fileName );
+        String data = FileUtility.readFileAsString( fileName );
         return JAXBUtility.unmarshalToObject( className, data );
     }
 }
