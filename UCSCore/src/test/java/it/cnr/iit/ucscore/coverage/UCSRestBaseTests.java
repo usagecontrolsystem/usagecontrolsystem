@@ -1,6 +1,5 @@
 package it.cnr.iit.ucscore.coverage;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 import java.io.IOException;
@@ -11,6 +10,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.logging.Logger;
 
@@ -43,8 +43,9 @@ import it.cnr.iit.ucs.pdp.PDPInterface;
 import it.cnr.iit.ucs.pep.PEPInterface;
 import it.cnr.iit.ucs.pip.PIPBase;
 import it.cnr.iit.ucs.pip.PIPCHInterface;
-import it.cnr.iit.ucs.properties.UCSProperties;
+import it.cnr.iit.ucs.properties.components.ContextHandlerProperties;
 import it.cnr.iit.ucs.properties.components.PipProperties;
+import it.cnr.iit.ucs.properties.components.RequestManagerProperties;
 import it.cnr.iit.ucs.requestmanager.RequestManager;
 import it.cnr.iit.ucs.requestmanager.RequestManagerToCHInterface;
 import it.cnr.iit.ucs.sessionmanager.SessionInterface;
@@ -69,17 +70,73 @@ public class UCSRestBaseTests {
     @Autowired
     TestProperties testProperties;
 
+    protected ContextHandlerProperties getContextHandlerProperties() {
+        return new ContextHandlerProperties() {
+
+            @Override
+            public String getName() {
+                return "ContextHandler";
+            }
+
+            @Override
+            public String getUri() {
+                return "http://localhost:9998";
+            }
+
+            @Override
+            public String getId() {
+                return "1";
+            }
+
+            @Override
+            public Map<String, String> getAdditionalProperties() {
+                return null;
+            }
+        };
+    }
+
+    protected RequestManagerProperties getRequestManagerProperties() {
+        return new RequestManagerProperties() {
+
+            @Override
+            public String getName() {
+                return "RequestManager";
+            }
+
+            @Override
+            public Map<String, String> getAdditionalProperties() {
+                return null;
+            }
+
+            @Override
+            public String getApiRemoteResponse() {
+                return null;
+            }
+
+            @Override
+            public boolean isActive() {
+                return false;
+            }
+
+            @Override
+            public String getId() {
+                return "1";
+            }
+
+        };
+    }
+
     /* Request Manager functions */
 
-    protected RequestManager getRequestManager( UCSProperties prop ) {
-        RequestManager requestManager = new RequestManager( prop.getRequestManager() );
+    protected RequestManager getRequestManager() {
+        RequestManager requestManager = new RequestManager( getRequestManagerProperties() );
         return requestManager;
     }
 
     /* Context Handler functions */
 
-    protected ContextHandler getContextHandler( UCSProperties prop ) {
-        ContextHandler contextHandler = new ContextHandler( prop.getContextHandler() );
+    protected ContextHandler getContextHandler() {
+        ContextHandler contextHandler = new ContextHandler( getContextHandlerProperties() );
         return contextHandler;
     }
 
@@ -91,16 +148,14 @@ public class UCSRestBaseTests {
         contextHandler.setObligationManager( getMockedObligationManager() );
     }
 
-    protected ContextHandler getContextHandlerCorrectlyInitialized( UCSProperties prop,
-            String policy,
-            String request ) throws Exception {
-        ContextHandler contextHandler = getContextHandler( prop );
+    protected ContextHandler getContextHandlerCorrectlyInitialized( String policy, String request ) throws Exception {
+        ContextHandler contextHandler = getContextHandler();
         initContextHandler( contextHandler );
         contextHandler.setSessionManager(
             getSessionManagerForStatus( "a", policy, request, STATUS.TRY.name() ) );
 
         /* must be called after initialisation */
-        addMockedPips( prop, contextHandler );
+        addMockedPips( contextHandler );
         contextHandler.startMonitoringThread();
 
         return contextHandler;
@@ -236,8 +291,7 @@ public class UCSRestBaseTests {
         return pip;
     }
 
-    protected void addMockedPips( UCSProperties prop, ContextHandler contextHandler ) {
-        // TODO FIX THIS HACK
+    protected void addMockedPips( ContextHandler contextHandler ) {
         String[] pips = { "virus", "telephone", "position", "role", "telephone", "time" };
         String[] pipVal = { "0", "0", "Pisa", "IIT", "0", "12:00" };
         Category[] pipCat = { Category.ENVIRONMENT, Category.ENVIRONMENT, Category.SUBJECT, Category.SUBJECT, Category.ENVIRONMENT,
@@ -258,15 +312,14 @@ public class UCSRestBaseTests {
         return attr;
     }
 
-    protected ArrayList<PIPCHInterface> getPIPS( UCSProperties prop ) {
+    protected ArrayList<PIPCHInterface> getPIPS( List<PipProperties> pipList ) {
         ArrayList<PIPCHInterface> pips = new ArrayList<>();
 
-        for( PipProperties pipProp : prop.getPipList() ) {
+        for( PipProperties pipProp : pipList ) {
             PIPCHInterface pip = ReflectionsUtility.buildComponent( pipProp, PIPBase.class ).get();
             assertNotNull( pip );
             pips.add( pip );
         }
-        assertEquals( "VALUE", prop.getPipList().get( 1 ).getAdditionalProperties().get( "KEY" ) );
 
         return pips;
     }
@@ -283,8 +336,6 @@ public class UCSRestBaseTests {
     protected TryAccessMessage buildTryAccessMessage( String pepId, String ucsUri, String policy, String request )
             throws URISyntaxException, IOException {
         TryAccessMessage message = new TryAccessMessage( pepId, ucsUri );
-        policy = FileUtility.readFileAsString( "../res/xmls/policy_1.xml" );
-        request = FileUtility.readFileAsString( "../res/xmls/request_1.xml" );
         message.setPolicy( policy );
         message.setRequest( request );
 
@@ -351,7 +402,7 @@ public class UCSRestBaseTests {
 
     private Object loadXMLFromFile( String fileName, Class<?> className )
             throws JAXBException, URISyntaxException, IOException {
-        String data = FileUtility.readFileAsString( fileName );
+        String data = FileUtility.readFileAbsPath( fileName );
         return JAXBUtility.unmarshalToObject( className, data );
     }
 }

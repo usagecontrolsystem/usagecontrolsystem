@@ -25,8 +25,8 @@ import io.swagger.annotations.ApiResponses;
 @RestController
 @RequestMapping( "/" )
 @EnableAutoConfiguration
-public class PEPUCSCommunication {
-    protected static final Logger log = Logger.getLogger( PEPUCSCommunication.class.getName() );
+public class PEPUCSController {
+    protected static final Logger log = Logger.getLogger( PEPUCSController.class.getName() );
 
     private PEPRest pepRest;
 

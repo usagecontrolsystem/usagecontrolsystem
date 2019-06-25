@@ -2,13 +2,13 @@ package it.cnr.iit.ucscore.coverage;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
 
 import javax.annotation.PostConstruct;
 import javax.xml.bind.JAXBException;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.ComponentScan;
@@ -27,9 +27,8 @@ import it.cnr.iit.ucs.message.attributechange.AttributeChangeMessage;
 import it.cnr.iit.ucs.message.endaccess.EndAccessMessage;
 import it.cnr.iit.ucs.message.startaccess.StartAccessMessage;
 import it.cnr.iit.ucs.message.tryaccess.TryAccessMessage;
-import it.cnr.iit.ucs.properties.UCSProperties;
+import it.cnr.iit.ucs.properties.components.PipProperties;
 import it.cnr.iit.ucscore.coverage.properties.TestProperties;
-import it.cnr.iit.ucsrest.properties.UCSRestProperties;
 import it.cnr.iit.utility.FileUtility;
 import it.cnr.iit.utility.errorhandling.exception.PreconditionException;
 import it.cnr.iit.xacml.Category;
@@ -41,12 +40,9 @@ import oasis.names.tc.xacml.core.schema.wd_17.DecisionType;
 @DirtiesContext( classMode = ClassMode.BEFORE_EACH_TEST_METHOD )
 @EnableAutoConfiguration
 @ComponentScan( basePackages = { "it.cnr.iit" } )
-@ContextConfiguration( classes = { UCSRestProperties.class, TestProperties.class } )
+@ContextConfiguration( classes = { TestProperties.class } )
 @RunWith( SpringRunner.class )
 public class ContextHandlerCoverageTests extends UCSRestBaseTests {
-
-    @Autowired
-    private UCSProperties properties;
 
     private String policy;
     private String request;
@@ -55,14 +51,14 @@ public class ContextHandlerCoverageTests extends UCSRestBaseTests {
     private void init() throws URISyntaxException, IOException, JAXBException {
         log.info( "Init tests " );
         Thread.interrupted(); // Avoid a nasty exception
-        policy = FileUtility.readFileAsString( testProperties.getPolicyFile() );
-        request = FileUtility.readFileAsString( testProperties.getRequestFile() );
+        policy = FileUtility.readFileAbsPath( testProperties.getPolicyFile() );
+        request = FileUtility.readFileAbsPath( testProperties.getRequestFile() );
     }
 
     @Test( expected = PreconditionException.class )
     public void contextHandlerTryAccessShouldFail() throws PreconditionException, PolicyException, RequestException {
-        ContextHandler contextHandler = getContextHandler( properties );
-        getPIPS( properties );
+        ContextHandler contextHandler = getContextHandler();
+        getPIPS( new ArrayList<PipProperties>() );
         initContextHandler( contextHandler );
         // set the pdp response to return deny
         contextHandler.setPdp( getMockedPDP( getMockedPDPEvaluation( DecisionType.DENY ) ) );
@@ -73,7 +69,7 @@ public class ContextHandlerCoverageTests extends UCSRestBaseTests {
 
     @Test
     public void contextHandlerStartAccess() throws StartAccessException, Exception {
-        ContextHandler contextHandler = getContextHandlerCorrectlyInitialized( properties, policy, request );
+        ContextHandler contextHandler = getContextHandlerCorrectlyInitialized( policy, request );
 
         contextHandler.setSessionManager(
             getSessionManagerForStatus( testProperties.getSessionId(), policy, request, STATUS.TRY.name() ) );
@@ -86,7 +82,7 @@ public class ContextHandlerCoverageTests extends UCSRestBaseTests {
 
     @Test
     public void contextHandlerEndAccess() throws EndAccessException, Exception {
-        ContextHandler contextHandler = getContextHandlerCorrectlyInitialized( properties, policy, request );
+        ContextHandler contextHandler = getContextHandlerCorrectlyInitialized( policy, request );
 
         contextHandler.setSessionManager(
             getSessionManagerForStatus( testProperties.getSessionId(), policy, request, STATUS.START.name() ) );
@@ -98,10 +94,10 @@ public class ContextHandlerCoverageTests extends UCSRestBaseTests {
 
     @Test
     public void contextHandlerFullFlow() throws StartAccessException, EndAccessException, Exception {
-        ContextHandler contextHandler = getContextHandlerCorrectlyInitialized( properties, policy, request );
+        ContextHandler contextHandler = getContextHandlerCorrectlyInitialized( policy, request );
 
         /* tryAccess */
-        TryAccessMessage tryAccessMessage = buildTryAccessMessage( testProperties.getPepId(), properties.getCore().getUri(), policy,
+        TryAccessMessage tryAccessMessage = buildTryAccessMessage( testProperties.getPepId(), "localhost", policy,
             request );
         contextHandler.tryAccess( tryAccessMessage );
 
