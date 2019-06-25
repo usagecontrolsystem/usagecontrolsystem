@@ -17,9 +17,6 @@ package it.cnr.iit.utility;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URISyntaxException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Scanner;
 import java.util.logging.Logger;
@@ -123,13 +120,6 @@ public final class FileUtility {
             return file.mkdir();
         }
         return true;
-    }
-
-    public static String readFileAsString( String resource ) throws URISyntaxException, IOException {
-        ClassLoader classLoader = FileUtility.class.getClassLoader();
-        Path path = Paths.get( classLoader.getResource( resource ).toURI() );
-        byte[] data = Files.readAllBytes( path );
-        return new String( data );
     }
 
     public static String stripExtension( String name ) {

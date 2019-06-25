@@ -55,8 +55,8 @@ public class ContextHandlerCoverageTests extends UCSRestBaseTests {
     private void init() throws URISyntaxException, IOException, JAXBException {
         log.info( "Init tests " );
         Thread.interrupted(); // Avoid a nasty exception
-        policy = FileUtility.readFileAsString( testProperties.getPolicyFile() );
-        request = FileUtility.readFileAsString( testProperties.getRequestFile() );
+        policy = FileUtility.readFileAbsPath( testProperties.getPolicyFile() );
+        request = FileUtility.readFileAbsPath( testProperties.getRequestFile() );
     }
 
     @Test( expected = PreconditionException.class )
