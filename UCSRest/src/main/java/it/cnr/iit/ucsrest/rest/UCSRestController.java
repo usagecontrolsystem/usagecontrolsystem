@@ -28,7 +28,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import it.cnr.iit.ucs.constants.OperationName;
-import it.cnr.iit.ucs.core.UCSCoreBuilder;
+import it.cnr.iit.ucs.core.UCSCoreServiceBuilder;
 import it.cnr.iit.ucs.message.endaccess.EndAccessMessage;
 import it.cnr.iit.ucs.message.startaccess.StartAccessMessage;
 import it.cnr.iit.ucs.message.tryaccess.TryAccessMessage;
@@ -59,7 +59,7 @@ public class UCSRestController {
 
     @PostConstruct
     private void init() {
-        ucs = new UCSCoreBuilder().setProperties( properties ).build();
+        ucs = new UCSCoreServiceBuilder().setProperties( properties ).build();
     }
 
     @ApiOperation( httpMethod = "POST", value = "Receives request from PEP for tryaccess operation" )
