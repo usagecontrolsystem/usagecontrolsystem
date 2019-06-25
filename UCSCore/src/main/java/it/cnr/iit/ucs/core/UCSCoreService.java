@@ -36,7 +36,7 @@ import it.cnr.iit.ucs.ucs.UCSInterface;
  *
  * @author Antonio La Marra, Alessandro Rosetti
  */
-public class UCSCore implements UCSInterface {
+public class UCSCoreService implements UCSInterface {
 
     AbstractContextHandler contextHandler;
     AbstractRequestManager requestManager;
@@ -47,7 +47,7 @@ public class UCSCore implements UCSInterface {
     List<PIPBase> pipList;
     HashMap<String, PEPInterface> pepMap;
 
-    public UCSCore() {}
+    public UCSCoreService() {}
 
     @Override
     public Boolean tryAccess( TryAccessMessage tryAccessMessage ) {

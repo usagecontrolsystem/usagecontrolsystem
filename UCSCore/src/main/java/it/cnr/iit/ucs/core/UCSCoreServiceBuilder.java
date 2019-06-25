@@ -43,20 +43,20 @@ import it.cnr.iit.utility.errorhandling.exception.PreconditionException;
  *
  * @author Antonio La Marra, Alessandro Rosetti
  */
-public class UCSCoreBuilder {
+public class UCSCoreServiceBuilder {
 
-    private static final Logger log = Logger.getLogger( UCSCoreBuilder.class.getName() );
+    private static final Logger log = Logger.getLogger( UCSCoreServiceBuilder.class.getName() );
 
-    private UCSCore ucsCore;
+    private UCSCoreService ucsCore;
     private UCSProperties properties;
 
-    public UCSCoreBuilder() {
-        ucsCore = new UCSCore();
+    public UCSCoreServiceBuilder() {
+        ucsCore = new UCSCoreService();
         ucsCore.pipList = new ArrayList<>();
         ucsCore.pepMap = new HashMap<>();
     }
 
-    public UCSCore build() {
+    public UCSCoreService build() {
         try {
             log.info( "[INIT] usage control initialisation ..." );
             buildComponents();
@@ -69,12 +69,12 @@ public class UCSCoreBuilder {
         return ucsCore;
     }
 
-    public UCSCoreBuilder setProperties( UCSProperties properties ) {
+    public UCSCoreServiceBuilder setProperties( UCSProperties properties ) {
         this.properties = properties;
         return this;
     }
 
-    private UCSCoreBuilder buildComponents() {
+    private UCSCoreServiceBuilder buildComponents() {
         buildContextHandler();
         buildRequestManager();
         buildSessionManager();
@@ -86,7 +86,7 @@ public class UCSCoreBuilder {
         return this;
     }
 
-    private UCSCoreBuilder setupConnections() {
+    private UCSCoreServiceBuilder setupConnections() {
         ucsCore.contextHandler.setSessionManager( ucsCore.sessionManager );
         ucsCore.contextHandler.setRequestManager( ucsCore.requestManager );
         ucsCore.contextHandler.setPap( ucsCore.pap );
