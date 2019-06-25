@@ -43,14 +43,14 @@ import it.cnr.iit.utility.errorhandling.exception.PreconditionException;
  *
  * @author Antonio La Marra, Alessandro Rosetti
  */
-public class UCSBuilder {
+public class UCSCoreBuilder {
 
-    private static final Logger log = Logger.getLogger( UCSBuilder.class.getName() );
+    private static final Logger log = Logger.getLogger( UCSCoreBuilder.class.getName() );
 
     private UCSCore ucsCore;
     private UCSProperties properties;
 
-    public UCSBuilder() {
+    public UCSCoreBuilder() {
         ucsCore = new UCSCore();
         ucsCore.pipList = new ArrayList<>();
         ucsCore.pepMap = new HashMap<>();
@@ -69,12 +69,12 @@ public class UCSBuilder {
         return ucsCore;
     }
 
-    public UCSBuilder setProperties( UCSProperties properties ) {
+    public UCSCoreBuilder setProperties( UCSProperties properties ) {
         this.properties = properties;
         return this;
     }
 
-    private UCSBuilder buildComponents() {
+    private UCSCoreBuilder buildComponents() {
         buildContextHandler();
         buildRequestManager();
         buildSessionManager();
@@ -86,7 +86,7 @@ public class UCSBuilder {
         return this;
     }
 
-    private UCSBuilder setupConnections() {
+    private UCSCoreBuilder setupConnections() {
         ucsCore.contextHandler.setSessionManager( ucsCore.sessionManager );
         ucsCore.contextHandler.setRequestManager( ucsCore.requestManager );
         ucsCore.contextHandler.setPap( ucsCore.pap );
