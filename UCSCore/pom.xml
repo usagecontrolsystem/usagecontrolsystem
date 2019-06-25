@@ -20,7 +20,6 @@
 		<relativePath /> <!-- lookup parent from repository -->
 	</parent>
 
-
 	<dependencies>
 		<dependency>
 			<groupId>it.cnr.iit.ucs</groupId>

@@ -71,8 +71,6 @@ public final class PIPReader extends PIPBase {
      */
     private Category expectedCategory;
 
-    private static final String ATTRIBUTE_SEPARATOR = "\t";
-
     public static final String FILE_PATH = "FILE_PATH";
     private String filePath;
 
@@ -252,7 +250,7 @@ public final class PIPReader extends PIPBase {
         try (BufferedReader br = new BufferedReader( new FileReader( filePath ) )) {
             for( String line; ( line = br.readLine() ) != null; ) {
                 if( line.contains( filter ) ) {
-                    String value = line.split( ATTRIBUTE_SEPARATOR )[1];
+                    String value = line.split( "\\s+" )[1];
                     journal.logReadOperation( value, filter );
                     return value;
                 }
