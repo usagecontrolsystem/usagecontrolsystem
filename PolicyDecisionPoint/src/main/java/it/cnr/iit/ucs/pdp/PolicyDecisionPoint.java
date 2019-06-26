@@ -15,11 +15,11 @@
  ******************************************************************************/
 package it.cnr.iit.ucs.pdp;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.logging.Logger;
 
@@ -53,16 +53,13 @@ import org.wso2.balana.xacml3.MultipleCtxResult;
 
 import it.cnr.iit.ucs.constants.STATUS;
 import it.cnr.iit.ucs.exceptions.PolicyException;
+import it.cnr.iit.ucs.journaling.JournalInterface;
 import it.cnr.iit.ucs.properties.components.PdpProperties;
-import it.cnr.iit.utility.FileUtility;
 import it.cnr.iit.utility.JAXBUtility;
 import it.cnr.iit.xacml.PolicyTags;
 import it.cnr.iit.xacml.wrappers.PolicyWrapper;
 import it.cnr.iit.xacml.wrappers.RequestWrapper;
 
-import journal.io.api.Journal;
-import journal.io.api.Journal.WriteType;
-import journal.io.api.JournalBuilder;
 import oasis.names.tc.xacml.core.schema.wd_17.ResponseType;
 
 /**
@@ -81,11 +78,11 @@ public final class PolicyDecisionPoint extends AbstractPDP {
     private static Logger log = Logger.getLogger( PolicyDecisionPoint.class.getName() );
 
     private PDPConfig pdpConfig;
-    private Journal journal = null;
+    private Optional<JournalInterface> journalInterface;
 
     public PolicyDecisionPoint( PdpProperties properties ) {
         super( properties );
-        buildJournal( properties.getJournalDir() );
+        journalInterface = it.cnr.iit.ucs.journaling.JournalBuilder.build( properties );
     }
 
     @Override
@@ -105,10 +102,7 @@ public final class PolicyDecisionPoint extends AbstractPDP {
         try {
             PolicyFinder policyFinder = getPolicyFinder( policy );
             ResponseCtx responseCtx = evaluate( request.getRequest(), policyFinder );
-            journal.write( policy.getPolicy().getBytes(), WriteType.ASYNC );
-            journal.write( request.getRequest().getBytes(), WriteType.ASYNC );
-            journal.write( responseCtx.encode().getBytes(), WriteType.ASYNC );
-            journal.sync();
+            write( policy.getPolicy(), request.getRequest(), responseCtx.encode() );
             ResponseType responseType = getResponseType( responseCtx.encode() );
             return new PDPResponse( responseType );
         } catch( Exception e ) {
@@ -286,13 +280,13 @@ public final class PolicyDecisionPoint extends AbstractPDP {
         return new ResponseCtx( new Result( result, status ) );
     }
 
-    private void buildJournal( String journalDir ) {
-        try {
-            File file = new File( journalDir ); // TODO UCS-33 NOSONAR
-            FileUtility.createPathIfNotExists( file );
-            journal = JournalBuilder.of( file ).open();
-        } catch( Exception e ) {
-            throw new IllegalArgumentException( e.getMessage() );
+    private void write( String policy, String request, String response ) {
+        if( !journalInterface.isPresent() ) {
+            return;
+        } else {
+            journalInterface.get().logString( policy );
+            journalInterface.get().logString( request );
+            journalInterface.get().logString( response );
         }
     }
 

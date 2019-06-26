@@ -1,9 +1,10 @@
-package it.cnr.iit.ucs.pipreader;
+package it.cnr.iit.ucs.journaling;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.logging.Logger;
 
+import it.cnr.iit.ucs.properties.base.JournalProperties;
 import it.cnr.iit.utility.FileUtility;
 import it.cnr.iit.utility.errorhandling.Reject;
 
@@ -11,19 +12,17 @@ import journal.io.api.Journal;
 import journal.io.api.Journal.WriteType;
 import journal.io.api.JournalBuilder;
 
-public class PIPJournalHelper {
+public class JournalingFileSystem implements JournalInterface {
 
-    private static Logger log = Logger.getLogger( PIPJournalHelper.class.getName() );
+    private static final Logger log = Logger.getLogger( JournalingFileSystem.class.getName() );
     private Journal journal;
 
-    public PIPJournalHelper( String journalDir ) {
-        configureJournal( journalDir );
-    }
-
-    private boolean configureJournal( String journalDir ) {
-        Reject.ifBlank( journalDir );
+    @Override
+    public boolean init( JournalProperties journalProperties ) {
+        Reject.ifNull( journalProperties );
+        Reject.ifBlank( journalProperties.getJournalUri() );
         try {
-            File file = new File( journalDir );
+            File file = new File( journalProperties.getJournalUri() );
             // TODO UCS-33 NOSONAR
             if( !FileUtility.createPathIfNotExists( file ) ) {
                 return false;
@@ -35,20 +34,21 @@ public class PIPJournalHelper {
         }
     }
 
-    public void logReadOperation( String... string ) {
-        Reject.ifNull( string );
+    @Override
+    public boolean logString( String message ) {
+        Reject.ifBlank( message );
 
         StringBuilder logStringBuilder = new StringBuilder();
-        logStringBuilder.append( "VALUE READ: " + string[0] );
+        logStringBuilder.append( message );
 
-        if( string.length > 1 ) {
-            logStringBuilder.append( " FOR FILTER: " + string[1] );
-        }
-        logStringBuilder.append( "\t AT: " + System.currentTimeMillis() );
+        logStringBuilder.append( "\ttime: " + System.currentTimeMillis() );
         try {
             journal.write( logStringBuilder.toString().getBytes(), WriteType.SYNC );
+            return true;
         } catch( IOException e ) {
             log.severe( "Error writing journal : " + e.getMessage() );
+            return false;
         }
     }
+
 }

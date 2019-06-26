@@ -270,7 +270,7 @@ public class Reject {
         }
     }
 
-    public static void ifNull( String... objects ) {
+    public static void ifNullStringArray( String... objects ) {
         for( String object : objects ) {
             ifNull( object );
         }
