@@ -1,11 +1,13 @@
 package it.cnr.iit.ucs.journaling;
 
 import java.util.Optional;
+import java.util.logging.Logger;
 
 import it.cnr.iit.ucs.properties.base.JournalProperties;
-import it.cnr.iit.utility.errorhandling.Reject;
 
 public final class JournalBuilder {
+
+    private static final Logger log = Logger.getLogger( JournalBuilder.class.getName() );
     private JournalingInterface journalInterface;
 
     private JournalBuilder() {
@@ -13,10 +15,15 @@ public final class JournalBuilder {
     }
 
     public static Optional<JournalingInterface> build( JournalProperties journalProperties ) {
-        Reject.ifNullStringArray( journalProperties.getJournalProtocol(), journalProperties.getJournalPath() );
-        if( journalProperties.getJournalProtocol().equals( "file" ) ) {
-            return Optional.ofNullable( buildFileJournal( journalProperties ) );
+        if( journalProperties.getJournalProtocol() != null && journalProperties.getJournalPath() != null ) {
+            if( journalProperties.getJournalProtocol().equals( "file" ) ) {
+                return Optional.ofNullable( buildFileJournal( journalProperties ) );
+            }
+            if( journalProperties.getJournalProtocol().equals( "syslog" ) ) {
+                return Optional.ofNullable( new JournalingSyslog() );
+            }
         }
+        log.warning( "No journaling " );
         return Optional.empty();
     }
 

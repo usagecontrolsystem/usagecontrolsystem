@@ -47,6 +47,10 @@ public class UCSRestPipProperties extends BaseProperties implements PipPropertie
         return journalProtocol;
     }
 
+    public void setJournalProtocol( String journalProtocol ) {
+        this.journalProtocol = journalProtocol;
+    }
+
     @Override
     public Map<String, String> getJournalAdditionalProperties() {
         return new HashMap<>();
