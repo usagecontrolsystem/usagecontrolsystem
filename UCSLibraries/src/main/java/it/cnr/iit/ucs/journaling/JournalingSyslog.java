@@ -2,17 +2,15 @@ package it.cnr.iit.ucs.journaling;
 
 import it.cnr.iit.ucs.properties.base.JournalProperties;
 
-public class JournalingSyslog implements JournalInterface {
+public class JournalingSyslog implements JournalingInterface {
 
     @Override
     public boolean init( JournalProperties journalProperties ) {
-        // TODO Auto-generated method stub
         return false;
     }
 
     @Override
     public boolean logString( String message ) {
-        // TODO Auto-generated method stub
         return false;
     }
 

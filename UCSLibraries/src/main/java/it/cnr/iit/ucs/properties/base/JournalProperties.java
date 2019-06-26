@@ -18,7 +18,7 @@ package it.cnr.iit.ucs.properties.base;
 import java.util.Map;
 
 public interface JournalProperties {
-    public String getJournalUri();
+    public String getJournalPath();
 
     public String getJournalProtocol();
 

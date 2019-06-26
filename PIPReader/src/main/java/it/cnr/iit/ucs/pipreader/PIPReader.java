@@ -34,7 +34,7 @@ import java.util.logging.Logger;
 import it.cnr.iit.ucs.constants.ENTITIES;
 import it.cnr.iit.ucs.exceptions.PIPException;
 import it.cnr.iit.ucs.journaling.JournalBuilder;
-import it.cnr.iit.ucs.journaling.JournalInterface;
+import it.cnr.iit.ucs.journaling.JournalingInterface;
 import it.cnr.iit.ucs.message.attributechange.AttributeChangeMessage;
 import it.cnr.iit.ucs.obligationmanager.ObligationInterface;
 import it.cnr.iit.ucs.pip.PIPBase;
@@ -58,7 +58,7 @@ import oasis.names.tc.xacml.core.schema.wd_17.RequestType;
 public final class PIPReader extends PIPBase {
 
     private static Logger log = Logger.getLogger( PIPReader.class.getName() );
-    private Optional<JournalInterface> journal;
+    private Optional<JournalingInterface> journal;
 
     // list that stores the attributes on which a subscribe has been performed
     protected final BlockingQueue<Attribute> subscriptions = new LinkedBlockingQueue<>();

@@ -12,7 +12,7 @@ import journal.io.api.Journal;
 import journal.io.api.Journal.WriteType;
 import journal.io.api.JournalBuilder;
 
-public class JournalingFileSystem implements JournalInterface {
+public class JournalingFileSystem implements JournalingInterface {
 
     private static final Logger log = Logger.getLogger( JournalingFileSystem.class.getName() );
     private Journal journal;
@@ -20,9 +20,9 @@ public class JournalingFileSystem implements JournalInterface {
     @Override
     public boolean init( JournalProperties journalProperties ) {
         Reject.ifNull( journalProperties );
-        Reject.ifBlank( journalProperties.getJournalUri() );
+        Reject.ifBlank( journalProperties.getJournalPath() );
         try {
-            File file = new File( journalProperties.getJournalUri() );
+            File file = new File( journalProperties.getJournalPath() );
             // TODO UCS-33 NOSONAR
             if( !FileUtility.createPathIfNotExists( file ) ) {
                 return false;

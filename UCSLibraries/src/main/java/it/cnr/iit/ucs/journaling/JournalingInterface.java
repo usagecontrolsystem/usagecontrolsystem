@@ -2,7 +2,7 @@ package it.cnr.iit.ucs.journaling;
 
 import it.cnr.iit.ucs.properties.base.JournalProperties;
 
-public interface JournalInterface {
+public interface JournalingInterface {
 
     public boolean init( JournalProperties journalProperties );
 

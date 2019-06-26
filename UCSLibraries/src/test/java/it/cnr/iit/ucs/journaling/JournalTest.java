@@ -2,17 +2,18 @@ package it.cnr.iit.ucs.journaling;
 
 import static org.junit.Assert.assertTrue;
 
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.HashMap;
+import java.util.Optional;
 
 import org.junit.Test;
 
+import it.cnr.iit.ucs.properties.base.JournalProperties;
+
 public class JournalTest {
 
-    JournalInterface journalInterface = new JournalInterface() {
+    JournalingInterface journalInterface = new JournalingInterface() {
         @Override
-        public boolean init( JournalPropertiesInterface journalProperties ) {
+        public boolean init( JournalProperties journalProperties ) {
             return true;
         }
 
@@ -22,25 +23,30 @@ public class JournalTest {
         }
     };
 
-    JournalPropertiesInterface fileSystem = new JournalPropertiesInterface() {
+    JournalProperties fileSystem = new JournalProperties() {
         @Override
-        public String getUri() {
+        public String getJournalPath() {
             return "/tmp/journalTest";
         }
 
         @Override
-        public HashMap<String, String> getAdditionalProperties() {
+        public HashMap<String, String> getJournalAdditionalProperties() {
             return null;
+        }
+
+        @Override
+        public String getJournalProtocol() {
+            return "file";
         }
     };
 
-    JournalInterface fileSystemJournal = new JournalingFileSystem();
+    JournalingInterface fileSystemJournal = new JournalingFileSystem();
 
-    public void testInit( JournalInterface journalInterface, JournalPropertiesInterface journalPropertiesInterface ) {
+    public void testInit( JournalingInterface journalInterface, JournalProperties journalPropertiesInterface ) {
         assertTrue( journalInterface.init( journalPropertiesInterface ) );
     }
 
-    public void testWrite( JournalInterface journalInterface, String message ) {
+    public void testWrite( JournalingInterface journalInterface, String message ) {
         assertTrue( journalInterface.logString( message ) );
     }
 
@@ -57,12 +63,10 @@ public class JournalTest {
     }
 
     @Test
-    public void urlTest() throws MalformedURLException {
-        String path = "file://./file.txt";
-        String network = "http://ciao.com";
-        URL url = new URL( path );
-        url = new URL( network );
-        System.out.println( url.getProtocol() );
+    public void testFSjournalBuilder() {
+        Optional<JournalingInterface> journalInterface = JournalBuilder.build( fileSystem );
+        testInit( journalInterface.get(), fileSystem );
+        testWrite( journalInterface.get(), "HELLO" );
     }
 
 }
