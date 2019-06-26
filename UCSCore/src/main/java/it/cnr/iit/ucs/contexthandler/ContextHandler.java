@@ -25,7 +25,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import it.cnr.iit.ucs.constants.STATUS;
-import it.cnr.iit.ucs.contexthandler.AbstractContextHandler;
 import it.cnr.iit.ucs.exceptions.PolicyException;
 import it.cnr.iit.ucs.exceptions.RequestException;
 import it.cnr.iit.ucs.exceptions.StatusException;

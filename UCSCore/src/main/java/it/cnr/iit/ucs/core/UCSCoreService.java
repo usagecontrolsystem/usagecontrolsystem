@@ -47,8 +47,6 @@ public class UCSCoreService implements UCSInterface {
     List<PIPBase> pipList;
     HashMap<String, PEPInterface> pepMap;
 
-    public UCSCoreService() {}
-
     @Override
     public Boolean tryAccess( TryAccessMessage tryAccessMessage ) {
         return requestManager.sendMessageToCH( tryAccessMessage );
