@@ -26,6 +26,7 @@ import org.springframework.scheduling.annotation.EnableAsync;
 import springfox.documentation.builders.ApiInfoBuilder;
 import springfox.documentation.builders.PathSelectors;
 import springfox.documentation.service.ApiInfo;
+import springfox.documentation.service.Contact;
 import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spring.web.plugins.Docket;
 import springfox.documentation.swagger.web.DocExpansion;
@@ -81,9 +82,9 @@ public class UCSRestStarter extends SpringBootServletInitializer {
 
     private ApiInfo metadata() {
         return new ApiInfoBuilder()
-            .title( "Usage Control System REST API" )
-            .description( "Usage Control System" )
-            .version( "1.0" ).contact( "antonio.lamarra@iit.cnr.it" ).build();
+            .title( "Usage Control System REST API" ).description( "Usage Control System" )
+            .version( "1.0" ).contact( new Contact( "Antonio La Marra", "", "antonio.lamarra@iit.cnr.it" ) )
+            .build();
     }
 
     public static void main( String[] args ) {
