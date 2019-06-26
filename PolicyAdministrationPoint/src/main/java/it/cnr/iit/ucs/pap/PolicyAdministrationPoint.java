@@ -22,6 +22,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
@@ -49,10 +50,6 @@ public class PolicyAdministrationPoint implements PAPInterface {
 
     private static final String POLICY_FILE_EXTENSION = ".xml";
 
-    private static final String MSG_ERR_POLICY_READ = "Error reading policy file : {0} -> {1}";
-    private static final String MSG_ERR_POLICY_WRITE = "Error writing policy file : {0} -> {1}";
-    private static final String MSG_WARN_POLICY_EXISTS = "Policy file already existent";
-
     public PolicyAdministrationPoint( PapProperties properties ) {
         Reject.ifNull( properties );
         this.properties = properties;
@@ -71,7 +68,7 @@ public class PolicyAdministrationPoint implements PAPInterface {
         try {
             return new String( Files.readAllBytes( path ) );
         } catch( Exception e ) {
-            log.severe( String.format( MSG_ERR_POLICY_READ, path, e.getMessage() ) );
+            log.log( Level.SEVERE, "Error reading policy file : {0} -> {1}", new Object[] { path, e.getMessage() } );
         }
         return null;
     }
@@ -96,13 +93,12 @@ public class PolicyAdministrationPoint implements PAPInterface {
         PolicyType policyType = policyWrapper.getPolicyType();
         String id = policyType.getPolicyId();
         if( id == null || id.isEmpty() ) {
+            log.severe( "No policyId specified" );
             return false;
         }
-
         Path policyPath = getPolicyPath( id );
         if( policyPath.toFile().exists() ) {
-            log.warning( MSG_WARN_POLICY_EXISTS );
-            return true;
+            log.log( Level.INFO, "Updating policy {0}", id );
         }
 
         return writePolicy( policyPath, policy );
@@ -114,7 +110,7 @@ public class PolicyAdministrationPoint implements PAPInterface {
             fos.write( policy.getBytes() );
             return true;
         } catch( Exception e ) {
-            log.severe( String.format( MSG_ERR_POLICY_WRITE, path, e.getMessage() ) );
+            log.log( Level.SEVERE, "Error writing policy file : {0} -> {1}", new Object[] { path, e.getMessage() } );
             return false;
         }
     }
