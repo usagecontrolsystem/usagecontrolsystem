@@ -11,58 +11,38 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>it.cnr.iit.ucsrest</groupId>
 	<artifactId>UCSRest</artifactId>
-	<version>3.0-SNAPSHOT</version>
+	<version>0.2.0-SNAPSHOT</version>
 
 	<properties>
-		<jclouds.version>1.9.1</jclouds.version>
-		<springfox.version>2.2.2</springfox.version>
-		<swagger.version>1.5.3</swagger.version>
+		<springfox.version>2.9.2</springfox.version>
+		<swagger.version>1.5.22</swagger.version>
 	</properties>
 
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>2.1.4.RELEASE</version>
+		<version>2.1.6.RELEASE</version>
 		<relativePath /> <!-- lookup parent from repository -->
 	</parent>
 
 	<dependencies>
 		<dependency>
-			<groupId>it.cnr.iit.ucs</groupId>
-			<artifactId>UCSLibraries</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
+			<groupId>it.cnr.iit.ucscore</groupId>
+			<artifactId>UCSCore</artifactId>
+			<version>0.2.0-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>it.cnr.iit.ucs</groupId>
 			<artifactId>UCSLibraries</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
+			<version>0.2.0-SNAPSHOT</version>
 			<type>test-jar</type>
 			<scope>test</scope>
 		</dependency>
+
 		<dependency>
-			<groupId>it.cnr.iit.ucs</groupId>
-			<artifactId>PolicyDecisionPoint</artifactId>
-			<version>1.0-SNAPSHOT</version>
-		</dependency>
-		<dependency>
-			<groupId>it.cnr.iit.ucs</groupId>
-			<artifactId>PIPReader</artifactId>
-			<version>2.0-SNAPSHOT</version>
-		</dependency>
-		<dependency>
-			<groupId>it.cnr.iit.ucs</groupId>
-			<artifactId>PolicyAdministrationPoint</artifactId>
-			<version>1.0-SNAPSHOT</version>
-		</dependency>
-		<dependency>
-			<groupId>it.cnr.iit.ucs</groupId>
-			<artifactId>ObligationManager</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
-		</dependency>
-		<dependency>
-			<groupId>it.cnr.iit.ucs</groupId>
-			<artifactId>SessionManager</artifactId>
-			<version>1.0-SNAPSHOT</version>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-configuration-processor</artifactId>
+			<optional>true</optional>
 		</dependency>
 
 		<!-- springfox dependencies -->
@@ -157,7 +137,7 @@
 		<dependency>
 			<groupId>com.google.guava</groupId>
 			<artifactId>guava</artifactId>
-			<version>22.0</version>
+			<version>23.0</version>
 		</dependency>
 
 	</dependencies>
@@ -188,7 +168,7 @@
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>exec-maven-plugin</artifactId>
 				<configuration>
-					<mainClass>it.cnr.iit.ucsrest</mainClass>
+					<mainClass>it.cnr.iit.ucs</mainClass>
 				</configuration>
 			</plugin>
 

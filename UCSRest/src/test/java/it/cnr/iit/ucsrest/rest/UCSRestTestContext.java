@@ -1,37 +1,27 @@
 package it.cnr.iit.ucsrest.rest;
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.SpringBootConfiguration;
-import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.test.context.TestPropertySource;
 
 import com.tngtech.jgiven.integration.spring.EnableJGiven;
 
 @Configuration
 @EnableJGiven
-@ComponentScan( basePackages = { "it.cnr.iit" } )
-@EnableConfigurationProperties
-@TestPropertySource( properties = "application.properties" )
-@ConfigurationProperties( prefix = "ucstest", ignoreUnknownFields = true, ignoreInvalidFields = true )
-@SpringBootConfiguration
 public class UCSRestTestContext {
 
-    @Value( "${policy-file}" )
+    @Value( "${ucstest.policy-file}" )
     private String policyFile;
 
-    @Value( "${policy-file-deny}" )
+    @Value( "${ucstest.policy-file-deny}" )
     private String policyFileDeny;
 
-    @Value( "${request-file}" )
+    @Value( "${ucstest.request-file}" )
     private String requestFile;
 
-    @Value( "${pep-id}" )
+    @Value( "${ucstest.pep-id}" )
     private String pepId;
 
-    @Value( "${session-id}" )
+    @Value( "${ucstest.session-id}" )
     private String sessionId;
 
     public String getPolicyFile() {

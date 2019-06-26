@@ -41,12 +41,12 @@ public class PEPWireMockExampleTest extends PEPRestAbstractTest {
     public WireMockRule wireMockRule = new WireMockRule(
         options().port( Integer.parseInt( PORT ) )
 
-            // Set the root of the filesystem WireMock will look under for files and mappings
-            // .usingFilesUnderDirectory("D:\\git")
+    // Set the root of the filesystem WireMock will look under for files and mappings
+    // .usingFilesUnderDirectory("D:\\git")
 
-            // Set a path within the classpath as the filesystem root
-            // .usingFilesUnderClasspath("src/test/resources")
-            );
+    // Set a path within the classpath as the filesystem root
+    // .usingFilesUnderClasspath("src/test/resources")
+    );
 
     @Override
     @Before

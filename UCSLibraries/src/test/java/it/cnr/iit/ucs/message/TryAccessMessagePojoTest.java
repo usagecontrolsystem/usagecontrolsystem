@@ -23,7 +23,7 @@ public class TryAccessMessagePojoTest extends AbstractPojoTest {
     public void shouldPassSetGetPolicy() {
         try {
             // given a policy and a message object
-            String policy = FileUtility.readFileAsString( "xmls/policy_1.xml" );
+            String policy = FileUtility.readFileAsString( "../res/xmls/policy_1.xml" );
             TryAccessMessage tryAccessMessage = new TryAccessMessage();
 
             // when the policy is set on message
@@ -32,7 +32,7 @@ public class TryAccessMessagePojoTest extends AbstractPojoTest {
             // then the policy is equal to the one in the message
             assertEquals( policy, tryAccessMessage.getPolicy() );
         } catch( Exception e ) {
-            fail( "unable to laod policy file " );
+            fail( "unable to load policy file " );
         }
     }
 
@@ -40,7 +40,7 @@ public class TryAccessMessagePojoTest extends AbstractPojoTest {
     public void shouldPassSetGetRequest() {
         try {
             // given a request and a message object
-            String request = FileUtility.readFileAsString( "xmls/request_1.xml" );
+            String request = FileUtility.readFileAsString( "../res/xmls/request.xml" );
             TryAccessMessage tryAccessMessage = new TryAccessMessage();
 
             // when the request is set on message
@@ -49,7 +49,7 @@ public class TryAccessMessagePojoTest extends AbstractPojoTest {
             // then the request is equal to the one in the message
             assertEquals( request, tryAccessMessage.getRequest() );
         } catch( Exception e ) {
-            fail( "unable to laod request file " );
+            fail( "unable to load request file " );
         }
     }
 
