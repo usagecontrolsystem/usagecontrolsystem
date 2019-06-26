@@ -387,15 +387,6 @@ public final class ContextHandler extends AbstractContextHandler {
     }
 
     /**
-     * API offered by the context handler to the PIP in case some attribute changes
-     */
-    @Override
-    public void attributeChanged( AttributeChangeMessage message ) {
-        log.log( Level.INFO, "Attribute changed received {0}", System.currentTimeMillis() );
-        attributeMonitor.add( message );
-    }
-
-    /**
      * This is the function where the effective reevaluation takes place.
      */
     public boolean reevaluateSessions( Attribute attribute ) {
@@ -455,6 +446,12 @@ public final class ContextHandler extends AbstractContextHandler {
         response.setSessionId( session.getId() );
         response.setEvaluation( evaluation );
         return response;
+    }
+
+    @Override
+    public void attributeChanged( AttributeChangeMessage message ) {
+        log.log( Level.INFO, "Attribute changed received {0}", System.currentTimeMillis() );
+        attributeMonitor.add( message );
     }
 
     @Override

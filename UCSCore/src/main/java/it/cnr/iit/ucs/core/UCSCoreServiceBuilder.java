@@ -97,7 +97,7 @@ public class UCSCoreServiceBuilder {
         ucsCore.requestManager.setContextHandler( ucsCore.contextHandler );
         ucsCore.requestManager.setPEPMap( ucsCore.pepMap );
         for( PIPBase pip : ucsCore.pipList ) {
-            pip.setContextHandler( ucsCore.contextHandler );
+            pip.setRequestManager( ucsCore.requestManager );
         }
         ucsCore.pdp.setPap( ucsCore.pap );
         ucsCore.pdp.setObligationManager( ucsCore.obligationManager );

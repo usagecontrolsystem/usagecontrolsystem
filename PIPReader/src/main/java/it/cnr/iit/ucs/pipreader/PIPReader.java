@@ -333,6 +333,6 @@ public final class PIPReader extends PIPBase {
         AttributeChangeMessage attrChangeMessage = new AttributeChangeMessage( ENTITIES.PIP.toString(), ENTITIES.CH.toString() );
         ArrayList<Attribute> attrList = new ArrayList<>( Arrays.asList( attribute ) );
         attrChangeMessage.setAttributes( attrList );
-        getContextHandler().attributeChanged( attrChangeMessage );
+        getRequestManager().sendMessage( attrChangeMessage );
     }
 }

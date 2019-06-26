@@ -107,7 +107,6 @@ public abstract class AbstractContextHandler implements ContextHandlerInterface 
     public void setPIPs( List<PIPCHInterface> pipList ) {
         Reject.ifNull( pipList, PIPCHInterface.class.getName() + " list" );
         for( PIPCHInterface pip : pipList ) {
-            pip.setContextHandler( this );
             pipRegistry.add( pip );
         }
     }
