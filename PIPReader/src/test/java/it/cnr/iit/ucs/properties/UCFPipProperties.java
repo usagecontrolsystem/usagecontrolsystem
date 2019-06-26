@@ -9,18 +9,18 @@ import it.cnr.iit.ucs.properties.components.PipProperties;
 
 public class UCFPipProperties implements PipProperties {
 
-    private String className;
+    private String name;
     private String id;
     private String journalDir;
     private List<Map<String, String>> attributes;
 
     @Override
     public String getName() {
-        return className;
+        return name;
     }
 
-    public void setClassName( String className ) {
-        this.className = className;
+    public void setName( String name ) {
+        this.name = name;
     }
 
     @Override
@@ -58,7 +58,6 @@ public class UCFPipProperties implements PipProperties {
 
     @Override
     public Map<String, String> getAdditionalProperties() {
-        // TODO Auto-generated method stub
         return null;
     }
 

@@ -56,7 +56,6 @@ public class GivenMessage extends Stage<GivenMessage> {
 
     @BeforeScenario
     public void init() throws URISyntaxException, IOException {
-        Thread.interrupted(); // Avoid a nasty exception
         policy = FileUtility.readFileAsString( testContext.getPolicyFile() );
         request = FileUtility.readFileAsString( testContext.getRequestFile() );
 
@@ -99,12 +98,7 @@ public class GivenMessage extends Stage<GivenMessage> {
     }
 
     public GivenMessage a_policy_that_will_trigger_a_Deny_response() {
-        try {
-            Thread.interrupted(); // Avoid a nasty exception
-            policy = FileUtility.readFileAsString( testContext.getPolicyFileDeny() );
-        } catch( URISyntaxException | IOException e ) {
-            policy = null;
-        }
+        policy = FileUtility.readFileAsString( testContext.getPolicyFileDeny() );
         return self();
     }
 

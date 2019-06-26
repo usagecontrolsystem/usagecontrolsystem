@@ -18,6 +18,8 @@ package it.cnr.iit.ucsrest.rest;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.annotation.PostConstruct;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -26,9 +28,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import it.cnr.iit.ucs.constants.OperationName;
+import it.cnr.iit.ucs.core.UCSCoreServiceBuilder;
 import it.cnr.iit.ucs.message.endaccess.EndAccessMessage;
 import it.cnr.iit.ucs.message.startaccess.StartAccessMessage;
 import it.cnr.iit.ucs.message.tryaccess.TryAccessMessage;
+import it.cnr.iit.ucs.properties.UCSProperties;
 import it.cnr.iit.ucs.ucs.UCSInterface;
 import it.cnr.iit.utility.errorhandling.Reject;
 
@@ -49,7 +53,14 @@ public class UCSRestController {
     private static final Logger log = Logger.getLogger( UCSRestController.class.getName() );
 
     @Autowired
+    private UCSProperties properties;
+
     private UCSInterface ucs;
+
+    @PostConstruct
+    private void init() {
+        ucs = new UCSCoreServiceBuilder().setProperties( properties ).build();
+    }
 
     @ApiOperation( httpMethod = "POST", value = "Receives request from PEP for tryaccess operation" )
     @ApiResponses( value = {
@@ -60,7 +71,7 @@ public class UCSRestController {
     // TODO UCS-34 NOSONAR
     public Boolean sendMessage( @RequestBody( ) TryAccessMessage message ) {
         Reject.ifNull( message );
-        log.log( Level.INFO, "Tryaccess received {0}", System.currentTimeMillis() );
+        log.log( Level.INFO, "TryAccess received {0}", System.currentTimeMillis() );
         return ucs.tryAccess( message );
     }
 
@@ -73,7 +84,7 @@ public class UCSRestController {
     // TODO UCS-34 NOSONAR
     public Boolean sendMessage( @RequestBody( ) StartAccessMessage message ) {
         Reject.ifNull( message );
-        log.log( Level.INFO, "Startaccess received {0}", System.currentTimeMillis() );
+        log.log( Level.INFO, "StartAccess received {0}", System.currentTimeMillis() );
         return ucs.startAccess( message );
     }
 
@@ -86,7 +97,7 @@ public class UCSRestController {
     // TODO UCS-34 NOSONAR
     public Boolean sendMessage( @RequestBody( ) EndAccessMessage message ) {
         Reject.ifNull( message );
-        log.log( Level.INFO, "Endaccess received {0}", System.currentTimeMillis() );
+        log.log( Level.INFO, "EndAccess received {0}", System.currentTimeMillis() );
         return ucs.endAccess( message );
     }
 

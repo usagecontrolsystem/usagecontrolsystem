@@ -98,8 +98,8 @@ public class PEPRest implements PEPInterface {
         PolicyWrapper policy;
         RequestWrapper request;
         try {
-            policy = PolicyWrapper.build( FileUtility.readFileAbsPath( pep.getPolicyPath() ) );
-            request = RequestWrapper.build( FileUtility.readFileAbsPath( pep.getRequestPath() ) );
+            policy = PolicyWrapper.build( FileUtility.readFileAsString( pep.getPolicyPath() ) );
+            request = RequestWrapper.build( FileUtility.readFileAsString( pep.getRequestPath() ) );
         } catch( PolicyException | RequestException e ) {
             return INVALID_MESSAGE_ID;
         }
