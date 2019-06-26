@@ -11,7 +11,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>it.cnr.iit.ucs</groupId>
 	<artifactId>PolicyDecisionPoint</artifactId>
-	<version>1.0-SNAPSHOT</version>
+	<version>0.2.0-SNAPSHOT</version>
 
     <properties>
         <balana.version>1.1.14</balana.version>
@@ -28,7 +28,7 @@
 		<dependency>
 			<groupId>it.cnr.iit.ucs</groupId>
 			<artifactId>UCSLibraries</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
+			<version>0.2.0-SNAPSHOT</version>
 		</dependency>
 
 		<dependency>

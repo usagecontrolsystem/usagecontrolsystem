@@ -5,6 +5,7 @@
  */
 package it.cnr.iit.ucs.sessionmanager;
 
+import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -12,7 +13,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.logging.Logger;
 
-import com.google.common.base.Throwables;
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.dao.DaoManager;
 import com.j256.ormlite.dao.ForeignCollection;
@@ -96,11 +96,11 @@ public final class SessionManager implements SessionManagerInterface {
     @Override
     public Boolean stop() {
         if( !isInitialized() ) {
-            Throwables.propagate( new IllegalStateException( "SessionManager was not correctly initialized" ) );
+            throw new IllegalStateException( "SessionManager was not correctly initialized" );
         }
         try {
             connection.close();
-        } catch( SQLException e ) {
+        } catch( IOException e ) {
             log.severe( String.format( MSG_ERR_SQL, e.getMessage() ) );
             initialized = false;
             throw new IllegalStateException( "SessionManager not in a valid state anymore" );

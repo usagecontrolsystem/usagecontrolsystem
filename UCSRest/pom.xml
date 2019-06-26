@@ -11,7 +11,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>it.cnr.iit.ucsrest</groupId>
 	<artifactId>UCSRest</artifactId>
-	<version>1.0.0-SNAPSHOT</version>
+	<version>0.2.0-SNAPSHOT</version>
 
 	<properties>
 		<springfox.version>2.9.2</springfox.version>
@@ -29,12 +29,12 @@
 		<dependency>
 			<groupId>it.cnr.iit.ucscore</groupId>
 			<artifactId>UCSCore</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
+			<version>0.2.0-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>it.cnr.iit.ucs</groupId>
 			<artifactId>UCSLibraries</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
+			<version>0.2.0-SNAPSHOT</version>
 			<type>test-jar</type>
 			<scope>test</scope>
 		</dependency>
