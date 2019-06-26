@@ -53,6 +53,7 @@ import org.wso2.balana.xacml3.MultipleCtxResult;
 
 import it.cnr.iit.ucs.constants.STATUS;
 import it.cnr.iit.ucs.exceptions.PolicyException;
+import it.cnr.iit.ucs.journaling.JournalBuilder;
 import it.cnr.iit.ucs.journaling.JournalingInterface;
 import it.cnr.iit.ucs.properties.components.PdpProperties;
 import it.cnr.iit.utility.JAXBUtility;
@@ -82,7 +83,7 @@ public final class PolicyDecisionPoint extends AbstractPDP {
 
     public PolicyDecisionPoint( PdpProperties properties ) {
         super( properties );
-        journalInterface = it.cnr.iit.ucs.journaling.JournalBuilder.build( properties );
+        journalInterface = JournalBuilder.build( properties );
     }
 
     @Override
@@ -281,9 +282,7 @@ public final class PolicyDecisionPoint extends AbstractPDP {
     }
 
     private void write( String policy, String request, String response ) {
-        if( !journalInterface.isPresent() ) {
-            return;
-        } else {
+        if( journalInterface.isPresent() ) {
             journalInterface.get().logString( policy );
             journalInterface.get().logString( request );
             journalInterface.get().logString( response );
