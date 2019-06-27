@@ -57,7 +57,7 @@ import it.cnr.iit.ucs.message.tryaccess.TryAccessResponseMessage;
  * @author Antonio La Marra
  *
  */
-public interface ContextHandlerInterface extends ContextHandlerPIPInterface {
+public interface ContextHandlerInterface extends ContextHandlerAttributeUpdateInterface {
 
     /**
      * This is the tryAccess function. In this case the RequestManager passes to

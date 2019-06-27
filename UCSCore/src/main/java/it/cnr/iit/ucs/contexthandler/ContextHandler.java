@@ -63,11 +63,8 @@ public final class ContextHandler extends AbstractContextHandler {
     @Deprecated
     public static final String PEP_ID_SEPARATOR = "#";
 
-    private AttributeMonitor attributeMonitor;
-
     public ContextHandler( ContextHandlerProperties properties ) {
         super( properties );
-        attributeMonitor = new AttributeMonitor( this );
     }
 
     /**
@@ -451,12 +448,17 @@ public final class ContextHandler extends AbstractContextHandler {
     @Override
     public void attributeChanged( AttributeChangeMessage message ) {
         log.log( Level.INFO, "Attribute changed received at {0}", System.currentTimeMillis() );
-        attributeMonitor.add( message );
+        List<Attribute> attributes = message.getAttributes();
+        handleChanges( attributes );
     }
 
-    @Override
-    public void setMonitoringThread( boolean running ) {
-        attributeMonitor.setRunning( running );
+    private boolean handleChanges( List<Attribute> attributes ) {
+        for( Attribute attribute : attributes ) {
+            if( reevaluateSessions( attribute ) ) {
+                return false;
+            }
+        }
+        return true;
     }
 
 }
