@@ -2,7 +2,7 @@ package it.cnr.iit.ucs.journaling;
 
 import it.cnr.iit.ucs.properties.base.JournalProperties;
 
-public class JournalingSyslog implements JournalingInterface {
+public class SyslogJournaling implements JournalingInterface {
 
     @Override
     public boolean init( JournalProperties journalProperties ) {
@@ -11,6 +11,11 @@ public class JournalingSyslog implements JournalingInterface {
 
     @Override
     public boolean logString( String message ) {
+        return false;
+    }
+
+    @Override
+    public boolean logMultipleStrings( String... strings ) {
         return false;
     }
 

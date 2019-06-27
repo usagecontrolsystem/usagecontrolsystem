@@ -8,4 +8,6 @@ public interface JournalingInterface {
 
     public boolean logString( String message );
 
+    public boolean logMultipleStrings( String... strings );
+
 }

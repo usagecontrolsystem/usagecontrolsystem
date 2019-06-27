@@ -3,7 +3,6 @@ package it.cnr.iit.ucs.journaling;
 import static org.junit.Assert.assertTrue;
 
 import java.util.HashMap;
-import java.util.Optional;
 
 import org.junit.Test;
 
@@ -19,6 +18,11 @@ public class JournalTest {
 
         @Override
         public boolean logString( String string ) {
+            return true;
+        }
+
+        @Override
+        public boolean logMultipleStrings( String... strings ) {
             return true;
         }
     };
@@ -40,7 +44,7 @@ public class JournalTest {
         }
     };
 
-    JournalingInterface fileSystemJournal = new JournalingFileSystem();
+    JournalingInterface fileSystemJournal = new FileJournaling();
 
     public void testInit( JournalingInterface journalInterface, JournalProperties journalPropertiesInterface ) {
         assertTrue( journalInterface.init( journalPropertiesInterface ) );
@@ -48,6 +52,10 @@ public class JournalTest {
 
     public void testWrite( JournalingInterface journalInterface, String message ) {
         assertTrue( journalInterface.logString( message ) );
+    }
+
+    public void testWriteMultiple( JournalingInterface journalInterface, String... message ) {
+        assertTrue( journalInterface.logMultipleStrings( message ) );
     }
 
     @Test
@@ -64,9 +72,10 @@ public class JournalTest {
 
     @Test
     public void testFSjournalBuilder() {
-        Optional<JournalingInterface> journalInterface = JournalBuilder.build( fileSystem );
-        testInit( journalInterface.get(), fileSystem );
-        testWrite( journalInterface.get(), "HELLO" );
+        JournalingInterface journalInterface = JournalBuilder.build( fileSystem );
+        testInit( journalInterface, fileSystem );
+        testWrite( journalInterface, "HELLO" );
+        testWriteMultiple( journalInterface, "Ciao", "Hello", "Ciao", "Hello" );
     }
 
 }

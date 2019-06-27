@@ -19,7 +19,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 import java.util.logging.Logger;
 
@@ -79,7 +78,7 @@ public final class PolicyDecisionPoint extends AbstractPDP {
     private static Logger log = Logger.getLogger( PolicyDecisionPoint.class.getName() );
 
     private PDPConfig pdpConfig;
-    private Optional<JournalingInterface> journalInterface;
+    private JournalingInterface journalInterface;
 
     public PolicyDecisionPoint( PdpProperties properties ) {
         super( properties );
@@ -103,7 +102,7 @@ public final class PolicyDecisionPoint extends AbstractPDP {
         try {
             PolicyFinder policyFinder = getPolicyFinder( policy );
             ResponseCtx responseCtx = evaluate( request.getRequest(), policyFinder );
-            write( policy.getPolicy(), request.getRequest(), responseCtx.encode() );
+            journalInterface.logMultipleStrings( policy.getPolicy(), request.getRequest(), responseCtx.encode() );
             ResponseType responseType = getResponseType( responseCtx.encode() );
             return new PDPResponse( responseType );
         } catch( Exception e ) {
@@ -279,14 +278,6 @@ public final class PolicyDecisionPoint extends AbstractPDP {
         List<String> codeList = new ArrayList<>( Arrays.asList( code ) );
         Status status = new Status( codeList, message );
         return new ResponseCtx( new Result( result, status ) );
-    }
-
-    private void write( String policy, String request, String response ) {
-        if( journalInterface.isPresent() ) {
-            journalInterface.get().logString( policy );
-            journalInterface.get().logString( request );
-            journalInterface.get().logString( response );
-        }
     }
 
 }

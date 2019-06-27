@@ -2,6 +2,7 @@ package it.cnr.iit.ucs.journaling;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Optional;
 import java.util.logging.Logger;
 
 import it.cnr.iit.ucs.properties.base.JournalProperties;
@@ -12,10 +13,14 @@ import journal.io.api.Journal;
 import journal.io.api.Journal.WriteType;
 import journal.io.api.JournalBuilder;
 
-public class JournalingFileSystem implements JournalingInterface {
+public class FileJournaling implements JournalingInterface {
 
-    private static final Logger log = Logger.getLogger( JournalingFileSystem.class.getName() );
-    private Journal journal;
+    private static final Logger log = Logger.getLogger( FileJournaling.class.getName() );
+    private Optional<Journal> journal;
+
+    public FileJournaling() {
+        journal = Optional.empty();
+    }
 
     @Override
     public boolean init( JournalProperties journalProperties ) {
@@ -27,7 +32,7 @@ public class JournalingFileSystem implements JournalingInterface {
             if( !FileUtility.createPathIfNotExists( file ) ) {
                 return false;
             }
-            journal = JournalBuilder.of( file ).open();
+            journal = Optional.ofNullable( JournalBuilder.of( file ).open() );
             return true;
         } catch( Exception e ) {
             throw new IllegalStateException( "Error while initialising the journaling dir : " + e.getMessage() );
@@ -36,6 +41,9 @@ public class JournalingFileSystem implements JournalingInterface {
 
     @Override
     public boolean logString( String message ) {
+        if( !journal.isPresent() ) {
+            return false;
+        }
         Reject.ifBlank( message );
 
         StringBuilder logStringBuilder = new StringBuilder();
@@ -43,7 +51,31 @@ public class JournalingFileSystem implements JournalingInterface {
 
         logStringBuilder.append( "\ttime: " + System.currentTimeMillis() );
         try {
-            journal.write( logStringBuilder.toString().getBytes(), WriteType.SYNC );
+            journal.get().write( logStringBuilder.toString().getBytes(), WriteType.SYNC );
+            return true;
+        } catch( IOException e ) {
+            log.severe( "Error writing journal : " + e.getMessage() );
+            return false;
+        }
+    }
+
+    @Override
+    public boolean logMultipleStrings( String... strings ) {
+        if( !journal.isPresent() ) {
+            return false;
+        }
+        Reject.ifNullStringArray( strings );
+
+        try {
+            for( String string : strings ) {
+                StringBuilder logStringBuilder = new StringBuilder();
+                logStringBuilder.append( string );
+
+                logStringBuilder.append( "\ttime: " + System.currentTimeMillis() );
+
+                journal.get().write( logStringBuilder.toString().getBytes(), WriteType.ASYNC );
+            }
+            journal.get().sync();
             return true;
         } catch( IOException e ) {
             log.severe( "Error writing journal : " + e.getMessage() );
