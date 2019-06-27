@@ -62,8 +62,6 @@ public abstract class AbstractContextHandler implements ContextHandlerInterface 
         pipRegistry = new PIPRegistry();
     }
 
-    public abstract void setMonitoringThread( boolean running );
-
     protected final SessionManagerInterface getSessionManager() {
         return sessionManager;
     }

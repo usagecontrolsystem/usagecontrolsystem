@@ -22,7 +22,7 @@ import it.cnr.iit.ucs.message.attributechange.AttributeChangeMessage;
  *
  * @author Antonio La Marra, Alessandro Rosetti
  */
-public interface ContextHandlerPIPInterface {
+public interface ContextHandlerAttributeUpdateInterface {
     /**
      * In this case the CH is notified the RM that the attribute monitored has changed.
      */
