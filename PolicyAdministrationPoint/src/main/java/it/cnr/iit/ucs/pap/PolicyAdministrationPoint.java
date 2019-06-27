@@ -51,7 +51,7 @@ public class PolicyAdministrationPoint implements PAPInterface {
 
     private static final String MSG_ERR_POLICY_READ = "Error reading policy file : {0} -> {1}";
     private static final String MSG_ERR_POLICY_WRITE = "Error writing policy file : {0} -> {1}";
-    private static final String MSG_WARN_POLICY_EXISTS = "Policy file already existent";
+    private static final String MSG_WARN_POLICY_EXISTS = "Policy file already exists";
 
     public PolicyAdministrationPoint( PapProperties properties ) {
         Reject.ifNull( properties );
@@ -84,28 +84,30 @@ public class PolicyAdministrationPoint implements PAPInterface {
      * @return true if everything goes OK, false otherwise
      */
     @Override
-    public boolean addPolicy( String policy ) {
+    public String addPolicy( String policy ) {
         Reject.ifBlank( policy );
         PolicyWrapper policyWrapper;
         try {
             policyWrapper = PolicyWrapper.build( policy );
         } catch( PolicyException e ) {
-            return false;
+            return null;
         }
 
         PolicyType policyType = policyWrapper.getPolicyType();
         String id = policyType.getPolicyId();
         if( id == null || id.isEmpty() ) {
-            return false;
+            return null;
         }
 
         Path policyPath = getPolicyPath( id );
         if( policyPath.toFile().exists() ) {
             log.warning( MSG_WARN_POLICY_EXISTS );
-            return true;
+            return null;
         }
-
-        return writePolicy( policyPath, policy );
+        if( writePolicy( policyPath, policy ) ) {
+            return id;
+        }
+        return null;
     }
 
     private boolean writePolicy( Path path, String policy ) {
@@ -121,7 +123,7 @@ public class PolicyAdministrationPoint implements PAPInterface {
 
     private Path getPolicyPath( String policyId ) {
         // TODO UCS-33 NOSONAR
-        return Paths.get( properties.getPath(), policyId, POLICY_FILE_EXTENSION );
+        return Paths.get( properties.getPath(), policyId + POLICY_FILE_EXTENSION );
     }
 
     /**
