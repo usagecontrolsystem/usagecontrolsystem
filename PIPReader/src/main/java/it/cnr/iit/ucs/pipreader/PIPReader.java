@@ -229,7 +229,7 @@ public final class PIPReader extends PIPBase {
             Path path = Paths.get( filePath );
             // TODO UCS-33 NOSONAR
             String value = new String( Files.readAllBytes( path ) );
-            logOperation( value );
+            journal.logString( formatJournaling( value ) );
             return value;
         } catch( IOException e ) {
             throw new PIPException( "Attribute Manager error : " + e.getMessage() );
