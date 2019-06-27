@@ -93,11 +93,10 @@ public class UCSCoreServiceBuilder {
         ucsCore.contextHandler.setPdp( ucsCore.pdp );
         ucsCore.contextHandler.setObligationManager( ucsCore.obligationManager );
         ucsCore.contextHandler.setPIPs( new ArrayList<PIPCHInterface>( ucsCore.pipList ) );
-        ucsCore.contextHandler.startMonitoringThread();
         ucsCore.requestManager.setContextHandler( ucsCore.contextHandler );
         ucsCore.requestManager.setPEPMap( ucsCore.pepMap );
         for( PIPBase pip : ucsCore.pipList ) {
-            pip.setContextHandler( ucsCore.contextHandler );
+            pip.setRequestManager( ucsCore.requestManager );
         }
         ucsCore.pdp.setPap( ucsCore.pap );
         ucsCore.pdp.setObligationManager( ucsCore.obligationManager );

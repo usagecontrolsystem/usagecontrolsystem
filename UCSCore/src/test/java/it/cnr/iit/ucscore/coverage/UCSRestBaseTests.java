@@ -156,7 +156,6 @@ public class UCSRestBaseTests {
 
         /* must be called after initialisation */
         addMockedPips( contextHandler );
-        contextHandler.startMonitoringThread();
 
         return contextHandler;
     }

@@ -1,5 +1,6 @@
 package it.cnr.iit.ucs.properties;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -12,6 +13,7 @@ public class UCFPipProperties implements PipProperties {
     private String name;
     private String id;
     private String journalDir;
+    private String journalProtocol;
     private List<Map<String, String>> attributes;
 
     @Override
@@ -30,11 +32,6 @@ public class UCFPipProperties implements PipProperties {
 
     public void setId( String id ) {
         this.id = id;
-    }
-
-    @Override
-    public String getJournalDir() {
-        return journalDir;
     }
 
     public void setJournalDir( String journalDir ) {
@@ -59,6 +56,21 @@ public class UCFPipProperties implements PipProperties {
     @Override
     public Map<String, String> getAdditionalProperties() {
         return null;
+    }
+
+    @Override
+    public String getJournalPath() {
+        return journalDir;
+    }
+
+    @Override
+    public String getJournalProtocol() {
+        return journalProtocol;
+    }
+
+    @Override
+    public Map<String, String> getJournalAdditionalProperties() {
+        return new HashMap<>();
     }
 
 }

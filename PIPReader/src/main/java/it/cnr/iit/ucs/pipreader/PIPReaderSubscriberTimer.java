@@ -29,7 +29,7 @@ final class PIPReaderSubscriberTimer extends TimerTask {
     private Timer timer;
     PIPReader pip;
 
-    private static final long DEFAULT_RATE = 3L * 1000;
+    private static final long DEFAULT_RATE = 1L * 1000;
     private long rate = DEFAULT_RATE;
 
     PIPReaderSubscriberTimer( PIPReader pip ) {

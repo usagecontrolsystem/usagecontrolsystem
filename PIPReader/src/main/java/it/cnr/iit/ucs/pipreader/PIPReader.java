@@ -32,6 +32,8 @@ import java.util.logging.Logger;
 
 import it.cnr.iit.ucs.constants.ENTITIES;
 import it.cnr.iit.ucs.exceptions.PIPException;
+import it.cnr.iit.ucs.journaling.JournalBuilder;
+import it.cnr.iit.ucs.journaling.JournalingInterface;
 import it.cnr.iit.ucs.message.attributechange.AttributeChangeMessage;
 import it.cnr.iit.ucs.obligationmanager.ObligationInterface;
 import it.cnr.iit.ucs.pip.PIPBase;
@@ -55,7 +57,7 @@ import oasis.names.tc.xacml.core.schema.wd_17.RequestType;
 public final class PIPReader extends PIPBase {
 
     private static Logger log = Logger.getLogger( PIPReader.class.getName() );
-    private PIPJournalHelper journal;
+    private JournalingInterface journal;
 
     // list that stores the attributes on which a subscribe has been performed
     protected final BlockingQueue<Attribute> subscriptions = new LinkedBlockingQueue<>();
@@ -95,8 +97,7 @@ public final class PIPReader extends PIPBase {
             Reject.ifFalse( attributeMap.containsKey( FILE_PATH ), "missing file path" );
             setFilePath( attributeMap.get( FILE_PATH ) );
             addAttribute( attribute );
-
-            journal = new PIPJournalHelper( properties.getJournalDir() );
+            journal = JournalBuilder.build( properties );
 
             PIPReaderSubscriberTimer subscriberTimer = new PIPReaderSubscriberTimer( this );
             subscriberTimer.start();
@@ -209,7 +210,7 @@ public final class PIPReader extends PIPBase {
     }
 
     private void addAdditionalInformation( RequestType request, Attribute attribute ) {
-        String filter = request.extractValue( expectedCategory );
+        String filter = request.getAttributeValue( expectedCategory );
         attribute.setAdditionalInformations( filter );
     }
 
@@ -228,7 +229,7 @@ public final class PIPReader extends PIPBase {
             Path path = Paths.get( filePath );
             // TODO UCS-33 NOSONAR
             String value = new String( Files.readAllBytes( path ) );
-            journal.logReadOperation( value );
+            journal.logString( formatJournaling( value ) );
             return value;
         } catch( IOException e ) {
             throw new PIPException( "Attribute Manager error : " + e.getMessage() );
@@ -251,7 +252,7 @@ public final class PIPReader extends PIPBase {
             for( String line; ( line = br.readLine() ) != null; ) {
                 if( line.contains( filter ) ) {
                     String value = line.split( "\\s+" )[1];
-                    journal.logReadOperation( value, filter );
+                    journal.logString( formatJournaling( value, filter ) );
                     return value;
                 }
             }
@@ -269,6 +270,16 @@ public final class PIPReader extends PIPBase {
             this.filePath = filePath;
         }
         Reject.ifBlank( this.filePath );
+    }
+
+    private String formatJournaling( String... strings ) {
+        StringBuilder logStringBuilder = new StringBuilder();
+        logStringBuilder.append( "VALUE READ: " + strings[0] );
+
+        if( strings.length > 1 ) {
+            logStringBuilder.append( " FOR FILTER: " + strings[1] );
+        }
+        return logStringBuilder.toString();
     }
 
     @Override
@@ -324,15 +335,15 @@ public final class PIPReader extends PIPBase {
                         attribute.getAdditionalInformations(),
                         System.currentTimeMillis() } );
                 attribute.setValue( attribute.getDataType(), value );
-                notifyContextHandler( attribute );
+                notifyRequestManager( attribute );
             }
         }
     }
 
-    public void notifyContextHandler( Attribute attribute ) {
+    public void notifyRequestManager( Attribute attribute ) {
         AttributeChangeMessage attrChangeMessage = new AttributeChangeMessage( ENTITIES.PIP.toString(), ENTITIES.CH.toString() );
         ArrayList<Attribute> attrList = new ArrayList<>( Arrays.asList( attribute ) );
         attrChangeMessage.setAttributes( attrList );
-        getContextHandler().attributeChanged( attrChangeMessage );
+        getRequestManager().sendMessage( attrChangeMessage );
     }
 }

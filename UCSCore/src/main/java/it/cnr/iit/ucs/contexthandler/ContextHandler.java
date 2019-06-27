@@ -63,11 +63,8 @@ public final class ContextHandler extends AbstractContextHandler {
     @Deprecated
     public static final String PEP_ID_SEPARATOR = "#";
 
-    private AttributeMonitor attributeMonitor;
-
     public ContextHandler( ContextHandlerProperties properties ) {
         super( properties );
-        attributeMonitor = new AttributeMonitor( this );
     }
 
     /**
@@ -140,9 +137,9 @@ public final class ContextHandler extends AbstractContextHandler {
             .setOnGoingAttributesForAction( getAttributeIdsForCategory( onGoingAttributes, Category.ACTION ) )
             .setOnGoingAttributesForResource( getAttributeIdsForCategory( onGoingAttributes, Category.RESOURCE ) )
             .setOnGoingAttributesForEnvironment( getAttributeIdsForCategory( onGoingAttributes, Category.ENVIRONMENT ) );
-        sessionAttributeBuilder.setSubjectName( request.getRequestType().extractValue( Category.SUBJECT ) )
-            .setResourceName( request.getRequestType().extractValue( Category.RESOURCE ) )
-            .setActionName( request.getRequestType().extractValue( Category.ACTION ) );
+        sessionAttributeBuilder.setSubjectName( request.getRequestType().getAttributeValue( Category.SUBJECT ) )
+            .setResourceName( request.getRequestType().getAttributeValue( Category.RESOURCE ) )
+            .setActionName( request.getRequestType().getAttributeValue( Category.ACTION ) );
         sessionAttributeBuilder.setSessionId( sessionId ).setPolicySet( policy.getPolicy() ).setOriginalRequest( request.getRequest() )
             .setStatus( STATUS.TRY.name() ).setPepURI( pepUri ).setMyIP( uri.getHost() );
 
@@ -387,15 +384,6 @@ public final class ContextHandler extends AbstractContextHandler {
     }
 
     /**
-     * API offered by the context handler to the PIP in case some attribute changes
-     */
-    @Override
-    public void attributeChanged( AttributeChangeMessage message ) {
-        log.log( Level.INFO, "Attribute changed received {0}", System.currentTimeMillis() );
-        attributeMonitor.add( message );
-    }
-
-    /**
      * This is the function where the effective reevaluation takes place.
      */
     public boolean reevaluateSessions( Attribute attribute ) {
@@ -458,12 +446,14 @@ public final class ContextHandler extends AbstractContextHandler {
     }
 
     @Override
-    public void startMonitoringThread() {
-        attributeMonitor.setTheadStatus( true );
+    public void attributeChanged( AttributeChangeMessage message ) {
+        log.log( Level.INFO, "Attribute changed received at {0}", System.currentTimeMillis() );
+        for( Attribute attribute : message.getAttributes() ) {
+            if( !reevaluateSessions( attribute ) ) {
+                log.log( Level.SEVERE, "Error handling attribute changes" );
+            }
+        }
+
     }
 
-    @Override
-    public void stopMonitoringThread() {
-        attributeMonitor.setTheadStatus( false );
-    }
 }

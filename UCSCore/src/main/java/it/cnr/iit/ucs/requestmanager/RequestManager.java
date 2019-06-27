@@ -22,12 +22,12 @@ import java.util.logging.Logger;
 
 import it.cnr.iit.ucs.constants.PURPOSE;
 import it.cnr.iit.ucs.message.Message;
+import it.cnr.iit.ucs.message.attributechange.AttributeChangeMessage;
 import it.cnr.iit.ucs.message.endaccess.EndAccessMessage;
 import it.cnr.iit.ucs.message.reevaluation.ReevaluationResponseMessage;
 import it.cnr.iit.ucs.message.startaccess.StartAccessMessage;
 import it.cnr.iit.ucs.message.tryaccess.TryAccessMessage;
 import it.cnr.iit.ucs.properties.components.RequestManagerProperties;
-import it.cnr.iit.ucs.requestmanager.AbstractRequestManager;
 import it.cnr.iit.utility.errorhandling.Reject;
 
 /**
@@ -64,7 +64,7 @@ public class RequestManager extends AbstractRequestManager {
 
     @Override
     public synchronized void sendReevaluation( ReevaluationResponseMessage reevaluation ) {
-        Reject.ifNull( reevaluation, "Invalid message" );
+        Reject.ifNull( reevaluation, "Null message" );
         log.info( "Sending on going reevaluation." );
         getPEPMap().get( ( reevaluation ).getPepId() )
             .onGoingEvaluation( reevaluation );
@@ -76,13 +76,13 @@ public class RequestManager extends AbstractRequestManager {
      * puts it in the priority queue of messages
      */
     @Override
-    public synchronized boolean sendMessageToCH( Message message ) {
+    public synchronized boolean sendMessage( Message message ) {
         Reject.ifNull( message, "Null message" );
         try {
             if( !active ) {
                 handleMessage( message );
             } else {
-                getQueueToCH().put( message );
+                getQueueOutput().put( message );
             }
             return true;
         } catch( Exception e ) {
@@ -102,7 +102,7 @@ public class RequestManager extends AbstractRequestManager {
         public Message call() {
             Message message;
             try {
-                while( ( message = getQueueToCH().take() ) != null ) {
+                while( ( message = getQueueOutput().take() ) != null ) {
                     handleMessage( message );
                 }
             } catch( Exception e ) {
@@ -115,7 +115,10 @@ public class RequestManager extends AbstractRequestManager {
 
     private void handleMessage( Message message ) throws Exception {
         Message responseMessage = null;
-        if( message.getPurpose() == PURPOSE.TRY ) {
+        if( message instanceof AttributeChangeMessage ) {
+            getContextHandler().attributeChanged( (AttributeChangeMessage) message );
+            return;
+        } else if( message.getPurpose() == PURPOSE.TRY ) {
             responseMessage = getContextHandler().tryAccess( (TryAccessMessage) message );
         } else if( message.getPurpose() == PURPOSE.START ) {
             responseMessage = getContextHandler().startAccess( (StartAccessMessage) message );
