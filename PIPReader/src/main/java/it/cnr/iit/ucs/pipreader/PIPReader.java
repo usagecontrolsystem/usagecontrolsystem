@@ -209,7 +209,7 @@ public final class PIPReader extends PIPBase {
     }
 
     private void addAdditionalInformation( RequestType request, Attribute attribute ) {
-        String filter = request.extractValue( expectedCategory );
+        String filter = request.getAttributeValue( expectedCategory );
         attribute.setAdditionalInformations( filter );
     }
 
@@ -333,6 +333,7 @@ public final class PIPReader extends PIPBase {
         AttributeChangeMessage attrChangeMessage = new AttributeChangeMessage( ENTITIES.PIP.toString(), ENTITIES.CH.toString() );
         ArrayList<Attribute> attrList = new ArrayList<>( Arrays.asList( attribute ) );
         attrChangeMessage.setAttributes( attrList );
+        log.info( "!!! pip->rm" );
         getRequestManager().sendMessage( attrChangeMessage );
     }
 }

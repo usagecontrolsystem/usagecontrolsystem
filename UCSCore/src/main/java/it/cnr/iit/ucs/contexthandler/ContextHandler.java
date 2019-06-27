@@ -140,9 +140,9 @@ public final class ContextHandler extends AbstractContextHandler {
             .setOnGoingAttributesForAction( getAttributeIdsForCategory( onGoingAttributes, Category.ACTION ) )
             .setOnGoingAttributesForResource( getAttributeIdsForCategory( onGoingAttributes, Category.RESOURCE ) )
             .setOnGoingAttributesForEnvironment( getAttributeIdsForCategory( onGoingAttributes, Category.ENVIRONMENT ) );
-        sessionAttributeBuilder.setSubjectName( request.getRequestType().extractValue( Category.SUBJECT ) )
-            .setResourceName( request.getRequestType().extractValue( Category.RESOURCE ) )
-            .setActionName( request.getRequestType().extractValue( Category.ACTION ) );
+        sessionAttributeBuilder.setSubjectName( request.getRequestType().getAttributeValue( Category.SUBJECT ) )
+            .setResourceName( request.getRequestType().getAttributeValue( Category.RESOURCE ) )
+            .setActionName( request.getRequestType().getAttributeValue( Category.ACTION ) );
         sessionAttributeBuilder.setSessionId( sessionId ).setPolicySet( policy.getPolicy() ).setOriginalRequest( request.getRequest() )
             .setStatus( STATUS.TRY.name() ).setPepURI( pepUri ).setMyIP( uri.getHost() );
 
@@ -450,17 +450,13 @@ public final class ContextHandler extends AbstractContextHandler {
 
     @Override
     public void attributeChanged( AttributeChangeMessage message ) {
-        log.log( Level.INFO, "Attribute changed received {0}", System.currentTimeMillis() );
+        log.log( Level.INFO, "Attribute changed received at {0}", System.currentTimeMillis() );
         attributeMonitor.add( message );
     }
 
     @Override
-    public void startMonitoringThread() {
-        attributeMonitor.setTheadStatus( true );
+    public void setMonitoringThread( boolean running ) {
+        attributeMonitor.setRunning( running );
     }
 
-    @Override
-    public void stopMonitoringThread() {
-        attributeMonitor.setTheadStatus( false );
-    }
 }

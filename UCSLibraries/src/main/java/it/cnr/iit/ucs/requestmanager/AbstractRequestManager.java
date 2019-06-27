@@ -42,8 +42,8 @@ public abstract class AbstractRequestManager implements RequestManagerToCHInterf
 
     protected static final Logger log = Logger.getLogger( AbstractRequestManager.class.getName() );
 
-    private final BlockingQueue<Message> queueFromCH = new LinkedBlockingQueue<>();
-    private final BlockingQueue<Message> queueToCH = new LinkedBlockingQueue<>();
+    private final BlockingQueue<Message> queueInput = new LinkedBlockingQueue<>();
+    private final BlockingQueue<Message> queueOutput = new LinkedBlockingQueue<>();
     private final BlockingQueue<AttributeChangeMessage> retrieveRequests = new LinkedBlockingQueue<>();
 
     private ContextHandlerInterface contextHandler;
@@ -75,12 +75,12 @@ public abstract class AbstractRequestManager implements RequestManagerToCHInterf
         return pepMap;
     }
 
-    protected BlockingQueue<Message> getQueueFromCH() {
-        return queueFromCH;
+    protected BlockingQueue<Message> getQueueInput() {
+        return queueInput;
     }
 
-    protected BlockingQueue<Message> getQueueToCH() {
-        return queueToCH;
+    protected BlockingQueue<Message> getQueueOutput() {
+        return queueOutput;
     }
 
     protected final BlockingQueue<AttributeChangeMessage> getRetrieveRequestsQueue() {

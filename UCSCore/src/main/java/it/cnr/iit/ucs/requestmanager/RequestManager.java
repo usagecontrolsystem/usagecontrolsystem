@@ -64,7 +64,7 @@ public class RequestManager extends AbstractRequestManager {
 
     @Override
     public synchronized void sendReevaluation( ReevaluationResponseMessage reevaluation ) {
-        Reject.ifNull( reevaluation, "Invalid message" );
+        Reject.ifNull( reevaluation, "Null message" );
         log.info( "Sending on going reevaluation." );
         getPEPMap().get( ( reevaluation ).getPepId() )
             .onGoingEvaluation( reevaluation );
@@ -82,7 +82,7 @@ public class RequestManager extends AbstractRequestManager {
             if( !active ) {
                 handleMessage( message );
             } else {
-                getQueueToCH().put( message );
+                getQueueOutput().put( message );
             }
             return true;
         } catch( Exception e ) {
@@ -102,7 +102,7 @@ public class RequestManager extends AbstractRequestManager {
         public Message call() {
             Message message;
             try {
-                while( ( message = getQueueToCH().take() ) != null ) {
+                while( ( message = getQueueOutput().take() ) != null ) {
                     handleMessage( message );
                 }
             } catch( Exception e ) {
@@ -116,6 +116,7 @@ public class RequestManager extends AbstractRequestManager {
     private void handleMessage( Message message ) throws Exception {
         Message responseMessage = null;
         if( message instanceof AttributeChangeMessage ) {
+            log.info( "!!! attrchange" );
             getContextHandler().attributeChanged( (AttributeChangeMessage) message );
             return;
         } else if( message.getPurpose() == PURPOSE.TRY ) {
