@@ -25,7 +25,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.logging.Level;
@@ -58,7 +57,7 @@ import oasis.names.tc.xacml.core.schema.wd_17.RequestType;
 public final class PIPReader extends PIPBase {
 
     private static Logger log = Logger.getLogger( PIPReader.class.getName() );
-    private Optional<JournalingInterface> journal;
+    private JournalingInterface journal;
 
     // list that stores the attributes on which a subscribe has been performed
     protected final BlockingQueue<Attribute> subscriptions = new LinkedBlockingQueue<>();
@@ -274,13 +273,10 @@ public final class PIPReader extends PIPBase {
     }
 
     private void logOperation( String... strings ) {
-        if( !journal.isPresent() ) {
-            return;
-        }
-        journal.get().logString( format( strings ) );
+        journal.logString( formatJournaling( strings ) );
     }
 
-    private String format( String... strings ) {
+    private String formatJournaling( String... strings ) {
         StringBuilder logStringBuilder = new StringBuilder();
         logStringBuilder.append( "VALUE READ: " + strings[0] );
 
