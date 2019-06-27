@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>it.cnr.iit.secgroup.ucs</groupId>
 	<artifactId>UCSLibraries</artifactId>
-	<version>0.2.0-RELEASE</version>
+	<version>0.2.0-SNAPSHOT</version>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -91,6 +91,12 @@
 			<groupId>org.reflections</groupId>
 			<artifactId>reflections</artifactId>
 			<version>0.9.11</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>com.github.sbtourist</groupId>
+			<artifactId>journalio</artifactId>
+			<version>1.4.2</version>
 		</dependency>
 
         <!-- JAVA > 11 compatibility -->
