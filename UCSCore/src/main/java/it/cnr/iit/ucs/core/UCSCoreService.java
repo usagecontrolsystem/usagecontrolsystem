@@ -49,17 +49,17 @@ public class UCSCoreService implements UCSInterface {
 
     @Override
     public Boolean tryAccess( TryAccessMessage tryAccessMessage ) {
-        return requestManager.sendMessageToCH( tryAccessMessage );
+        return requestManager.sendMessage( tryAccessMessage );
     }
 
     @Override
     public Boolean startAccess( StartAccessMessage startAccessMessage ) {
-        return requestManager.sendMessageToCH( startAccessMessage );
+        return requestManager.sendMessage( startAccessMessage );
     }
 
     @Override
     public Boolean endAccess( EndAccessMessage endAccessMessage ) {
-        return requestManager.sendMessageToCH( endAccessMessage );
+        return requestManager.sendMessage( endAccessMessage );
     }
 
 }

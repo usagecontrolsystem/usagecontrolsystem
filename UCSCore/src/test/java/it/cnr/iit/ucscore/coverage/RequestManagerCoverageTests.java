@@ -47,7 +47,7 @@ public class RequestManagerCoverageTests extends UCSRestBaseTests {
             throws JAXBException, URISyntaxException, IOException, NoSuchMethodException, SecurityException,
             InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
         RequestManager requestManager = getRequestManager();
-        requestManager.sendMessageToCH( null );
+        requestManager.sendMessage( null );
         requestManager.sendReevaluation( null );
     }
 
@@ -74,7 +74,7 @@ public class RequestManagerCoverageTests extends UCSRestBaseTests {
         };
 
         for( Message message : messages ) {
-            requestManager.sendMessageToCH( message );
+            requestManager.sendMessage( message );
         }
     }
 

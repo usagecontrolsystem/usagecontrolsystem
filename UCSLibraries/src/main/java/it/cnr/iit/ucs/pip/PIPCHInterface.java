@@ -17,8 +17,8 @@ package it.cnr.iit.ucs.pip;
 
 import java.util.List;
 
-import it.cnr.iit.ucs.contexthandler.ContextHandlerPIPInterface;
 import it.cnr.iit.ucs.exceptions.PIPException;
+import it.cnr.iit.ucs.requestmanager.RequestManagerInterface;
 import it.cnr.iit.xacml.Attribute;
 
 import oasis.names.tc.xacml.core.schema.wd_17.RequestType;
@@ -129,14 +129,14 @@ public interface PIPCHInterface extends PIPBaseInterface {
             List<Attribute> attributeRetrieval );
 
     /**
-     * Sets the context handler to which the PIPs have to communicate to
+     * Sets the request manager to which the PIPs have to communicate to
      *
-     * @param contextHandler
-     *          the context handler to which the pip have to communicate
+     * @param requestManager
+     *          the request manager to which the pip have to communicate
      */
-    public void setContextHandler( ContextHandlerPIPInterface contextHandler );
+    public void setRequestManager( RequestManagerInterface requestManager );
 
-    public ContextHandlerPIPInterface getContextHandler();
+    public RequestManagerInterface getRequestManager();
 
     @Override
     public List<String> getAttributeIds();
