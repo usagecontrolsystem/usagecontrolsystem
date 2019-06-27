@@ -23,16 +23,16 @@ class AttributeMonitor {
     private static final Logger log = Logger.getLogger( AttributeMonitor.class.getName() );
 
     private ExecutorService executorService;
-    private boolean running;
+    private boolean running = false;
 
     // queue in charge of storing the changing in the attributes
-    private LinkedTransferQueue<AttributeChangeMessage> changedAttributesQueue;
+    private LinkedTransferQueue<AttributeChangeMessage> attributeQueue;
     private ContextHandler contextHandler;
 
     public AttributeMonitor( ContextHandler contextHandler ) {
         Reject.ifNull( contextHandler, "ContextHandler is null" );
         this.contextHandler = contextHandler;
-        changedAttributesQueue = new LinkedTransferQueue<>();
+        attributeQueue = new LinkedTransferQueue<>();
         executorService = Executors.newSingleThreadExecutor();
     }
 
@@ -42,11 +42,11 @@ class AttributeMonitor {
             log.info( "Attribute monitor started" );
             while( running ) {
                 try {
-                    AttributeChangeMessage message = changedAttributesQueue.take();
+                    AttributeChangeMessage message = attributeQueue.take();
                     List<Attribute> attributes = message.getAttributes();
 
                     if( attributes == null ) {
-                        log.warning( "Attributes list in the message is null" );
+                        log.warning( "Null attribute list in message" );
                         continue;
                     }
 
@@ -58,6 +58,7 @@ class AttributeMonitor {
                     Thread.currentThread().interrupt();
                 }
             }
+            log.info( "Attribute monitor stopped" );
         }
 
         private boolean handleChanges( List<Attribute> attributes ) {
@@ -71,13 +72,15 @@ class AttributeMonitor {
     }
 
     public void add( AttributeChangeMessage message ) {
-        changedAttributesQueue.put( message );
+        attributeQueue.put( message );
     }
 
-    public void setTheadStatus( boolean status ) {
-        running = status;
-        if( status ) {
+    public synchronized void setRunning( boolean running ) {
+        if( !this.running && running ) {
+            this.running = true;
             executorService.submit( new ContinuousMonitor() );
+        } else {
+            this.running = running;
         }
     }
 

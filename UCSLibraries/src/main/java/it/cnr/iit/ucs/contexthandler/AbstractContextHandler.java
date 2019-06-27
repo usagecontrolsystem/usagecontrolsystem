@@ -44,10 +44,9 @@ public abstract class AbstractContextHandler implements ContextHandlerInterface 
     private SessionManagerInterface sessionManager;
     private RequestManagerToCHInterface requestManager;
     private ObligationManagerInterface obligationManager;
+    private PIPRegistryInterface pipRegistry;
     private PDPInterface pdp;
     private PAPInterface pap;
-
-    private PIPRegistryInterface pipRegistry;
 
     protected ContextHandlerProperties properties;
     protected URI uri;
@@ -63,9 +62,7 @@ public abstract class AbstractContextHandler implements ContextHandlerInterface 
         pipRegistry = new PIPRegistry();
     }
 
-    public abstract void startMonitoringThread();
-
-    public abstract void stopMonitoringThread();
+    public abstract void setMonitoringThread( boolean running );
 
     protected final SessionManagerInterface getSessionManager() {
         return sessionManager;
@@ -107,7 +104,6 @@ public abstract class AbstractContextHandler implements ContextHandlerInterface 
     public void setPIPs( List<PIPCHInterface> pipList ) {
         Reject.ifNull( pipList, PIPCHInterface.class.getName() + " list" );
         for( PIPCHInterface pip : pipList ) {
-            pip.setContextHandler( this );
             pipRegistry.add( pip );
         }
     }

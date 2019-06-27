@@ -5,12 +5,6 @@
  */
 package it.cnr.iit.ucs.exceptions;
 
-/**
- * A wrapper for exceptions related to the PIP operations (i.e. errors occurred
- * during file configuration parsing, wrong attributes when creating user search
- * base, etc.) and LDAP operations (i.e. invalid credentials)
- * @author Fabio Bindi and Filippo Lauria
- */
 public class PIPException extends Exception {
     private static final long serialVersionUID = 1488407629633894422L;
 

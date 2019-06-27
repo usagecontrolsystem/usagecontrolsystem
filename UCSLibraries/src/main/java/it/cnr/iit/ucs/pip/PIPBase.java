@@ -8,8 +8,8 @@ package it.cnr.iit.ucs.pip;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import it.cnr.iit.ucs.contexthandler.ContextHandlerPIPInterface;
 import it.cnr.iit.ucs.properties.components.PipProperties;
+import it.cnr.iit.ucs.requestmanager.RequestManagerInterface;
 import it.cnr.iit.utility.errorhandling.Reject;
 import it.cnr.iit.xacml.Attribute;
 
@@ -20,17 +20,11 @@ import it.cnr.iit.xacml.Attribute;
  */
 public abstract class PIPBase implements PIPCHInterface, PIPOMInterface {
 
-    private ContextHandlerPIPInterface contextHandler;
+    private RequestManagerInterface requestManager;
     private HashMap<String, Attribute> attributesMap = new HashMap<>();
 
     private PipProperties properties;
 
-    /**
-     * Basic constructor for a PIP
-     *
-     * @param properties
-     *          the configuration of the PIP
-     */
     public PIPBase( PipProperties properties ) {
         Reject.ifNull( properties );
         this.properties = properties;
@@ -56,15 +50,15 @@ public abstract class PIPBase implements PIPCHInterface, PIPOMInterface {
     }
 
     @Override
-    public ContextHandlerPIPInterface getContextHandler() {
-        Reject.ifNull( contextHandler );
-        return contextHandler;
+    public RequestManagerInterface getRequestManager() {
+        Reject.ifNull( requestManager, "request manager is null" );
+        return requestManager;
     }
 
     @Override
-    public void setContextHandler( ContextHandlerPIPInterface contextHandler ) {
-        Reject.ifNull( contextHandler );
-        this.contextHandler = contextHandler;
+    public void setRequestManager( RequestManagerInterface requestManager ) {
+        Reject.ifNull( requestManager );
+        this.requestManager = requestManager;
     }
 
     protected final boolean addAttribute( Attribute attribute ) {

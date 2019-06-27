@@ -62,14 +62,15 @@ public class ContextHandlerCoverageTests extends UCSRestBaseTests {
         initContextHandler( contextHandler );
         // set the pdp response to return deny
         contextHandler.setPdp( getMockedPDP( getMockedPDPEvaluation( DecisionType.DENY ) ) );
-        contextHandler.startMonitoringThread();
+        contextHandler.setMonitoringThread( true );
         contextHandler.tryAccess( null );
-        contextHandler.stopMonitoringThread();
+        contextHandler.setMonitoringThread( false );
     }
 
     @Test
     public void contextHandlerStartAccess() throws StartAccessException, Exception {
         ContextHandler contextHandler = getContextHandlerCorrectlyInitialized( policy, request );
+        contextHandler.setMonitoringThread( true );
 
         contextHandler.setSessionManager(
             getSessionManagerForStatus( testProperties.getSessionId(), policy, request, STATUS.TRY.name() ) );
@@ -77,7 +78,7 @@ public class ContextHandlerCoverageTests extends UCSRestBaseTests {
         contextHandler.setPdp( getMockedPDP( getMockedPDPEvaluation( DecisionType.DENY ) ) );
         StartAccessMessage startAccessMessage = buildStartAccessMessage( testProperties.getSessionId(), "a", "a" );
         contextHandler.startAccess( startAccessMessage );
-        contextHandler.stopMonitoringThread();
+        contextHandler.setMonitoringThread( false );
     }
 
     @Test
@@ -89,12 +90,13 @@ public class ContextHandlerCoverageTests extends UCSRestBaseTests {
         contextHandler.setPdp( getMockedPDP( getMockedPDPEvaluation( DecisionType.DENY ) ) );
         EndAccessMessage endAccessMessage = buildEndAccessMessage( testProperties.getSessionId(), "a", "a" );
         contextHandler.endAccess( endAccessMessage );
-        contextHandler.stopMonitoringThread();
+        contextHandler.setMonitoringThread( false );
     }
 
     @Test
     public void contextHandlerFullFlow() throws StartAccessException, EndAccessException, Exception {
         ContextHandler contextHandler = getContextHandlerCorrectlyInitialized( policy, request );
+        contextHandler.setMonitoringThread( true );
 
         /* tryAccess */
         TryAccessMessage tryAccessMessage = buildTryAccessMessage( testProperties.getPepId(), "localhost", policy,
@@ -120,7 +122,7 @@ public class ContextHandlerCoverageTests extends UCSRestBaseTests {
         EndAccessMessage endAccessMessage = buildEndAccessMessage( testProperties.getSessionId(), "a", "a" );
         contextHandler.endAccess( endAccessMessage );
 
-        contextHandler.stopMonitoringThread();
+        contextHandler.setMonitoringThread( false );
     }
 
 }
