@@ -448,17 +448,12 @@ public final class ContextHandler extends AbstractContextHandler {
     @Override
     public void attributeChanged( AttributeChangeMessage message ) {
         log.log( Level.INFO, "Attribute changed received at {0}", System.currentTimeMillis() );
-        List<Attribute> attributes = message.getAttributes();
-        handleChanges( attributes );
-    }
-
-    private boolean handleChanges( List<Attribute> attributes ) {
-        for( Attribute attribute : attributes ) {
-            if( reevaluateSessions( attribute ) ) {
-                return false;
+        for( Attribute attribute : message.getAttributes() ) {
+            if( !reevaluateSessions( attribute ) ) {
+                log.log( Level.SEVERE, "Error handling attribute changes" );
             }
         }
-        return true;
+
     }
 
 }

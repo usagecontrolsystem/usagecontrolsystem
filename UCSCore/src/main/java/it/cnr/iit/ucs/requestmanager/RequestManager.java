@@ -116,7 +116,6 @@ public class RequestManager extends AbstractRequestManager {
     private void handleMessage( Message message ) throws Exception {
         Message responseMessage = null;
         if( message instanceof AttributeChangeMessage ) {
-            log.info( "!!! attrchange" );
             getContextHandler().attributeChanged( (AttributeChangeMessage) message );
             return;
         } else if( message.getPurpose() == PURPOSE.TRY ) {

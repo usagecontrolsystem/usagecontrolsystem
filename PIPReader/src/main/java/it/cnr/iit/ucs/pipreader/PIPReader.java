@@ -324,16 +324,15 @@ public final class PIPReader extends PIPBase {
                         attribute.getAdditionalInformations(),
                         System.currentTimeMillis() } );
                 attribute.setValue( attribute.getDataType(), value );
-                notifyContextHandler( attribute );
+                notifyRequestManager( attribute );
             }
         }
     }
 
-    public void notifyContextHandler( Attribute attribute ) {
+    public void notifyRequestManager( Attribute attribute ) {
         AttributeChangeMessage attrChangeMessage = new AttributeChangeMessage( ENTITIES.PIP.toString(), ENTITIES.CH.toString() );
         ArrayList<Attribute> attrList = new ArrayList<>( Arrays.asList( attribute ) );
         attrChangeMessage.setAttributes( attrList );
-        log.info( "!!! pip->rm" );
         getRequestManager().sendMessage( attrChangeMessage );
     }
 }
