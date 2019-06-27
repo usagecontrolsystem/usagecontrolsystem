@@ -252,7 +252,7 @@ public final class PIPReader extends PIPBase {
             for( String line; ( line = br.readLine() ) != null; ) {
                 if( line.contains( filter ) ) {
                     String value = line.split( "\\s+" )[1];
-                    logOperation( value, filter );
+                    journal.logString( formatJournaling( value, filter ) );
                     return value;
                 }
             }
@@ -270,10 +270,6 @@ public final class PIPReader extends PIPBase {
             this.filePath = filePath;
         }
         Reject.ifBlank( this.filePath );
-    }
-
-    private void logOperation( String... strings ) {
-        journal.logString( formatJournaling( strings ) );
     }
 
     private String formatJournaling( String... strings ) {
