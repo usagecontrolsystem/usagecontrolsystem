@@ -25,8 +25,6 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 
-import com.google.gson.Gson;
-
 import it.cnr.iit.xacml.Attribute;
 import it.cnr.iit.xacml.Category;
 
@@ -103,7 +101,6 @@ public final class RequestType {
     public String getAttributeValue( Category subject ) {
         try {
             for( AttributesType attributeType : attributes ) {
-                log.info( new Gson().toJson( attributeType ) );
                 if( attributeType.getCategory().equals( subject.toString() ) ) {
                     return attributeType.getAttribute().get( 0 ).getAttributeValue().get( 0 )
                         .getContent().get( 0 ).toString();
