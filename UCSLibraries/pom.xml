@@ -6,6 +6,10 @@
 	<artifactId>UCSLibraries</artifactId>
 	<version>0.2.0-SNAPSHOT</version>
 
+	<scm>
+	<connection>scm:git:git://github.com/usagecontrolsystem/usagecontrolsystem.git</connection>
+	<developerConnection>scm:git:git@github.com:usagecontrolsystem/usagecontrolsystem.git</developerConnection>
+	</scm>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<maven.compiler.source>1.8</maven.compiler.source>
