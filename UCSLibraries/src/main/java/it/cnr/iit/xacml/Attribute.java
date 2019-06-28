@@ -283,7 +283,7 @@ public final class Attribute implements Cloneable {
 
     public void setValue( DataType dataType, String... values ) {
         Reject.ifNull( dataType );
-        Reject.ifNull( values );
+        Reject.ifNullStringArray( values );
 
         ArrayList<String> list = new ArrayList<>( Arrays.asList( values ) );
         attributeValueMap.put( dataType.toString(), list );

@@ -25,17 +25,16 @@ import it.cnr.iit.ucs.message.Message;
  * Request manager which will then forwards the request to the context handler.
  *
  * @author Antonio La Marra
- *
  */
-public interface UCSCHInterface {
+public interface RequestManagerInterface {
 
     /**
-     * Sends a message from the external world to the context handler
+     * Receives a message from the external world
      *
      * @param message
      *          the message to be sent
      * @return the response of the ContextHandler
      */
-    public boolean sendMessageToCH( Message message );
+    public boolean sendMessage( Message message );
 
 }

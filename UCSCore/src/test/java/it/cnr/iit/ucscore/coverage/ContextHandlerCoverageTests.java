@@ -62,9 +62,7 @@ public class ContextHandlerCoverageTests extends UCSRestBaseTests {
         initContextHandler( contextHandler );
         // set the pdp response to return deny
         contextHandler.setPdp( getMockedPDP( getMockedPDPEvaluation( DecisionType.DENY ) ) );
-        contextHandler.startMonitoringThread();
         contextHandler.tryAccess( null );
-        contextHandler.stopMonitoringThread();
     }
 
     @Test
@@ -77,7 +75,6 @@ public class ContextHandlerCoverageTests extends UCSRestBaseTests {
         contextHandler.setPdp( getMockedPDP( getMockedPDPEvaluation( DecisionType.DENY ) ) );
         StartAccessMessage startAccessMessage = buildStartAccessMessage( testProperties.getSessionId(), "a", "a" );
         contextHandler.startAccess( startAccessMessage );
-        contextHandler.stopMonitoringThread();
     }
 
     @Test
@@ -89,7 +86,6 @@ public class ContextHandlerCoverageTests extends UCSRestBaseTests {
         contextHandler.setPdp( getMockedPDP( getMockedPDPEvaluation( DecisionType.DENY ) ) );
         EndAccessMessage endAccessMessage = buildEndAccessMessage( testProperties.getSessionId(), "a", "a" );
         contextHandler.endAccess( endAccessMessage );
-        contextHandler.stopMonitoringThread();
     }
 
     @Test
@@ -120,7 +116,6 @@ public class ContextHandlerCoverageTests extends UCSRestBaseTests {
         EndAccessMessage endAccessMessage = buildEndAccessMessage( testProperties.getSessionId(), "a", "a" );
         contextHandler.endAccess( endAccessMessage );
 
-        contextHandler.stopMonitoringThread();
     }
 
 }

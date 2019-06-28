@@ -80,24 +80,32 @@ public class PDPTest {
         PdpProperties pdpProperties = new PdpProperties() {
 
             @Override
-            public String getJournalDir() {
-                return journalDir;
-            }
-
-            @Override
             public String getName() {
                 return className;
             }
 
             @Override
             public Map<String, String> getAdditionalProperties() {
-                // TODO Auto-generated method stub
                 return null;
             }
 
             @Override
             public String getId() {
-                // TODO Auto-generated method stub
+                return null;
+            }
+
+            @Override
+            public String getJournalPath() {
+                return journalDir;
+            }
+
+            @Override
+            public String getJournalProtocol() {
+                return "file";
+            }
+
+            @Override
+            public Map<String, String> getJournalAdditionalProperties() {
                 return null;
             }
         };

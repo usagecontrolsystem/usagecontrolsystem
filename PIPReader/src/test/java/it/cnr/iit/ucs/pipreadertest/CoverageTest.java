@@ -26,10 +26,10 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import com.tngtech.jgiven.annotation.AfterScenario;
 
-import it.cnr.iit.ucs.contexthandler.ContextHandlerInterface;
 import it.cnr.iit.ucs.exceptions.PIPException;
 import it.cnr.iit.ucs.pipreader.PIPReader;
 import it.cnr.iit.ucs.properties.UCFPipProperties;
+import it.cnr.iit.ucs.requestmanager.RequestManagerInterface;
 import it.cnr.iit.utility.JAXBUtility;
 import it.cnr.iit.utility.JsonUtility;
 import it.cnr.iit.utility.errorhandling.exception.PreconditionException;
@@ -99,21 +99,21 @@ public class CoverageTest {
     private Attribute actionAttribute = new Attribute();
     private Attribute environmentAttribute = new Attribute();
 
-    private ContextHandlerInterface contextHandler;
+    private RequestManagerInterface requestManager;
 
     public void init() {
         try {
             resetRequest();
-            contextHandler = Mockito.mock( ContextHandlerInterface.class );
+            requestManager = Mockito.mock( RequestManagerInterface.class );
             subjectAttributePip = new PIPReader( getPropertiesFromString( subjectPip ) );
             resourceAttributePip = new PIPReader( getPropertiesFromString( resourcePip ) );
             actionAttributePip = new PIPReader( getPropertiesFromString( actionPip ) );
             environmentAttributePip = new PIPReader( getPropertiesFromString( environmentPip ) );
             initAttributes();
-            subjectAttributePip.setContextHandler( contextHandler );
-            resourceAttributePip.setContextHandler( contextHandler );
-            actionAttributePip.setContextHandler( contextHandler );
-            environmentAttributePip.setContextHandler( contextHandler );
+            subjectAttributePip.setRequestManager( requestManager );
+            resourceAttributePip.setRequestManager( requestManager );
+            actionAttributePip.setRequestManager( requestManager );
+            environmentAttributePip.setRequestManager( requestManager );
         } catch( Exception e ) {
             e.printStackTrace();
         }
@@ -158,9 +158,9 @@ public class CoverageTest {
         testRetrieve();
         testSubscribe();
         try {
-            Thread.sleep( 4000 ); // NOSONAR
+            Thread.sleep( 2000 ); // NOSONAR
             changeAttributeValue();
-            Thread.sleep( 3000 ); // NOSONAR
+            Thread.sleep( 2000 ); // NOSONAR
             resetAttributeValue();
             testUnsubscribe();
         } catch( InterruptedException e ) {

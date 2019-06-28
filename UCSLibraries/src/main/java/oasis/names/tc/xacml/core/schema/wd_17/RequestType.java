@@ -98,7 +98,7 @@ public final class RequestType {
      *          the category in which we're interested into
      * @return the value of the attribute, null otherwise
      */
-    public String extractValue( Category subject ) {
+    public String getAttributeValue( Category subject ) {
         try {
             for( AttributesType attributeType : attributes ) {
                 if( attributeType.getCategory().equals( subject.toString() ) ) {
@@ -107,7 +107,7 @@ public final class RequestType {
                 }
             }
         } catch( Exception e ) {
-            log.severe( e.getMessage() );
+            log.severe( "error getting attribute value : " + e.getMessage() );
         }
 
         return null;

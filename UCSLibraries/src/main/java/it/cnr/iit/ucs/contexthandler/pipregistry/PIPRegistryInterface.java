@@ -8,6 +8,11 @@ import it.cnr.iit.xacml.Attribute;
 
 import oasis.names.tc.xacml.core.schema.wd_17.RequestType;
 
+/**
+ * This class handles a group of PIP basic operations
+ *
+ * @author Alessandro Rosetti
+ */
 public interface PIPRegistryInterface {
 
     public boolean add( PIPCHInterface pip );
