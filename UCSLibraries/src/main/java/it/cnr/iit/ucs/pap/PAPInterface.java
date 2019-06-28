@@ -41,9 +41,9 @@ public interface PAPInterface {
      *
      * @param policy
      *          the policy to be added
-     * @return true if everything goes fine, false otherwise
+     * @return String id of the policy added if everything goes fine, null otherwise
      */
-    public boolean addPolicy( String policy );
+    public String addPolicy( String policy );
 
     /**
      * List all the policies stored in the table

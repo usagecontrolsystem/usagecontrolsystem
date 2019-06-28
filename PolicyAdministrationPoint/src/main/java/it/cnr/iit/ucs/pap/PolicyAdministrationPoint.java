@@ -81,27 +81,29 @@ public class PolicyAdministrationPoint implements PAPInterface {
      * @return true if everything goes OK, false otherwise
      */
     @Override
-    public boolean addPolicy( String policy ) {
+    public String addPolicy( String policy ) {
         Reject.ifBlank( policy );
         PolicyWrapper policyWrapper;
         try {
             policyWrapper = PolicyWrapper.build( policy );
         } catch( PolicyException e ) {
-            return false;
+            return null;
         }
 
         PolicyType policyType = policyWrapper.getPolicyType();
         String id = policyType.getPolicyId();
         if( id == null || id.isEmpty() ) {
-            log.severe( "No policyId specified" );
-            return false;
+            return null;
         }
+
         Path policyPath = getPolicyPath( id );
         if( policyPath.toFile().exists() ) {
             log.log( Level.INFO, "Updating policy {0}", id );
         }
-
-        return writePolicy( policyPath, policy );
+        if( writePolicy( policyPath, policy ) ) {
+            return id;
+        }
+        return null;
     }
 
     private boolean writePolicy( Path path, String policy ) {
@@ -117,7 +119,7 @@ public class PolicyAdministrationPoint implements PAPInterface {
 
     private Path getPolicyPath( String policyId ) {
         // TODO UCS-33 NOSONAR
-        return Paths.get( properties.getPath(), policyId, POLICY_FILE_EXTENSION );
+        return Paths.get( properties.getPath(), policyId + POLICY_FILE_EXTENSION );
     }
 
     /**
