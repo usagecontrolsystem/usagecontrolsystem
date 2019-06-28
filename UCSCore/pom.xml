@@ -134,7 +134,7 @@
 					<target>1.8</target>
 				</configuration>
 			</plugin>
-			<plugin>
+				<plugin>
                         <artifactId>maven-deploy-plugin</artifactId>
                         <version>2.8.2</version>
                         <executions>
@@ -145,7 +145,8 @@
                         <goal>deploy</goal>
                         </goals>
                         </execution>
-                        </executions>
+		</executions>
+	</plugin>
 			<plugin>
 				<artifactId>maven-war-plugin</artifactId>
 				<configuration>
