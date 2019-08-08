@@ -24,11 +24,18 @@ package it.cnr.iit.xacml;
  *
  */
 public enum DataType {
+    STRING( "http://www.w3.org/2001/XMLSchema#string" ),
+    BOOLEAN( "http://www.w3.org/2001/XMLSchema#boolean" ),
     INTEGER( "http://www.w3.org/2001/XMLSchema#integer" ),
     DOUBLE( "http://www.w3.org/2001/XMLSchema#double" ),
-    STRING( "http://www.w3.org/2001/XMLSchema#string" ),
+    TIME( "http://www.w3.org/2001/XMLSchema#time" ),
+    DATE( "http://www.w3.org/2001/XMLSchema#date" ),
+    DATETIME( "http://www.w3.org/2001/XMLSchema#dateTime" ),
     ANYURI( "http://www.w3.org/2001/XMLSchema#anyURI" ),
-    DATE( "http://www.w3.org/2001/XMLSchema#date" );
+    HEXBINARY( "http://www.w3.org/2001/XMLSchema#hexBinary" ),
+    BASE64BINARY( "http://www.w3.org/2001/XMLSchema#base64Binary" ),
+    DAYTIMEDURATION( "http://www.w3.org/2001/XMLSchema#dayTimeDuration" ),
+    YEARMONTHDURATION( "http://www.w3.org/2001/XMLSchema#yearMonthDuration" );
 
     private final String payload;
 
@@ -49,16 +56,30 @@ public enum DataType {
      * @return the dataType object correspondent to the string, null otherwise
      */
     public static DataType toDATATYPE( String payload ) {
-        if( payload.equalsIgnoreCase( INTEGER.toString() ) ) {
+        if( payload.equalsIgnoreCase( STRING.toString() ) ) {
+            return STRING;
+        } else if( payload.equalsIgnoreCase( BOOLEAN.toString() ) ) {
+            return BOOLEAN;
+        } else if( payload.equalsIgnoreCase( INTEGER.toString() ) ) {
             return INTEGER;
         } else if( payload.equalsIgnoreCase( DOUBLE.toString() ) ) {
             return DOUBLE;
-        } else if( payload.equalsIgnoreCase( STRING.toString() ) ) {
-            return STRING;
-        } else if( payload.equalsIgnoreCase( ANYURI.toString() ) ) {
-            return ANYURI;
+        } else if( payload.equalsIgnoreCase( TIME.toString() ) ) {
+            return TIME;
         } else if( payload.equalsIgnoreCase( DATE.toString() ) ) {
             return DATE;
+        } else if( payload.equalsIgnoreCase( DATETIME.toString() ) ) {
+            return DATETIME;
+        } else if( payload.equalsIgnoreCase( ANYURI.toString() ) ) {
+            return ANYURI;
+        } else if( payload.equalsIgnoreCase( HEXBINARY.toString() ) ) {
+            return HEXBINARY;
+        } else if( payload.equalsIgnoreCase( BASE64BINARY.toString() ) ) {
+            return BASE64BINARY;
+        } else if( payload.equalsIgnoreCase( DAYTIMEDURATION.toString() ) ) {
+            return DAYTIMEDURATION;
+        } else if( payload.equalsIgnoreCase( YEARMONTHDURATION.toString() ) ) {
+            return YEARMONTHDURATION;
         }
         return null;
     }
