@@ -13,4 +13,10 @@ public class AbstractPojoTest {
             .testing( Method.GETTER, Method.SETTER, Method.CONSTRUCTOR )
             .areWellImplemented();
     }
+
+    public void shouldPassSpecifiedMethodsPojoTests( Class<?> clazz, Predicate<String> predicate, Method... methods ) {
+        assertPojoMethodsFor( clazz, predicate )
+            .testing( methods )
+            .areWellImplemented();
+    }
 }
