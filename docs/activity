@@ -1,0 +1,35 @@
+@startuml
+
+(*) --> [open demo app] "MainActivity"
+--> [pep intercepts onStart] "PEP"
+--> [pep calls UCS_tryaccess] == UCS_TRY_RESPONSE ==
+
+if "check evaluation result" then
+        --> [isAllowed] "call startAccess" 
+        --> == UCS_START_RESPONSE ==
+        if "user allowed" then
+                --> [Yes] "User allowed"
+                --> [show activities] "Activity displayed"
+                note left
+                        this is one way of signaling a loop
+                end note
+                --> [context change] == UCS_START_RESPONSE ==
+        else
+                --> [No] "User not allowed"
+                --> [endAccess] == ENDACCESS ==
+                --> "closeActivity"
+                --> (*)
+        endif
+else 
+        if "notification sent?" then
+                --> [No] "notify parent"
+                --> [notAllowed] "ask for notification" 
+                --> [sendNotification] "ParentPhone"
+                --> [pep receives notification response] "PEP"
+        else
+                --> [Yes] "stop usage"
+                --> [endAccess] == ENDACCESS ==
+        endif
+endif
+
+@enduml
