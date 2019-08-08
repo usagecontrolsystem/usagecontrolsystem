@@ -1,0 +1,46 @@
+@startuml
+  
+class MainActivity extends Activity {
+        + void onStart()
+        + void onDestroy()
+}
+
+class PEP extends Service implements PEPInterface {
+        - obligationManager : ObligationManager
+        + triggerEvaluation()
+        + triggerEvaluation(notificationResult : String)
+        + onGoingEvaluation(reevaluationResponseMessage : ReevaluationResponseMessage)
+}
+
+class UCSService extends Service implements UCSInterface {
+        + tryAccess(tryAccessMessage : TryAccessMessage) : TryAccessResponse
+        + startAccess(startAccessMessage : StartAccessMessage) : StartAccessResponse
+        + endAccess(endAccessMessage : EndAccessMessage) : EndAccessResponse
+}
+
+class ObligationManager {
+        + performObligation(text : String)
+}
+
+class NotificationManager {
+        + sendNotification(text : String)
+}
+
+interface AttributeManagerInterface {
+        + retrieveValue(attribute : Attribute);
+}
+
+class LocationAttributeManager extends Service implements AttributeManagerInterface {
+}
+
+class IdentificationAttributeManager extends Service implements AttributeManagerInterface {
+}
+
+                                                 
+class DemoApp {                                  
+        - mainActivity : MainActivity
+        - pepService : PEP
+        - ucsService : UCSService
+}
+
+@enduml
