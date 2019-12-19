@@ -18,7 +18,7 @@ Read the following papers to understand the concepts of ABAC and how UCS impleme
 5) click on **Try it out** button
 6) you will see in the log outputs the following
 * in PEPRest: after tryAccess, startAccess and evaluation **Permit** is received
-* in UCSREST: policy XML, pdp response as Permit and several "Polling on value of the attribute" per monitored attribute 
+* in UCSReST: policy XML, pdp response **Permit** and several "Polling on value..." messages per monitored attribute 
 7) go to directory <cloned-location-of-ucs>/res/pips
 8) open text file **light** and change its value from 0 to 1 and save the file
 9) you will see in the log outputs the following
