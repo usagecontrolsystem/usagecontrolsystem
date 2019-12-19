@@ -1,7 +1,10 @@
 # usagecontrolsystem (UCS)
 
-Read the following paper to understand the concepts of ABAC and how UCS implements them, especially the concept of continuous monitoring.
+Read the following papers to understand the concepts of ABAC and how UCS implements them, especially the concept of continuous monitoring.
 1) https://fardapaper.ir/mohavaha/uploads/2017/10/Implementing-Usage-Control-in-Internet-of-Things.pdf
+2) https://www.iit.cnr.it/sites/default/files/Internet%20of%20Things.pdf
+3) https://www.iit.cnr.it/sites/default/files/main_22.pdf
+4) https://www.iit.cnr.it/sites/default/files/Improving_MQTT_by_inc_of_UCON.pdf
 
 ## Try UCS by performing the following steps
 
