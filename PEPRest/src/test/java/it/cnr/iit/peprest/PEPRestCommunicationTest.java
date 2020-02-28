@@ -22,7 +22,7 @@ import it.cnr.iit.ucs.constants.RestOperation;
 
 @RunWith( SpringJUnit4ClassRunner.class )
 @WebAppConfiguration
-@WebMvcTest( value = PEPRestController.class, secure = false )
+@WebMvcTest( value = PEPRestController.class)
 public class PEPRestCommunicationTest extends PEPRestAbstractTest {
 
     @Override

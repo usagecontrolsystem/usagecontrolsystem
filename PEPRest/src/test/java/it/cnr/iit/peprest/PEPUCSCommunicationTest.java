@@ -21,7 +21,7 @@ import it.cnr.iit.ucs.message.Message;
 
 @RunWith( SpringJUnit4ClassRunner.class )
 @WebAppConfiguration
-@WebMvcTest( value = PEPUCSController.class, secure = false )
+@WebMvcTest( value = PEPUCSController.class )
 public class PEPUCSCommunicationTest extends PEPRestAbstractTest {
 
     @Override
