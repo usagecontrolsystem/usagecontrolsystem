@@ -77,7 +77,7 @@ public final class PolicyDecisionPoint extends AbstractPDP {
 
     private static Logger log = Logger.getLogger( PolicyDecisionPoint.class.getName() );
 
-    private PDPConfig pdpConfig;
+    private Balana balana = Balana.getInstance();
     private JournalingInterface journalInterface;
 
     public PolicyDecisionPoint( PdpProperties properties ) {
@@ -173,9 +173,7 @@ public final class PolicyDecisionPoint extends AbstractPDP {
     private ResponseCtx evaluate( AbstractRequestCtx request, PolicyFinder policyFinder ) {
         EvaluationCtx evalContext = null;
         try {
-            Balana balana = Balana.getInstance();
-            pdpConfig = balana.getPdpConfig();
-            evalContext = EvaluationCtxFactory.getFactory().getEvaluationCtx( request, pdpConfig );
+            evalContext = EvaluationCtxFactory.getFactory().getEvaluationCtx( request, balana.getPdpConfig() );
             return evaluate( evalContext, policyFinder );
         } catch( ParsingException e ) {
             return getResponseCtx( AbstractResult.DECISION_INDETERMINATE, Status.STATUS_SYNTAX_ERROR,
@@ -199,7 +197,7 @@ public final class PolicyDecisionPoint extends AbstractPDP {
      */
     private ResponseCtx evaluate( EvaluationCtx context, PolicyFinder policyFinder ) {
         // check whether this PDP is configured to support multiple decision profiles
-        if( pdpConfig.isMultipleRequestHandle() ) {
+        if( balana.getPdpConfig().isMultipleRequestHandle() ) {
             Set<EvaluationCtx> evaluationCtxSet;
             MultipleCtxResult multipleCtxResult = context.getMultipleEvaluationCtx();
             if( multipleCtxResult.isIndeterminate() ) {
