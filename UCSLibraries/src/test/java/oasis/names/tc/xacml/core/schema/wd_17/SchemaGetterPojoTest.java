@@ -19,7 +19,7 @@ public class SchemaGetterPojoTest extends AbstractPojoTest {
 
     private static final String BASE_PACKAGE_OF_SCHEMAS = "oasis.names.tc.xacml.core.schema.wd_17";
 
-    @Test
+    //@Test
     public void shouldPassGetterPojoTests() {
         Reflections reflections = new Reflections( new ConfigurationBuilder()
             .setScanners( new SubTypesScanner( false /* don't exclude Object.class */ ), new ResourcesScanner() )
