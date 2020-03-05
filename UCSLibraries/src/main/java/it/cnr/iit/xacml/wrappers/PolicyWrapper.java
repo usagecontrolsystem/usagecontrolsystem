@@ -84,7 +84,7 @@ public class PolicyWrapper implements PolicyWrapperInterface {
 
     public static PolicyWrapper build( PAPInterface pap, TryAccessMessage message ) throws PolicyException {
         String policy = message.getPolicy();
-        if( policy == null && message.getPolicyId() != null ) {
+        if( (policy == null || policy.isEmpty()) && message.getPolicyId() != null && !message.getPolicyId().isEmpty()) {
             policy = pap.retrievePolicy( message.getPolicyId() );
         }
         return PolicyWrapper.build( policy );
