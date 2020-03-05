@@ -70,12 +70,13 @@ public final class TryAccessMessage extends Message {
     }
 
     public void setPolicy( String policy ) {
-        Reject.ifBlank( policy );
-        try {
-            PolicyWrapper policyWrapper = PolicyWrapper.build( policy );
-        } catch( PolicyException e ) {
-            throw new IllegalStateException( "invalid policy" ); // NOSONAR
-        }
+    	if (!policy.isEmpty()) {
+	    	try {
+	            PolicyWrapper policyWrapper = PolicyWrapper.build( policy );
+	        } catch( PolicyException e ) {
+	            throw new IllegalStateException( "invalid policy" ); // NOSONAR
+	        }
+    	}
         this.policy = policy;
     }
 
