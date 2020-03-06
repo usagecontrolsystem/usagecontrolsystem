@@ -139,6 +139,10 @@ public final class RequestType {
             attribute.getAttributeId(), value );
     }
 
+    public boolean removeAttribute(Category category, String attributeId) {
+    	return this.attributes.removeIf( a -> a.getCategory() == category.toString() && a.getId() == attributeId);
+    }
+
     public boolean addAttribute( String category, String dataType,
             String attributeId, String value ) {
 

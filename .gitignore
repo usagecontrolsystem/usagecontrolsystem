@@ -1,3 +1,4 @@
 .*
 target/
 jgiven-reports/
+res/xmls/policy2Attributes.xml
