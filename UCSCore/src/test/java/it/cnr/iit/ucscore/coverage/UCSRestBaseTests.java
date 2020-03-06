@@ -237,7 +237,7 @@ public class UCSRestBaseTests {
 
     protected PEPInterface getMockedPEPInterface( String response ) {
         PEPInterface pep = Mockito.mock( PEPInterface.class );
-        Mockito.when( pep.receiveResponse( ArgumentMatchers.<Message>any() ) ).thenReturn( response );
+        Mockito.when( pep.sendResponse( ArgumentMatchers.<Message>any() ) ).thenReturn( response );
         return pep;
     }
 

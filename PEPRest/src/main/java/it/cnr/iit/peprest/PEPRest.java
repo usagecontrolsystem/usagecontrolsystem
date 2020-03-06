@@ -183,7 +183,7 @@ public class PEPRest implements PEPInterface {
 
     @Override
     @Async
-    public String receiveResponse( Message message ) {
+    public String sendResponse( Message message ) {
         Reject.ifNull( message );
         try {
             responsesMap.put( message.getMessageId(), message );

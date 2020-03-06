@@ -110,7 +110,7 @@ public final class RequestType {
             log.severe( "error getting attribute value : " + e.getMessage() );
         }
 
-        return null;
+        return "";
     }
 
     public String getAttribute( String category, String attributeId ) {

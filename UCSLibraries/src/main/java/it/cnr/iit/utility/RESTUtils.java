@@ -105,7 +105,7 @@ public final class RESTUtils {
             .post()
             .uri( api )
             .contentType( MediaType.APPLICATION_JSON )
-            .body( BodyInserters.fromObject( obj ) )
+            .body( BodyInserters.fromValue( obj ) )
             .exchange()
             .flatMap( r -> r.toEntity( clazz ) );
 

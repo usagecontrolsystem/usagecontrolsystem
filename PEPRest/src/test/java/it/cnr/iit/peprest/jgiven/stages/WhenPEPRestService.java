@@ -111,7 +111,7 @@ public class WhenPEPRestService extends Stage<WhenPEPRestService> {
             default:
                 break;
         }
-        pepRest.receiveResponse( message );
+        pepRest.sendResponse( message );
         return self();
     }
 
