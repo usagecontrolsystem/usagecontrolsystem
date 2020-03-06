@@ -86,14 +86,14 @@ public class RequestWrapper {
         return update();
     }
 
-    public void setAttribute(Attribute attribute, String value) {
-    	requestType.removeAttribute(attribute.getCategory(), attribute.getAttributeId());
-        requestType.addAttribute(attribute, value);
-        try {
+	public void setAttribute(Attribute attribute, String value) {
+		requestType.removeAttribute(attribute.getCategory(), attribute.getAttributeId());
+		requestType.addAttribute(attribute, value);
+		try {
 			request = marshalRequestType(requestType);
 		} catch (JAXBException e) {
 		}
-    }
+	}
     
     public static RequestType unmarshalRequestType( String request ) throws JAXBException {
         return JAXBUtility.unmarshalToObject( RequestType.class, request );
