@@ -110,7 +110,7 @@ public final class RequestType {
             log.severe( "error getting attribute value : " + e.getMessage() );
         }
 
-        return null;
+        return "";
     }
 
     public String getAttribute( String category, String attributeId ) {
@@ -137,6 +137,10 @@ public final class RequestType {
         return addAttribute( attribute.getCategory().toString(),
             attribute.getDataType().toString(),
             attribute.getAttributeId(), value );
+    }
+
+    public boolean removeAttribute(Category category, String attributeId) {
+    	return this.attributes.removeIf( a -> a.getCategory() == category.toString() && a.getId() == attributeId);
     }
 
     public boolean addAttribute( String category, String dataType,

@@ -45,5 +45,5 @@ public interface PEPInterface {
      * context handler, this will be considered a callback function (to be put
      * inside the message sent to the context handler), or it can be a REST API.
      */
-    public String receiveResponse( Message message );
+    public String sendResponse( Message message );
 }

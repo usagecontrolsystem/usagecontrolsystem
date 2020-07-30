@@ -34,7 +34,7 @@ public class PEPUCSCommunicationTest extends PEPRestAbstractTest {
     public void tryAccessResponseRequestTriggersReceiveResponse() throws Exception {
         Message tryAccessResponse = buildTryAccessResponseDeny();
 
-        when( pepRest.receiveResponse( tryAccessResponse ) ).thenReturn( PERMIT.value() );
+        when( pepRest.sendResponse( tryAccessResponse ) ).thenReturn( PERMIT.value() );
 
         MockHttpServletResponse mvcResponse = postResponseToPEPRest( tryAccessResponse, TRYACCESSRESPONSE_REST );
 

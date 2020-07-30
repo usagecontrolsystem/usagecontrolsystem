@@ -9,7 +9,6 @@ import it.cnr.iit.ucs.contexthandler.pipregistry.PIPRegistryInterface;
 import it.cnr.iit.ucs.exceptions.RequestException;
 import it.cnr.iit.utility.JAXBUtility;
 import it.cnr.iit.xacml.Attribute;
-
 import oasis.names.tc.xacml.core.schema.wd_17.AttributeType;
 import oasis.names.tc.xacml.core.schema.wd_17.AttributesType;
 import oasis.names.tc.xacml.core.schema.wd_17.RequestType;
@@ -87,6 +86,15 @@ public class RequestWrapper {
         return update();
     }
 
+	public void setAttribute(Attribute attribute, String value) {
+		requestType.removeAttribute(attribute.getCategory(), attribute.getAttributeId());
+		requestType.addAttribute(attribute, value);
+		try {
+			request = marshalRequestType(requestType);
+		} catch (JAXBException e) {
+		}
+	}
+    
     public static RequestType unmarshalRequestType( String request ) throws JAXBException {
         return JAXBUtility.unmarshalToObject( RequestType.class, request );
     }

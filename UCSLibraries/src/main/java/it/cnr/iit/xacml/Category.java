@@ -27,7 +27,8 @@ public enum Category {
     ACTION( "urn:oasis:names:tc:xacml:3.0:attribute-category:action" ),
     RESOURCE( "urn:oasis:names:tc:xacml:3.0:attribute-category:resource" ),
     SUBJECT( "urn:oasis:names:tc:xacml:1.0:subject-category:access-subject" ),
-    ENVIRONMENT( "urn:oasis:names:tc:xacml:3.0:attribute-category:environment" );
+    ENVIRONMENT( "urn:oasis:names:tc:xacml:3.0:attribute-category:environment" ),
+    UCS("urn:uxacml:names:xacml:3.0:attribute-category:ucs");
 
     private final String payload;
 

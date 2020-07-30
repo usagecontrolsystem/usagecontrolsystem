@@ -47,7 +47,7 @@ public class PEPUCSController {
     @PostMapping( value = "/tryAccessResponse", consumes = MediaType.APPLICATION_JSON_VALUE )
     // TODO UCS-34 NOSONAR
     public void tryAccessResponse( @RequestBody( ) TryAccessResponseMessage message ) {
-        pepRest.receiveResponse( message );
+        pepRest.sendResponse( message );
     }
 
     @ApiOperation( httpMethod = "POST", value = "Receives request from CH for startAccess operation" )
@@ -57,7 +57,7 @@ public class PEPUCSController {
     @PostMapping( value = "/startAccessResponse", consumes = MediaType.APPLICATION_JSON_VALUE )
     // TODO UCS-34 NOSONAR
     public void startAccessResponse( @RequestBody( ) StartAccessResponseMessage message ) {
-        pepRest.receiveResponse( message );
+        pepRest.sendResponse( message );
     }
 
     @ApiOperation( httpMethod = "POST", value = "Receives request from CH for tryAccess operation" )
@@ -67,7 +67,7 @@ public class PEPUCSController {
     @PostMapping( value = "/endAccessResponse", consumes = MediaType.APPLICATION_JSON_VALUE )
     // TODO UCS-34 NOSONAR
     public void endAccessResponse( @RequestBody( ) EndAccessResponseMessage message ) {
-        pepRest.receiveResponse( message );
+        pepRest.sendResponse( message );
     }
 
     @Autowired

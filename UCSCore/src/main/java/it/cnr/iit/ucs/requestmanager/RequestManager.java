@@ -85,11 +85,12 @@ public class RequestManager extends AbstractRequestManager {
                 getQueueOutput().put( message );
             }
             return true;
-        } catch( Exception e ) {
-            log.severe( e.getLocalizedMessage() );
-            Thread.currentThread().interrupt();
-            return false;
-        }
+		} catch (InterruptedException e) {
+			Thread.currentThread().interrupt();
+		} catch (Exception e) {
+			log.severe("sendMessage : " + e.getClass().getSimpleName() + " : " + e.getMessage());
+		}
+        return false;
     }
 
     /**
@@ -98,20 +99,23 @@ public class RequestManager extends AbstractRequestManager {
     */
     private class ContextHandlerInquirer implements Callable<Message> {
 
-        @Override
-        public Message call() {
-            Message message;
-            try {
-                while( ( message = getQueueOutput().take() ) != null ) {
-                    handleMessage( message );
-                }
-            } catch( Exception e ) {
-                log.severe( e.getMessage() );
-                Thread.currentThread().interrupt();
-            }
-            return null;
-        }
-    }
+		@Override
+		public Message call() {
+			Message message;
+			try {
+				while ((message = getQueueOutput().take()) != null) {
+					handleMessage(message);
+				}
+			} catch (InterruptedException e) {
+				Thread.currentThread().interrupt();
+			} catch (Exception e) {
+				e.printStackTrace();
+				log.severe("ContextHandlerInquirer : " + e.getClass().getSimpleName() + " : " + e.getMessage());
+			}
+
+			return null;
+		}
+	}
 
     private void handleMessage( Message message ) throws Exception {
         Message responseMessage = null;
@@ -127,7 +131,12 @@ public class RequestManager extends AbstractRequestManager {
         } else {
             throw new IllegalArgumentException( "Invalid message arrived" );
         }
-        getPEPMap().get( responseMessage.getDestination() ).receiveResponse( responseMessage );
+
+        if (getPEPMap().containsKey(responseMessage.getDestination())) {
+        	getPEPMap().get( responseMessage.getDestination() ).sendResponse( responseMessage );        	
+        } else {
+        	log.severe("Error sending response to PEP : \"" + responseMessage.getDestination() + "\" not found!");
+        }
     }
 
     @Override

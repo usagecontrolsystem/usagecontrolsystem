@@ -77,6 +77,7 @@ public final class ContextHandler extends AbstractContextHandler {
 
         PolicyWrapper policy = PolicyWrapper.build( getPap(), message );
         RequestWrapper request = RequestWrapper.build( message.getRequest(), getPipRegistry() );
+        request = RequestStatusEnricher.setAttributeForStatus(request, STATUS.TRY);
         request.fatten( false );
         log.info( "TryAccess enriched request contents : \n" + request.getRequest() );
 
@@ -189,6 +190,8 @@ public final class ContextHandler extends AbstractContextHandler {
 
         PolicyWrapper policy = PolicyWrapper.build( session.getPolicySet() );
         RequestWrapper request = RequestWrapper.build( session.getOriginalRequest(), getPipRegistry() );
+        request = RequestStatusEnricher.setAttributeForStatus(request, STATUS.START);
+
         request.fatten( true );
 
         PDPEvaluation evaluation = getPdp().evaluate( request, policy, STATUS.START );
@@ -359,6 +362,7 @@ public final class ContextHandler extends AbstractContextHandler {
 
         PolicyWrapper policy = PolicyWrapper.build( session.getPolicySet() );
         RequestWrapper request = RequestWrapper.build( session.getOriginalRequest(), getPipRegistry() );
+        request = RequestStatusEnricher.setAttributeForStatus(request, STATUS.END);
         request.fatten( false );
 
         PDPEvaluation evaluation = getPdp().evaluate( request, policy, STATUS.END );

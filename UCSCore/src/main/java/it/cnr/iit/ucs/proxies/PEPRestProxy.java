@@ -58,10 +58,10 @@ public class PEPRestProxy implements PEPInterface {
     }
 
     @Override
-    // TODO return actual response.
-    public String receiveResponse( Message message ) {
+    public String sendResponse( Message message ) {
         Optional<String> api = getApiForMessage( message );
         try {
+        	log.info("Posting response to PEP " + properties.getId() + " uri : " + uri + " api : " + api.get());
             RESTUtils.asyncPost( uri.toString(), api.get(), message ); // NOSONAR
         } catch( Exception e ) {
             log.severe( "Error posting message : " + api );
